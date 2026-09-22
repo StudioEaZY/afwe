@@ -1,0 +1,30 @@
+{
+  "proposals": [
+    {
+      "id": "unmapped:aff22d1faf",
+      "created": "2026-09-22T16:52:15Z",
+      "finding": {
+        "id": "unmapped:aff22d1faf",
+        "kind": "unmapped_file",
+        "severity": "warn",
+        "confidence": 0.3,
+        "summary": "`src/notifications/mailer.ts` has no blueprint home; maybe a new node `notifications`",
+        "evidence": [
+          "no sibling, import or name evidence"
+        ],
+        "change": {
+          "op": "create_node",
+          "parent": "demo-product",
+          "name": "notifications",
+          "files": [
+            "src/notifications/**"
+          ]
+        },
+        "files": [
+          "src/notifications/mailer.ts"
+        ]
+      },
+      "status": "reverted"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+relations:
+- from: authentication
+  to: identity
+  kind: depends_on
+  rationale: Sessions wrap a User
+  status: declared
+  origin: human
+- from: payments
+  to: identity
+  kind: depends_on
+  rationale: Charges are per user
+  status: declared
+  origin: human
+- from: dashboard
+  to: canvas-renderer
+  kind: depends_on
+  rationale: Widgets render on the canvas
+  status: declared
+  origin: human
+- from: dashboard
+  to: ui
+  kind: depends_on
+  rationale: Dashboard is composed with shared layout
+  status: declared
+  origin: human
+- from: dashboard
+  to: workspace-library
+  kind: depends_on
+  status: declared
+  origin: human
+- from: workspace-preview
+  to: canvas-renderer
+  kind: depends_on
+  rationale: Previews reuse the renderer instead of a second implementation
+  status: declared
+  origin: human
+- from: sessions
+  to: data
+  kind: depends_on
+  rationale: Sessions are persisted to the primary db
+  status: declared
+  origin: human
+- from: workspace-library
+  to: workspace-tagging
+  kind: depends_on
+  status: inferred
+  origin: human
+  confidence: 0.65
+- from: workspace-preview
+  to: workspace-library
+  kind: depends_on
+  status: inferred
+  origin: human
+  confidence: 0.65
+- from: workspace-search
+  to: workspace-library
+  kind: depends_on
+  status: inferred
+  origin: human
+  confidence: 0.65
+- from: sessions
+  to: oauth
+  kind: depends_on
+  status: inferred
+  origin: human
+  confidence: 0.65
+- from: dashboard
+  to: payments
+  kind: depends_on
+  status: inferred
+  origin: human
+  confidence: 0.65

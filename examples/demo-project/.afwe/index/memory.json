@@ -1,0 +1,128 @@
+{
+  "auth-session-expiry": {
+    "kind": "decision",
+    "title": "Session expiry is 30 minutes, server-side",
+    "path": "memory/decisions/auth-session-expiry.md",
+    "nodes": [
+      "sessions"
+    ],
+    "files": [],
+    "symbols": [
+      "src/auth/session.ts::SESSION_TTL_MS"
+    ],
+    "tags": [
+      "auth",
+      "security"
+    ],
+    "status": "accepted"
+  },
+  "dashboard-rendering": {
+    "kind": "exception",
+    "title": "Dashboard rendering ignores Lighthouse budgets",
+    "path": "memory/exceptions/dashboard-rendering.md",
+    "nodes": [
+      "dashboard"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [
+      "performance"
+    ],
+    "status": "accepted"
+  },
+  "lighthouse-exception": {
+    "kind": "decision",
+    "title": "Lighthouse exception for Dashboard",
+    "path": "memory/decisions/lighthouse-exception.md",
+    "nodes": [
+      "dashboard",
+      "canvas-renderer"
+    ],
+    "files": [
+      "src/dashboard/**",
+      "src/canvas/CanvasRenderer.tsx"
+    ],
+    "symbols": [
+      "src/canvas/CanvasRenderer.tsx::CanvasRenderer.render"
+    ],
+    "tags": [
+      "performance",
+      "intentional-exception"
+    ],
+    "status": "accepted"
+  },
+  "payments-boundary": {
+    "kind": "constraint",
+    "title": "Payments boundary: no UI dependencies",
+    "path": "memory/constraints/payments-boundary.md",
+    "nodes": [
+      "payments"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [
+      "boundary"
+    ],
+    "status": "accepted"
+  },
+  "renderer-strategy": {
+    "kind": "decision",
+    "title": "Renderer strategy: one CanvasRenderer, reused",
+    "path": "memory/decisions/renderer-strategy.md",
+    "nodes": [
+      "canvas-renderer",
+      "workspace-preview"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [
+      "rendering",
+      "reuse"
+    ],
+    "status": "accepted"
+  },
+  "replica-read-policy": {
+    "kind": "constraint",
+    "title": "Replica read policy",
+    "path": "memory/constraints/replica-read-policy.md",
+    "nodes": [
+      "data"
+    ],
+    "files": [
+      "src/data/replica.ts"
+    ],
+    "symbols": [],
+    "tags": [
+      "consistency",
+      "database"
+    ],
+    "status": "accepted"
+  },
+  "replication-lag": {
+    "kind": "problem",
+    "title": "Replication lag on status reads",
+    "path": "memory/problems/replication-lag.md",
+    "nodes": [
+      "data",
+      "realtime-status-worker"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [
+      "database"
+    ],
+    "status": "open"
+  },
+  "workspace": {
+    "kind": "terminology",
+    "title": "Workspace",
+    "path": "memory/terminology/workspace.md",
+    "nodes": [
+      "workspace"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  }
+}

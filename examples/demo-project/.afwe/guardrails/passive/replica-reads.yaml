@@ -1,0 +1,17 @@
+id: replica-reads
+mode: passive
+statement: Do not read from the replica for consistency-critical operations.
+reason: Replication lag is unacceptable for these reads.
+scope:
+  global: true
+exceptions:
+- Realtime status widgets may read from the replica.
+exception_scope:
+  nodes:
+  - realtime-status-worker
+memory:
+- replica-read-policy
+- replication-lag
+origin: human
+status: active
+created: 2026-09-22

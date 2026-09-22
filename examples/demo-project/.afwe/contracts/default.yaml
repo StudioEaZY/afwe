@@ -1,0 +1,34 @@
+id: default
+name: Default coding contract
+description: 'For normal coding tasks: implement → verify against the blueprint → update .afwe memory if needed → log completion.'
+task_kinds:
+- code
+- bugfix
+- refactor
+- chore
+- test
+steps:
+- id: context
+  phase: before
+  action: afwe_context
+  instruction: Before touching a file, ask AFWE for the relevant context (`afwe context <file>` / tool `afwe_context`) and respect the decisions, exceptions and guardrails it returns.
+- id: implement
+  phase: during
+  action: harness
+  instruction: Implement the requested change. Reuse existing nodes/libraries shown in the context before creating new ones.
+- id: verify
+  phase: after
+  action: afwe_verify
+  instruction: Run `afwe verify --changed <files>` (tool `afwe_verify`). Fix constraint violations and failed active guardrails; do not silence them.
+- id: update
+  phase: after
+  action: afwe_update
+  instruction: 'If you made a decision, hit an exception, or changed structure: record it (`afwe memory add …`, `afwe blueprint map …`). Keep the blueprint and the code as two views of the same thing.'
+- id: sync
+  phase: after
+  action: afwe_sync
+  instruction: Run `afwe sync` so mapping/index/drift are current (auto‑reconciles confident changes, proposes uncertain ones).
+- id: log
+  phase: after
+  action: afwe_log
+  instruction: Log completion with what changed and why (`afwe task done <task> --message …`).

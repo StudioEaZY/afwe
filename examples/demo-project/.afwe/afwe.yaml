@@ -1,0 +1,25 @@
+format: afwe/1
+project:
+  name: Demo Product
+  description: Tiny multi-language app used to demonstrate AFWE
+  root: .
+analyzer:
+  include: []
+  ignore:
+  - .afwe/**
+  - node_modules/**
+  - target/**
+  - dist/**
+  - build/**
+  - .git/**
+  - '**/*.min.js'
+  - '**/*.lock'
+  max_file_size_kb: 512
+  languages: []
+policy:
+  auto_reconcile_min: 0.7
+  soft_reconcile_min: 0.5
+  create_proposals: true
+  fail_on_violation: true
+provenance:
+  retain_prompts: true

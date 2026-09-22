@@ -1,0 +1,135 @@
+nodes:
+- id: demo-product
+  name: Demo Product
+  kind: product
+  purpose: Root of the architecture. Everything the project is lives beneath this node.
+  status: active
+  origin: human
+  children:
+  - id: authentication
+    name: Authentication
+    kind: subsystem
+    purpose: Who is the caller? Sessions and OAuth login.
+    status: active
+    origin: human
+    children:
+    - id: sessions
+      name: Sessions
+      kind: module
+      purpose: Server-side sessions with a fixed TTL.
+      implements:
+        files:
+        - src/auth/session.ts
+        - src/auth/sessionStore.ts
+        - src/auth/auth.ts
+      status: active
+      origin: human
+    - id: oauth
+      name: OAuth
+      kind: module
+      purpose: Exchange provider codes for profiles.
+      implements:
+        files:
+        - src/auth/oauth.ts
+      status: active
+      origin: human
+  - id: identity
+    name: Identity
+    kind: subsystem
+    purpose: The User model everyone shares. Depends on nothing.
+    implements:
+      files:
+      - src/identity/**
+    status: active
+    origin: human
+  - id: payments
+    name: Payments
+    kind: subsystem
+    purpose: Charging users. Must stay UI-free so it can run in workers.
+    implements:
+      files:
+      - src/payments/**
+      - src/ui/Button.tsx
+    status: active
+    origin: human
+  - id: dashboard
+    name: Dashboard
+    kind: subsystem
+    purpose: Interactive overview; rendering responsiveness beats Lighthouse score here.
+    implements:
+      files:
+      - src/dashboard/**
+      - src/ui/Layout.tsx
+    status: active
+    origin: human
+    children:
+    - id: canvas-renderer
+      name: Canvas Renderer
+      kind: component
+      purpose: Frame-based renderer shared by dashboard widgets and workspace previews.
+      implements:
+        files:
+        - src/canvas/CanvasRenderer.tsx
+      status: active
+      origin: human
+  - id: workspace
+    name: Workspace
+    kind: subsystem
+    purpose: The user's library of items and everything you can do with it.
+    status: active
+    origin: human
+    children:
+    - id: workspace-library
+      name: Library
+      kind: module
+      purpose: Owns items.
+      implements:
+        files:
+        - src/workspace/library/**
+      status: active
+      origin: human
+    - id: workspace-search
+      name: Search
+      kind: module
+      purpose: Find items by title or tag.
+      implements:
+        files:
+        - src/workspace/search/**
+      status: active
+      origin: human
+    - id: workspace-preview
+      name: Preview
+      kind: module
+      purpose: Render an item without opening it.
+      implements:
+        files:
+        - src/workspace/preview/**
+      status: active
+      origin: human
+    - id: workspace-tagging
+      name: Tagging
+      kind: module
+      purpose: Normalised tags on items.
+      implements:
+        files:
+        - src/workspace/tagging/**
+      status: active
+      origin: human
+  - id: data
+    name: Data
+    kind: subsystem
+    purpose: Primary and replica database handles.
+    implements:
+      files:
+      - src/data/**
+    status: active
+    origin: human
+  - id: realtime-status-worker
+    name: Realtime Status Worker
+    kind: service
+    purpose: Polls replica for status widgets; eventual consistency accepted.
+    implements:
+      files:
+      - services/**
+    status: active
+    origin: human

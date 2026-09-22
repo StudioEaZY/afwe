@@ -1,0 +1,64 @@
+{"ts": "2026-09-22T16:13:42Z", "origin": "human", "kind": "init", "summary": "Initialised .afwe for `Demo Product`"}
+{"ts": "2026-09-22T16:13:42Z", "origin": "human", "kind": "add_node", "summary": "Added node Authentication under demo-product", "details": {"id": "authentication"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Sessions under authentication", "details": {"id": "sessions"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node OAuth under authentication", "details": {"id": "oauth"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Identity under demo-product", "details": {"id": "identity"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Payments under demo-product", "details": {"id": "payments"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node UI under demo-product", "details": {"id": "ui"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Dashboard under demo-product", "details": {"id": "dashboard"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Canvas Renderer under dashboard", "details": {"id": "canvas-renderer"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Workspace under demo-product", "details": {"id": "workspace"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Library under workspace", "details": {"id": "workspace-library"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Search under workspace", "details": {"id": "workspace-search"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Preview under workspace", "details": {"id": "workspace-preview"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Tagging under workspace", "details": {"id": "workspace-tagging"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Data under demo-product", "details": {"id": "data"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "add_node", "summary": "Added node Realtime Status Worker under demo-product", "details": {"id": "realtime-status-worker"}}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "relate", "summary": "Declared Demo Product.Authentication depends_on Demo Product.Identity"}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "relate", "summary": "Declared Demo Product.Payments depends_on Demo Product.Identity"}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "relate", "summary": "Declared Demo Product.Dashboard depends_on Demo Product.Dashboard.Canvas Renderer"}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "relate", "summary": "Declared Demo Product.Dashboard depends_on Demo Product.UI"}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "relate", "summary": "Declared Demo Product.Dashboard depends_on Demo Product.Workspace.Library"}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "relate", "summary": "Declared Demo Product.Workspace.Preview depends_on Demo Product.Dashboard.Canvas Renderer"}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "relate", "summary": "Declared Demo Product.Authentication.Sessions depends_on Demo Product.Data"}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "constrain", "summary": "Constraint payments-no-ui: payments must_not_depend [\"ui\"]"}
+{"ts": "2026-09-22T16:14:17Z", "origin": "human", "kind": "constrain", "summary": "Constraint identity-is-a-leaf: identity may_depend_only [\"identity\"]"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "memory_add", "summary": "Recorded decision `lighthouse-exception`: Lighthouse exception for Dashboard", "details": {"path": "memory/decisions/lighthouse-exception.md"}}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "memory_add", "summary": "Recorded decision `renderer-strategy`: Renderer strategy: one CanvasRenderer, reused", "details": {"path": "memory/decisions/renderer-strategy.md"}}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "memory_add", "summary": "Recorded decision `auth-session-expiry`: Session expiry is 30 minutes, server-side", "details": {"path": "memory/decisions/auth-session-expiry.md"}}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "memory_add", "summary": "Recorded constraint `payments-boundary`: Payments boundary: no UI dependencies", "details": {"path": "memory/constraints/payments-boundary.md"}}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "memory_add", "summary": "Recorded constraint `replica-read-policy`: Replica read policy", "details": {"path": "memory/constraints/replica-read-policy.md"}}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "memory_add", "summary": "Recorded exception `dashboard-rendering`: Dashboard rendering ignores Lighthouse budgets", "details": {"path": "memory/exceptions/dashboard-rendering.md"}}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "memory_add", "summary": "Recorded terminology `workspace`: Workspace", "details": {"path": "memory/terminology/workspace.md"}}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "memory_add", "summary": "Recorded problem `replication-lag`: Replication lag on status reads", "details": {"path": "memory/problems/replication-lag.md"}}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "guardrail_add", "summary": "Added passive guardrail `interactive-rendering-priority`: Interactive rendering is intentionally prioritized."}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "guardrail_add", "summary": "Added passive guardrail `replica-reads`: Do not read from the replica for consistency-critical operations."}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "guardrail_add", "summary": "Added active guardrail `payments-boundary`: Payments stays headless and quiet."}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "guardrail_add", "summary": "Added passive guardrail `one-renderer`: Never add a second renderer; extend CanvasRenderer."}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "workflow_new", "summary": "Created workflow `add-tagging`: Add tagging to the workspace"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "workflow_add_node", "summary": "Workflow `add-tagging`: added intent node `Tags are flat labels on items`"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "llm:claude-code", "kind": "workflow_add_node", "summary": "Workflow `add-tagging`: added component node `Tag model + normaliser`"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "llm:claude-code", "kind": "workflow_add_node", "summary": "Workflow `add-tagging`: added step node `Items carry tags`"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "llm:claude-code", "kind": "workflow_add_node", "summary": "Workflow `add-tagging`: added step node `Search matches tags`"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "workflow_add_node", "summary": "Workflow `add-tagging`: added question node `Should tags be per-user or global?`"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "workflow_set", "summary": "Workflow `add-tagging` updated"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "workflow_set", "summary": "Workflow `add-tagging` updated (node tag-model-normaliser)"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "workflow_set", "summary": "Workflow `add-tagging` updated (node items-carry-tags)"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "workflow_set", "summary": "Workflow `add-tagging` updated (node search-matches-tags)"}
+{"ts": "2026-09-22T16:14:58Z", "origin": "human", "kind": "lens_save", "summary": "Saved lens `workspace-blueprint`"}
+{"ts":"2026-09-22T16:52:15Z","origin":"human:reconcile","kind":"map_file","summary":"`src/auth/auth.ts` has no blueprint home; best fit: Demo Product.Authentication.Sessions","confidence":0.62,"uncertain":true,"details":{"op":"map_file","node":"sessions","file":"src/auth/auth.ts"}}
+{"ts":"2026-09-22T16:52:15Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 1, proposed 1, uncertain 1"}
+{"ts":"2026-09-22T16:52:15Z","origin":"llm:claude-code","kind":"task_start","summary":"Task started: Make widget titles editable [code] under contract default","details":{"task":"task-cacf40"}}
+{"ts":"2026-09-22T20:11:19Z","origin":"human","kind":"verify","summary":"verify: failed (3 errors, 1 warnings)"}
+{"ts":"2026-09-22T20:12:25Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 0, proposed 1, uncertain 0"}
+{"ts":"2026-09-22T20:13:20Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 0, proposed 1, uncertain 0"}
+{"ts":"2026-09-22T20:13:21Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 0, proposed 1, uncertain 0"}
+{"ts":"2026-09-22T20:18:16Z","origin":"human","kind":"remove_node","summary":"Removed Demo Product.UI (and 0 descendants)"}
+{"ts":"2026-09-22T20:18:22Z","origin":"human:reconcile","kind":"map_file","summary":"`src/ui/Button.tsx` has no blueprint home; best fit: Demo Product.Payments","confidence":0.55,"uncertain":true,"details":{"op":"map_file","node":"payments","file":"src/ui/Button.tsx"}}
+{"ts":"2026-09-22T20:18:22Z","origin":"human:reconcile","kind":"map_file","summary":"`src/ui/Layout.tsx` has no blueprint home; best fit: Demo Product.Dashboard","confidence":0.55,"uncertain":true,"details":{"op":"map_file","node":"dashboard","file":"src/ui/Layout.tsx"}}
+{"ts":"2026-09-22T20:18:22Z","origin":"human:reconcile","kind":"add_relation","summary":"code shows Demo Product.Dashboard → Demo Product.Payments (1 import edge) but the blueprint does not declare it","confidence":0.65,"uncertain":true,"details":{"op":"add_relation","from":"dashboard","to":"payments","kind":"depends_on"}}
+{"ts":"2026-09-22T20:18:22Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 3, proposed 1, uncertain 3"}
+{"ts":"2026-09-22T20:18:32Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 0, proposed 1, uncertain 0"}
+{"ts":"2026-09-22T20:18:35Z","origin":"human","kind":"verify","summary":"verify: failed (1 errors, 3 warnings)"}
+{"ts":"2026-09-22T20:18:36Z","origin":"human","kind":"verify","summary":"verify: failed (1 errors, 3 warnings)"}
+{"ts":"2026-09-22T20:19:12Z","origin":"human","kind":"proposal_reverted","summary":"Reverted proposal: `src/notifications/mailer.ts` has no blueprint home; maybe a new node `notifications`"}

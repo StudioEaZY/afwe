@@ -1,0 +1,25 @@
+id: payments-boundary
+mode: active
+statement: Payments stays headless and quiet.
+reason: Runs in workers; no UI, no console noise.
+scope:
+  nodes:
+  - payments
+memory:
+- payments-boundary
+checks:
+- type: forbid_import
+  to_nodes:
+  - ui
+  message: Payments must not import UI code (guardrail payments-boundary).
+- type: forbid_pattern
+  pattern: console\.log
+  files:
+  - src/payments/**
+  severity: error
+- type: command
+  run: npm run lint --silent
+  when: files_changed_in_scope
+origin: human
+status: active
+created: 2026-09-22

@@ -1,0 +1,15 @@
+constraints:
+- id: payments-no-ui
+  rule: must_not_depend
+  from: payments
+  to:
+  - ui
+  severity: error
+  rationale: Payments runs headless in workers; UI code would drag a renderer into it.
+- id: identity-is-a-leaf
+  rule: may_depend_only
+  from: identity
+  except:
+  - identity
+  severity: error
+  rationale: Identity is the shared leaf; everything depends on it, it depends on nothing.

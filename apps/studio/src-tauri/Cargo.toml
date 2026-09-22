@@ -1,0 +1,26 @@
+[package]
+name = "afwe-studio"
+version = "0.1.0"
+edition = "2021"
+description = "AFWE Studio — Tauri v2 desktop shell around the AFWE engine"
+license = "MIT"
+
+# Standalone workspace on purpose: the desktop shell needs webkit2gtk / WebView2 toolchains that the
+# engine and CLI must not depend on. Build with `npm run tauri dev` / `npm run tauri build` from apps/studio.
+[workspace]
+
+[lib]
+name = "afwe_studio_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+afwe-core = { path = "../../../crates/afwe-core" }
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"

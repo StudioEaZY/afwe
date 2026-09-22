@@ -1,0 +1,103 @@
+id: add-tagging
+title: Add tagging to the workspace
+status: implemented
+origin: human
+targets:
+- workspace-tagging
+- workspace-search
+nodes:
+- id: prompt-1
+  kind: prompt
+  title: Original prompt
+  text: I want tags on library items so search can filter by tag. Keep it simple, no tag hierarchy.
+  origin: human
+  status: captured
+  position:
+    x: 0.0
+    y: 0.0
+  created: 2026-09-22T16:14:58Z
+- id: tags-are-flat-labels-on-items
+  kind: intent
+  title: Tags are flat labels on items
+  text: No hierarchy. A tag is a normalised lowercase name, optional colour.
+  origin: human
+  status: pending
+  position:
+    x: 260.0
+    y: 0.0
+  created: 2026-09-22T16:14:58Z
+- id: tag-model-normaliser
+  kind: component
+  title: Tag model + normaliser
+  text: 'Tags.ts: Tag interface and normaliseTag()'
+  origin: llm:claude-code
+  status: done
+  position:
+    x: 520.0
+    y: 0.0
+  maps_to:
+    nodes:
+    - workspace-tagging
+    files:
+    - src/workspace/tagging/Tags.ts
+    symbols:
+    - src/workspace/tagging/Tags.ts::normaliseTag
+  created: 2026-09-22T16:14:58Z
+- id: items-carry-tags
+  kind: step
+  title: Items carry tags
+  text: 'Library.Item gets tags: Tag[]'
+  origin: llm:claude-code
+  status: done
+  position:
+    x: 780.0
+    y: 0.0
+  maps_to:
+    nodes:
+    - workspace-library
+    files:
+    - src/workspace/library/Library.ts
+  created: 2026-09-22T16:14:58Z
+- id: search-matches-tags
+  kind: step
+  title: Search matches tags
+  text: search() also matches tag names
+  origin: llm:claude-code
+  status: done
+  position:
+    x: 0.0
+    y: 160.0
+  maps_to:
+    nodes:
+    - workspace-search
+    symbols:
+    - src/workspace/search/Search.ts::search
+  created: 2026-09-22T16:14:58Z
+- id: should-tags-be-per-user-or-global
+  kind: question
+  title: Should tags be per-user or global?
+  text: 'Deferred: global for now (decision pending).'
+  origin: human
+  status: pending
+  position:
+    x: 260.0
+    y: 160.0
+  created: 2026-09-22T16:14:58Z
+edges:
+- from: prompt-1
+  to: tags-are-flat-labels-on-items
+  kind: then
+- from: tags-are-flat-labels-on-items
+  to: tag-model-normaliser
+  kind: then
+- from: tag-model-normaliser
+  to: items-carry-tags
+  kind: then
+- from: items-carry-tags
+  to: search-matches-tags
+  kind: then
+- from: tags-are-flat-labels-on-items
+  to: should-tags-be-per-user-or-global
+  kind: then
+created: 2026-09-22T16:14:58Z
+updated: 2026-09-22T16:14:58Z

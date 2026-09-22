@@ -1,0 +1,46 @@
+{
+  "generated": "2026-09-22T20:18:32Z",
+  "findings": [
+    {
+      "id": "broken_rel:e72ab30eda",
+      "kind": "broken_reference",
+      "severity": "warn",
+      "confidence": 1.0,
+      "summary": "relation dashboard → ui references an unknown node",
+      "evidence": []
+    },
+    {
+      "id": "broken_constraint:3156c393b0",
+      "kind": "broken_reference",
+      "severity": "warn",
+      "confidence": 1.0,
+      "summary": "constraint `payments-no-ui` references unknown node `ui`",
+      "evidence": []
+    }
+  ],
+  "applied": [],
+  "proposed": [
+    {
+      "id": "unmapped:aff22d1faf",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/notifications/mailer.ts` has no blueprint home; maybe a new node `notifications`",
+      "evidence": [
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "demo-product",
+        "name": "notifications",
+        "files": [
+          "src/notifications/**"
+        ]
+      },
+      "files": [
+        "src/notifications/mailer.ts"
+      ]
+    }
+  ],
+  "uncertain": []
+}

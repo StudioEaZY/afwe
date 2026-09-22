@@ -1,0 +1,11 @@
+id: one-renderer
+mode: passive
+statement: Never add a second renderer; extend CanvasRenderer.
+reason: See decision renderer-strategy.
+scope:
+  nodes:
+  - workspace-preview
+  - dashboard
+origin: human
+status: active
+created: 2026-09-22

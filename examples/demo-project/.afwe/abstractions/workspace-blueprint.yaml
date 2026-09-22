@@ -1,0 +1,20 @@
+id: workspace-blueprint
+name: Workspace Blueprint
+description: 'The workspace as its own product: skip Product › Workspace › … navigation.'
+groups:
+- name: Library
+  nodes:
+  - workspace-library
+- name: Search
+  nodes:
+  - workspace-search
+- name: Preview
+  nodes:
+  - workspace-preview
+  - canvas-renderer
+- name: Tagging
+  nodes:
+  - workspace-tagging
+  workflows:
+  - add-tagging
+origin: human

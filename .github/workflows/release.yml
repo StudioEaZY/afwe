@@ -1,0 +1,118 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  # -------------------------------------------------------------
+  # 1. Multi-platform Core Engine & CLI Binaries
+  # -------------------------------------------------------------
+  build-binaries:
+    name: Build Binary (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary: target/x86_64-pc-windows-msvc/release/afwe.exe
+            asset: afwe-x86_64-pc-windows-msvc.exe
+
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            binary: target/x86_64-unknown-linux-gnu/release/afwe
+            asset: afwe-x86_64-unknown-linux-gnu
+
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            binary: target/x86_64-apple-darwin/release/afwe
+            asset: afwe-x86_64-apple-darwin
+
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            binary: target/aarch64-apple-darwin/release/afwe
+            asset: afwe-aarch64-apple-darwin
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build Studio web frontend
+        run: |
+          cd apps/studio
+          npm ci || npm install
+          npm run build
+
+      - name: Build CLI release binary
+        run: cargo build --release --target ${{ matrix.target }} -p afwe-cli
+
+      - name: Stage release asset
+        shell: bash
+        run: |
+          cp ${{ matrix.binary }} ${{ matrix.asset }}
+
+      - name: Upload binary asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.asset }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # -------------------------------------------------------------
+  # 2. Tauri v2 Desktop App (Multi-platform desktop bundles)
+  # -------------------------------------------------------------
+  build-tauri:
+    name: Build Tauri v2 (${{ matrix.platform }})
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest, macos-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux dependencies (Tauri v2)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0-dev libjavascriptcoregtk-4.1-dev
+
+      - name: Install frontend dependencies
+        run: |
+          cd apps/studio
+          npm ci || npm install
+
+      - name: Build Tauri v2 desktop bundles
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'AFWE Studio v__VERSION__'
+          releaseBody: 'See changelog for release details.'
+          releaseDraft: false
+          prerelease: false
+          projectPath: './apps/studio'

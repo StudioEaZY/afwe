@@ -1,0 +1,16 @@
+id: interactive-rendering-priority
+mode: passive
+statement: Interactive rendering is intentionally prioritized.
+reason: The dashboard and canvas are judged by frame latency, not by Lighthouse.
+scope:
+  nodes:
+  - dashboard
+  - canvas-renderer
+exceptions:
+- Lighthouse performance optimization may be ignored here.
+memory:
+- lighthouse-exception
+- dashboard-rendering
+origin: human
+status: active
+created: 2026-09-22

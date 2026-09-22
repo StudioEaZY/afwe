@@ -1,0 +1,251 @@
+{
+  "authentication": {
+    "path": "Demo Product.Authentication",
+    "name": "Authentication",
+    "kind": "subsystem",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "canvas-renderer": {
+    "path": "Demo Product.Dashboard.Canvas Renderer",
+    "name": "Canvas Renderer",
+    "kind": "component",
+    "depth": 2,
+    "parent": "dashboard",
+    "files": [
+      "src/canvas/CanvasRenderer.tsx"
+    ],
+    "symbols": [],
+    "memory": [
+      "lighthouse-exception",
+      "renderer-strategy"
+    ],
+    "guardrails": [
+      "interactive-rendering-priority",
+      "replica-reads"
+    ]
+  },
+  "dashboard": {
+    "path": "Demo Product.Dashboard",
+    "name": "Dashboard",
+    "kind": "subsystem",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [
+      "src/dashboard/Dashboard.tsx",
+      "src/dashboard/Widget.tsx",
+      "src/ui/Layout.tsx"
+    ],
+    "symbols": [],
+    "memory": [
+      "lighthouse-exception",
+      "dashboard-rendering"
+    ],
+    "guardrails": [
+      "interactive-rendering-priority",
+      "one-renderer",
+      "replica-reads"
+    ]
+  },
+  "data": {
+    "path": "Demo Product.Data",
+    "name": "Data",
+    "kind": "subsystem",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [
+      "src/data/db.ts",
+      "src/data/replica.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "replica-read-policy",
+      "replication-lag"
+    ],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "demo-product": {
+    "path": "Demo Product",
+    "name": "Demo Product",
+    "kind": "product",
+    "depth": 0,
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "identity": {
+    "path": "Demo Product.Identity",
+    "name": "Identity",
+    "kind": "subsystem",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [
+      "src/identity/user.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "oauth": {
+    "path": "Demo Product.Authentication.OAuth",
+    "name": "OAuth",
+    "kind": "module",
+    "depth": 2,
+    "parent": "authentication",
+    "files": [
+      "src/auth/oauth.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "payments": {
+    "path": "Demo Product.Payments",
+    "name": "Payments",
+    "kind": "subsystem",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [
+      "src/payments/checkout.ts",
+      "src/payments/stripe.ts",
+      "src/ui/Button.tsx"
+    ],
+    "symbols": [],
+    "memory": [
+      "payments-boundary"
+    ],
+    "guardrails": [
+      "replica-reads",
+      "payments-boundary"
+    ]
+  },
+  "realtime-status-worker": {
+    "path": "Demo Product.Realtime Status Worker",
+    "name": "Realtime Status Worker",
+    "kind": "service",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [
+      "services/status_worker.py"
+    ],
+    "symbols": [],
+    "memory": [
+      "replication-lag"
+    ],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "sessions": {
+    "path": "Demo Product.Authentication.Sessions",
+    "name": "Sessions",
+    "kind": "module",
+    "depth": 2,
+    "parent": "authentication",
+    "files": [
+      "src/auth/auth.ts",
+      "src/auth/session.ts",
+      "src/auth/sessionStore.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "auth-session-expiry"
+    ],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "workspace": {
+    "path": "Demo Product.Workspace",
+    "name": "Workspace",
+    "kind": "subsystem",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [],
+    "symbols": [],
+    "memory": [
+      "workspace"
+    ],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "workspace-library": {
+    "path": "Demo Product.Workspace.Library",
+    "name": "Library",
+    "kind": "module",
+    "depth": 2,
+    "parent": "workspace",
+    "files": [
+      "src/workspace/library/Library.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "workspace-preview": {
+    "path": "Demo Product.Workspace.Preview",
+    "name": "Preview",
+    "kind": "module",
+    "depth": 2,
+    "parent": "workspace",
+    "files": [
+      "src/workspace/preview/Preview.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "renderer-strategy"
+    ],
+    "guardrails": [
+      "one-renderer",
+      "replica-reads"
+    ]
+  },
+  "workspace-search": {
+    "path": "Demo Product.Workspace.Search",
+    "name": "Search",
+    "kind": "module",
+    "depth": 2,
+    "parent": "workspace",
+    "files": [
+      "src/workspace/search/Search.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "workspace-tagging": {
+    "path": "Demo Product.Workspace.Tagging",
+    "name": "Tagging",
+    "kind": "module",
+    "depth": 2,
+    "parent": "workspace",
+    "files": [
+      "src/workspace/tagging/Tags.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": [
+      "replica-reads"
+    ]
+  }
+}

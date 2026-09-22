@@ -1,0 +1,22 @@
+[package]
+name = "afwe-cli"
+description = "AFWE command line, MCP server and web studio host"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "afwe"
+path = "src/main.rs"
+
+[dependencies]
+afwe-core = { path = "../afwe-core" }
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+tiny_http.workspace = true
+open.workspace = true
+include_dir = "0.7"
+
+[build-dependencies]

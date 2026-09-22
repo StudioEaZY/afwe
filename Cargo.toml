@@ -1,0 +1,38 @@
+[workspace]
+resolver = "2"
+members = ["crates/afwe-core", "crates/afwe-cli"]
+# The Tauri shell (apps/studio/src-tauri) is its own workspace so that the core
+# engine + CLI build without desktop toolchain dependencies.
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/StudioEaZY/afwe"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+serde_yaml = "0.9"
+anyhow = "1"
+thiserror = "2"
+chrono = { version = "0.4", features = ["serde"] }
+globset = "0.4"
+ignore = "0.4"
+blake3 = "1"
+regex = "1"
+tree-sitter = "0.25"
+tree-sitter-python = "0.25"
+tree-sitter-typescript = "0.23"
+tree-sitter-javascript = "0.25"
+tree-sitter-rust = "0.24"
+tree-sitter-go = "0.25"
+tree-sitter-java = "0.23"
+clap = { version = "4", features = ["derive"] }
+tiny_http = "0.12"
+open = "5"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

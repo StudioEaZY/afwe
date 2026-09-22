@@ -1,0 +1,7 @@
+{
+  "name": "demo-project",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Tiny multi-language app used to demonstrate AFWE (blueprint, memory, guardrails, drift).",
+  "scripts": { "lint": "echo lint ok" }
+}

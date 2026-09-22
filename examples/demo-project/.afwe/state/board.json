@@ -1,0 +1,142 @@
+{
+  "tasks": [
+    {
+      "id": "task-cacf40",
+      "title": "Make widget titles editable",
+      "kind": "code",
+      "contract": "default",
+      "status": "open",
+      "files": [
+        "src/dashboard/Widget.tsx"
+      ],
+      "nodes": [
+        "dashboard"
+      ],
+      "origin": "llm:claude-code",
+      "created": "2026-09-22T16:52:15Z"
+    }
+  ],
+  "items": [
+    {
+      "id": "item-f79d74",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/notifications/mailer.ts` has no blueprint home; maybe a new node `notifications`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:aff22d1faf",
+      "created": "2026-09-22T16:52:15Z"
+    },
+    {
+      "id": "item-50b238",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 62% confidence: `src/auth/auth.ts` has no blueprint home; best fit: Demo Product.Authentication.Sessions",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "unmapped:cf5743a8db",
+      "created": "2026-09-22T16:52:15Z"
+    },
+    {
+      "id": "task-cacf40:context",
+      "kind": "contract_step",
+      "title": "afwe_context — Make widget titles editable",
+      "status": "done",
+      "task": "task-cacf40",
+      "action": "afwe_context",
+      "detail": "Before touching a file, ask AFWE for the relevant context (`afwe context <file>` / tool `afwe_context`) and respect the decisions, exceptions and guardrails it returns.",
+      "reference": "default",
+      "created": "2026-09-22T16:52:15Z",
+      "resolved": "2026-09-22T16:52:15Z"
+    },
+    {
+      "id": "task-cacf40:verify",
+      "kind": "contract_step",
+      "title": "afwe_verify — Make widget titles editable",
+      "status": "open",
+      "task": "task-cacf40",
+      "action": "afwe_verify",
+      "detail": "Run `afwe verify --changed <files>` (tool `afwe_verify`). Fix constraint violations and failed active guardrails; do not silence them.",
+      "reference": "default",
+      "created": "2026-09-22T16:52:15Z"
+    },
+    {
+      "id": "task-cacf40:update",
+      "kind": "contract_step",
+      "title": "afwe_update — Make widget titles editable",
+      "status": "done",
+      "task": "task-cacf40",
+      "action": "afwe_update",
+      "detail": "If you made a decision, hit an exception, or changed structure: record it (`afwe memory add …`, `afwe blueprint map …`). Keep the blueprint and the code as two views of the same thing.",
+      "reference": "default",
+      "created": "2026-09-22T16:52:15Z",
+      "resolved": "2026-09-22T20:18:16Z"
+    },
+    {
+      "id": "task-cacf40:sync",
+      "kind": "contract_step",
+      "title": "afwe_sync — Make widget titles editable",
+      "status": "done",
+      "task": "task-cacf40",
+      "action": "afwe_sync",
+      "detail": "Run `afwe sync` so mapping/index/drift are current (auto‑reconciles confident changes, proposes uncertain ones).",
+      "reference": "default",
+      "created": "2026-09-22T16:52:15Z",
+      "resolved": "2026-09-22T20:12:25Z"
+    },
+    {
+      "id": "task-cacf40:log",
+      "kind": "contract_step",
+      "title": "afwe_log — Make widget titles editable",
+      "status": "open",
+      "task": "task-cacf40",
+      "action": "afwe_log",
+      "detail": "Log completion with what changed and why (`afwe task done <task> --message …`).",
+      "reference": "default",
+      "created": "2026-09-22T16:52:15Z"
+    },
+    {
+      "id": "item-3d710c",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 55% confidence: `src/ui/Button.tsx` has no blueprint home; best fit: Demo Product.Payments",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "unmapped:99562566f4",
+      "created": "2026-09-22T20:18:22Z"
+    },
+    {
+      "id": "item-689975",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 55% confidence: `src/ui/Layout.tsx` has no blueprint home; best fit: Demo Product.Dashboard",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "unmapped:2fffab6569",
+      "created": "2026-09-22T20:18:22Z"
+    },
+    {
+      "id": "item-349cb9",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 65% confidence: code shows Demo Product.Dashboard → Demo Product.Payments (1 import edge) but the blueprint does not declare it",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "undeclared:752a59d104",
+      "created": "2026-09-22T20:18:22Z"
+    },
+    {
+      "id": "item-c15b0d",
+      "kind": "drift",
+      "title": "relation dashboard → ui references an unknown node",
+      "status": "open",
+      "detail": "",
+      "reference": "broken_rel:e72ab30eda",
+      "created": "2026-09-22T20:18:22Z"
+    },
+    {
+      "id": "item-0cc004",
+      "kind": "drift",
+      "title": "constraint `payments-no-ui` references unknown node `ui`",
+      "status": "open",
+      "detail": "",
+      "reference": "broken_constraint:3156c393b0",
+      "created": "2026-09-22T20:18:22Z"
+    }
+  ]
+}

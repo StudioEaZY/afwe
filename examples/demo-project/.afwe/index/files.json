@@ -1,0 +1,340 @@
+{
+  "README.md": {
+    "language": "markdown",
+    "hash": "b1a465b27c9a9e96",
+    "nodes": [],
+    "symbols": [],
+    "imports": [],
+    "externals": []
+  },
+  "package.json": {
+    "language": "json",
+    "hash": "4675cf2faa34e440",
+    "nodes": [],
+    "symbols": [],
+    "imports": [],
+    "externals": []
+  },
+  "services/status_worker.py": {
+    "language": "python",
+    "hash": "9ffbcc6867d7fd08",
+    "node": "realtime-status-worker",
+    "nodes": [
+      "realtime-status-worker"
+    ],
+    "symbols": [
+      "services/status_worker.py::StatusWorker",
+      "services/status_worker.py::StatusWorker.__init__",
+      "services/status_worker.py::StatusWorker.poll",
+      "services/status_worker.py::main"
+    ],
+    "imports": [],
+    "externals": [
+      "json",
+      "time"
+    ]
+  },
+  "src/auth/auth.ts": {
+    "language": "typescript",
+    "hash": "0737afd4d53d101d",
+    "node": "sessions",
+    "nodes": [
+      "sessions"
+    ],
+    "symbols": [
+      "src/auth/auth.ts::store",
+      "src/auth/auth.ts::loginWithCode"
+    ],
+    "imports": [
+      "src/auth/session.ts",
+      "src/auth/sessionStore.ts",
+      "src/auth/oauth.ts"
+    ],
+    "externals": []
+  },
+  "src/auth/oauth.ts": {
+    "language": "typescript",
+    "hash": "97b988614e0f4f94",
+    "node": "oauth",
+    "nodes": [
+      "oauth"
+    ],
+    "symbols": [
+      "src/auth/oauth.ts::OAuthProfile",
+      "src/auth/oauth.ts::exchangeCode",
+      "src/auth/oauth.ts::profileToUser"
+    ],
+    "imports": [
+      "src/identity/user.ts"
+    ],
+    "externals": []
+  },
+  "src/auth/session.ts": {
+    "language": "typescript",
+    "hash": "1a7c4da991b77568",
+    "node": "sessions",
+    "nodes": [
+      "sessions"
+    ],
+    "symbols": [
+      "src/auth/session.ts::SESSION_TTL_MS",
+      "src/auth/session.ts::Session",
+      "src/auth/session.ts::Session.constructor",
+      "src/auth/session.ts::Session.isExpired",
+      "src/auth/session.ts::createSession"
+    ],
+    "imports": [
+      "src/auth/sessionStore.ts",
+      "src/identity/user.ts"
+    ],
+    "externals": []
+  },
+  "src/auth/sessionStore.ts": {
+    "language": "typescript",
+    "hash": "86dc385aa2062882",
+    "node": "sessions",
+    "nodes": [
+      "sessions"
+    ],
+    "symbols": [
+      "src/auth/sessionStore.ts::SessionStore",
+      "src/auth/sessionStore.ts::SessionStore.put",
+      "src/auth/sessionStore.ts::SessionStore.get"
+    ],
+    "imports": [
+      "src/auth/session.ts",
+      "src/data/db.ts"
+    ],
+    "externals": []
+  },
+  "src/canvas/CanvasRenderer.tsx": {
+    "language": "tsx",
+    "hash": "c2a08211e1a1a6e9",
+    "node": "canvas-renderer",
+    "nodes": [
+      "canvas-renderer"
+    ],
+    "symbols": [
+      "src/canvas/CanvasRenderer.tsx::RenderInput",
+      "src/canvas/CanvasRenderer.tsx::CanvasRenderer",
+      "src/canvas/CanvasRenderer.tsx::CanvasRenderer.render",
+      "src/canvas/CanvasRenderer.tsx::CanvasRenderer.reset"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/dashboard/Dashboard.tsx": {
+    "language": "tsx",
+    "hash": "7e73896d48109069",
+    "node": "dashboard",
+    "nodes": [
+      "dashboard"
+    ],
+    "symbols": [
+      "src/dashboard/Dashboard.tsx::Dashboard"
+    ],
+    "imports": [
+      "src/ui/Layout.tsx",
+      "src/dashboard/Widget.tsx",
+      "src/workspace/library/Library.ts"
+    ],
+    "externals": []
+  },
+  "src/dashboard/Widget.tsx": {
+    "language": "tsx",
+    "hash": "ef7fb304ee48b520",
+    "node": "dashboard",
+    "nodes": [
+      "dashboard"
+    ],
+    "symbols": [
+      "src/dashboard/Widget.tsx::renderer",
+      "src/dashboard/Widget.tsx::Widget"
+    ],
+    "imports": [
+      "src/canvas/CanvasRenderer.tsx"
+    ],
+    "externals": []
+  },
+  "src/data/db.ts": {
+    "language": "typescript",
+    "hash": "f45ac6af51bcf4df",
+    "node": "data",
+    "nodes": [
+      "data"
+    ],
+    "symbols": [
+      "src/data/db.ts::Db",
+      "src/data/db.ts::Db.constructor",
+      "src/data/db.ts::Db.write",
+      "src/data/db.ts::Db.read",
+      "src/data/db.ts::primaryDb"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/replica.ts": {
+    "language": "typescript",
+    "hash": "9929c71f3880bc56",
+    "node": "data",
+    "nodes": [
+      "data"
+    ],
+    "symbols": [
+      "src/data/replica.ts::replicaDb"
+    ],
+    "imports": [
+      "src/data/db.ts"
+    ],
+    "externals": []
+  },
+  "src/identity/user.ts": {
+    "language": "typescript",
+    "hash": "0a3bec137aadd0ad",
+    "node": "identity",
+    "nodes": [
+      "identity"
+    ],
+    "symbols": [
+      "src/identity/user.ts::User",
+      "src/identity/user.ts::User.constructor",
+      "src/identity/user.ts::isSameUser"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/notifications/mailer.ts": {
+    "language": "typescript",
+    "hash": "b8c401ba091f7050",
+    "nodes": [],
+    "symbols": [
+      "src/notifications/mailer.ts::sendMail"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/payments/checkout.ts": {
+    "language": "typescript",
+    "hash": "207781679da20270",
+    "node": "payments",
+    "nodes": [
+      "payments"
+    ],
+    "symbols": [
+      "src/payments/checkout.ts::Cart",
+      "src/payments/checkout.ts::checkout"
+    ],
+    "imports": [
+      "src/identity/user.ts",
+      "src/payments/stripe.ts",
+      "src/ui/Button.tsx"
+    ],
+    "externals": []
+  },
+  "src/payments/stripe.ts": {
+    "language": "typescript",
+    "hash": "3cc5316aaef514cc",
+    "node": "payments",
+    "nodes": [
+      "payments"
+    ],
+    "symbols": [
+      "src/payments/stripe.ts::charge"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/ui/Button.tsx": {
+    "language": "tsx",
+    "hash": "4e86978e99907acc",
+    "node": "payments",
+    "nodes": [
+      "payments"
+    ],
+    "symbols": [
+      "src/ui/Button.tsx::Button"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/ui/Layout.tsx": {
+    "language": "tsx",
+    "hash": "5102f58f2fdb1d4f",
+    "node": "dashboard",
+    "nodes": [
+      "dashboard"
+    ],
+    "symbols": [
+      "src/ui/Layout.tsx::Layout"
+    ],
+    "imports": [
+      "src/ui/Button.tsx"
+    ],
+    "externals": []
+  },
+  "src/workspace/library/Library.ts": {
+    "language": "typescript",
+    "hash": "63ec618f0af1a86d",
+    "node": "workspace-library",
+    "nodes": [
+      "workspace-library"
+    ],
+    "symbols": [
+      "src/workspace/library/Library.ts::Item",
+      "src/workspace/library/Library.ts::Library",
+      "src/workspace/library/Library.ts::Library.add",
+      "src/workspace/library/Library.ts::Library.recent",
+      "src/workspace/library/Library.ts::Library.all"
+    ],
+    "imports": [
+      "src/workspace/tagging/Tags.ts"
+    ],
+    "externals": []
+  },
+  "src/workspace/preview/Preview.ts": {
+    "language": "typescript",
+    "hash": "c7de6edf7199fe0c",
+    "node": "workspace-preview",
+    "nodes": [
+      "workspace-preview"
+    ],
+    "symbols": [
+      "src/workspace/preview/Preview.ts::renderer",
+      "src/workspace/preview/Preview.ts::preview"
+    ],
+    "imports": [
+      "src/workspace/library/Library.ts",
+      "src/canvas/CanvasRenderer.tsx"
+    ],
+    "externals": []
+  },
+  "src/workspace/search/Search.ts": {
+    "language": "typescript",
+    "hash": "c3d3ea8bca6fbe03",
+    "node": "workspace-search",
+    "nodes": [
+      "workspace-search"
+    ],
+    "symbols": [
+      "src/workspace/search/Search.ts::search"
+    ],
+    "imports": [
+      "src/workspace/library/Library.ts"
+    ],
+    "externals": []
+  },
+  "src/workspace/tagging/Tags.ts": {
+    "language": "typescript",
+    "hash": "4a67463ab97ca657",
+    "node": "workspace-tagging",
+    "nodes": [
+      "workspace-tagging"
+    ],
+    "symbols": [
+      "src/workspace/tagging/Tags.ts::Tag",
+      "src/workspace/tagging/Tags.ts::normaliseTag"
+    ],
+    "imports": [],
+    "externals": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "afwe",
+  "version": "0.1.0",
+  "description": "Architecture-First Workspace Engine — CLI runner and MCP server",
+  "bin": {
+    "afwe": "bin/afwe.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StudioEaZY/afwe.git"
+  },
+  "keywords": [
+    "afwe",
+    "architecture",
+    "workspace",
+    "llm",
+    "mcp",
+    "tree-sitter",
+    "tauri",
+    "codebase-engine"
+  ],
+  "author": "EaZy <eazy4d@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ]
+}
