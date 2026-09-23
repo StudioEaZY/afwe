@@ -38,11 +38,30 @@ answers "what applies to what I am touching?" (passive guardrails), refuses what
 Identity is *file path + symbol identity + structural (AST) path + content fingerprint* — never line numbers,
 so renames and moves are recognised instead of breaking references.
 
-## Quick start
+## Installation & Quick Start
 
-### Instant execution with npx or npm
+AFWE is a standalone native binary that comes with the embedded web studio. Choose the method that best fits your stack:
+
+### Method 1: Instant GitHub One-Liner (No Node, No Rust required)
+
+**Linux & macOS:**
 ```bash
-# Run without installing Rust:
+curl -fsSL https://raw.githubusercontent.com/StudioEaZY/afwe/main/scripts/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/StudioEaZY/afwe/main/scripts/install.ps1 | iex
+```
+*This downloads the latest native binary directly from GitHub Releases into `~/.afwe/bin/` and adds it to your PATH.*
+
+---
+
+### Method 2: Node.js / JavaScript / TypeScript projects (`npx` / `npm`)
+
+Works on any Node.js project (Next.js, Vite, Nest, Remix, etc.) without compiling anything:
+```bash
+# Run on demand:
 npx afwe init --name "My Product" --agents-md
 npx afwe status
 npx afwe studio
@@ -52,12 +71,36 @@ npm install -g afwe
 afwe status
 ```
 
-### Build from source (Rust 1.75+)
+---
+
+### Method 3: Direct Download from GitHub Releases
+
+Download the pre-compiled binary for your system directly from [GitHub Releases](https://github.com/StudioEaZY/afwe/releases):
+- **Windows (x64)**: `afwe-x86_64-pc-windows-msvc.exe`
+- **Linux (x64)**: `afwe-x86_64-unknown-linux-gnu`
+- **macOS (Apple Silicon)**: `afwe-aarch64-apple-darwin`
+- **macOS (Intel)**: `afwe-x86_64-apple-darwin`
+
+Rename the binary to `afwe` (or `afwe.exe`), make it executable (`chmod +x afwe`), and place it anywhere in your `PATH`.
+
+---
+
+### Method 4: Rust / Low-Level Developers (`cargo`)
+
+If you work in Rust, C++, Go, or systems programming:
+
 ```bash
-# Studio frontend is pre-built in apps/studio/web-dist and embedded into the binary.
-cargo build --release            # → target/release/afwe
+# Install directly from the GitHub repository:
+cargo install --git https://github.com/StudioEaZY/afwe crates/afwe-cli
 
+# Or if you already have the repository cloned:
+cargo install --path crates/afwe-cli
+```
 
+---
+
+### Basic Usage Flow
+```bash
 cd your-project
 afwe init --name "My Product" --agents-md      # empty .afwe/ (+ contract block in AGENTS.md / CLAUDE.md)
 afwe blueprint add Payments --kind subsystem --purpose "Charging users" --files 'src/payments/**'
