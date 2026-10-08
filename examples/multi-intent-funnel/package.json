@@ -1,0 +1,8 @@
+{
+  "name": "multi-intent-funnel",
+  "version": "1.0.0",
+  "description": "Stress-test fixture for multi-intent prompt refinements, slide transitions, and claim verification",
+  "scripts": {
+    "test": "echo 'tests passed'"
+  }
+}

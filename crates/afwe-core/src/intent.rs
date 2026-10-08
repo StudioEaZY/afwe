@@ -285,7 +285,20 @@ pub fn run_command(cmd: &str, root: &Path, changed: &[String], timeout_s: u64) -
     let (tx, rx) = mpsc::channel();
     let (cmd, root, env) = (cmd.to_string(), root.to_path_buf(), changed.join("\n"));
     std::thread::spawn(move || {
-        let out = std::process::Command::new("sh").arg("-c").arg(&cmd).current_dir(&root).env("AFWE_CHANGED_FILES", env).output();
+        let out = if cfg!(windows) {
+            std::process::Command::new("cmd")
+                .args(["/C", &cmd])
+                .current_dir(&root)
+                .env("AFWE_CHANGED_FILES", env)
+                .output()
+        } else {
+            std::process::Command::new("sh")
+                .arg("-c")
+                .arg(&cmd)
+                .current_dir(&root)
+                .env("AFWE_CHANGED_FILES", env)
+                .output()
+        };
         let _ = tx.send(out);
     });
     match rx.recv_timeout(Duration::from_secs(timeout_s)) {

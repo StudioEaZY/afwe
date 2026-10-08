@@ -1,0 +1,17 @@
+id: multi-intent-funnel
+title: Multi Intent Funnel Fixture
+statement: A stress-test funnel project testing multi-slide transitions, copy changes, and pre-generation claims.
+status: active
+origin: human
+attaches:
+  files:
+  - examples/multi-intent-funnel
+from_turns:
+- t0001
+history:
+- turn: t0001
+  ts: 2026-10-08T09:17:15Z
+  statement: A stress-test funnel project testing multi-slide transitions, copy changes, and pre-generation claims.
+created: 2026-10-08T09:17:15Z
+updated: 2026-10-08T09:17:15Z
+task: task-ebaf9b
