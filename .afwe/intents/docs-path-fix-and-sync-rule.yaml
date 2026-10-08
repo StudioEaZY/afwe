@@ -1,0 +1,17 @@
+id: docs-path-fix-and-sync-rule
+title: Fix Docs Paths to .afwe/docs and Add Mandatory Doc Sync Rule
+statement: Correct all developer guide references to .afwe/docs/TUTORIAL.md and embed mandatory documentation sync rule in SKILL.md and AGENTS.md.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0006
+history:
+- turn: t0006
+  ts: 2026-10-08T11:05:07Z
+  statement: Correct all developer guide references to .afwe/docs/TUTORIAL.md and embed mandatory documentation sync rule in SKILL.md and AGENTS.md.
+created: 2026-10-08T11:05:07Z
+updated: 2026-10-08T11:05:07Z
+task: task-ac36c8

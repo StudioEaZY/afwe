@@ -1,6 +1,6 @@
 ---
 name: afwe
-description: Architecture-First Workspace Engine skill. Enforces turn protocol (begin -> assume -> commit), micro-context retrieval, verification gates, and architectural integrity for coding agents.
+description: Architecture-First Workspace Engine skill. Enforces turn protocol (begin -> assume -> commit), micro-context retrieval, verification gates, architectural integrity, and documentation sync for coding agents.
 ---
 
 # AFWE Skill Instructions
@@ -18,7 +18,8 @@ When interacting with this codebase:
    - Retrieve micro-context via `afwe context <files>` (or MCP `afwe_context`).
    - Obey active pins; never delete pinned behavior without an explicit override.
 
-3. **After Editing**:
+3. **After Editing (Verification & Mandatory Documentation Sync)**:
    - Run verification via `afwe verify --changed <files>` (or MCP `afwe_verify`).
+   - **Post-Turn Documentation Obligation**: Whenever code structure, public APIs, rules, or behavior change, update the relevant documentation (`README.md`, `.afwe/skills/afwe/SKILL.md`, `.afwe/docs/`, or record a decision via `afwe memory add` / `afwe_memory_add`). Keep documentation synchronized with implementation on every turn.
    - Commit the turn via `afwe turn commit <turn> --summary "..."` (or MCP `afwe_turn_commit`).
    - If proposals are pending, include the AFWE reminder footer in your reply.

@@ -53,7 +53,7 @@ pub fn select_contract(contracts: &[Contract], task_kind: &str) -> Option<Contra
 
 pub const AFWE_SKILL_MD: &str = r#"---
 name: afwe
-description: Architecture-First Workspace Engine skill. Enforces turn protocol (begin -> assume -> commit), micro-context retrieval, verification gates, and architectural integrity for coding agents.
+description: Architecture-First Workspace Engine skill. Enforces turn protocol (begin -> assume -> commit), micro-context retrieval, verification gates, architectural integrity, and documentation sync for coding agents.
 ---
 
 # AFWE Skill Instructions
@@ -71,8 +71,9 @@ When interacting with this codebase:
    - Retrieve micro-context via `afwe context <files>` (or MCP `afwe_context`).
    - Obey active pins; never delete pinned behavior without an explicit override.
 
-3. **After Editing**:
+3. **After Editing (Verification & Mandatory Documentation Sync)**:
    - Run verification via `afwe verify --changed <files>` (or MCP `afwe_verify`).
+   - **Post-Turn Documentation Obligation**: Whenever code structure, public APIs, rules, or behavior change, update the relevant documentation (`README.md`, `.afwe/skills/afwe/SKILL.md`, `.afwe/docs/`, or record a decision via `afwe_memory_add`). Keep documentation synchronized with implementation on every turn.
    - Commit the turn via `afwe turn commit <turn> --summary "..."` (or MCP `afwe_turn_commit`).
    - If proposals are pending, include the AFWE reminder footer in your reply.
 "#;
@@ -86,9 +87,10 @@ pub fn render_agents_block(project: &str, _contracts: &[Contract]) -> String {
     s.push_str("## Turn Protocol Summary\n");
     s.push_str("1. `afwe turn begin \"<prompt>\" --target <files>` (MCP `afwe_turn_begin`) → read briefing pack & pins.\n");
     s.push_str("2. `afwe turn assume <turn> --file <json>` (MCP `afwe_turn_assume`) → declare intents & claims BEFORE writing code.\n");
-    s.push_str("3. `afwe turn commit <turn> --summary \"…\"` (MCP `afwe_turn_commit`) → gated commit AFTER code is written.\n\n");
+    s.push_str("3. `afwe turn commit <turn> --summary \"…\"` (MCP `afwe_turn_commit`) → gated commit AFTER code is written.\n");
+    s.push_str("4. **Documentation Sync**: Update relevant docs/skills after each update when architecture or behavior changes.\n\n");
     s.push_str("If skills or MCP are unavailable in your harness, execute the CLI commands above directly via terminal.\n");
-    s.push_str("Consult `docs/TUTORIAL.md` for complete protocol instructions and `docs/WALKTHROUGH.md` for real-world case studies.\n");
+    s.push_str("Consult `.afwe/docs/TUTORIAL.md` (or `docs/TUTORIAL.md`) for complete protocol instructions and `docs/WALKTHROUGH.md` for real-world case studies.\n");
     s.push_str("<!-- afwe:end -->\n");
     s
 }
