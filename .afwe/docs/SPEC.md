@@ -417,3 +417,78 @@ into a standing check authored by `checkgen`.
 `intents/<id>.yaml` may carry `graph: { description, nodes, edges }`: the node-based design documents of v1 are intents
 with a graph. `workflow.*` operations read and write through the same files. `afwe migrate` converts legacy
 `workflows/` files.
+
+---
+
+## 13. Supported Languages & Extensibility
+
+AFWE uses a two-tier language model designed for fast file-level governance with opt-in deep syntax parsing:
+
+### 13.1 Tier 1: Full AST Symbol & Import Analysis (Tree-Sitter Grammars)
+
+Parsed via Rust Tree-Sitter grammars. AFWE extracts structural symbol identity (`class:Foo/method:bar`), AST paths, exported visibility flags, and Blake3 content fingerprints (whitespace-insensitive), so renames and moves preserve identity:
+
+- **TypeScript** (`.ts`, `.mts`, `.cts`)
+- **TSX** (`.tsx`)
+- **JavaScript** (`.js`, `.jsx`, `.mjs`, `.cjs`)
+- **Python** (`.py`, `.pyi`)
+- **Rust** (`.rs`)
+- **Go** (`.go`)
+- **Java** (`.java`)
+
+### 13.2 Tier 2: File-Level Structural & Regex Import Analysis (Architecture-Aware)
+
+Indexed at file and directory level, mapped to blueprint nodes, tracked for drift, and gated by active guardrails/constraints (using regex import detection):
+
+- **C & C++** (`.c`, `.h`, `.cc`, `.cpp`, `.cxx`, `.hpp`, `.hh`)
+- **C#** (`.cs`)
+- **Ruby** (`.rb`)
+- **PHP** (`.php`)
+- **Kotlin** (`.kt`, `.kts`)
+- **Swift** (`.swift`)
+- **SQL** (`.sql`)
+- **HTML / Templates** (`.html`, `.htm`, `.vue`, `.svelte`)
+- **CSS / Preprocessors** (`.css`, `.scss`, `.less`)
+- **Shell** (`.sh`, `.bash`, `.zsh`)
+- **Config & Data** (`.json`, `.yaml`, `.toml`, `.markdown`)
+
+### 13.3 Extensibility & Adding New Languages
+
+#### Case A: Zero-Code / Immediate (File & Component Tracking)
+If an engineer or AI agent is working in a language not in Tier 1 (e.g., C#, Swift, Kotlin, Zig, Elixir):
+1. **Zero Rust code changes required**: AFWE already tracks and maps files of any registered extension to blueprint nodes, detects unmapped drift, enforces boundary constraints, and executes guardrails.
+2. For extensions not recognized by default (e.g. `.zig`), simply register them in `.afwe/afwe.yaml` under `analyzer.include`.
+
+#### Case B: Upgrading to Full Tree-Sitter AST Symbols (10-Minute Addition)
+Because AFWE uses declarative language specs in `crates/afwe-core/src/analyze/langs.rs`, upgrading a language to Tier 1 requires only 3 simple steps:
+
+1. **Add the grammar crate in `Cargo.toml`**:
+   ```toml
+   tree-sitter-c-sharp = "0.23"
+   ```
+
+2. **Define symbol extraction rules in `langs.rs`**:
+   ```rust
+   const CSHARP_DEFS: &[DefRule] = &[
+       d("class_declaration", "class", "name"),
+       d("interface_declaration", "interface", "name"),
+       d("method_declaration", "method", "name"),
+   ];
+   ```
+
+3. **Register the `LangSpec`**:
+   ```rust
+   LangSpec {
+       id: "csharp",
+       extensions: &["cs"],
+       grammar: Some(|| Language::new(tree_sitter_c_sharp::LANGUAGE)),
+       defs: CSHARP_DEFS,
+   }
+   ```
+
+Every other engine layer—mapping, retrieval index, drift detection, context extraction, timeline deltas, pre-commit gates, and the Studio graph—operates over the generic code model and works automatically with zero extra code.
+
+### 13.4 Onboarding & Agent Self-Extension
+- **Onboarding / Import**: Running `afwe onboard` auto-detects the project tech stacks and maps the directory structure to the initial blueprint via `afwe bootstrap`.
+- **Agent Self-Extension**: AI agents in pair-programming mode can add Tree-Sitter language grammars, verify them with `cargo test`, and commit them through the turn protocol (`turn begin` → `turn assume` → `turn commit`) in a single prompt cycle.
+

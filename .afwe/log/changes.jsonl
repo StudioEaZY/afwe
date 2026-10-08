@@ -86,3 +86,11 @@
 {"ts":"2026-10-08T11:34:32Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 0 warnings)"}
 {"ts":"2026-10-08T11:34:47Z","origin":"human","kind":"memory_add","summary":"Recorded decision `dual-context-separation-between-afwe-core-and-afwe-client`: Dual-context separation between AFWE-Core and AFWE-Client","details":{"path":"memory/decisions/dual-context-separation-between-afwe-core-and-afwe-client.md"}}
 {"ts":"2026-10-08T11:35:20Z","origin":"human","kind":"turn_ready","summary":"t0007 ready: Enforce dual-context separation for AFWE-Core vs AFWE-Client and safeguard AGENTS.md in init (100%)","details":{"turn":"t0007","reasons":["OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic architectural contracts and AGENTS.md safeguards"]}}
+{"ts":"2026-10-08T11:35:57Z","origin":"human:sync","kind":"sync","summary":"Synced 120 files; applied 0, proposed 0, uncertain 0"}
+{"ts":"2026-10-08T11:45:03Z","origin":"human:sync","kind":"sync","summary":"Synced 120 files; applied 0, proposed 0, uncertain 0"}
+{"ts":"2026-10-08T11:45:08Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 0 warnings)"}
+{"ts":"2026-10-08T11:51:07Z","origin":"human","kind":"task_start","summary":"Task started: t0008: Document Supported Languages and Extensibility in SPEC.md and sync AFWE-Client [code] under contract default","details":{"task":"task-c2f3c1"}}
+{"ts":"2026-10-08T11:51:07Z","origin":"human","kind":"turn_begin","summary":"t0008 begun: Document Supported Languages and Extensibility in SPEC.md and sync AFWE-Client","details":{"turn":"t0008","task":"task-c2f3c1","nodes":["afwe","afwe-2"]}}
+{"ts":"2026-10-08T11:51:24Z","origin":"human","kind":"turn_assume","summary":"t0008: 1 intent(s), 0 assumption(s) registered","details":{"turn":"t0008"}}
+{"ts":"2026-10-08T11:52:36Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 0 warnings)"}
+{"ts":"2026-10-08T11:53:58Z","origin":"human","kind":"turn_ready","summary":"t0008 ready: Document Tier 1 and Tier 2 supported languages and Tree-Sitter extensibility in SPEC.md (100%)","details":{"turn":"t0008","reasons":[]}}

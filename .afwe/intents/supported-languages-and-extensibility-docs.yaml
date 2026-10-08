@@ -1,0 +1,17 @@
+id: supported-languages-and-extensibility-docs
+title: Document Supported Languages and Extensibility in SPEC.md
+statement: Document Supported Languages and Extensibility in SPEC.md and sync AFWE-Client
+status: active
+origin: human
+attaches:
+  files:
+  - docs/SPEC.md
+from_turns:
+- t0008
+history:
+- turn: t0008
+  ts: 2026-10-08T11:51:24Z
+  statement: Document Supported Languages and Extensibility in SPEC.md and sync AFWE-Client
+created: 2026-10-08T11:51:24Z
+updated: 2026-10-08T11:51:24Z
+task: task-c2f3c1

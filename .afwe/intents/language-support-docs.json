@@ -1,0 +1,17 @@
+{
+  "intents": [
+    {
+      "id": "supported-languages-and-extensibility-docs",
+      "title": "Document Supported Languages and Extensibility in SPEC.md",
+      "description": "Document AFWE's two-tier language model (Tier 1 Tree-Sitter AST symbols vs Tier 2 file/regex structural analysis), zero-code tracking for new extensions, and the 10-minute Tree-Sitter extension procedure.",
+      "targets": ["docs/SPEC.md"],
+      "action": "update"
+    }
+  ],
+  "claims": [
+    {
+      "statement": "docs/SPEC.md explicitly documents Tier 1 and Tier 2 supported languages and the 3-step Tree-Sitter addition procedure",
+      "kind": "postcondition"
+    }
+  ]
+}
