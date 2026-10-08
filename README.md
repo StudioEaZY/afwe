@@ -97,7 +97,12 @@ afwe mcp                         # MCP server on stdio for your harness (49 tool
 
 For an already-populated example: `cd examples/demo-project && afwe status` (see its README).
 
-## The pieces
+## Documentation & Guides
+
+- **[Developer Tutorial (Zero to Mastery)](docs/TUTORIAL.md)**: Interactive walkthrough covering onboarding, turn protocol, pin management, planned futures, and 3-way timeline feature restoration.
+- **[Real-World Case Study (Multi-Intent Funnel)](docs/WALKTHROUGH.md)**: Step-by-step case study showing how AFWE decomposes complex qualitative prompts into AST claims and protects against collateral damage without LLMs in core.
+- **[Architecture Specification](docs/SPEC.md)**: Format specification of the `.afwe/` product folder.
+- **[V2 Decisions & Kernel Refinements](docs/V2-DECISIONS.md)**: In-depth technical rationale on turn ledger, gate mechanics, and pin sliders.
 
 ### Blueprint (structural reality)
 Tree of nodes (`product → subsystem → module → component …`) with *purpose* ("why does it exist"),

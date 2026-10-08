@@ -1,0 +1,17 @@
+id: developer-tutorials-and-guides
+title: Comprehensive Developer Tutorials and Real-World Walkthrough
+statement: Create TUTORIAL.md and WALKTHROUGH.md, and update README.md and AGENTS.md with guides.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe
+from_turns:
+- t0004
+history:
+- turn: t0004
+  ts: 2026-10-08T10:26:24Z
+  statement: Create TUTORIAL.md and WALKTHROUGH.md, and update README.md and AGENTS.md with guides.
+created: 2026-10-08T10:26:24Z
+updated: 2026-10-08T10:26:24Z
+task: task-38ef2d

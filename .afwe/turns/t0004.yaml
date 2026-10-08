@@ -1,0 +1,261 @@
+id: t0004
+ts: 2026-10-08T10:24:51Z
+origin: human
+prompt: Add practical developer tutorials, walkthroughs, and harness guide
+prompt_hash: 705d376a6e91c736
+task: task-38ef2d
+targets:
+- docs/TUTORIAL.md
+- docs/WALKTHROUGH.md
+- README.md
+- AGENTS.md
+scope:
+  nodes:
+  - afwe
+  files:
+  - README.md
+  - AGENTS.md
+intents:
+- id: developer-tutorials-and-guides
+  action: create
+  targets:
+  - afwe
+  title: Comprehensive Developer Tutorials and Real-World Walkthrough
+  statement: Create TUTORIAL.md and WALKTHROUGH.md, and update README.md and AGENTS.md with guides.
+assumptions:
+- id: a1
+  text: TUTORIAL.md contains zero to mastery guide
+  claim:
+    type: require_pattern
+    pattern: 'AFWE Developer Tutorial: Zero to Mastery'
+    files:
+    - docs/TUTORIAL.md
+  status: proposed
+- id: a2
+  text: WALKTHROUGH.md details multi-intent funnel case study
+  claim:
+    type: require_pattern
+    pattern: 'Real-World Case Study: The Multi-Intent Funnel Overhaul'
+    files:
+    - docs/WALKTHROUGH.md
+  status: proposed
+status: ready
+touched:
+  files:
+  - .afwe/intents/developer-tutorials-and-guides.yaml
+  - AGENTS.md
+  - README.md
+  - docs/TUTORIAL.md
+  - docs/WALKTHROUGH.md
+implements:
+  afwe-2:
+  - packages/afwe/README.md
+  - packages/afwe/bin/afwe.js
+  - packages/afwe/package.json
+  afwe-cli:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  afwe-core:
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  crates:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  demo-project:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  examples:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  - examples/multi-intent-funnel/package.json
+  - examples/multi-intent-funnel/src/Slide1.tsx
+  - examples/multi-intent-funnel/src/Slide5.tsx
+  - examples/multi-intent-funnel/src/Slide6.tsx
+  - examples/multi-intent-funnel/src/index.tsx
+  scripts:
+  - scripts/build.sh
+  - scripts/demo.sh
+  - scripts/dev.sh
+  - scripts/install.ps1
+  - scripts/install.sh
+  studio:
+  - apps/studio/index.html
+  - apps/studio/package-lock.json
+  - apps/studio/package.json
+  - apps/studio/src-tauri/Cargo.toml
+  - apps/studio/src-tauri/README.md
+  - apps/studio/src-tauri/build.rs
+  - apps/studio/src-tauri/capabilities/default.json
+  - apps/studio/src-tauri/src/lib.rs
+  - apps/studio/src-tauri/src/main.rs
+  - apps/studio/src-tauri/tauri.conf.json
+  - apps/studio/src/App.tsx
+  - apps/studio/src/api.ts
+  - apps/studio/src/components/BoardView.tsx
+  - apps/studio/src/components/BottomBar.tsx
+  - apps/studio/src/components/ContextPanel.tsx
+  - apps/studio/src/components/DriftDrawer.tsx
+  - apps/studio/src/components/ErrorBoundary.tsx
+  - apps/studio/src/components/GraphView.tsx
+  - apps/studio/src/components/MemoryView.tsx
+  - apps/studio/src/components/Modal.tsx
+  - apps/studio/src/components/OnboardingModal.tsx
+  - apps/studio/src/components/PinsView.tsx
+  - apps/studio/src/components/SearchPalette.tsx
+  - apps/studio/src/components/TimelineView.tsx
+  - apps/studio/src/components/TopBar.tsx
+  - apps/studio/src/components/TreePanel.tsx
+  - apps/studio/src/components/WorkflowView.tsx
+  - apps/studio/src/main.tsx
+  - apps/studio/src/store.ts
+  - apps/studio/src/styles.css
+  - apps/studio/tsconfig.json
+  - apps/studio/vite.config.ts
+  - apps/studio/web-dist/assets/core-DhEqZVGG.js
+  - apps/studio/web-dist/assets/index-31t2pd1n.css
+  - apps/studio/web-dist/assets/index-Bsvk8ymg.css
+  - apps/studio/web-dist/assets/index-C0TxAtxn.js
+  - apps/studio/web-dist/assets/index-DOCU9siz.js
+  - apps/studio/web-dist/index.html
+checks:
+- id: afwe-verify
+  title: constraints and active guardrails
+  trust: deterministic
+  authored_by: afwe
+  passed: true
+  blocking: true
+- id: project-tests
+  title: cargo test
+  trust: deterministic
+  authored_by: human
+  passed: true
+  blocking: true
+- id: claim:a1
+  title: TUTORIAL.md contains zero to mastery guide
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+- id: claim:a2
+  title: WALKTHROUGH.md details multi-intent funnel case study
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+strength: deterministic
+confidence: 1.0
+confidence_parts:
+  clarity: 1.0
+  mapping: 1.0
+  pins: 1.0
+  verification: 1.0
+gate:
+  decision: ready
+footer_shown: false
+summary: 'docs: create TUTORIAL.md, WALKTHROUGH.md, and update README.md and AGENTS.md'

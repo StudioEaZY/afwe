@@ -19,6 +19,7 @@ Declare removals in `removes`; never edit around a pin, ask for an override with
 
 The blueprint is not documentation to understand; it is the structural reality of this project. Verify your work against it.
 If the code and the blueprint disagree, say so (or let `afwe sync` propose) — never silently reinterpret the architecture.
+Consult `docs/TUTORIAL.md` for complete protocol instructions and `docs/WALKTHROUGH.md` for real-world case studies.
 
 ## Contract `architecture` — Architecture / workflow contract (tasks: architecture, feature, workflow, design)
 1. **before** — Capture the intent as a node-based workflow (`afwe workflow new …` / tool `afwe_workflow_upsert`). Paste the original prompt verbatim as a `prompt` node (provenance) and break the design into nodes; do not assume beyond the prompt.

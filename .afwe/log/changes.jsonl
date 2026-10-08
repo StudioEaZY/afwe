@@ -66,3 +66,7 @@
 {"ts":"2026-10-08T10:21:48Z","origin":"human:sync","kind":"sync","summary":"Synced 118 files; applied 0, proposed 0, uncertain 0"}
 {"ts":"2026-10-08T10:22:20Z","origin":"human","kind":"turn_assume","summary":"t0003: 1 intent(s), 2 assumption(s) registered","details":{"turn":"t0003"}}
 {"ts":"2026-10-08T10:22:56Z","origin":"human","kind":"turn_ready","summary":"t0003 ready: docs: document futures engine and register exclusions-engine and timeline-snapshot as planned architecture (100%)","details":{"turn":"t0003","reasons":[]}}
+{"ts":"2026-10-08T10:24:51Z","origin":"human","kind":"task_start","summary":"Task started: t0004: Add practical developer tutorials, walkthroughs, and harness guide [code] under contract default","details":{"task":"task-38ef2d"}}
+{"ts":"2026-10-08T10:24:51Z","origin":"human","kind":"turn_begin","summary":"t0004 begun: Add practical developer tutorials, walkthroughs, and harness guide","details":{"turn":"t0004","task":"task-38ef2d","nodes":[]}}
+{"ts":"2026-10-08T10:26:24Z","origin":"human","kind":"turn_assume","summary":"t0004: 1 intent(s), 2 assumption(s) registered","details":{"turn":"t0004"}}
+{"ts":"2026-10-08T10:27:08Z","origin":"human","kind":"turn_ready","summary":"t0004 ready: docs: create TUTORIAL.md, WALKTHROUGH.md, and update README.md and AGENTS.md (100%)","details":{"turn":"t0004","reasons":[]}}
