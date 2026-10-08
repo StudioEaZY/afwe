@@ -1,0 +1,8 @@
+constraints:
+- id: afwe-core-must-not-afwe-cli
+  rule: must_not_depend
+  from: afwe-core
+  to:
+  - afwe-cli
+  severity: error
+  rationale: core engine must never depend on the CLI layer

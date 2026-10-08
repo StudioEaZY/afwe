@@ -1,0 +1,41 @@
+id: architecture
+name: Architecture / workflow contract
+description: 'For features, subsystems and architectural changes: intent → node-based workflow → blueprint changes → implementation → verify → update → log.'
+task_kinds:
+- architecture
+- feature
+- workflow
+- design
+steps:
+- id: intent
+  phase: before
+  action: afwe_workflow
+  instruction: Capture the intent as a node-based workflow (`afwe workflow new …` / tool `afwe_workflow_upsert`). Paste the original prompt verbatim as a `prompt` node (provenance) and break the design into nodes; do not assume beyond the prompt.
+- id: context
+  phase: before
+  action: afwe_context
+  instruction: Ask AFWE for context on the nodes/files the workflow touches; check whether an existing node already does the job before inventing a new one.
+- id: blueprint
+  phase: before
+  action: afwe_blueprint
+  instruction: Reflect the desired structure in the blueprint first (`afwe blueprint add/move/relate/constrain`). Blueprint = structural reality, workflow = desired behaviour.
+- id: implement
+  phase: during
+  action: harness
+  instruction: Implement beneath the blueprint. Map new files/symbols to their nodes as you go.
+- id: verify
+  phase: after
+  action: afwe_verify
+  instruction: Verify against the blueprint (`afwe verify`). Every workflow component node should map to real nodes/files.
+- id: update
+  phase: after
+  action: afwe_update
+  instruction: Persist the resulting knowledge as memory (decisions, constraints, terminology) – not the conversation. Mark workflow nodes done and set `maps_to`.
+- id: sync
+  phase: after
+  action: afwe_sync
+  instruction: Run `afwe sync`.
+- id: log
+  phase: after
+  action: afwe_log
+  instruction: Log completion.

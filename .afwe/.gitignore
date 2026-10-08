@@ -1,0 +1,3 @@
+# derived state is reproducible (rebuilt by `afwe sync`); the rest of .afwe/ is the product and belongs in git
+index/
+state/

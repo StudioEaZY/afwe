@@ -1,0 +1,98 @@
+nodes:
+- id: afwe
+  name: afwe
+  kind: product
+  purpose: Root of the architecture. Everything the project is lives beneath this node.
+  status: active
+  origin: human
+  children:
+  - id: studio
+    name: Studio
+    kind: module
+    description: Bootstrapped from `apps/studio/` (31 code files). Review and give it a purpose.
+    implements:
+      files:
+      - apps/studio/**
+    tags:
+    - bootstrapped
+    status: active
+    origin: afwe:bootstrap
+  - id: crates
+    name: Crates
+    kind: subsystem
+    description: Bootstrapped from `crates/` (34 code files). Review and give it a purpose.
+    implements:
+      files:
+      - crates/**
+    tags:
+    - bootstrapped
+    status: active
+    origin: afwe:bootstrap
+    children:
+    - id: afwe-cli
+      name: Afwe Cli
+      kind: module
+      description: Bootstrapped from `crates/afwe-cli/` (5 code files). Review and give it a purpose.
+      implements:
+        files:
+        - crates/afwe-cli/**
+      tags:
+      - bootstrapped
+      status: active
+      origin: afwe:bootstrap
+    - id: afwe-core
+      name: Afwe Core
+      kind: module
+      description: Bootstrapped from `crates/afwe-core/` (29 code files). Review and give it a purpose.
+      implements:
+        files:
+        - crates/afwe-core/**
+      tags:
+      - bootstrapped
+      status: active
+      origin: afwe:bootstrap
+  - id: examples
+    name: Examples
+    kind: subsystem
+    description: Bootstrapped from `examples/` (20 code files). Review and give it a purpose.
+    implements:
+      files:
+      - examples/**
+    tags:
+    - bootstrapped
+    status: active
+    origin: afwe:bootstrap
+    children:
+    - id: demo-project
+      name: Demo Project
+      kind: module
+      description: Bootstrapped from `examples/demo-project/` (20 code files). Review and give it a purpose.
+      implements:
+        files:
+        - examples/demo-project/**
+      tags:
+      - bootstrapped
+      status: active
+      origin: afwe:bootstrap
+  - id: afwe-2
+    name: Afwe
+    kind: module
+    description: Bootstrapped from `packages/afwe/` (1 code files). Review and give it a purpose.
+    implements:
+      files:
+      - packages/afwe/**
+    tags:
+    - bootstrapped
+    status: active
+    origin: afwe:bootstrap
+  - id: scripts
+    name: Scripts
+    kind: module
+    description: Bootstrapped from `scripts/` (4 code files). Review and give it a purpose.
+    implements:
+      files:
+      - scripts/**
+    tags:
+    - bootstrapped
+    status: active
+    origin: afwe:bootstrap

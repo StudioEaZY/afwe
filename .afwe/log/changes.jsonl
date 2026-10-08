@@ -1,0 +1,8 @@
+{"ts":"2026-10-08T09:15:09Z","origin":"human","kind":"init","summary":"Initialised .afwe for `afwe`"}
+{"ts":"2026-10-08T09:15:10Z","origin":"human:onboard:sync","kind":"sync","summary":"Synced 113 files; applied 0, proposed 86, uncertain 0"}
+{"ts":"2026-10-08T09:15:10Z","origin":"human:onboard","kind":"onboard","summary":"Onboarded with profile `engineer`","details":{"actions":["initialised .afwe/","profile `engineer`: pin slider 4, checkgen on, auto-commit false","project test command `cargo test` runs on every turn","wrote .github/workflows/afwe-gate.yml (set the repo variable AFWE_INSTALL_COMMAND)","AGENTS.md: AFWE contract block written"]}}
+{"ts":"2026-10-08T09:15:23Z","origin":"afwe:bootstrap","kind":"bootstrap","summary":"Bootstrapped blueprint from directory structure (113 files)"}
+{"ts":"2026-10-08T09:15:43Z","origin":"human","kind":"constrain","summary":"Constraint afwe-core-must-not-afwe-cli: afwe-core must_not_depend [\"afwe-cli\"]"}
+{"ts":"2026-10-08T09:16:09Z","origin":"human","kind":"pin_accept","summary":"Pin pin-5babbe is active: afwe-core stays 100% deterministic with no model calls inside"}
+{"ts":"2026-10-08T09:16:09Z","origin":"human","kind":"pin_propose","summary":"Pin pin-5babbe (active): afwe-core stays 100% deterministic with no model calls inside"}
+{"ts":"2026-10-08T09:16:17Z","origin":"human:sync","kind":"sync","summary":"Synced 113 files; applied 0, proposed 0, uncertain 0"}

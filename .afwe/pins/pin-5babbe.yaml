@@ -1,0 +1,10 @@
+id: pin-5babbe
+statement: afwe-core stays 100% deterministic with no model calls inside
+kind: decision
+attaches:
+  nodes:
+  - afwe-core
+severity: block
+status: active
+origin: human
+created: 2026-10-08T09:16:09Z

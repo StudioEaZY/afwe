@@ -1,0 +1,16 @@
+# AFWE architecture gate — added by `afwe onboard`.
+# Set the repository variable AFWE_INSTALL_COMMAND to whatever installs the afwe binary for your team,
+# for example: cargo install --git <your afwe repo> afwe-cli
+name: AFWE Architecture Gate
+on: [push, pull_request]
+jobs:
+  afwe-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install AFWE
+        run: ${{ vars.AFWE_INSTALL_COMMAND }}
+      - name: The architecture matches the code
+        run: afwe sync --check
+      - name: Constraints, guardrails, pins and registered checks hold
+        run: afwe gate --ci
