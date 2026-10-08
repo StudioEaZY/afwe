@@ -1,0 +1,17 @@
+id: skill-architecture-and-clean-agents-md
+title: Decouple Contract to Skill and Clean AGENTS.md Delegation
+statement: Store full AFWE instructions in .afwe/skills/afwe/SKILL.md, keep AGENTS.md clean by delegating to the skill and MCP, and validate AGENTS.md health during sync.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0005
+history:
+- turn: t0005
+  ts: 2026-10-08T10:56:47Z
+  statement: Store full AFWE instructions in .afwe/skills/afwe/SKILL.md, keep AGENTS.md clean by delegating to the skill and MCP, and validate AGENTS.md health during sync.
+created: 2026-10-08T10:56:47Z
+updated: 2026-10-08T10:56:47Z
+task: task-272ead

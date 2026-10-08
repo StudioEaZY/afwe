@@ -80,6 +80,7 @@ pub fn init(project_root: &Path, opts: InitOptions) -> Result<Store> {
             store.save_contract(&c)?;
         }
     }
+    store.write_text("skills/afwe/SKILL.md", crate::contract::AFWE_SKILL_MD)?;
     store.write_text("README.md", AFWE_README)?;
     store.write_text(".gitignore", "# derived state is reproducible (rebuilt by `afwe sync`); the rest of .afwe/ is the product and belongs in git\nindex/\nstate/\n")?;
     let engine = Engine { store: store.clone() };

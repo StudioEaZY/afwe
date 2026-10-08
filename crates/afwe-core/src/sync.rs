@@ -125,6 +125,16 @@ fn update_board(engine: &Engine, report: &DriftReport) -> Result<()> {
         keep_info.push(f.id.clone());
         upsert_system_item(&mut board, "drift", &f.id, &f.summary, Some(f.evidence.join("; ")));
     }
+    // Check if AGENTS.md references AFWE and skill file is present
+    let agents_md = engine.store.project_root.join("AGENTS.md");
+    if agents_md.exists() {
+        if let Ok(text) = std::fs::read_to_string(&agents_md) {
+            if !text.contains("afwe") {
+                keep_info.push("agents_md_missing_afwe".into());
+                upsert_system_item(&mut board, "drift", "agents_md_missing_afwe", "AGENTS.md missing AFWE contract instruction", Some("Run `afwe onboard` or add the AFWE skill contract block to AGENTS.md".into()));
+            }
+        }
+    }
     resolve_system_items(&mut board, "drift", &keep_info);
     engine.store.save_board(&board)
 }

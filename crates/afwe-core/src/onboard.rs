@@ -176,7 +176,9 @@ pub fn apply(root: &Path, o: ApplyOptions) -> Result<Value> {
         let contracts = engine.store.contracts()?;
         let block = contract::render_agents_block(&m.project.name, &contracts);
         write_agents_block(&root.join("AGENTS.md"), &block)?;
+        engine.store.write_text("skills/afwe/SKILL.md", contract::AFWE_SKILL_MD)?;
         actions.push("AGENTS.md: AFWE contract block written".into());
+        actions.push(".afwe/skills/afwe/SKILL.md: skill template written".into());
     }
     let (report, _) = sync(&engine, &SyncOptions { dry_run: false, origin: "human:onboard".into() })?;
     engine.log("human:onboard", "onboard", format!("Onboarded with profile `{}`", o.profile), Some(json!({"actions": actions})))?;

@@ -51,33 +51,44 @@ pub fn select_contract(contracts: &[Contract], task_kind: &str) -> Option<Contra
         .cloned()
 }
 
-/// Render the contract block that goes into AGENTS.md / CLAUDE.md.
-pub fn render_agents_block(project: &str, contracts: &[Contract]) -> String {
+pub const AFWE_SKILL_MD: &str = r#"---
+name: afwe
+description: Architecture-First Workspace Engine skill. Enforces turn protocol (begin -> assume -> commit), micro-context retrieval, verification gates, and architectural integrity for coding agents.
+---
+
+# AFWE Skill Instructions
+
+This project uses AFWE to deterministically govern architecture and prevent agent regressions.
+When interacting with this codebase:
+
+1. **Before Touching Code**:
+   - Call `afwe turn begin "<prompt>" --target <files>` (or MCP tool `afwe_turn_begin`).
+   - Read the briefing: inspect in-scope architectural nodes, locked pins, memory, and proposals.
+   - Call `afwe turn assume <turn> --file <json>` (or MCP tool `afwe_turn_assume`) to declare your intents and pre-generation claims.
+   - If REDO is returned, revise assumptions according to the schema before proceeding.
+
+2. **While Editing**:
+   - Retrieve micro-context via `afwe context <files>` (or MCP `afwe_context`).
+   - Obey active pins; never delete pinned behavior without an explicit override.
+
+3. **After Editing**:
+   - Run verification via `afwe verify --changed <files>` (or MCP `afwe_verify`).
+   - Commit the turn via `afwe turn commit <turn> --summary "..."` (or MCP `afwe_turn_commit`).
+   - If proposals are pending, include the AFWE reminder footer in your reply.
+"#;
+
+pub fn render_agents_block(project: &str, _contracts: &[Contract]) -> String {
     let mut s = String::new();
     s.push_str("<!-- afwe:begin -->\n");
     s.push_str(&format!("# AFWE — architecture contract for `{project}`\n\n"));
-    s.push_str("This project keeps a persistent, structural model of itself in `.afwe/` (blueprint, memory, guardrails, workflows).\n");
-    s.push_str("You do not need to read those files directly: ask AFWE.\n\n");
-    s.push_str("- `afwe context <file...>` (MCP: `afwe_context`) → only the decisions/exceptions/constraints/guardrails that apply to what you are touching.\n");
-    s.push_str("- `afwe verify --changed <file...>` (MCP: `afwe_verify`) → checks your change against the blueprint; exit code 1 means you must fix it, not silence it.\n");
-    s.push_str("- `afwe sync` (MCP: `afwe_sync`) → re-analyses the code, reconciles confident changes, proposes uncertain ones.\n");
-    s.push_str("- `afwe memory add <kind> …` (MCP: `afwe_memory_add`) → record a decision/exception/constraint/term/problem with scope.\n");
-    s.push_str("- `afwe workflow …` (MCP: `afwe_workflow_upsert`) → capture intent as a node-based workflow before designing features.\n");
-    s.push_str("- `afwe task start …` / `afwe task done …` → the Board tracks contract obligations for the task.\n\n");
-    s.push_str("## Turn protocol (every prompt)\n");
-    s.push_str("1. `afwe turn begin \"<prompt>\" --target <nodes|files>` (MCP `afwe_turn_begin`): read the briefing; obey the pins and intentional markers; show the footer if proposals are pending.\n");
-    s.push_str("2. `afwe turn assume <turn> --file <json>` (MCP `afwe_turn_assume`) BEFORE writing code: declare intents and claims. REDO = fix and assume again.\n");
-    s.push_str("3. `afwe turn commit <turn> --summary \"…\"` (MCP `afwe_turn_commit`) AFTER writing code. REDO = nothing committed: fix and commit again.\n");
-    s.push_str("Declare removals in `removes`; never edit around a pin, ask for an override with a reason.\n\n");
-    s.push_str("The blueprint is not documentation to understand; it is the structural reality of this project. Verify your work against it.\n");
-    s.push_str("If the code and the blueprint disagree, say so (or let `afwe sync` propose) — never silently reinterpret the architecture.\n\n");
-    for c in contracts {
-        s.push_str(&format!("## Contract `{}` — {} (tasks: {})\n", c.id, c.name, c.task_kinds.join(", ")));
-        for (i, st) in c.steps.iter().enumerate() {
-            s.push_str(&format!("{}. **{}** — {}\n", i + 1, st.phase, st.instruction));
-        }
-        s.push('\n');
-    }
+    s.push_str("This project is architecturally governed by AFWE (`.afwe/`).\n");
+    s.push_str("Always activate the `afwe` skill (`.afwe/skills/afwe/SKILL.md`) or use the connected AFWE MCP tools (`afwe_turn_begin`, `afwe_turn_assume`, `afwe_turn_commit`).\n\n");
+    s.push_str("## Turn Protocol Summary\n");
+    s.push_str("1. `afwe turn begin \"<prompt>\" --target <files>` (MCP `afwe_turn_begin`) → read briefing pack & pins.\n");
+    s.push_str("2. `afwe turn assume <turn> --file <json>` (MCP `afwe_turn_assume`) → declare intents & claims BEFORE writing code.\n");
+    s.push_str("3. `afwe turn commit <turn> --summary \"…\"` (MCP `afwe_turn_commit`) → gated commit AFTER code is written.\n\n");
+    s.push_str("If skills or MCP are unavailable in your harness, execute the CLI commands above directly via terminal.\n");
+    s.push_str("Consult `docs/TUTORIAL.md` for complete protocol instructions and `docs/WALKTHROUGH.md` for real-world case studies.\n");
     s.push_str("<!-- afwe:end -->\n");
     s
 }

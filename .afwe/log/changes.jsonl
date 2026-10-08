@@ -70,3 +70,8 @@
 {"ts":"2026-10-08T10:24:51Z","origin":"human","kind":"turn_begin","summary":"t0004 begun: Add practical developer tutorials, walkthroughs, and harness guide","details":{"turn":"t0004","task":"task-38ef2d","nodes":[]}}
 {"ts":"2026-10-08T10:26:24Z","origin":"human","kind":"turn_assume","summary":"t0004: 1 intent(s), 2 assumption(s) registered","details":{"turn":"t0004"}}
 {"ts":"2026-10-08T10:27:08Z","origin":"human","kind":"turn_ready","summary":"t0004 ready: docs: create TUTORIAL.md, WALKTHROUGH.md, and update README.md and AGENTS.md (100%)","details":{"turn":"t0004","reasons":[]}}
+{"ts":"2026-10-08T10:52:16Z","origin":"human","kind":"task_start","summary":"Task started: t0005: Add AFWE Skill Generator, Clean Delegation in AGENTS.md, and Sync Health Check [code] under contract default","details":{"task":"task-272ead"}}
+{"ts":"2026-10-08T10:52:16Z","origin":"human","kind":"turn_begin","summary":"t0005 begun: Add AFWE Skill Generator, Clean Delegation in AGENTS.md, and Sync Health Check","details":{"turn":"t0005","task":"task-272ead","nodes":["afwe","afwe-2"]}}
+{"ts":"2026-10-08T10:56:22Z","origin":"human:sync","kind":"sync","summary":"Synced 120 files; applied 0, proposed 0, uncertain 0"}
+{"ts":"2026-10-08T10:56:47Z","origin":"human","kind":"turn_assume","summary":"t0005: 1 intent(s), 2 assumption(s) registered","details":{"turn":"t0005"}}
+{"ts":"2026-10-08T10:58:03Z","origin":"human","kind":"turn_ready","summary":"t0005 ready: feat: decouple agent contract to .afwe/skills/afwe/SKILL.md, clean AGENTS.md, and add sync health check (100%)","details":{"turn":"t0005","reasons":["OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic with zero model calls in core"]}}
