@@ -351,7 +351,20 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
             let to_hit = c.to.iter().filter_map(|t| table.resolve(t)).any(|n| chain.contains(&n));
             from.map(|f| chain.contains(&f)).unwrap_or(false) || to_hit
         })
-        .map(|c| json!({"id": c.id, "rule": c.rule, "from": c.from, "to": c.to, "description": c.description}))
+        .map(|c| {
+            let a_node = table.resolve(&c.from).and_then(|f| table.nodes.get(&f));
+            let is_planned = c.phase.as_deref() == Some("planned")
+                || a_node.and_then(|n| n.status.as_deref()) == Some("planned")
+                || c.to.iter().filter_map(|t| table.resolve(t)).any(|t| table.nodes.get(&t).and_then(|n| n.status.as_deref()) == Some("planned"));
+            json!({
+                "id": c.id,
+                "rule": c.rule,
+                "from": c.from,
+                "to": c.to,
+                "description": c.description,
+                "phase": if is_planned { "planned" } else { "active" }
+            })
+        })
         .collect();
 
     let guardrails: Vec<Value> = snap

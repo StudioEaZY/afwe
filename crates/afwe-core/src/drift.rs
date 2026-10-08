@@ -83,6 +83,10 @@ pub fn detect(snap: &Snapshot, only_files: Option<&[String]>) -> Vec<Finding> {
         m
     };
     for (node, entry) in &snap.mapping.dangling_files {
+        // Planned nodes are architectural directions; missing files are expected and not errors
+        if table.nodes.get(node).and_then(|n| n.status.as_deref()) == Some("planned") {
+            continue;
+        }
         // find rename candidates: same basename, or files sharing symbol fingerprints previously indexed
         let base = basename(entry);
         let mut cands: BTreeMap<String, (f64, Vec<String>)> = BTreeMap::new();

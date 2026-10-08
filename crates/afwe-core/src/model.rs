@@ -290,6 +290,9 @@ pub struct Constraint {
     /// error | warn
     #[serde(default = "default_error")]
     pub severity: String,
+    /// active | planned (forward-looking constraint, informative only until active)
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub phase: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rationale: Option<String>,
     /// Memory entries that explain this rule.

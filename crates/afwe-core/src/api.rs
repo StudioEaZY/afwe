@@ -161,7 +161,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         "blueprint.unmap" => j(ops::map_node(engine, &req(&p, "node")?, &list(&p, "files"), &list(&p, "symbols"), true, &origin(&p, default_origin))?),
         "blueprint.relate" => j(ops::relate(engine, &req(&p, "from")?, &req(&p, "to")?, &s(&p, "kind").unwrap_or("depends_on".into()), s(&p, "rationale"), false, &origin(&p, default_origin))?),
         "blueprint.unrelate" => j(ops::relate(engine, &req(&p, "from")?, &req(&p, "to")?, "depends_on", None, true, &origin(&p, default_origin))?),
-        "blueprint.constrain" => j(ops::constrain(engine, ops::Constrain { id: s(&p, "id"), rule: s(&p, "rule").unwrap_or("must_not_depend".into()), from: req(&p, "from")?, to: list(&p, "to"), except: { let mut e = list(&p, "except"); e.extend(list(&p, "allowed")); e }, description: s(&p, "description"), rationale: s(&p, "rationale"), severity: s(&p, "severity") }, &origin(&p, default_origin))?),
+        "blueprint.constrain" => j(ops::constrain(engine, ops::Constrain { id: s(&p, "id"), rule: s(&p, "rule").unwrap_or("must_not_depend".into()), from: req(&p, "from")?, to: list(&p, "to"), except: { let mut e = list(&p, "except"); e.extend(list(&p, "allowed")); e }, description: s(&p, "description"), rationale: s(&p, "rationale"), severity: s(&p, "severity"), phase: s(&p, "phase") }, &origin(&p, default_origin))?),
         "blueprint.unconstrain" => {
             ops::remove_constraint(engine, &req(&p, "id")?, &origin(&p, default_origin))?;
             Ok(json!({"ok": true}))

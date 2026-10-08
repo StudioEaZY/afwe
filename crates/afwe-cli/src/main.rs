@@ -284,6 +284,12 @@ enum BlueprintCmd {
         id: Option<String>,
         #[arg(long, default_value = "error")]
         severity: String,
+        /// active | planned (forward-looking constraint)
+        #[arg(long)]
+        phase: Option<String>,
+        /// Mark constraint as planned (forward-looking, non-blocking)
+        #[arg(long)]
+        planned: bool,
     },
     Unconstrain { id: String },
 }
@@ -671,14 +677,15 @@ fn run(cli: Cli) -> Result<i32> {
                 BlueprintCmd::Unmap { node, files, symbols } => ("blueprint.unmap", json!({"node": node, "files": strs(&files), "symbols": strs(&symbols)})),
                 BlueprintCmd::Relate { from, to, kind, why } => ("blueprint.relate", json!({"from": from, "to": to, "kind": kind, "rationale": why})),
                 BlueprintCmd::Unrelate { from, to } => ("blueprint.unrelate", json!({"from": from, "to": to})),
-                BlueprintCmd::Constrain { from, must_not_depend, may_depend_only, except, why, id, severity } => {
+                BlueprintCmd::Constrain { from, must_not_depend, may_depend_only, except, why, id, severity, phase, planned } => {
+                    let phase = if planned { Some("planned".to_string()) } else { phase };
                     if must_not_depend.is_empty() && may_depend_only.is_empty() {
                         return Err(anyhow!("use --must-not-depend <nodes> or --may-depend-only <nodes>"));
                     }
                     if !must_not_depend.is_empty() {
-                        ("blueprint.constrain", json!({"from": from, "rule": "must_not_depend", "to": strs(&must_not_depend), "except": strs(&except), "rationale": why, "id": id, "severity": severity}))
+                        ("blueprint.constrain", json!({"from": from, "rule": "must_not_depend", "to": strs(&must_not_depend), "except": strs(&except), "rationale": why, "id": id, "severity": severity, "phase": phase}))
                     } else {
-                        ("blueprint.constrain", json!({"from": from, "rule": "may_depend_only", "allowed": strs(&may_depend_only), "rationale": why, "id": id, "severity": severity}))
+                        ("blueprint.constrain", json!({"from": from, "rule": "may_depend_only", "allowed": strs(&may_depend_only), "rationale": why, "id": id, "severity": severity, "phase": phase}))
                     }
                 }
                 BlueprintCmd::Unconstrain { id } => ("blueprint.unconstrain", json!({"id": id})),

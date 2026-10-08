@@ -182,6 +182,7 @@ pub struct Constrain {
     pub description: Option<String>,
     pub rationale: Option<String>,
     pub severity: Option<String>,
+    pub phase: Option<String>,
 }
 
 pub fn constrain(engine: &Engine, c: Constrain, origin: &str) -> Result<Constraint> {
@@ -194,7 +195,7 @@ pub fn constrain(engine: &Engine, c: Constrain, origin: &str) -> Result<Constrai
     }
     let mut cs = engine.store.constraints()?;
     let id = c.id.unwrap_or_else(|| slug(&format!("{}-{}-{}", from, c.rule.replace("_depend", ""), if c.rule == "may_depend_only" { except.join("-") } else { to.join("-") })));
-    let constraint = Constraint { id: id.clone(), description: c.description, rule: c.rule, from, to, except, severity: c.severity.unwrap_or("error".into()), rationale: c.rationale, memory: vec![] };
+    let constraint = Constraint { id: id.clone(), description: c.description, rule: c.rule, from, to, except, severity: c.severity.unwrap_or("error".into()), phase: c.phase, rationale: c.rationale, memory: vec![] };
     cs.constraints.retain(|x| x.id != id);
     cs.constraints.push(constraint.clone());
     engine.store.save_constraints(&cs)?;

@@ -50,17 +50,25 @@ pub fn verify(snap: &Snapshot, project_root: &Path, opts: &VerifyOptions) -> Ver
                 continue;
             }
             if let Some(c) = violates_constraint(snap, a, b) {
+                let a_node = table.nodes.get(a);
+                let b_node = table.nodes.get(b);
+                let is_planned = c.phase.as_deref() == Some("planned")
+                    || a_node.and_then(|n| n.status.as_deref()) == Some("planned")
+                    || b_node.and_then(|n| n.status.as_deref()) == Some("planned");
+                let severity = if is_planned { "info".into() } else { c.severity.clone() };
+
                 let paths = |refs: &[String]| refs.iter().map(|r| table.resolve(r).map(|id| table.path_of(&id)).unwrap_or(r.clone())).collect::<Vec<_>>().join(", ");
                 let from_path = table.resolve(&c.from).map(|id| table.path_of(&id)).unwrap_or(c.from.clone());
                 let rule = match c.rule.as_str() {
                     "must_not_depend" => format!("{from_path} must not depend on {}", paths(&c.to)),
                     _ => format!("{from_path} may only depend on {}", paths(&c.except.iter().chain(c.to.iter()).cloned().collect::<Vec<_>>())),
                 };
+                let status_suffix = if is_planned { " [PLANNED DIRECTION: non-blocking]" } else { "" };
                 issues.push(VerifyIssue {
-                    severity: c.severity.clone(),
+                    severity,
                     source: "constraint".into(),
                     id: c.id.clone(),
-                    message: format!("{} imports {} ({} → {}) — violates `{}`: {}", f.path, imp, table.path_of(a), table.path_of(b), c.id, rule),
+                    message: format!("{} imports {} ({} → {}) — violates `{}`: {}{status_suffix}", f.path, imp, table.path_of(a), table.path_of(b), c.id, rule),
                     files: vec![f.path.clone(), imp.clone()],
                     nodes: vec![a.to_string(), b.to_string()],
                     hint: c.rationale.clone().or(c.description.clone()).or_else(|| Some("move the dependency behind an allowed node, or record an explicit exception in .afwe/memory/exceptions".into())),

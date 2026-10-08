@@ -1,0 +1,17 @@
+id: architectural-directions
+title: Architectural Directions and Futures Engine
+statement: Support first-class planned node status and forward-looking constraints without failing verification gates or drift checks, briefing agents on future directions.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0002
+history:
+- turn: t0002
+  ts: 2026-10-08T09:46:32Z
+  statement: Support first-class planned node status and forward-looking constraints without failing verification gates or drift checks, briefing agents on future directions.
+created: 2026-10-08T09:46:32Z
+updated: 2026-10-08T09:46:32Z
+task: task-02b89d

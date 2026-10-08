@@ -88,6 +88,7 @@ pub struct CtxConstraint {
     pub to: Vec<String>,
     pub except: Vec<String>,
     pub severity: String,
+    pub phase: Option<String>,
     pub description: Option<String>,
     pub rationale: Option<String>,
 }
@@ -340,7 +341,17 @@ pub fn build_context(snap: &Snapshot, q: ContextQuery, sync: &str) -> ContextBun
         let tos: Vec<String> = c.to.iter().filter_map(|r| snap.table.resolve(r)).collect();
         let touches = from.as_ref().map(|f| chain.contains(f)).unwrap_or(false) || tos.iter().any(|t| chain.contains(t));
         if touches {
-            constraints.push(CtxConstraint { id: c.id.clone(), rule: c.rule.clone(), from: from.map(|f| snap.table.path_of(&f)).unwrap_or(c.from.clone()), to: tos.iter().map(|t| snap.table.path_of(t)).collect(), except: c.except.clone(), severity: c.severity.clone(), description: c.description.clone(), rationale: c.rationale.clone() });
+            constraints.push(CtxConstraint {
+                id: c.id.clone(),
+                rule: c.rule.clone(),
+                from: from.map(|f| snap.table.path_of(&f)).unwrap_or(c.from.clone()),
+                to: tos.iter().map(|t| snap.table.path_of(t)).collect(),
+                except: c.except.clone(),
+                severity: c.severity.clone(),
+                phase: c.phase.clone(),
+                description: c.description.clone(),
+                rationale: c.rationale.clone(),
+            });
         }
     }
 
@@ -466,7 +477,8 @@ pub fn render_markdown(b: &ContextBundle) -> String {
                 "may_depend_only" => format!("**{}** may only depend on {}", c.from, c.except.join(", ")),
                 other => format!("{other}: {} → {}", c.from, c.to.join(", ")),
             };
-            s.push_str(&format!("- {rule} (`{}`, {})", c.id, c.severity));
+            let phase_tag = if c.phase.as_deref() == Some("planned") { " [planned direction]" } else { "" };
+            s.push_str(&format!("- {rule} (`{}`, {}{phase_tag})", c.id, c.severity));
             if let Some(d) = c.description.as_ref().or(c.rationale.as_ref()) {
                 s.push_str(&format!(" — {d}"));
             }

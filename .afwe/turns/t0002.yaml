@@ -1,0 +1,291 @@
+id: t0002
+ts: 2026-10-08T09:46:16Z
+origin: human
+prompt: Add Architectural Directions and Futures Engine (planned nodes and forward constraints)
+prompt_hash: 22205a387fc0ba4b
+task: task-02b89d
+targets:
+- crates/afwe-core/src/model.rs
+- crates/afwe-core/src/drift.rs
+- crates/afwe-core/src/verify.rs
+- crates/afwe-core/src/context.rs
+- crates/afwe-core/src/turn.rs
+scope:
+  nodes:
+  - afwe-core
+  files:
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/turn.rs
+intents:
+- id: architectural-directions
+  action: update
+  targets:
+  - afwe-core
+  title: Architectural Directions and Futures Engine
+  statement: Support first-class planned node status and forward-looking constraints without failing verification gates or drift checks, briefing agents on future directions.
+assumptions:
+- id: a1
+  text: Constraint struct in model.rs supports optional phase field
+  claim:
+    type: require_pattern
+    pattern: 'pub phase: Option<String>'
+    files:
+    - crates/afwe-core/src/model.rs
+  status: proposed
+- id: a2
+  text: verify.rs marks planned constraint issues as info without failing gate
+  claim:
+    type: require_pattern
+    pattern: planned
+    files:
+    - crates/afwe-core/src/verify.rs
+  status: proposed
+overrides:
+- pin: pin-5babbe
+  reason: Changes in afwe-core are 100% deterministic with zero model calls
+status: ready
+touched:
+  nodes:
+  - afwe-cli
+  - afwe-core
+  - crates
+  files:
+  - .afwe/intents/architectural-directions.yaml
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/verify.rs
+  symbols:
+  - crates/afwe-cli/src/main.rs::BlueprintCmd
+  - crates/afwe-cli/src/main.rs::run
+  - crates/afwe-core/src/api.rs::dispatch
+  - crates/afwe-core/src/context.rs::CtxConstraint
+  - crates/afwe-core/src/context.rs::build_context
+  - crates/afwe-core/src/context.rs::render_markdown
+  - crates/afwe-core/src/drift.rs::detect
+  - crates/afwe-core/src/model.rs::Constraint
+  - crates/afwe-core/src/ops.rs::Constrain
+  - crates/afwe-core/src/ops.rs::constrain
+  - crates/afwe-core/src/turn.rs::begin
+  - crates/afwe-core/src/verify.rs::verify
+implements:
+  afwe-2:
+  - packages/afwe/README.md
+  - packages/afwe/bin/afwe.js
+  - packages/afwe/package.json
+  afwe-cli:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  afwe-core:
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  crates:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  demo-project:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  examples:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  - examples/multi-intent-funnel/package.json
+  - examples/multi-intent-funnel/src/Slide1.tsx
+  - examples/multi-intent-funnel/src/Slide5.tsx
+  - examples/multi-intent-funnel/src/Slide6.tsx
+  - examples/multi-intent-funnel/src/index.tsx
+  scripts:
+  - scripts/build.sh
+  - scripts/demo.sh
+  - scripts/dev.sh
+  - scripts/install.ps1
+  - scripts/install.sh
+  studio:
+  - apps/studio/index.html
+  - apps/studio/package-lock.json
+  - apps/studio/package.json
+  - apps/studio/src-tauri/Cargo.toml
+  - apps/studio/src-tauri/README.md
+  - apps/studio/src-tauri/build.rs
+  - apps/studio/src-tauri/capabilities/default.json
+  - apps/studio/src-tauri/src/lib.rs
+  - apps/studio/src-tauri/src/main.rs
+  - apps/studio/src-tauri/tauri.conf.json
+  - apps/studio/src/App.tsx
+  - apps/studio/src/api.ts
+  - apps/studio/src/components/BoardView.tsx
+  - apps/studio/src/components/BottomBar.tsx
+  - apps/studio/src/components/ContextPanel.tsx
+  - apps/studio/src/components/DriftDrawer.tsx
+  - apps/studio/src/components/ErrorBoundary.tsx
+  - apps/studio/src/components/GraphView.tsx
+  - apps/studio/src/components/MemoryView.tsx
+  - apps/studio/src/components/Modal.tsx
+  - apps/studio/src/components/OnboardingModal.tsx
+  - apps/studio/src/components/PinsView.tsx
+  - apps/studio/src/components/SearchPalette.tsx
+  - apps/studio/src/components/TimelineView.tsx
+  - apps/studio/src/components/TopBar.tsx
+  - apps/studio/src/components/TreePanel.tsx
+  - apps/studio/src/components/WorkflowView.tsx
+  - apps/studio/src/main.tsx
+  - apps/studio/src/store.ts
+  - apps/studio/src/styles.css
+  - apps/studio/tsconfig.json
+  - apps/studio/vite.config.ts
+  - apps/studio/web-dist/assets/core-DhEqZVGG.js
+  - apps/studio/web-dist/assets/index-31t2pd1n.css
+  - apps/studio/web-dist/assets/index-Bsvk8ymg.css
+  - apps/studio/web-dist/assets/index-C0TxAtxn.js
+  - apps/studio/web-dist/assets/index-DOCU9siz.js
+  - apps/studio/web-dist/index.html
+checks:
+- id: afwe-verify
+  title: constraints and active guardrails
+  trust: deterministic
+  authored_by: afwe
+  passed: true
+  blocking: true
+- id: project-tests
+  title: cargo test
+  trust: deterministic
+  authored_by: human
+  passed: true
+  blocking: true
+- id: claim:a1
+  title: Constraint struct in model.rs supports optional phase field
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+- id: claim:a2
+  title: verify.rs marks planned constraint issues as info without failing gate
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+strength: deterministic
+confidence: 1.0
+confidence_parts:
+  clarity: 1.0
+  mapping: 1.0
+  pins: 1.0
+  verification: 1.0
+gate:
+  decision: ready
+  reasons:
+  - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes in afwe-core are 100% deterministic with zero model calls'
+footer_shown: false
+summary: 'feat: support architectural directions and planned constraints in futures engine'
