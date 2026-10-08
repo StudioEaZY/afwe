@@ -4,6 +4,10 @@
 use crate::context::{build_context, ContextQuery};
 use crate::contract::{self, TaskStart};
 use crate::drift;
+use crate::intent::{self, PinSpec};
+use crate::onboard;
+use crate::timeline;
+use crate::turn;
 use crate::engine::{Engine, Snapshot};
 use crate::lens::resolve_lens;
 use crate::model::*;
@@ -34,6 +38,12 @@ fn origin(p: &Value, default: &str) -> String {
 }
 fn j<T: serde::Serialize>(v: T) -> Result<Value> {
     Ok(serde_json::to_value(v)?)
+}
+fn parse_vec<T: serde::de::DeserializeOwned>(p: &Value, k: &str) -> Result<Vec<T>> {
+    match p.get(k) {
+        Some(v) if !v.is_null() => Ok(serde_json::from_value(v.clone()).map_err(|e| anyhow!("`{k}`: {e}"))?),
+        _ => Ok(vec![]),
+    }
 }
 
 /// Snapshot that is guaranteed to know about `files` (re‑analyses when the cache is stale).
@@ -302,6 +312,91 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let bp = crate::init::bootstrap(engine, p.get("depth").and_then(|v| v.as_u64()).unwrap_or(2) as usize, b(&p, "apply", false))?;
             j(bp)
         }
+        // ───────── v2: turns (the protocol: begin → assume → commit) ─────────
+        "turn.begin" => turn::begin(engine, turn::BeginRequest { prompt: req(&p, "prompt")?, origin: origin(&p, default_origin), agent: s(&p, "agent"), targets: list(&p, "targets"), refines: list(&p, "refines"), kind: s(&p, "kind").unwrap_or("code".into()) }),
+        "turn.assume" => turn::assume(engine, &req(&p, "turn")?, turn::AssumeRequest { intents: parse_vec(&p, "intents")?, assumptions: parse_vec(&p, "assumptions")?, removes: list(&p, "removes"), overrides: parse_vec(&p, "overrides")?, origin: origin(&p, default_origin) }),
+        "turn.commit" => turn::commit(engine, &req(&p, "turn")?, turn::CommitRequest { summary: s(&p, "summary"), footer_shown: b(&p, "footer_shown", false), removes: list(&p, "removes"), touched: list(&p, "touched"), overrides: parse_vec(&p, "overrides")?, origin: origin(&p, default_origin), confirmed: b(&p, "confirmed", false) }),
+        "turn.confirm" => turn::confirm(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
+        "turn.revert" => turn::revert(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
+        "turn.get" => j(turn::get(engine, &req(&p, "turn")?)?),
+        "turn.list" => j(turn::list(engine)?),
+        "gate" => turn::gate_now(engine, &origin(&p, default_origin)),
+
+        // ───────── v2: intents ─────────
+        "intent.list" => j(engine.store.intents()?),
+        "intent.get" => {
+            let id = req(&p, "id")?;
+            j(engine.store.intent(&id)?.ok_or_else(|| anyhow!("intent `{id}` not found"))?)
+        }
+
+        // ───────── v2: pins ─────────
+        "pin.list" => {
+            let status = s(&p, "status");
+            let pins: Vec<Pin> = engine.store.pins()?.into_iter().filter(|x| status.as_ref().map(|st| &x.status == st).unwrap_or(true)).collect();
+            j(pins)
+        }
+        "pin.get" => {
+            let id = req(&p, "id")?;
+            j(engine.store.pin(&id)?.ok_or_else(|| anyhow!("pin `{id}` not found"))?)
+        }
+        "pin.propose" => j(intent::propose_pin(engine, PinSpec {
+            statement: req(&p, "statement")?,
+            kind: s(&p, "kind").unwrap_or("decision".into()),
+            severity: s(&p, "severity").unwrap_or("confirm".into()),
+            attaches: Attachment { nodes: list(&p, "nodes"), files: list(&p, "files"), symbols: list(&p, "symbols"), global: b(&p, "global", false) },
+            reason: s(&p, "reason"),
+            origin: origin(&p, default_origin),
+            created_from: s(&p, "turn"),
+            intentional: b(&p, "intentional", false),
+        })?),
+        "pin.accept" => j(intent::accept_pin(engine, &req(&p, "id")?, &origin(&p, default_origin))?),
+        "pin.retire" => j(intent::retire_pin(engine, &req(&p, "id")?, s(&p, "reason"), &origin(&p, default_origin))?),
+        "pin.budget" => match p.get("slider").and_then(|v| v.as_u64()) {
+            Some(sl) => j(intent::set_slider(engine, sl as u8, &origin(&p, default_origin))?),
+            None => j(intent::budget(engine)?),
+        },
+
+        // ───────── v2: checks (the gate's registry) ─────────
+        "check.list" => j(engine.store.checks()?),
+        "check.add" => {
+            let c: CheckSpec = serde_json::from_value(p.get("check").cloned().unwrap_or(p.clone()))?;
+            j(intent::add_check(engine, c, &origin(&p, default_origin))?)
+        }
+        "check.remove" => {
+            intent::remove_check(engine, &req(&p, "id")?, &origin(&p, default_origin))?;
+            Ok(json!({"ok": true}))
+        }
+
+        // ───────── v2: timeline ─────────
+        "timeline.list" => timeline::list(engine, p.get("limit").and_then(|v| v.as_u64()).unwrap_or(50) as usize),
+        "timeline.get" => timeline::get(engine, &req(&p, "turn")?),
+        "timeline.diff" => timeline::diff(engine, &req(&p, "turn")?, s(&p, "file")),
+        "timeline.search" => timeline::search(engine, &req(&p, "q")?),
+        "timeline.losses" => timeline::losses(engine),
+        "timeline.restore" => timeline::restore(engine, &req(&p, "feature")?, b(&p, "apply", false), &origin(&p, default_origin)),
+
+        // ───────── v2: onboarding & migration ─────────
+        "onboard.detect" => onboard::detect(&engine.store.project_root),
+        "onboard.apply" => onboard::apply(
+            &engine.store.project_root,
+            onboard::ApplyOptions {
+                profile: s(&p, "profile").unwrap_or("normie".into()),
+                init_git: b(&p, "init_git", true),
+                baseline_commit: b(&p, "baseline_commit", true),
+                ci: b(&p, "ci", true),
+                agents_md: b(&p, "agents_md", true),
+                test_command: s(&p, "test_command"),
+            },
+        ),
+        "migrate" => {
+            let moved = engine.store.migrate_workflows()?;
+            let mut m = engine.store.manifest()?;
+            m.format = crate::model::FORMAT_VERSION.into();
+            engine.store.save_manifest(&m)?;
+            engine.log(&origin(&p, default_origin), "migrate", format!("Migrated to {} ({moved} workflow(s) moved to intents/)", crate::model::FORMAT_VERSION), None)?;
+            Ok(json!({"format": crate::model::FORMAT_VERSION, "workflows_moved": moved}))
+        }
+
         "ops" => Ok(json!(OPS)),
         other => Err(anyhow!("unknown op `{other}` (see `ops`)")),
     }
@@ -316,6 +411,10 @@ pub const OPS: &[&str] = &[
     "lens.list", "lens.get", "lens.save", "lens.remove",
     "contract.list", "contract.get", "contract.render", "task.start", "task.done", "task.step", "board.get", "board.dismiss",
     "proposals.list", "proposal.resolve", "log.get", "log.add", "bootstrap", "ops",
+    "turn.begin", "turn.assume", "turn.commit", "turn.confirm", "turn.revert", "turn.get", "turn.list", "gate",
+    "intent.list", "intent.get", "pin.list", "pin.get", "pin.propose", "pin.accept", "pin.retire", "pin.budget",
+    "check.list", "check.add", "check.remove", "timeline.list", "timeline.get", "timeline.diff", "timeline.search", "timeline.losses", "timeline.restore",
+    "onboard.detect", "onboard.apply", "migrate",
 ];
 
 fn status(engine: &Engine) -> Result<Value> {
@@ -513,5 +612,30 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_proposals", op: "proposals.list", description: "Pending architecture proposals (<50% confidence changes AFWE will not apply on its own).", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_proposal_resolve", op: "proposal.resolve", description: "accept | revert | review a proposal (review = impact on memory, guardrails, constraints, files).", schema: obj(json!({"id": {"type": "string"}, "action": {"type": "string"}}), &["id", "action"]) },
         ToolSpec { name: "afwe_log", op: "log.add", description: "Append a note to the change log (kind: note|complete|decision).", schema: obj(json!({"message": {"type": "string"}, "kind": {"type": "string"}, "task": {"type": "string"}}), &["message"]) },
+        ToolSpec { name: "afwe_turn_begin", op: "turn.begin", description: "START every prompt here. Stores the prompt verbatim as a turn and returns the briefing: scope, active pins (do not change what they protect), intentional markers, intents, memory, constraints, registered checks, unresolved proposals and the footer you must show. Then call afwe_turn_assume.", schema: obj(json!({"prompt": {"type": "string"}, "targets": strs, "refines": strs, "kind": {"type": "string"}, "agent": {"type": "string"}}), &["prompt"]) },
+        ToolSpec { name: "afwe_turn_assume", op: "turn.assume", description: "BEFORE writing code: declare intents (action + targets) and assumption claims (regex/import/symbol checks). Returns REDO with error codes when the schema is wrong or a pin would be broken; then revise and call again. Pin overrides need a reason.", schema: obj(json!({"turn": {"type": "string"}, "intents": {"type": "array"}, "assumptions": {"type": "array"}, "removes": strs, "overrides": {"type": "array"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_commit", op: "turn.commit", description: "AFTER writing code: AFWE attributes the changes, runs verify, pins, collateral-loss detection, claims and registered checks, then commits (with an AFWE-Turn trailer), stages a proposal, or returns REDO with the failures. Nothing is committed on REDO. Set footer_shown=true once the proposal notice is in your reply.", schema: obj(json!({"turn": {"type": "string"}, "summary": {"type": "string"}, "footer_shown": {"type": "boolean"}, "removes": strs, "touched": strs, "overrides": {"type": "array"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_confirm", op: "turn.confirm", description: "Human confirmation of a staged proposal: commits it through the gate.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_revert", op: "turn.revert", description: "Undo a turn as far as that is safe (files clean at turn.begin go back to HEAD; the rest becomes a Board item).", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_get", op: "turn.get", description: "Read one turn: prompt, intents, assumptions, checks, strength, confidence and gate reasons.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_list", op: "turn.list", description: "List all turns (ledger).", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_intent_list", op: "intent.list", description: "Living intents: merged statements derived from the raw prompts, with history and the turns they came from.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_pin_list", op: "pin.list", description: "Pins: human-locked decisions and intentional bug markers. Filter by status (active|proposed|retired).", schema: obj(json!({"status": {"type": "string"}}), &[]) },
+        ToolSpec { name: "afwe_pin_propose", op: "pin.propose", description: "Propose a pin (decision to keep, or an intentional bug). Agent proposals stay proposed until a human accepts them.", schema: obj(json!({"statement": {"type": "string"}, "kind": {"type": "string"}, "severity": {"type": "string"}, "nodes": strs, "files": strs, "reason": {"type": "string"}, "intentional": {"type": "boolean"}}), &["statement"]) },
+        ToolSpec { name: "afwe_pin_accept", op: "pin.accept", description: "Human accepts a proposed pin (subject to the pin budget).", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
+        ToolSpec { name: "afwe_pin_retire", op: "pin.retire", description: "Retire a pin with a reason.", schema: obj(json!({"id": {"type": "string"}, "reason": {"type": "string"}}), &["id"]) },
+        ToolSpec { name: "afwe_pin_budget", op: "pin.budget", description: "Pin budget: derived from the codebase size, scaled by the manual slider (1 relaxed … 5 strict). Pass slider to change it.", schema: obj(json!({"slider": {"type": "integer"}}), &[]) },
+        ToolSpec { name: "afwe_check_list", op: "check.list", description: "The gate's registry of checks (deterministic, generated, llm_judged) and who authored them.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_check_add", op: "check.add", description: "Register a check the gate must pass: a shell command (exit 0 = pass) or a claim, with trust and attachments.", schema: obj(json!({"check": {"type": "object"}}), &["check"]) },
+        ToolSpec { name: "afwe_check_remove", op: "check.remove", description: "Remove a check from the gate (logged).", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
+        ToolSpec { name: "afwe_gate", op: "gate", description: "Whole-project gate (CI): constraints, guardrails, registered checks and the project test command.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_timeline_list", op: "timeline.list", description: "Intent-indexed history: committed turns with strength, confidence and status.", schema: obj(json!({"limit": {"type": "integer"}}), &[]) },
+        ToolSpec { name: "afwe_timeline_get", op: "timeline.get", description: "One turn with its commit and diff stat.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_timeline_diff", op: "timeline.diff", description: "Patch of a turn (committed or staged).", schema: obj(json!({"turn": {"type": "string"}, "file": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_timeline_search", op: "timeline.search", description: "Search history by prompt, summary, intent or node.", schema: obj(json!({"q": {"type": "string"}}), &["q"]) },
+        ToolSpec { name: "afwe_timeline_losses", op: "timeline.losses", description: "Features that were realised and disappeared, and whether that was on purpose.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_timeline_restore", op: "timeline.restore", description: "Restore a vanished feature: 3-way merge of its last good version. apply=true opens a restore turn that is gated at commit.", schema: obj(json!({"feature": {"type": "string"}, "apply": {"type": "boolean"}}), &["feature"]) },
+        ToolSpec { name: "afwe_onboard_detect", op: "onboard.detect", description: "Detect stacks, git state, configuration and the suggested test command, without changing anything.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_onboard_apply", op: "onboard.apply", description: "Configure the project with a profile (normie | engineer): policy presets, git init, CI gate, AGENTS.md block.", schema: obj(json!({"profile": {"type": "string"}, "init_git": {"type": "boolean"}, "ci": {"type": "boolean"}, "agents_md": {"type": "boolean"}, "test_command": {"type": "string"}}), &["profile"]) },
     ]
 }

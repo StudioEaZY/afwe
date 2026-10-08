@@ -79,3 +79,20 @@ Then `afwe task start "Split users table" --kind migration`.
 
 Contracts are deliberately small. Anything the harness must *know* belongs in memory/guardrails (so it is
 scoped and retrievable); anything the harness must *do around* a change belongs in a contract.
+
+
+---
+
+## The default contract is now the turn protocol (v2)
+
+The default coding contract is executed by AFWE itself, in three calls:
+
+1. **begin** — `afwe turn begin "<prompt>" --target <nodes|files>` (MCP `afwe_turn_begin`). Read the briefing. Obey the
+   pins, respect the intentional markers, and show the footer if proposals are pending.
+2. **assume** — before writing code, declare the intents (`action` + `targets`) and the claims you rely on
+   (`afwe turn assume <turn> --file <json>`). A REDO means the schema or a pin was wrong: fix it and assume again.
+3. **commit** — after writing code, `afwe turn commit <turn> --summary "…"`. A REDO means nothing was committed:
+   fix the listed failures and commit again. A STAGE means the change waits for a human (`turn confirm` / `turn revert`).
+
+Declare removals in `removes`. A feature that disappears without a declaration is refused as collateral loss. Do not
+edit around a pin: ask for an override with a reason, and let a human decide.

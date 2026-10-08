@@ -312,3 +312,104 @@ constraint; an unmapped file is proposed to the best-fitting node, not silently 
 `format: afwe/1`. Unknown keys must be preserved by engines that rewrite files. New node kinds, memory
 kinds, check types and workflow node kinds may be introduced without a format bump; consumers should treat
 unknown values as opaque strings.
+
+
+---
+
+## 12. v2 additions (`afwe/2`)
+
+`afwe/1` folders are read unchanged. `afwe migrate` upgrades the format and moves legacy `workflows/` into
+`intents/`. The folder is still the product; everything below is a file you can read.
+
+### 12.1 `afwe.yaml` additions
+
+```yaml
+format: afwe/2
+profile: normie                # normie | engineer | custom (set by `afwe onboard`)
+policy:
+  auto_reconcile_min: 0.7      # commit threshold for turns (confidence)
+  pins:
+    slider: 3                  # 1 relaxed .. 5 strict; scales the codebase-derived pin budget
+  checkgen: true               # confirmed claims become standing checks
+vcs:
+  provider: git                # git | none
+  auto_commit: true            # false = engineer manual mode: turns end `ready`
+  test_command: "cargo test"   # optional: deterministic check on every code-changing turn
+```
+
+### 12.2 New folders
+
+| Folder | Holds | Committed |
+|---|---|---|
+| `turns/tNNNN.yaml` | one turn: verbatim prompt, intents, assumptions, scope, touched, checks, strength, confidence, gate reasons | yes |
+| `intents/<id>.yaml` | living intent: merged `statement`, `history` (revisions), `from_turns`, `parents`, `attaches`, optional `graph` | yes |
+| `pins/<id>.yaml` | pin: `statement`, `kind` (decision/intentional/constraint/preference), `severity` (block/confirm/warn), `status` (proposed/active/retired), `attaches`, `intentional` | yes |
+| `checks/<id>.yaml` | registered check: `trust`, `authored_by` (human/agent/checkgen/app:*), `attaches`, `command` or `claim` | yes |
+| `index/baselines/tNNNN.json` | content hashes and symbol fingerprints captured at turn begin | no (derived) |
+
+Attachments are nodes first, then files (globs, code-root-relative) and symbols (`file::Qualified`). Never line numbers.
+
+### 12.3 Trust, strength, confidence
+
+* **Trust** (weakest → strongest): `llm_judged` (never blocks alone) < `generated` (agent or generator tests; blocks
+  when failing) < `deterministic` (parser, regex, exit code; blocks when failing).
+* **Strength** of a turn = the weakest trust among the checks that ran; no checks ran → `unverified`.
+* **Confidence** = mapping × verification × clarity × pins, each in [0,1] and recorded in `confidence_parts`:
+  mapping = 0.5 + 0.5 × (mapped touched code files ÷ touched code files) (code only; docs and fixtures excluded);
+  verification = 1.0 deterministic, 0.9 generated, 0.8 llm_judged, 0.75 unverified; clarity = 1.0 when every
+  declared intent resolves, 0.85 when none is declared, 0.7 otherwise; pins = 0.9 per warn-level conflict (floor 0.5).
+
+### 12.4 The turn protocol
+
+1. `turn.begin { prompt, targets?, refines?, kind?, origin? }` → stores the prompt verbatim, opens a Task, captures the
+   baseline, returns the briefing: scope, active pins in scope, intentional markers, intents, memory, constraints,
+   passive guardrails, registered checks, unresolved proposals and the **footer** that must be shown while proposals
+   are pending.
+2. `turn.assume { turn, intents?, assumptions?, removes?, overrides? }` → validates the schema (codes `SCHEMA_INVALID`,
+   `DUPLICATE_ID`, `UNKNOWN_TARGET`, `BAD_CLAIM`) and destructive intents against active pins (`PIN_CONFLICT`). Any error
+   → `redo`, nothing registered. Otherwise intents are upserted (history appended) and claims are queued.
+3. `turn.commit { turn, summary?, footer_shown?, removes?, touched?, overrides? }` → attribution = changes since the
+   baseline (+ declared extras, + folded proposals). Then, in order: `FOOTER_REQUIRED`, verify (`VERIFY_FAILED`),
+   project tests, pins (`PIN_CONFLICT` / confirm), collateral loss (`COLLATERAL_LOSS`), claims (`CLAIM_FAILED`),
+   registered checks (`CHECK_FAILED`), restore markers (`RESTORE_CONFLICT`). Then the decision:
+   * any blocking failure → **redo**: nothing is written to git;
+   * no change → **empty**;
+   * confirm-level pin or confidence below `auto_reconcile_min` → **staged** (proposal; Board item; footer applies);
+   * `auto_commit: false` → **ready**;
+   * otherwise **committed**: the turn record, the checkgen checks, pin proposals from keyword phrases, task steps, a
+     sync, then one git commit of exactly the attributed files plus the `.afwe/` source directories, with trailers
+     `AFWE-Turn: tNNNN`, `AFWE-Strength`, `AFWE-Confidence`.
+4. `turn.confirm` commits a staged proposal through the gate with confirm-level pins treated as confirmed.
+   `turn.revert` restores files that were clean at begin, removes files the turn created, and turns anything else
+   into a Board item.
+
+Pins: a *block* pin refuses any change under its nodes (or files/symbols) unless an override `{pin, reason}` is given;
+a *confirm* pin stages the change; a *warn* pin is reported. Keyword phrases propose pins: "intentional", "on purpose",
+"not a bug" propose an intentional marker (block); "keep it like that", "don't change" propose a decision (confirm).
+Proposed pins are never active until accepted.
+
+Pin budget: `auto = clamp(round(2 + 1.5·√nodes), 3, 60)`; `limit = round(auto × multiplier(slider))` with the multiplier
+0.5, 0.75, 1, 1.5, 2 for slider 1…5. Accepting beyond the limit fails.
+
+### 12.5 History (derived, never stored separately)
+
+* Commits with an `AFWE-Turn:` trailer are the committed turns; `timeline` joins them with the records in `turns/`.
+* Each committed turn records `implements`: node → files realising it, after the turn. Losses and restores are computed
+  from these maps. A loss is "on purpose" when the turn that caused it declared the node (or an ancestor) in `removes`.
+* **Restore** of a feature: the last committed turn that realised it is the *good* version; the turn that lost it is
+  the *base*; the working tree is *ours*. `git merge-file` gives the result; conflicts leave markers and block the
+  restore turn at commit (`RESTORE_CONFLICT`) until resolved.
+
+### 12.6 Checks and checkgen
+
+A check is a shell command (exit 0 = pass; run from the project root with `AFWE_CHANGED_FILES` set to the changed
+files, timeout default 120 s) or a claim (`forbid_pattern`, `require_pattern`, `forbid_import`, `symbol_exists`,
+`require_file`). A check runs when its attachments intersect the turn's touched nodes (with ancestors), changed files
+or changed symbols, or when it has no attachments (global). `checkgen` turns each *confirmed* claim of a committed turn
+into a standing check authored by `checkgen`.
+
+### 12.7 Workflows → intents
+
+`intents/<id>.yaml` may carry `graph: { description, nodes, edges }`: the node-based design documents of v1 are intents
+with a graph. `workflow.*` operations read and write through the same files. `afwe migrate` converts legacy
+`workflows/` files.

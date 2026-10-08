@@ -1,4 +1,4 @@
-format: afwe/1
+format: afwe/2
 project:
   name: Demo Product
   description: Tiny multi-language app used to demonstrate AFWE
@@ -21,5 +21,11 @@ policy:
   soft_reconcile_min: 0.5
   create_proposals: true
   fail_on_violation: true
+  pins:
+    slider: 3
+  checkgen: true
 provenance:
   retain_prompts: true
+vcs:
+  provider: git
+  auto_commit: true

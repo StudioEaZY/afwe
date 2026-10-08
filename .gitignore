@@ -5,6 +5,3 @@ apps/studio/src-tauri/gen
 # the built Studio is committed on release branches so `cargo build` embeds it; ignore during development
 # apps/studio/web-dist
 .DS_Store
-*.log
-**/.afwe/index/code.json
-

@@ -1,0 +1,11 @@
+id: pin-f6a032
+statement: Session expiry stays at 30 minutes, server-side. Changing it needs a new decision, not a silent edit.
+kind: decision
+attaches:
+  nodes:
+  - sessions
+severity: confirm
+status: active
+origin: human:demo
+created: 2026-10-08T08:23:15Z
+reason: decision auth-session-expiry

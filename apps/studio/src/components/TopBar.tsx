@@ -7,10 +7,12 @@ const tabs: { id: View; label: string }[] = [
   { id: "workflows", label: "Workflows" },
   { id: "board", label: "Board / Tasks" },
   { id: "memory", label: "Memory" },
+  { id: "timeline", label: "Timeline" },
+  { id: "pins", label: "Pins" },
 ];
 
 export function TopBar() {
-  const { graph, view, setView, setDrawer, run, notify, refresh } = useStore();
+  const { graph, view, setView, setDrawer, run, notify, refresh, configured, setOnboardOpen } = useStore();
   const [syncing, setSyncing] = useState(false);
   if (!graph) return null;
   const sync = graph.sync.status;
@@ -54,6 +56,11 @@ export function TopBar() {
         ))}
       </nav>
       <div className="right">
+        {configured === false && (
+          <button className="ghost" onClick={() => setOnboardOpen(true)} title="Configure git, CI and the agent contract">
+            set up
+          </button>
+        )}
         <button className={`sync ${sync}`} onClick={doSync} disabled={syncing} title={graph.sync.last_sync ? `last sync ${graph.sync.last_sync}` : "run afwe sync"}>
           ● {syncing ? "syncing…" : syncLabel}
         </button>

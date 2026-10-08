@@ -38,69 +38,38 @@ answers "what applies to what I am touching?" (passive guardrails), refuses what
 Identity is *file path + symbol identity + structural (AST) path + content fingerprint* — never line numbers,
 so renames and moves are recognised instead of breaking references.
 
-## Installation & Quick Start
+## The turn protocol (v2)
 
-AFWE is a standalone native binary that comes with the embedded web studio. Choose the method that best fits your stack:
+Every prompt is a **turn**. AFWE never calls a model; the harness does, and AFWE wraps it in three deterministic
+steps. Nothing is committed unless the gate passes.
 
-### Method 1: Instant GitHub One-Liner (No Node, No Rust required)
-
-**Linux & macOS:**
-```bash
-curl -fsSL https://raw.githubusercontent.com/StudioEaZY/afwe/main/scripts/install.sh | bash
+```text
+turn begin  "Let checkout show the button" --target payments   → briefing: scope, PINS, intents, memory,
+                                                                 registered checks, unresolved proposals
+turn assume t0002 --file intents.json                          → intents + claims BEFORE the code (REDO on
+                                                                 schema errors or pin conflicts)
+   …harness writes the code…
+turn commit t0002                                              → COMMIT (git, AFWE-Turn: t0002 trailer)
+                                                                 | STAGE (proposal, uncommitted)
+                                                                 | REDO (the reasons; nothing committed)
+timeline / timeline restore <feature> / timeline losses        → history indexed by intent
 ```
 
-**Windows (PowerShell):**
-```powershell
-irm https://raw.githubusercontent.com/StudioEaZY/afwe/main/scripts/install.ps1 | iex
-```
-*This downloads the latest native binary directly from GitHub Releases into `~/.afwe/bin/` and adds it to your PATH.*
+What the gate checks, in order: constraints and active guardrails on the changed files, pins (a *block* pin
+refuses the change, a *confirm* pin stages it), collateral loss (a feature that disappeared without being
+declared in `removes`), assumption claims, and every registered check whose scope the turn touches. Confidence
+below 70 % stages the turn as a proposal; the footer tells you about it until you accept or revert it.
 
----
+Pins are human-locked decisions. Say "keep it like that" and AFWE proposes a pin; "intentional" proposes an
+intentional-bug marker, so "fix all bugs" leaves it alone. The number of active pins is bounded by the size of
+the blueprint and the manual slider (`afwe pin budget --slider 1..5`). See `docs/V2-DECISIONS.md`.
 
-### Method 2: Node.js / JavaScript / TypeScript projects (`npx` / `npm`)
-
-Works on any Node.js project (Next.js, Vite, Nest, Remix, etc.) without compiling anything:
-```bash
-# Run on demand:
-npx afwe init --name "My Product" --agents-md
-npx afwe status
-npx afwe studio
-
-# Or install globally:
-npm install -g afwe
-afwe status
-```
-
----
-
-### Method 3: Direct Download from GitHub Releases
-
-Download the pre-compiled binary for your system directly from [GitHub Releases](https://github.com/StudioEaZY/afwe/releases):
-- **Windows (x64)**: `afwe-x86_64-pc-windows-msvc.exe`
-- **Linux (x64)**: `afwe-x86_64-unknown-linux-gnu`
-- **macOS (Apple Silicon)**: `afwe-aarch64-apple-darwin`
-- **macOS (Intel)**: `afwe-x86_64-apple-darwin`
-
-Rename the binary to `afwe` (or `afwe.exe`), make it executable (`chmod +x afwe`), and place it anywhere in your `PATH`.
-
----
-
-### Method 4: Rust / Low-Level Developers (`cargo`)
-
-If you work in Rust, C++, Go, or systems programming:
+## Quick start
 
 ```bash
-# Install directly from the GitHub repository:
-cargo install --git https://github.com/StudioEaZY/afwe crates/afwe-cli
+# build the engine (Rust 1.75+). The Studio frontend is pre-built in apps/studio/web-dist and embedded.
+cargo build --release            # → target/release/afwe
 
-# Or if you already have the repository cloned:
-cargo install --path crates/afwe-cli
-```
-
----
-
-### Basic Usage Flow
-```bash
 cd your-project
 afwe init --name "My Product" --agents-md      # empty .afwe/ (+ contract block in AGENTS.md / CLAUDE.md)
 afwe blueprint add Payments --kind subsystem --purpose "Charging users" --files 'src/payments/**'
@@ -111,8 +80,12 @@ afwe memory add decision "Sessions expire after 24h" --applies-to Authentication
 afwe sync                        # analyse code, build index, reconcile drift by confidence
 afwe context src/payments/checkout.ts   # what an agent gets before touching that file
 afwe verify --changed src/payments/checkout.ts   # exit 1 on violations
+afwe onboard --profile normie    # git, CI gate, AGENTS.md, profile (idempotent)
+afwe turn begin "Add tagging to search" --target src/workspace/**   # briefing for the harness
+afwe turn commit t0001           # gate, then commit with the AFWE-Turn trailer (or stage / REDO)
+afwe gate                        # whole-project gate (what CI runs)
 afwe studio                      # Studio in the browser (http://localhost:4242)
-afwe mcp                         # MCP server on stdio for your harness
+afwe mcp                         # MCP server on stdio for your harness (49 tools)
 ```
 
 For an already-populated example: `cd examples/demo-project && afwe status` (see its README).
@@ -169,6 +142,12 @@ when they are out of sync.
 
 ## Studio
 
+The Studio has a **Timeline** (every turn with its status, confidence and diff; accept or revert a staged proposal;
+restore a feature that disappeared), a **Pins** view (accept or retire pins, move the strictness slider, see the
+intents and the registered checks), and a **set up** wizard that shows what it will write before it writes it.
+
+![timeline](docs/screenshots/studio-timeline.png)
+
 `afwe studio` (web, embedded in the binary) or the Tauri v2 desktop app in `apps/studio/src-tauri`.
 Same React frontend, same engine, one API call (`call(op, params, origin)`).
 
@@ -204,27 +183,34 @@ one-line `LangSpec` in `crates/afwe-core/src/analyze/langs.rs`.
 ## Repository layout
 
 ```
-crates/afwe-core     engine: schema, store, analysis, mapping, index, context, verify, drift, sync, ops, api
+crates/afwe-core     engine: schema, store, analysis, mapping, index, context, verify, drift, sync, ops, api,
+                     v2: turn (protocol), intent (intents, pins, checks, checkgen), gate, conflict, claims,
+                     vcs (trait + git), timeline (history, losses, restore), onboard
 crates/afwe-cli      `afwe` binary: CLI, MCP server (stdio), web Studio host (embeds apps/studio/web-dist)
 apps/studio          React + React Flow Studio (Vite) · src-tauri = Tauri v2 desktop shell (own workspace)
-examples/demo-project  a populated .afwe/ with deliberate drift, a violation, a lens and a workflow
+examples/demo-project  a populated .afwe/ (format afwe/2) with drift, a violation, pins, a lens and an intent
 docs/                SPEC.md (format) · ARCHITECTURE.md (engine) · CONTRACTS.md · INTEGRATION.md · screenshots/
-scripts/             build.sh (frontend + release binary) · dev.sh (Vite + engine API) · demo.sh (CLI tour)
+scripts/             build.sh (frontend + release binary) · dev.sh (Vite + engine API) · demo.sh (CLI + turn-protocol tour)
 ```
 
 ## Tests
 
 ```bash
-cargo test            # analyzer/mapping unit tests + end-to-end tests in crates/afwe-core/tests/end_to_end.rs
+cargo test            # unit tests (gate, conflicts, claims, pin budget, timeline, onboarding, analyzer, mapping),
+                      # end-to-end tests (crates/afwe-core/tests/end_to_end.rs) and turn-protocol tests against
+                      # real git (crates/afwe-core/tests/turn_flow.rs)
+scripts/demo.sh       # a tour of the shipped demo, then the turn protocol on a throw-away git copy
 ```
 
-The end-to-end tests build a throw-away project in a temp directory and exercise the whole loop through the
-same `api::call` surface the CLI, MCP server and Studio use: blueprint → sync → context → verify (violation +
-guardrail), the confidence policy (0.9 auto-map vs 0.3 proposal), rename detection without line numbers, and
-contract obligations / lenses / workflows.
+The turn-protocol tests walk the whole loop through the same `api::call` surface the CLI, MCP server and Studio use:
+a committed turn with a claim that becomes a standing check; a REDO for a boundary violation (nothing committed),
+then a fix; collateral loss refused, then declared and committed; a restore by 3-way merge; a block pin refusing an
+edit, then overridden with a reason; a staged proposal that is folded into a later turn behind the footer; revert;
+the whole-project gate.
 
 ## Status
 
-MVP of everything described above. Deliberately out of scope for now: optimising the onboarding of large
-existing codebases (`afwe bootstrap` proposes a first blueprint from the directory structure, nothing more),
-a visual Excalidraw-style explanation layer, and multi-user sync. Licence: MIT.
+v2 is the engine described in `implementation_plan_arena.md`, with the refinements in `docs/V2-DECISIONS.md`
+(what changed, why, what was verified, and the decisions to confirm). Not built yet: the 50-prompt benchmark, a 3D
+view of history, LLM-judged check runners, harness-specific hook installers, and the Tauri desktop build (it needs
+webkit2gtk). Licence: MIT.

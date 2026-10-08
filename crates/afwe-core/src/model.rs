@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
 
-pub const FORMAT_VERSION: &str = "afwe/1";
+pub const FORMAT_VERSION: &str = "afwe/2";
 
 fn is_false(b: &bool) -> bool {
     !*b
@@ -29,6 +29,11 @@ pub struct Manifest {
     pub policy: Policy,
     #[serde(default)]
     pub provenance: ProvenanceConfig,
+    #[serde(default)]
+    pub vcs: VcsConfig,
+    /// Onboarding profile the project was set up with (normie | engineer | custom).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub profile: Option<String>,
 }
 
 fn default_format() -> String {
@@ -103,6 +108,12 @@ pub struct Policy {
     /// Treat constraint violations as errors in `verify` (exit code 1).
     #[serde(default = "default_true")]
     pub fail_on_violation: bool,
+    /// Pin budget slider (1 relaxed .. 5 strict). Scales the codebase-derived pin limit.
+    #[serde(default)]
+    pub pins: PinPolicy,
+    /// Generate standing checks from confirmed assumptions (the default `checkgen` app).
+    #[serde(default = "default_true")]
+    pub checkgen: bool,
 }
 fn d_auto() -> f64 {
     0.70
@@ -117,7 +128,47 @@ impl Default for Policy {
             soft_reconcile_min: d_soft(),
             create_proposals: true,
             fail_on_violation: true,
+            pins: PinPolicy::default(),
+            checkgen: true,
         }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PinPolicy {
+    /// 1 (relaxed) .. 5 (strict). 3 = balanced. Multiplies the codebase-derived pin limit.
+    #[serde(default = "default_slider")]
+    pub slider: u8,
+}
+fn default_slider() -> u8 {
+    3
+}
+impl Default for PinPolicy {
+    fn default() -> Self {
+        Self { slider: 3 }
+    }
+}
+
+/// How turns reach version control.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VcsConfig {
+    /// git | none
+    #[serde(default = "default_vcs_provider")]
+    pub provider: String,
+    /// true: a passing turn is committed by AFWE. false (engineer manual mode): the turn ends `ready`
+    /// and the engineer commits with plain git (keeping the `AFWE-Turn:` trailer).
+    #[serde(default = "default_true")]
+    pub auto_commit: bool,
+    /// Optional deterministic project check (exit code) run on every turn, e.g. `cargo test`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub test_command: Option<String>,
+}
+fn default_vcs_provider() -> String {
+    "git".into()
+}
+impl Default for VcsConfig {
+    fn default() -> Self {
+        Self { provider: default_vcs_provider(), auto_commit: true, test_command: None }
     }
 }
 
@@ -816,4 +867,341 @@ pub struct VerifyReport {
     pub checked_files: Vec<String>,
     #[serde(default)]
     pub ran_checks: Vec<String>,
+}
+
+// ───────────────────────────── v2: attachments ─────────────────────────────
+
+/// What a record is anchored to. Nodes are the primary anchor (they survive refactors); files and
+/// symbols are used when no node applies yet. Never line numbers.
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+pub struct Attachment {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub nodes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub files: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub symbols: Vec<String>,
+    /// Whole project.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub global: bool,
+}
+impl Attachment {
+    pub fn is_empty(&self) -> bool {
+        *self == Attachment::default()
+    }
+}
+
+// ───────────────────────────── v2: intents (living, DAG) ─────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct IntentRevision {
+    pub turn: String,
+    pub ts: String,
+    pub statement: String,
+}
+
+/// Optional node-based design graph (the former `workflows/` documents live here).
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct IntentGraph {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(default)]
+    pub nodes: Vec<WorkflowNode>,
+    #[serde(default)]
+    pub edges: Vec<WorkflowEdge>,
+}
+
+/// A stable "what is wanted" record. It is a *view* merged from raw prompts (turns): the statement
+/// can be rewritten, the originals never are. Pins are the only human-locked part.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Intent {
+    pub id: String,
+    pub title: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub statement: Option<String>,
+    /// active | paused | superseded | archived | orphaned | draft | in_progress | implemented
+    #[serde(default = "default_active")]
+    pub status: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub origin: Option<String>,
+    #[serde(default, skip_serializing_if = "Attachment::is_empty")]
+    pub attaches: Attachment,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub parents: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub from_turns: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub history: Vec<IntentRevision>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pins: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub graph: Option<IntentGraph>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub updated: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub task: Option<String>,
+}
+fn default_active() -> String {
+    "active".into()
+}
+
+// ───────────────────────────── v2: pins (human-locked decisions) ─────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Pin {
+    pub id: String,
+    pub statement: String,
+    /// decision | intentional | constraint | preference
+    #[serde(default = "default_decision")]
+    pub kind: String,
+    #[serde(default, skip_serializing_if = "Attachment::is_empty")]
+    pub attaches: Attachment,
+    /// block (commit refused) | confirm (staged until a human confirms) | warn (reported)
+    #[serde(default = "default_confirm")]
+    pub severity: String,
+    /// proposed | active | retired
+    pub status: String,
+    pub origin: String,
+    pub created: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created_from: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub retired: Option<String>,
+    /// A deliberate bug/quirk: "fix all bugs" must not touch it.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub intentional: bool,
+}
+fn default_decision() -> String {
+    "decision".into()
+}
+fn default_confirm() -> String {
+    "confirm".into()
+}
+
+// ───────────────────────────── v2: checks (the gate's registry) ─────────────────────────────
+
+/// How strong a pass is. Ordered weakest → strongest.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum CheckTrust {
+    /// Nothing verified this turn.
+    #[default]
+    Unverified,
+    /// Judged by a model (adversarial pair, reviewer). Advisory: never blocks alone.
+    LlmJudged,
+    /// Tests written by an agent or a generator. Blocks when failing.
+    Generated,
+    /// Parser/AST/regex/exit-code checks. Blocks when failing.
+    Deterministic,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CheckSpec {
+    pub id: String,
+    pub title: String,
+    pub trust: CheckTrust,
+    /// human | agent | checkgen | app:<name>
+    pub authored_by: String,
+    #[serde(default, skip_serializing_if = "Attachment::is_empty")]
+    pub attaches: Attachment,
+    /// Shell command, exit 0 = pass, run from the project root. Gets AFWE_CHANGED_FILES.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub command: Option<String>,
+    /// Or a declarative claim (what checkgen produces from confirmed assumptions).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub claim: Option<AssumptionClaim>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub timeout_s: Option<u64>,
+    /// active | retired
+    #[serde(default = "default_active")]
+    pub status: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub origin: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created_from: Option<String>,
+}
+
+// ───────────────────────────── v2: turns (append-only ledger) ─────────────────────────────
+
+/// A declarative, tree-sitter / regex checkable statement an agent makes before writing code.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct AssumptionClaim {
+    /// forbid_pattern | require_pattern | forbid_import | symbol_exists | require_file
+    #[serde(rename = "type")]
+    pub kind: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pattern: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub symbol: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub files: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub to_nodes: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct Assumption {
+    pub id: String,
+    pub text: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub claim: Option<AssumptionClaim>,
+    /// proposed | confirmed | failed
+    #[serde(default)]
+    pub status: String,
+}
+
+/// A decomposed piece of a prompt: what the turn intends to do to which nodes.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TurnIntent {
+    pub id: String,
+    /// create | update | refine | remove | rename | move | replace | keep
+    pub action: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub targets: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub statement: Option<String>,
+}
+
+/// An explicit, reasoned exception to a pin.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct PinOverride {
+    pub pin: String,
+    pub reason: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TurnScope {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub nodes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub files: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TurnTouched {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub nodes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub files: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub symbols: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CheckResult {
+    pub id: String,
+    pub title: String,
+    pub trust: CheckTrust,
+    pub authored_by: String,
+    pub passed: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub message: Option<String>,
+    /// Does a failure stop the commit?
+    #[serde(default)]
+    pub blocking: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GateRecord {
+    /// commit | stage | redo | ready | empty
+    #[serde(default)]
+    pub decision: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub reasons: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct RestoreRecord {
+    pub feature: String,
+    pub from_turn: String,
+    pub lost_turn: String,
+    #[serde(default)]
+    pub conflicts: usize,
+}
+
+/// One prompt = one turn. The prompt is stored verbatim and never edited afterwards.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct Turn {
+    pub id: String,
+    pub ts: String,
+    #[serde(default)]
+    pub origin: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub agent: Option<String>,
+    pub prompt: String,
+    #[serde(default)]
+    pub prompt_hash: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub task: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub refines: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub targets: Vec<String>,
+    #[serde(default)]
+    pub scope: TurnScope,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub intents: Vec<TurnIntent>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub assumptions: Vec<Assumption>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub removes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub overrides: Vec<PinOverride>,
+    /// open | staged | ready | committed | reverted | folded | abandoned
+    #[serde(default)]
+    pub status: String,
+    #[serde(default)]
+    pub touched: TurnTouched,
+    /// node -> files realising it right after this turn (basis for restore and loss search)
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub implements: BTreeMap<String, Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub checks: Vec<CheckResult>,
+    #[serde(default)]
+    pub strength: CheckTrust,
+    #[serde(default)]
+    pub confidence: f64,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub confidence_parts: BTreeMap<String, f64>,
+    #[serde(default)]
+    pub gate: GateRecord,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub folded: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub folded_into: Option<String>,
+    #[serde(default)]
+    pub footer_shown: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub summary: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub committed_at: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub restore: Option<RestoreRecord>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pin_proposals: Vec<String>,
+}
+
+/// Derived (rebuildable) snapshot taken at turn.begin, used to attribute changes at commit time.
+/// Lives in index/baselines/ and is never committed.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct Baseline {
+    #[serde(default)]
+    pub head: Option<String>,
+    /// project-relative path -> content hash (code files and .afwe sources)
+    #[serde(default)]
+    pub files: BTreeMap<String, String>,
+    /// symbol id -> fingerprint
+    #[serde(default)]
+    pub symbols: BTreeMap<String, String>,
+    /// node -> files that realised it at begin
+    #[serde(default)]
+    pub implements: BTreeMap<String, Vec<String>>,
 }

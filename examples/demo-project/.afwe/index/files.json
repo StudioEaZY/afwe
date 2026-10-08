@@ -247,9 +247,9 @@
   "src/ui/Button.tsx": {
     "language": "tsx",
     "hash": "4e86978e99907acc",
-    "node": "payments",
+    "node": "ui",
     "nodes": [
-      "payments"
+      "ui"
     ],
     "symbols": [
       "src/ui/Button.tsx::Button"
@@ -260,9 +260,9 @@
   "src/ui/Layout.tsx": {
     "language": "tsx",
     "hash": "5102f58f2fdb1d4f",
-    "node": "dashboard",
+    "node": "ui",
     "nodes": [
-      "dashboard"
+      "ui"
     ],
     "symbols": [
       "src/ui/Layout.tsx::Layout"

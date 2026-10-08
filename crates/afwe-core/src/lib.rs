@@ -17,19 +17,27 @@
 
 pub mod analyze;
 pub mod api;
+pub mod claims;
+pub mod conflict;
 pub mod context;
 pub mod contract;
 pub mod drift;
 pub mod engine;
+pub mod gate;
 pub mod index;
 pub mod init;
+pub mod intent;
 pub mod lens;
 pub mod mapping;
 pub mod model;
+pub mod onboard;
 pub mod ops;
 pub mod store;
 pub mod sync;
+pub mod timeline;
+pub mod turn;
 pub mod util;
+pub mod vcs;
 pub mod verify;
 
 pub use engine::{Engine, Snapshot};

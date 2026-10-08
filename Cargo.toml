@@ -8,7 +8,7 @@ members = ["crates/afwe-core", "crates/afwe-cli"]
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-repository = "https://github.com/StudioEaZY/afwe"
+repository = "https://github.com/your-org/afwe"
 
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }

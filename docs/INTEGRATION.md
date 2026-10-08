@@ -161,3 +161,25 @@ afwe call context '{"files":["src/payments/checkout.ts"]}'
 afwe call blueprint.edit '{"op":"constrain","from":"payments","rule":"must_not_depend","to":["ui"],"rationale":"headless"}' --origin llm:script
 curl -s -X POST localhost:4242/api/call -H 'content-type: application/json' -d '{"op":"status"}'
 ```
+
+
+---
+
+## v2 surface (turns, pins, checks, timeline, onboarding)
+
+Harnesses drive the turn protocol through three MCP tools (or the CLI equivalents):
+
+| Step | MCP tool | CLI |
+|---|---|---|
+| start a prompt | `afwe_turn_begin` | `afwe turn begin "<prompt>" --target <nodes or files>` |
+| declare intents and claims | `afwe_turn_assume` | `afwe turn assume <turn> --file <json>` |
+| check and commit | `afwe_turn_commit` | `afwe turn commit <turn> [--summary …] [--footer-shown]` |
+
+Also available: `afwe_turn_confirm`, `afwe_turn_revert`, `afwe_turn_get`, `afwe_turn_list`, `afwe_intent_list`,
+`afwe_pin_list | propose | accept | retire | budget`, `afwe_check_list | add | remove`, `afwe_gate`,
+`afwe_timeline_list | get | diff | search | losses | restore`, `afwe_onboard_detect | apply`.
+`afwe mcp` answers `tools/list` with 49 tools.
+
+Rules for a harness: call `afwe_turn_begin` first and show the footer it returns while proposals are pending;
+call `afwe_turn_assume` before writing code; call `afwe_turn_commit` after writing code; treat `status: redo` as
+"nothing was committed, fix the listed failures". The full protocol is in `docs/SPEC.md` §12 and `docs/CONTRACTS.md`.

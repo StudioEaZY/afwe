@@ -64,6 +64,11 @@ pub fn render_agents_block(project: &str, contracts: &[Contract]) -> String {
     s.push_str("- `afwe memory add <kind> …` (MCP: `afwe_memory_add`) → record a decision/exception/constraint/term/problem with scope.\n");
     s.push_str("- `afwe workflow …` (MCP: `afwe_workflow_upsert`) → capture intent as a node-based workflow before designing features.\n");
     s.push_str("- `afwe task start …` / `afwe task done …` → the Board tracks contract obligations for the task.\n\n");
+    s.push_str("## Turn protocol (every prompt)\n");
+    s.push_str("1. `afwe turn begin \"<prompt>\" --target <nodes|files>` (MCP `afwe_turn_begin`): read the briefing; obey the pins and intentional markers; show the footer if proposals are pending.\n");
+    s.push_str("2. `afwe turn assume <turn> --file <json>` (MCP `afwe_turn_assume`) BEFORE writing code: declare intents and claims. REDO = fix and assume again.\n");
+    s.push_str("3. `afwe turn commit <turn> --summary \"…\"` (MCP `afwe_turn_commit`) AFTER writing code. REDO = nothing committed: fix and commit again.\n");
+    s.push_str("Declare removals in `removes`; never edit around a pin, ask for an override with a reason.\n\n");
     s.push_str("The blueprint is not documentation to understand; it is the structural reality of this project. Verify your work against it.\n");
     s.push_str("If the code and the blueprint disagree, say so (or let `afwe sync` propose) — never silently reinterpret the architecture.\n\n");
     for c in contracts {

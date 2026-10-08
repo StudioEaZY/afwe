@@ -49,16 +49,13 @@
 {"ts":"2026-09-22T16:52:15Z","origin":"human:reconcile","kind":"map_file","summary":"`src/auth/auth.ts` has no blueprint home; best fit: Demo Product.Authentication.Sessions","confidence":0.62,"uncertain":true,"details":{"op":"map_file","node":"sessions","file":"src/auth/auth.ts"}}
 {"ts":"2026-09-22T16:52:15Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 1, proposed 1, uncertain 1"}
 {"ts":"2026-09-22T16:52:15Z","origin":"llm:claude-code","kind":"task_start","summary":"Task started: Make widget titles editable [code] under contract default","details":{"task":"task-cacf40"}}
-{"ts":"2026-09-22T20:11:19Z","origin":"human","kind":"verify","summary":"verify: failed (3 errors, 1 warnings)"}
-{"ts":"2026-09-22T20:12:25Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 0, proposed 1, uncertain 0"}
-{"ts":"2026-09-22T20:13:20Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 0, proposed 1, uncertain 0"}
-{"ts":"2026-09-22T20:13:21Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 0, proposed 1, uncertain 0"}
-{"ts":"2026-09-22T20:18:16Z","origin":"human","kind":"remove_node","summary":"Removed Demo Product.UI (and 0 descendants)"}
-{"ts":"2026-09-22T20:18:22Z","origin":"human:reconcile","kind":"map_file","summary":"`src/ui/Button.tsx` has no blueprint home; best fit: Demo Product.Payments","confidence":0.55,"uncertain":true,"details":{"op":"map_file","node":"payments","file":"src/ui/Button.tsx"}}
-{"ts":"2026-09-22T20:18:22Z","origin":"human:reconcile","kind":"map_file","summary":"`src/ui/Layout.tsx` has no blueprint home; best fit: Demo Product.Dashboard","confidence":0.55,"uncertain":true,"details":{"op":"map_file","node":"dashboard","file":"src/ui/Layout.tsx"}}
-{"ts":"2026-09-22T20:18:22Z","origin":"human:reconcile","kind":"add_relation","summary":"code shows Demo Product.Dashboard → Demo Product.Payments (1 import edge) but the blueprint does not declare it","confidence":0.65,"uncertain":true,"details":{"op":"add_relation","from":"dashboard","to":"payments","kind":"depends_on"}}
-{"ts":"2026-09-22T20:18:22Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 3, proposed 1, uncertain 3"}
-{"ts":"2026-09-22T20:18:32Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 0, proposed 1, uncertain 0"}
-{"ts":"2026-09-22T20:18:35Z","origin":"human","kind":"verify","summary":"verify: failed (1 errors, 3 warnings)"}
-{"ts":"2026-09-22T20:18:36Z","origin":"human","kind":"verify","summary":"verify: failed (1 errors, 3 warnings)"}
-{"ts":"2026-09-22T20:19:12Z","origin":"human","kind":"proposal_reverted","summary":"Reverted proposal: `src/notifications/mailer.ts` has no blueprint home; maybe a new node `notifications`"}
+{"ts":"2026-10-08T08:23:15Z","origin":"human","kind":"migrate","summary":"Migrated to afwe/2 (1 workflow(s) moved to intents/)"}
+{"ts":"2026-10-08T08:23:15Z","origin":"human:demo","kind":"pin_accept","summary":"Pin pin-f6a032 is active: Session expiry stays at 30 minutes, server-side. Changing it needs a new decision, not a silent edit."}
+{"ts":"2026-10-08T08:23:15Z","origin":"human:demo","kind":"pin_propose","summary":"Pin pin-f6a032 (active): Session expiry stays at 30 minutes, server-side. Changing it needs a new decision, not a silent edit."}
+{"ts":"2026-10-08T08:23:15Z","origin":"human:demo","kind":"pin_accept","summary":"Pin pin-d95a5b is active: Status widgets read the replica on purpose (eventual consistency accepted). Do not switch them to the primary to 'fix' s…"}
+{"ts":"2026-10-08T08:23:15Z","origin":"human:demo","kind":"pin_propose","summary":"Pin pin-d95a5b (active): Status widgets read the replica on purpose (eventual consistency accepted). Do not switch them to the primary to 'fix' s…"}
+{"ts":"2026-10-08T08:23:15Z","origin":"human:sync","kind":"sync","summary":"Synced 22 files; applied 0, proposed 1, uncertain 0"}
+{"ts":"2026-10-08T08:23:15Z","origin":"human","kind":"verify","summary":"verify: failed (3 errors, 1 warnings)"}
+{"ts":"2026-10-08T08:23:46Z","origin":"human","kind":"verify","summary":"verify: failed (3 errors, 1 warnings)"}
+{"ts":"2026-10-08T08:24:12Z","origin":"human","kind":"verify","summary":"verify: failed (3 errors, 1 warnings)"}
+{"ts":"2026-10-08T08:29:32Z","origin":"human","kind":"verify","summary":"verify: failed (3 errors, 1 warnings)"}

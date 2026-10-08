@@ -1,0 +1,12 @@
+id: pin-d95a5b
+statement: Status widgets read the replica on purpose (eventual consistency accepted). Do not switch them to the primary to 'fix' staleness.
+kind: intentional
+attaches:
+  nodes:
+  - realtime-status-worker
+severity: block
+status: active
+origin: human:demo
+created: 2026-10-08T08:23:15Z
+reason: replica-read-policy
+intentional: true

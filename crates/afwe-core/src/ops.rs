@@ -345,7 +345,7 @@ pub fn guardrail_remove(engine: &Engine, id: &str, origin: &str) -> Result<()> {
 
 pub fn workflow_new(engine: &Engine, title: &str, id: Option<String>, description: Option<String>, prompt: Option<String>, targets: Vec<String>, task: Option<String>, origin: &str) -> Result<Workflow> {
     let id = id.unwrap_or_else(|| slug(title));
-    if engine.store.p(&format!("workflows/{id}.yaml")).exists() {
+    if engine.store.intent(&id)?.is_some() {
         return Err(anyhow!("workflow `{id}` already exists"));
     }
     let manifest = engine.store.manifest()?;
@@ -490,7 +490,7 @@ pub fn workflow_set(engine: &Engine, workflow: &str, node: Option<&str>, patch: 
 }
 
 pub fn workflow_remove(engine: &Engine, id: &str, origin: &str) -> Result<()> {
-    engine.store.remove(&format!("workflows/{id}.yaml"))?;
+    engine.store.remove_workflow(id)?;
     engine.log(origin, "workflow_remove", format!("Removed workflow `{id}`"), None)
 }
 

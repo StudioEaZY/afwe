@@ -45,6 +45,9 @@ pub struct Sources {
     pub memory: Vec<MemoryEntry>,
     pub guardrails: Vec<Guardrail>,
     pub workflows: Vec<Workflow>,
+    pub intents: Vec<Intent>,
+    pub pins: Vec<Pin>,
+    pub checks: Vec<CheckSpec>,
     pub lenses: Vec<Lens>,
     pub contracts: Vec<Contract>,
 }
@@ -236,7 +239,7 @@ impl Store {
         self.write_yaml(&format!("guardrails/{}/{}.yaml", g.mode, g.id), g)
     }
 
-    // ── workflows ──
+    // ── workflows (node graphs; now stored as intents with a `graph`, legacy files still read) ──
     pub fn workflows(&self) -> Result<Vec<Workflow>> {
         let mut out = vec![];
         for path in list_files(&self.p("workflows"), "yaml") {
@@ -245,14 +248,41 @@ impl Store {
                 out.push(w);
             }
         }
+        for i in self.intents()? {
+            if i.graph.is_some() && !out.iter().any(|w| w.id == i.id) {
+                out.push(workflow_from_intent(&i));
+            }
+        }
         Ok(out)
     }
     pub fn workflow(&self, id: &str) -> Result<Workflow> {
+        if let Some(i) = self.read_yaml::<Intent>(&format!("intents/{id}.yaml"))? {
+            if i.graph.is_some() {
+                return Ok(workflow_from_intent(&i));
+            }
+        }
         self.read_yaml(&format!("workflows/{id}.yaml"))?
             .ok_or_else(|| anyhow!("workflow `{id}` not found"))
     }
+    /// Saves a node graph. Intent-only fields (statement, history, pins, parents, …) are preserved.
     pub fn save_workflow(&self, w: &Workflow) -> Result<()> {
-        self.write_yaml(&format!("workflows/{}.yaml", w.id), w)
+        let mut i = intent_from_workflow(w);
+        if let Some(old) = self.intent(&w.id)? {
+            i.statement = i.statement.or(old.statement);
+            i.history = old.history;
+            i.from_turns = old.from_turns;
+            i.parents = old.parents;
+            i.pins = old.pins;
+            i.attaches.files = old.attaches.files;
+            i.attaches.symbols = old.attaches.symbols;
+            i.attaches.global = old.attaches.global;
+        }
+        self.write_yaml(&format!("intents/{}.yaml", w.id), &i)?;
+        self.remove(&format!("workflows/{}.yaml", w.id))
+    }
+    pub fn remove_workflow(&self, id: &str) -> Result<()> {
+        self.remove(&format!("intents/{id}.yaml"))?;
+        self.remove(&format!("workflows/{id}.yaml"))
     }
 
     // ── lenses ──
@@ -357,6 +387,9 @@ impl Store {
             memory: self.memory()?,
             guardrails: self.guardrails()?,
             workflows: self.workflows()?,
+            intents: self.intents()?,
+            pins: self.pins()?,
+            checks: self.checks()?,
             lenses: self.lenses()?,
             contracts: self.contracts()?,
         })
@@ -365,7 +398,7 @@ impl Store {
     /// Fingerprint of all *source* files inside `.afwe/` (not derived state).
     pub fn afwe_fingerprint(&self) -> String {
         let mut hashes: BTreeMap<String, String> = BTreeMap::new();
-        for sub in ["afwe.yaml", "blueprint", "memory", "guardrails", "workflows", "abstractions", "contracts"] {
+        for sub in ["afwe.yaml", "blueprint", "memory", "guardrails", "workflows", "intents", "pins", "checks", "abstractions", "contracts"] {
             let p = self.p(sub);
             if p.is_file() {
                 if let Ok(b) = fs::read(&p) {
@@ -470,4 +503,148 @@ pub fn parse_yaml<T: serde::de::DeserializeOwned>(text: &str) -> Result<T> {
 /// Serialise to YAML text.
 pub fn to_yaml<T: serde::Serialize>(v: &T) -> Result<String> {
     Ok(serde_yaml::to_string(v)?)
+}
+
+// ───────────────────────────── v2 accessors ─────────────────────────────
+
+/// Legacy `workflows/*.yaml` document → unified intent (keeps the node graph).
+pub fn intent_from_workflow(w: &Workflow) -> Intent {
+    let statement = w.nodes.iter().find(|n| n.kind == "prompt").and_then(|n| n.text.clone());
+    Intent {
+        id: w.id.clone(),
+        title: w.title.clone(),
+        statement,
+        status: w.status.clone(),
+        origin: w.origin.clone(),
+        attaches: Attachment { nodes: w.targets.clone(), ..Default::default() },
+        parents: vec![],
+        from_turns: vec![],
+        history: vec![],
+        pins: vec![],
+        graph: Some(IntentGraph { description: w.description.clone(), nodes: w.nodes.clone(), edges: w.edges.clone() }),
+        created: w.created.clone(),
+        updated: w.updated.clone(),
+        task: w.task.clone(),
+    }
+}
+
+/// Unified intent with a graph → the node-graph view used by workflow ops and lenses.
+pub fn workflow_from_intent(i: &Intent) -> Workflow {
+    let g = i.graph.clone().unwrap_or_default();
+    Workflow {
+        id: i.id.clone(),
+        title: i.title.clone(),
+        description: g.description,
+        status: i.status.clone(),
+        origin: i.origin.clone(),
+        targets: i.attaches.nodes.clone(),
+        nodes: g.nodes,
+        edges: g.edges,
+        created: i.created.clone(),
+        updated: i.updated.clone(),
+        task: i.task.clone(),
+    }
+}
+
+fn load_dir<T: serde::de::DeserializeOwned>(store: &Store, dir: &str) -> Result<Vec<T>> {
+    let mut out = vec![];
+    for path in list_files(&store.p(dir), "yaml") {
+        let rel = rel_to(&store.afwe_dir, &path);
+        if let Some(v) = store.read_yaml::<T>(&rel)? {
+            out.push(v);
+        }
+    }
+    Ok(out)
+}
+
+impl Store {
+    // ── intents (living, DAG) ──
+    pub fn intents(&self) -> Result<Vec<Intent>> {
+        let mut out: Vec<Intent> = load_dir(self, "intents")?;
+        for w in load_dir::<Workflow>(self, "workflows")? {
+            if !out.iter().any(|i| i.id == w.id) {
+                out.push(intent_from_workflow(&w));
+            }
+        }
+        out.sort_by(|a, b| a.id.cmp(&b.id));
+        Ok(out)
+    }
+    pub fn intent(&self, id: &str) -> Result<Option<Intent>> {
+        if let Some(i) = self.read_yaml::<Intent>(&format!("intents/{id}.yaml"))? {
+            return Ok(Some(i));
+        }
+        Ok(self.read_yaml::<Workflow>(&format!("workflows/{id}.yaml"))?.map(|w| intent_from_workflow(&w)))
+    }
+    pub fn save_intent(&self, i: &Intent) -> Result<()> {
+        self.write_yaml(&format!("intents/{}.yaml", i.id), i)?;
+        self.remove(&format!("workflows/{}.yaml", i.id))
+    }
+
+    // ── pins ──
+    pub fn pins(&self) -> Result<Vec<Pin>> {
+        let mut out: Vec<Pin> = load_dir(self, "pins")?;
+        out.sort_by(|a, b| a.id.cmp(&b.id));
+        Ok(out)
+    }
+    pub fn pin(&self, id: &str) -> Result<Option<Pin>> {
+        self.read_yaml(&format!("pins/{id}.yaml"))
+    }
+    pub fn save_pin(&self, p: &Pin) -> Result<()> {
+        self.write_yaml(&format!("pins/{}.yaml", p.id), p)
+    }
+
+    // ── checks (the gate's registry) ──
+    pub fn checks(&self) -> Result<Vec<CheckSpec>> {
+        let mut out: Vec<CheckSpec> = load_dir(self, "checks")?;
+        out.sort_by(|a, b| a.id.cmp(&b.id));
+        Ok(out)
+    }
+    pub fn check(&self, id: &str) -> Result<Option<CheckSpec>> {
+        self.read_yaml(&format!("checks/{id}.yaml"))
+    }
+    pub fn save_check(&self, c: &CheckSpec) -> Result<()> {
+        self.write_yaml(&format!("checks/{}.yaml", c.id), c)
+    }
+    pub fn remove_check_file(&self, id: &str) -> Result<()> {
+        self.remove(&format!("checks/{id}.yaml"))
+    }
+
+    // ── turns (append-only ledger) ──
+    pub fn turns(&self) -> Result<Vec<Turn>> {
+        let mut out: Vec<Turn> = load_dir(self, "turns")?;
+        out.sort_by(|a, b| a.id.cmp(&b.id));
+        Ok(out)
+    }
+    pub fn turn(&self, id: &str) -> Result<Option<Turn>> {
+        self.read_yaml(&format!("turns/{id}.yaml"))
+    }
+    pub fn save_turn(&self, t: &Turn) -> Result<()> {
+        self.write_yaml(&format!("turns/{}.yaml", t.id), t)
+    }
+    pub fn next_turn_id(&self) -> Result<String> {
+        let max = list_files(&self.p("turns"), "yaml")
+            .iter()
+            .filter_map(|p| p.file_stem().and_then(|s| s.to_str()).and_then(|s| s.strip_prefix('t')).and_then(|n| n.parse::<u64>().ok()))
+            .max()
+            .unwrap_or(0);
+        Ok(format!("t{:04}", max + 1))
+    }
+
+    // ── baselines (derived; never committed) ──
+    pub fn save_baseline(&self, turn: &str, b: &Baseline) -> Result<()> {
+        self.write_json(&format!("index/baselines/{turn}.json"), b)
+    }
+    pub fn baseline(&self, turn: &str) -> Result<Option<Baseline>> {
+        self.read_json(&format!("index/baselines/{turn}.json"))
+    }
+
+    // ── migration of legacy workflows/ into intents/ ──
+    pub fn migrate_workflows(&self) -> Result<usize> {
+        let legacy: Vec<Workflow> = load_dir(self, "workflows")?;
+        let n = legacy.len();
+        for w in legacy {
+            self.save_workflow(&w)?;
+        }
+        Ok(n)
+    }
 }

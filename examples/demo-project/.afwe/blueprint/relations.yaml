@@ -64,9 +64,3 @@ relations:
   status: inferred
   origin: human
   confidence: 0.65
-- from: dashboard
-  to: payments
-  kind: depends_on
-  status: inferred
-  origin: human
-  confidence: 0.65

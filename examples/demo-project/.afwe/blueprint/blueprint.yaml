@@ -49,7 +49,15 @@ nodes:
     implements:
       files:
       - src/payments/**
-      - src/ui/Button.tsx
+    status: active
+    origin: human
+  - id: ui
+    name: UI
+    kind: library
+    purpose: Shared presentational components.
+    implements:
+      files:
+      - src/ui/**
     status: active
     origin: human
   - id: dashboard
@@ -59,7 +67,6 @@ nodes:
     implements:
       files:
       - src/dashboard/**
-      - src/ui/Layout.tsx
     status: active
     origin: human
     children:

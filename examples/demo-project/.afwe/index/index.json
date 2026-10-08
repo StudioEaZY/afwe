@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-22T20:18:32Z",
+  "generated": "2026-10-08T08:23:15Z",
   "files": {
     "README.md": {
       "language": "markdown",
@@ -249,9 +249,9 @@
     "src/ui/Button.tsx": {
       "language": "tsx",
       "hash": "4e86978e99907acc",
-      "node": "payments",
+      "node": "ui",
       "nodes": [
-        "payments"
+        "ui"
       ],
       "symbols": [
         "src/ui/Button.tsx::Button"
@@ -262,9 +262,9 @@
     "src/ui/Layout.tsx": {
       "language": "tsx",
       "hash": "5102f58f2fdb1d4f",
-      "node": "dashboard",
+      "node": "ui",
       "nodes": [
-        "dashboard"
+        "ui"
       ],
       "symbols": [
         "src/ui/Layout.tsx::Layout"
@@ -1095,8 +1095,7 @@
       "parent": "demo-product",
       "files": [
         "src/dashboard/Dashboard.tsx",
-        "src/dashboard/Widget.tsx",
-        "src/ui/Layout.tsx"
+        "src/dashboard/Widget.tsx"
       ],
       "symbols": [],
       "memory": [
@@ -1178,8 +1177,7 @@
       "parent": "demo-product",
       "files": [
         "src/payments/checkout.ts",
-        "src/payments/stripe.ts",
-        "src/ui/Button.tsx"
+        "src/payments/stripe.ts"
       ],
       "symbols": [],
       "memory": [
@@ -1222,6 +1220,22 @@
       "memory": [
         "auth-session-expiry"
       ],
+      "guardrails": [
+        "replica-reads"
+      ]
+    },
+    "ui": {
+      "path": "Demo Product.UI",
+      "name": "UI",
+      "kind": "library",
+      "depth": 1,
+      "parent": "demo-product",
+      "files": [
+        "src/ui/Button.tsx",
+        "src/ui/Layout.tsx"
+      ],
+      "symbols": [],
+      "memory": [],
       "guardrails": [
         "replica-reads"
       ]
@@ -1307,14 +1321,15 @@
   },
   "node_edges": {
     "dashboard": {
-      "payments": 1,
+      "ui": 1,
       "workspace-library": 1
     },
     "oauth": {
       "identity": 1
     },
     "payments": {
-      "identity": 1
+      "identity": 1,
+      "ui": 1
     },
     "sessions": {
       "data": 1,

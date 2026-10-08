@@ -12,12 +12,22 @@ import { BoardView } from "./components/BoardView";
 import { MemoryView } from "./components/MemoryView";
 import { SearchPalette } from "./components/SearchPalette";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { TimelineView } from "./components/TimelineView";
+import { PinsView } from "./components/PinsView";
+import { OnboardingModal } from "./components/OnboardingModal";
+import { call } from "./api";
 
 export default function App() {
-  const { graph, error, loading, view, refresh, drawer, setDrawer, toast, busy } = useStore();
+  const { graph, error, loading, view, refresh, drawer, setDrawer, toast, busy, onboardOpen, setOnboardOpen, setConfigured } = useStore();
 
   useEffect(() => {
     refresh();
+    call("onboard.detect", {})
+      .then((d: any) => {
+        setConfigured(!!d.configured);
+        if (!d.configured && !sessionStorage.getItem("afwe.onboard.later")) setOnboardOpen(true);
+      })
+      .catch(() => {});
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -73,6 +83,9 @@ export default function App() {
           <BoardView />
         </ErrorBoundary>
       )}
+      {view === "timeline" && <TimelineView />}
+      {view === "pins" && <PinsView />}
+      {onboardOpen && <OnboardingModal />}
       {view === "memory" && (
         <ErrorBoundary name="Memory">
           <MemoryView />

@@ -1,2 +1,3 @@
-# derived state is reproducible; keep the sources of truth in git
-index/code.json
+# derived state is reproducible (rebuilt by `afwe sync`); the rest of .afwe/ is the product and belongs in git
+index/
+state/

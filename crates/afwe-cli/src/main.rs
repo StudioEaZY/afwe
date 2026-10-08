@@ -153,6 +153,52 @@ enum Cmd {
         #[arg(long, default_value = "127.0.0.1")]
         host: String,
     },
+    /// The turn protocol: begin → assume → commit. One prompt = one turn; AFWE gates every commit
+    #[command(subcommand)]
+    Turn(TurnCmd),
+    /// Living intents: merged statements derived from the raw prompts, with history
+    #[command(subcommand)]
+    Intent(IntentCmd),
+    /// Pins: human-locked decisions and intentional bugs, under a codebase-scaled budget
+    #[command(subcommand)]
+    Pin(PinCmd),
+    /// The gate's registry of checks (who authored them, how strong they are)
+    #[command(subcommand)]
+    Check(CheckCmd),
+    /// History by intent: committed turns (default), or show/diff/search/losses/restore
+    Timeline {
+        #[command(subcommand)]
+        cmd: Option<TimelineCmd>,
+        #[arg(long, default_value_t = 30)]
+        limit: usize,
+    },
+    /// Whole-project gate: constraints, guardrails, registered checks, project tests. Exit 1 on failure
+    Gate {
+        /// Terse output for CI
+        #[arg(long)]
+        ci: bool,
+    },
+    /// Set the project up: stacks, profile, git, CI gate and agent contract (idempotent)
+    Onboard {
+        /// normie (AFWE commits passing turns) | engineer (manual commit mode, stricter pins)
+        #[arg(long, default_value = "normie")]
+        profile: String,
+        /// Only report what would be configured
+        #[arg(long)]
+        check: bool,
+        #[arg(long)]
+        no_git: bool,
+        #[arg(long)]
+        no_baseline: bool,
+        #[arg(long)]
+        no_ci: bool,
+        #[arg(long)]
+        no_agents: bool,
+        #[arg(long)]
+        test_command: Option<String>,
+    },
+    /// Upgrade the .afwe/ folder to the current format (legacy workflows/ become intents/)
+    Migrate,
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
     Call { op: String, params: Option<String> },
 }
@@ -890,6 +936,185 @@ fn run(cli: Cli) -> Result<i32> {
             studio::serve(start, &host, port, !no_open, dist)?;
             Ok(0)
         }
+        Cmd::Turn(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            let code = match cmd {
+                TurnCmd::Begin { prompt, file, target, refines, kind, agent } => {
+                    let text = match (prompt, file) {
+                        (Some(p), _) => p,
+                        (None, Some(f)) => read_text_input(&f)?,
+                        _ => return Err(anyhow!("give the prompt text, or --file <path> (use `-` for stdin)")),
+                    };
+                    let v = api::call(&engine, "turn.begin", json!({"prompt": text, "targets": strs(&target), "refines": strs(&refines), "kind": kind, "agent": agent}), &origin)?;
+                    out(json, &v, render::turn_briefing);
+                    0
+                }
+                TurnCmd::Assume { turn, file } => {
+                    let mut body = read_json_input(file)?;
+                    body["turn"] = json!(turn);
+                    let v = api::call(&engine, "turn.assume", body, &origin)?;
+                    out(json, &v, render::turn_result);
+                    if v["status"] == "redo" { 1 } else { 0 }
+                }
+                TurnCmd::Commit { turn, summary, footer_shown, remove, touch, overrides } => {
+                    let v = api::call(&engine, "turn.commit", json!({"turn": turn, "summary": summary, "footer_shown": footer_shown, "removes": strs(&remove), "touched": strs(&touch), "overrides": parse_overrides(&overrides)?}), &origin)?;
+                    out(json, &v, render::turn_result);
+                    if v["status"] == "redo" { 1 } else { 0 }
+                }
+                TurnCmd::Confirm { turn } => {
+                    let v = api::call(&engine, "turn.confirm", json!({"turn": turn}), &origin)?;
+                    out(json, &v, render::turn_result);
+                    0
+                }
+                TurnCmd::Revert { turn } => {
+                    let v = api::call(&engine, "turn.revert", json!({"turn": turn}), &origin)?;
+                    out(json, &v, render::turn_result);
+                    0
+                }
+                TurnCmd::Show { turn } => {
+                    let v = api::call(&engine, "turn.get", json!({"turn": turn}), &origin)?;
+                    out(json, &v, |v| serde_json::to_string_pretty(v).unwrap_or_default());
+                    0
+                }
+                TurnCmd::List => {
+                    let v = api::call(&engine, "turn.list", json!({}), &origin)?;
+                    out(json, &v, render::turn_list);
+                    0
+                }
+            };
+            Ok(code)
+        }
+        Cmd::Intent(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                IntentCmd::List => {
+                    let v = api::call(&engine, "intent.list", json!({}), &origin)?;
+                    out(json, &v, render::intents);
+                }
+                IntentCmd::Show { id } => {
+                    let v = api::call(&engine, "intent.get", json!({"id": id}), &origin)?;
+                    out(json, &v, |v| serde_json::to_string_pretty(v).unwrap_or_default());
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Pin(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                PinCmd::List { status } => {
+                    let v = api::call(&engine, "pin.list", json!({"status": status}), &origin)?;
+                    out(json, &v, render::pins);
+                }
+                PinCmd::Propose { statement, kind, severity, node, file, reason, intentional } => {
+                    let v = api::call(&engine, "pin.propose", json!({"statement": statement, "kind": kind, "severity": severity, "nodes": strs(&node), "files": strs(&file), "reason": reason, "intentional": intentional}), &origin)?;
+                    out(json, &v, |v| format!("pin {} is {}: {}", s_of(v, "id"), s_of(v, "status"), s_of(v, "statement")));
+                }
+                PinCmd::Accept { id } => {
+                    let v = api::call(&engine, "pin.accept", json!({"id": id}), &origin)?;
+                    out(json, &v, |v| format!("pin {} is active: {}", s_of(v, "id"), s_of(v, "statement")));
+                }
+                PinCmd::Retire { id, reason } => {
+                    let v = api::call(&engine, "pin.retire", json!({"id": id, "reason": reason}), &origin)?;
+                    out(json, &v, |_| format!("pin {id} retired"));
+                }
+                PinCmd::Budget { slider } => {
+                    let v = api::call(&engine, "pin.budget", json!({"slider": slider}), &origin)?;
+                    out(json, &v, render::budget);
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Check(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                CheckCmd::List => {
+                    let v = api::call(&engine, "check.list", json!({}), &origin)?;
+                    out(json, &v, render::checks);
+                }
+                CheckCmd::Add { id, title, trust, authored_by, command, claim, node, file, timeout } => {
+                    let claim_v: Option<Value> = match claim {
+                        Some(c) => Some(serde_json::from_str(&c).map_err(|e| anyhow!("--claim must be JSON: {e}"))?),
+                        None => None,
+                    };
+                    let check = json!({
+                        "id": id.unwrap_or_default(),
+                        "title": title,
+                        "trust": trust,
+                        "authored_by": authored_by.unwrap_or("human".into()),
+                        "command": command,
+                        "claim": claim_v,
+                        "attaches": {"nodes": strs(&node), "files": strs(&file)},
+                        "timeout_s": timeout,
+                    });
+                    let v = api::call(&engine, "check.add", json!({"check": check}), &origin)?;
+                    out(json, &v, |v| format!("check {} registered ({} by {})", s_of(v, "id"), s_of(v, "trust"), s_of(v, "authored_by")));
+                }
+                CheckCmd::Remove { id } => {
+                    api::call(&engine, "check.remove", json!({"id": id}), &origin)?;
+                    out(json, &json!({"id": id}), |v| format!("check {} removed from the gate", s_of(v, "id")));
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Timeline { cmd, limit } => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                None => {
+                    let v = api::call(&engine, "timeline.list", json!({"limit": limit}), &origin)?;
+                    out(json, &v, render::timeline_list);
+                }
+                Some(TimelineCmd::Show { turn }) => {
+                    let v = api::call(&engine, "timeline.get", json!({"turn": turn}), &origin)?;
+                    out(json, &v, render::timeline_show);
+                }
+                Some(TimelineCmd::Diff { turn, file }) => {
+                    let v = api::call(&engine, "timeline.diff", json!({"turn": turn, "file": file}), &origin)?;
+                    out(json, &v, |v| v["patch"].as_str().unwrap_or("").to_string());
+                }
+                Some(TimelineCmd::Search { q }) => {
+                    let v = api::call(&engine, "timeline.search", json!({"q": q}), &origin)?;
+                    out(json, &v, |v| serde_json::to_string_pretty(v).unwrap_or_default());
+                }
+                Some(TimelineCmd::Losses) => {
+                    let v = api::call(&engine, "timeline.losses", json!({}), &origin)?;
+                    out(json, &v, render::losses);
+                }
+                Some(TimelineCmd::Restore { feature, apply }) => {
+                    let v = api::call(&engine, "timeline.restore", json!({"feature": feature, "apply": apply}), &origin)?;
+                    out(json, &v, render::restore);
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Gate { ci } => {
+            let engine = engine_for(&cli.dir)?;
+            let v = api::call(&engine, "gate", json!({}), &origin)?;
+            out(json, &v, |v| render::gate(v, ci));
+            Ok(if v["ok"].as_bool().unwrap_or(false) { 0 } else { 1 })
+        }
+        Cmd::Onboard { profile, check, no_git, no_baseline, no_ci, no_agents, test_command } => {
+            let root = match cli.dir.clone() {
+                Some(d) => d,
+                None => std::env::current_dir()?,
+            };
+            if check {
+                let v = afwe_core::onboard::detect(&root)?;
+                out(json, &v, render::onboard_detect);
+                return Ok(0);
+            }
+            let v = afwe_core::onboard::apply(
+                &root,
+                afwe_core::onboard::ApplyOptions { profile, init_git: !no_git, baseline_commit: !no_baseline, ci: !no_ci, agents_md: !no_agents, test_command },
+            )?;
+            out(json, &v, render::onboard_apply);
+            Ok(0)
+        }
+        Cmd::Migrate => {
+            let engine = engine_for(&cli.dir)?;
+            let v = api::call(&engine, "migrate", json!({}), &origin)?;
+            out(json, &v, |v| format!("format {} · {} workflow(s) moved to intents/", s_of(v, "format"), v["workflows_moved"]));
+            Ok(0)
+        }
         Cmd::Call { op, params } => {
             let engine = engine_for(&cli.dir)?;
             let params: Value = match params {
@@ -920,4 +1145,189 @@ fn write_agents_block(path: &std::path::Path, block: &str) -> Result<()> {
     };
     std::fs::write(path, new)?;
     Ok(())
+}
+
+// ───────────────────────────── v2 command trees ─────────────────────────────
+
+fn s_of(v: &Value, k: &str) -> String {
+    match &v[k] {
+        Value::String(x) => x.clone(),
+        other => other.to_string(),
+    }
+}
+
+fn read_text_input(path: &str) -> Result<String> {
+    if path == "-" {
+        let mut s = String::new();
+        std::io::Read::read_to_string(&mut std::io::stdin(), &mut s)?;
+        Ok(s)
+    } else {
+        Ok(std::fs::read_to_string(path)?)
+    }
+}
+
+fn read_json_input(file: Option<String>) -> Result<Value> {
+    let path = file.ok_or_else(|| anyhow!("pass --file <path> (or `-` for stdin) with the JSON body"))?;
+    let text = read_text_input(&path)?;
+    serde_json::from_str(&text).map_err(|e| anyhow!("the body is not valid JSON: {e}"))
+}
+
+/// `--override pin-id=reason`
+fn parse_overrides(list: &[String]) -> Result<Value> {
+    let mut out = vec![];
+    for o in list {
+        let (pin, reason) = o.split_once('=').ok_or_else(|| anyhow!("an override looks like pin-id=reason, got `{o}`"))?;
+        out.push(json!({"pin": pin.trim(), "reason": reason.trim()}));
+    }
+    Ok(json!(out))
+}
+
+#[derive(Subcommand)]
+enum TurnCmd {
+    /// Start a turn: stores the prompt verbatim and prints the briefing (scope, pins, intents, memory, checks)
+    Begin {
+        /// The prompt text (or --file)
+        prompt: Option<String>,
+        #[arg(long)]
+        file: Option<String>,
+        /// Nodes or files this turn is about (comma separated or repeated)
+        #[arg(long = "target", num_args = 1.., value_delimiter = ',')]
+        target: Vec<String>,
+        /// Earlier turns this one refines
+        #[arg(long, num_args = 1.., value_delimiter = ',')]
+        refines: Vec<String>,
+        /// code | bugfix | refactor | architecture | feature
+        #[arg(long, default_value = "code")]
+        kind: String,
+        #[arg(long)]
+        agent: Option<String>,
+    },
+    /// Declare intents and assumption claims (JSON via --file or stdin) before writing code
+    Assume {
+        turn: String,
+        #[arg(long)]
+        file: Option<String>,
+    },
+    /// Check and commit (or stage, or REDO) what changed since turn begin
+    Commit {
+        turn: String,
+        #[arg(long)]
+        summary: Option<String>,
+        /// Set once the AFWE proposal notice is in your reply
+        #[arg(long)]
+        footer_shown: bool,
+        /// Nodes removed on purpose (not collateral)
+        #[arg(long = "remove", num_args = 1.., value_delimiter = ',')]
+        remove: Vec<String>,
+        /// Extra files AFWE cannot see changing
+        #[arg(long = "touch", num_args = 1.., value_delimiter = ',')]
+        touch: Vec<String>,
+        /// Pin override: pin-id=reason
+        #[arg(long = "override")]
+        overrides: Vec<String>,
+    },
+    /// Confirm a staged proposal (commits it through the gate)
+    Confirm { turn: String },
+    /// Undo a turn as far as that is safe
+    Revert { turn: String },
+    /// One turn in full (JSON)
+    Show { turn: String },
+    /// All turns
+    List,
+}
+
+#[derive(Subcommand)]
+enum IntentCmd {
+    /// Living intents
+    List,
+    /// One intent in full (JSON)
+    Show { id: String },
+}
+
+#[derive(Subcommand)]
+enum PinCmd {
+    /// Pins (all statuses unless filtered)
+    List {
+        #[arg(long)]
+        status: Option<String>,
+    },
+    /// Propose a pin. Human origin = active at once (within the budget)
+    Propose {
+        statement: String,
+        /// decision | intentional | constraint | preference
+        #[arg(long, default_value = "decision")]
+        kind: String,
+        /// block | confirm | warn
+        #[arg(long, default_value = "confirm")]
+        severity: String,
+        #[arg(long = "node", num_args = 1.., value_delimiter = ',')]
+        node: Vec<String>,
+        #[arg(long = "file", num_args = 1.., value_delimiter = ',')]
+        file: Vec<String>,
+        #[arg(long)]
+        reason: Option<String>,
+        /// A deliberate bug or quirk that "fix all bugs" must not touch
+        #[arg(long)]
+        intentional: bool,
+    },
+    /// Accept a proposed pin (subject to the budget)
+    Accept { id: String },
+    /// Retire a pin
+    Retire {
+        id: String,
+        #[arg(long)]
+        reason: Option<String>,
+    },
+    /// Show the budget, or set the manual slider with --slider 1..5
+    Budget {
+        #[arg(long)]
+        slider: Option<u8>,
+    },
+}
+
+#[derive(Subcommand)]
+enum CheckCmd {
+    /// Registered checks
+    List,
+    /// Register a check the gate must pass: a shell command (exit 0 = pass) or a claim (JSON)
+    Add {
+        id: Option<String>,
+        #[arg(long)]
+        title: String,
+        /// deterministic | generated | llm_judged
+        #[arg(long, default_value = "deterministic")]
+        trust: String,
+        #[arg(long)]
+        authored_by: Option<String>,
+        #[arg(long)]
+        command: Option<String>,
+        #[arg(long)]
+        claim: Option<String>,
+        #[arg(long = "node", num_args = 1.., value_delimiter = ',')]
+        node: Vec<String>,
+        #[arg(long = "file", num_args = 1.., value_delimiter = ',')]
+        file: Vec<String>,
+        #[arg(long)]
+        timeout: Option<u64>,
+    },
+    /// Remove a check from the gate (logged)
+    Remove { id: String },
+}
+
+#[derive(Subcommand)]
+enum TimelineCmd {
+    /// One turn: decisions, checks, commit
+    Show { turn: String },
+    /// Patch of a turn, optionally one file
+    Diff { turn: String, file: Option<String> },
+    /// Search prompts, summaries, intents and nodes
+    Search { q: String },
+    /// Features that disappeared, and whether that was on purpose
+    Losses,
+    /// Restore a vanished feature from its last good version (3-way merge); --apply opens a restore turn
+    Restore {
+        feature: String,
+        #[arg(long)]
+        apply: bool,
+    },
 }

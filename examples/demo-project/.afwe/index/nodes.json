@@ -39,8 +39,7 @@
     "parent": "demo-product",
     "files": [
       "src/dashboard/Dashboard.tsx",
-      "src/dashboard/Widget.tsx",
-      "src/ui/Layout.tsx"
+      "src/dashboard/Widget.tsx"
     ],
     "symbols": [],
     "memory": [
@@ -122,8 +121,7 @@
     "parent": "demo-product",
     "files": [
       "src/payments/checkout.ts",
-      "src/payments/stripe.ts",
-      "src/ui/Button.tsx"
+      "src/payments/stripe.ts"
     ],
     "symbols": [],
     "memory": [
@@ -166,6 +164,22 @@
     "memory": [
       "auth-session-expiry"
     ],
+    "guardrails": [
+      "replica-reads"
+    ]
+  },
+  "ui": {
+    "path": "Demo Product.UI",
+    "name": "UI",
+    "kind": "library",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [
+      "src/ui/Button.tsx",
+      "src/ui/Layout.tsx"
+    ],
+    "symbols": [],
+    "memory": [],
     "guardrails": [
       "replica-reads"
     ]

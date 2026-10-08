@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { api, Graph, GraphNode } from "./api";
 
-export type View = "blueprint" | "workflows" | "board" | "memory";
+export type View = "blueprint" | "workflows" | "board" | "memory" | "timeline" | "pins";
 
 interface State {
   graph: Graph | null;
@@ -16,8 +16,12 @@ interface State {
   drawer: null | "drift" | "search";
   toast: string | null;
   busy: string | null;
+  onboardOpen: boolean;
+  configured: boolean | null;
 
   refresh: () => Promise<void>;
+  setOnboardOpen: (b: boolean) => void;
+  setConfigured: (b: boolean) => void;
   setView: (v: View) => void;
   select: (id: string | null) => void;
   selectFile: (path: string | null) => void;
@@ -44,6 +48,10 @@ export const useStore = create<State>((set, get) => ({
   drawer: null,
   toast: null,
   busy: null,
+  onboardOpen: false,
+  configured: null,
+  setOnboardOpen: (b) => set({ onboardOpen: b }),
+  setConfigured: (b) => set({ configured: b }),
 
   refresh: async () => {
     set({ loading: true, error: null });
