@@ -107,17 +107,31 @@ fn write_gitignore_if_missing(root: &Path) -> Result<bool> {
     Ok(true)
 }
 
-/// Replace the AFWE block between its markers, or append it. Re-running onboarding never duplicates it.
+/// Replace the AFWE block between its markers, or append it. Re-running onboarding never duplicates it
+/// or blows away user configurations. If in AFWE-Core repo itself, protect existing custom instructions.
 fn write_agents_block(path: &Path, block: &str) -> Result<()> {
-    let body = if block.contains(AGENTS_BEGIN) { block.to_string() } else { format!("{AGENTS_BEGIN}\n{block}\n{AGENTS_END}") };
-    let next = match std::fs::read_to_string(path) {
-        Ok(existing) => match (existing.find(AGENTS_BEGIN), existing.find(AGENTS_END)) {
+    if let Ok(existing) = std::fs::read_to_string(path) {
+        // Guard: If we are in AFWE-Core root AGENTS.md, preserve the existing specialized AFWE-Core contract.
+        if existing.contains("# AFWE-Core") {
+            return Ok(());
+        }
+        let body = if block.contains(AGENTS_BEGIN) { block.to_string() } else { format!("{AGENTS_BEGIN}\n{block}\n{AGENTS_END}") };
+        let next = match (existing.find(AGENTS_BEGIN), existing.find(AGENTS_END)) {
             (Some(a), Some(b)) if b > a => format!("{}{}{}", &existing[..a], body, &existing[b + AGENTS_END.len()..]),
-            _ => format!("{}\n\n{}\n", existing.trim_end(), body),
-        },
-        Err(_) => format!("{body}\n"),
-    };
-    std::fs::write(path, next)?;
+            _ => {
+                let trimmed = existing.trim_end();
+                if trimmed.is_empty() {
+                    format!("{body}\n")
+                } else {
+                    format!("{}\n\n{}\n", trimmed, body)
+                }
+            }
+        };
+        std::fs::write(path, next)?;
+    } else {
+        let body = if block.contains(AGENTS_BEGIN) { block.to_string() } else { format!("{AGENTS_BEGIN}\n{block}\n{AGENTS_END}") };
+        std::fs::write(path, format!("{body}\n"))?;
+    }
     Ok(())
 }
 

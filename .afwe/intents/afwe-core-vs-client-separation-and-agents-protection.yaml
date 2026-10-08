@@ -1,0 +1,21 @@
+id: afwe-core-vs-client-separation-and-agents-protection
+title: Establish AFWE-Core vs AFWE-Client contracts and protect AGENTS.md
+statement: Enforce dual-context AFWE-Core vs AFWE-Client contracts and protect AGENTS.md in init
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-cli/src/main.rs
+  - AGENTS.md
+from_turns:
+- t0007
+history:
+- turn: t0007
+  ts: 2026-10-08T11:31:22Z
+  statement: Enforce dual-context AFWE-Core vs AFWE-Client contracts and protect AGENTS.md in init
+created: 2026-10-08T11:31:22Z
+updated: 2026-10-08T11:31:22Z
+task: task-38a97e

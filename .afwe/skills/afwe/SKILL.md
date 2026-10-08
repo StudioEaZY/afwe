@@ -18,8 +18,12 @@ When interacting with this codebase:
    - Retrieve micro-context via `afwe context <files>` (or MCP `afwe_context`).
    - Obey active pins; never delete pinned behavior without an explicit override.
 
-3. **After Editing (Verification & Mandatory Documentation Sync)**:
+3. **After Editing (Verification & Mandatory Documentation, Skill & MCP Sync)**:
    - Run verification via `afwe verify --changed <files>` (or MCP `afwe_verify`).
-   - **Post-Turn Documentation Obligation**: Whenever code structure, public APIs, rules, or behavior change, update the relevant documentation (`README.md`, `.afwe/skills/afwe/SKILL.md`, `.afwe/docs/`, or record a decision via `afwe memory add` / `afwe_memory_add`). Keep documentation synchronized with implementation on every turn.
+   - **Post-Turn Synchronization Obligation**: Whenever code structure, public APIs, rules, or behavior change:
+     - Update documentation (`README.md`, `.afwe/docs/`, root `docs/`).
+     - Update skill instructions (`.afwe/skills/afwe/SKILL.md`) with generalized examples.
+     - Update MCP tool specs and handlers (`mcp.rs`, `api.rs`) whenever tool capabilities expand.
+     - Persist non-obvious design choices via `afwe memory add --kind decision ...` (or `afwe_memory_add`).
    - Commit the turn via `afwe turn commit <turn> --summary "..."` (or MCP `afwe_turn_commit`).
    - If proposals are pending, include the AFWE reminder footer in your reply.

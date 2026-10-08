@@ -1143,6 +1143,10 @@ fn serde_yaml_to_json(text: &str) -> Result<Value> {
 
 fn write_agents_block(path: &std::path::Path, block: &str) -> Result<()> {
     let existing = std::fs::read_to_string(path).unwrap_or_default();
+    // Guard: never overwrite the specialized AFWE-Core contract in this repository
+    if existing.contains("# AFWE-Core") {
+        return Ok(());
+    }
     let new = if let (Some(s), Some(e)) = (existing.find("<!-- afwe:begin -->"), existing.find("<!-- afwe:end -->")) {
         format!("{}{}{}", &existing[..s], block, &existing[e + "<!-- afwe:end -->".len()..].trim_start_matches('\n'))
     } else if existing.trim().is_empty() {
