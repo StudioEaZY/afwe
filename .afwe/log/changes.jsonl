@@ -25,3 +25,44 @@
 {"ts":"2026-10-08T09:51:29Z","origin":"human","kind":"remove_node","summary":"Removed afwe.Crates.futures-test (and 0 descendants)"}
 {"ts":"2026-10-08T09:52:28Z","origin":"human","kind":"turn_redo","summary":"t0002 REDO: 1 blocking issue(s)","details":{"turn":"t0002","blocking":["PIN_CONFLICT: pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside) protects node afwe-core — revert the change, or record an explicit override"]}}
 {"ts":"2026-10-08T09:53:18Z","origin":"human","kind":"turn_ready","summary":"t0002 ready: feat: support architectural directions and planned constraints in futures engine (100%)","details":{"turn":"t0002","reasons":["OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes in afwe-core are 100% deterministic with zero model calls"]}}
+{"ts":"2026-10-08T10:11:27Z","origin":"human:sync","kind":"sync","summary":"Synced 118 files; applied 0, proposed 0, uncertain 0"}
+{"ts":"2026-10-08T10:11:52Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 5"}
+{"ts":"2026-10-08T10:11:52Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 5"}
+{"ts":"2026-10-08T10:11:52Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 5"}
+{"ts":"2026-10-08T10:11:54Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:11:54Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:11:54Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 5"}
+{"ts":"2026-10-08T10:11:54Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 5"}
+{"ts":"2026-10-08T10:11:56Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:11:56Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:11:57Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 5"}
+{"ts":"2026-10-08T10:11:57Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 5"}
+{"ts":"2026-10-08T10:11:58Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:11:58Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:11:59Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 3"}
+{"ts":"2026-10-08T10:11:59Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 3"}
+{"ts":"2026-10-08T10:12:01Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:12:01Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:12:02Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 3"}
+{"ts":"2026-10-08T10:12:02Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 3"}
+{"ts":"2026-10-08T10:12:03Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:12:03Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:12:14Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 3"}
+{"ts":"2026-10-08T10:12:14Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 3"}
+{"ts":"2026-10-08T10:12:15Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:12:15Z","origin":"human","kind":"pin_budget","summary":"Pin slider set to 4"}
+{"ts":"2026-10-08T10:16:30Z","origin":"human:sync","kind":"sync","summary":"Synced 118 files; applied 0, proposed 0, uncertain 0"}
+{"ts":"2026-10-08T10:16:31Z","origin":"human:sync","kind":"sync","summary":"Synced 118 files; applied 0, proposed 0, uncertain 0"}
+{"ts":"2026-10-08T10:17:43Z","origin":"human","kind":"task_start","summary":"Task started: t0003: Add planned features (exclusions engine and 4D timeline snapshot) and document futures arc… [code] under contract default","details":{"task":"task-7dd801"}}
+{"ts":"2026-10-08T10:17:43Z","origin":"human","kind":"turn_begin","summary":"t0003 begun: Add planned features (exclusions engine and 4D timeline snapshot) and document futures arc…","details":{"turn":"t0003","task":"task-7dd801","nodes":[]}}
+{"ts":"2026-10-08T10:17:52Z","origin":"human","kind":"add_node","summary":"Added node exclusions-engine under afwe-core","details":{"id":"exclusions-engine"}}
+{"ts":"2026-10-08T10:18:00Z","origin":"human","kind":"add_node","summary":"Added node timeline-snapshot under afwe-core","details":{"id":"timeline-snapshot"}}
+{"ts":"2026-10-08T10:18:07Z","origin":"human","kind":"constrain","summary":"Constraint afwe-cli-must-not-exclusions-engine: afwe-cli must_not_depend [\"exclusions-engine\"]"}
+{"ts":"2026-10-08T10:18:14Z","origin":"human","kind":"constrain","summary":"Constraint afwe-cli-must-not-timeline-snapshot: afwe-cli must_not_depend [\"timeline-snapshot\"]"}
+{"ts":"2026-10-08T10:18:21Z","origin":"human","kind":"memory_add","summary":"Recorded decision `architectural-directions-and-futures-engine`: Architectural Directions and Futures Engine","details":{"path":"memory/decisions/architectural-directions-and-futures-engine.md"}}
+{"ts":"2026-10-08T10:18:36Z","origin":"human","kind":"memory_add","summary":"Recorded decision `exclusions-engine-scoping-plan`: Exclusions Engine Scoping Plan","details":{"path":"memory/decisions/exclusions-engine-scoping-plan.md"}}
+{"ts":"2026-10-08T10:18:43Z","origin":"human","kind":"memory_add","summary":"Recorded decision `4d-timeline-snapshot-plan`: 4D Timeline Snapshot Plan","details":{"path":"memory/decisions/4d-timeline-snapshot-plan.md"}}
+{"ts":"2026-10-08T10:21:21Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 0 warnings)"}
+{"ts":"2026-10-08T10:21:48Z","origin":"human:sync","kind":"sync","summary":"Synced 118 files; applied 0, proposed 0, uncertain 0"}
+{"ts":"2026-10-08T10:22:20Z","origin":"human","kind":"turn_assume","summary":"t0003: 1 intent(s), 2 assumption(s) registered","details":{"turn":"t0003"}}
+{"ts":"2026-10-08T10:22:56Z","origin":"human","kind":"turn_ready","summary":"t0003 ready: docs: document futures engine and register exclusions-engine and timeline-snapshot as planned architecture (100%)","details":{"turn":"t0003","reasons":[]}}

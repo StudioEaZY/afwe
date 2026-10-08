@@ -136,11 +136,15 @@ constraints:
   to: [ui]                      # for must_not_depend
   except: []                    # must_not_depend: exempt targets · may_depend_only: the allow-list
   severity: error               # error | warn
+  phase: active                 # active (enforced) | planned (forward-looking directional constraint, non-blocking info)
   rationale: Payments runs headless in workers.
   memory: [payments-boundary]   # memory entries that explain the rule
 ```
 
 Constraints apply to the whole subtree of `from` and match targets by subtree as well.
+Constraints with `phase: planned` or involving nodes marked `status: planned` are forward-looking:
+they are highlighted during turns and context queries as architectural directions but do not fail
+verification gates (`afwe verify`) or block pre-commit checks.
 
 ## 4. Memory
 

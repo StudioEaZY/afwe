@@ -64,6 +64,13 @@ Pins are human-locked decisions. Say "keep it like that" and AFWE proposes a pin
 intentional-bug marker, so "fix all bugs" leaves it alone. The number of active pins is bounded by the size of
 the blueprint and the manual slider (`afwe pin budget --slider 1..5`). See `docs/V2-DECISIONS.md`.
 
+## Building for the future (Architectural Directions)
+
+Developers and agents can declare where an architecture is headed before writing code:
+- **Planned Nodes**: Blueprint nodes support `status: planned`. They are exempted from missing-file drift warnings so future architecture does not trigger false alerts.
+- **Planned Constraints**: Constraints support `phase: planned` (e.g. `afwe blueprint constrain billing --must-not-depend db --planned`). These forward-looking rules are highlighted in turn briefings and `afwe context` queries as architectural directions, but do not fail verification gates or block pre-commit checks.
+- **Planned Roadmap**: Upcoming capabilities like First-Class Project Scoping (`exclusions-engine`: `afwe ignore add/remove/list`) and 4D Temporal Scrubbing (`timeline-snapshot`) are mapped directly as planned components in the blueprint.
+
 ## Quick start
 
 ```bash

@@ -6,3 +6,19 @@ constraints:
   - afwe-cli
   severity: error
   rationale: core engine must never depend on the CLI layer
+- id: afwe-cli-must-not-exclusions-engine
+  rule: must_not_depend
+  from: afwe-cli
+  to:
+  - exclusions-engine
+  severity: error
+  phase: planned
+  rationale: 'Future direction: CLI will talk to exclusions engine via public api.rs only'
+- id: afwe-cli-must-not-timeline-snapshot
+  rule: must_not_depend
+  from: afwe-cli
+  to:
+  - timeline-snapshot
+  severity: error
+  phase: planned
+  rationale: 'Future direction: CLI will talk to timeline snapshot via public api.rs only'

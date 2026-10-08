@@ -26,8 +26,10 @@ recoverable with `timeline`/`restore`.
 | Dual profiles (normie / engineer) | `onboard.rs` (presets only) | done |
 | checkgen (default app) | `intent.rs::checkgen` | done, tested (confirmed claims → standing checks) |
 | Harness integration (MCP tools) | `api.rs` (`tool_specs`) | done: 49 MCP tools, 25 of them new |
+| Architectural Directions & Futures Engine | `model.rs`, `verify.rs`, `drift.rs`, `context.rs`, `turn.rs` | done, tested (`status: planned` nodes, `phase: planned` non-blocking constraints, briefing context) |
+| First-Class Project & Demo Scoping (`afwe ignore`) | `exclusions-engine` node in blueprint | planned / future (retroactive unmapping & sync purge) |
+| 4D Timeline Snapshot Provider | `timeline-snapshot` node in blueprint | planned / future (deterministic temporal snapshot reconstruction) |
 | Studio timeline / pins / onboarding | `apps/studio` | see §5 |
-| 4D preparation | `turn.implements` per committed turn | data only; no 3D view |
 | 50-prompt benchmark | — | not built; see §6 |
 
 ## 3. Refinements to the plan (and why)
@@ -93,11 +95,12 @@ The Studio gained the Timeline view, the Pins and Intents panel, and the onboard
 Studio section of the README for what is wired). The Tauri shell is unchanged and, as before, not built in
 this sandbox.
 
-## 6. Not built, and why
-
+## 6. Not built / Planned in Architecture
+ 
+- **First-Class Project & Demo Scoping (`exclusions-engine`).** Registered as `status: planned` in blueprint. Adds `afwe ignore add/remove/list`, retroactive blueprint unmapping, and sync purging without foreign sidecars.
+- **4D Temporal Scrubbing (`timeline-snapshot`).** Registered as `status: planned` in blueprint. Data exists (`implements` per turn); engine will expose `timeline.snapshot` for temporal graph playback in Studio.
 - **50-prompt benchmark (plan phase 8).** It needs a scripted harness and a fixed set of prompts to be
   meaningful. The design is in §8 of the discussion notes; `turn_flow.rs` covers the mechanisms.
-- **3D / temporal scrubbing (4D).** Only the data exists (`implements` per committed turn). No 3D view.
 - **Adversarial pair / LLM-judged checks.** The trust level and the gate rule exist; no runner ships.
 - **Hooks for specific harnesses** (e.g. Claude Code settings). The AGENTS.md / CLAUDE.md contract block is
   written; hook installation needs each harness's current format and was not verified here.

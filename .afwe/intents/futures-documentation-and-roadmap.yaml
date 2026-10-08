@@ -1,0 +1,19 @@
+id: futures-documentation-and-roadmap
+title: Document Architectural Directions and Plan Futures
+statement: Register planned nodes for exclusions-engine and timeline-snapshot, and document the 1.2 Futures Engine in SPEC.md, V2-DECISIONS.md, and README.md.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  - exclusions-engine
+  - timeline-snapshot
+from_turns:
+- t0003
+history:
+- turn: t0003
+  ts: 2026-10-08T10:22:20Z
+  statement: Register planned nodes for exclusions-engine and timeline-snapshot, and document the 1.2 Futures Engine in SPEC.md, V2-DECISIONS.md, and README.md.
+created: 2026-10-08T10:22:20Z
+updated: 2026-10-08T10:22:20Z
+task: task-7dd801

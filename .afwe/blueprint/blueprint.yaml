@@ -51,6 +51,19 @@ nodes:
       - bootstrapped
       status: active
       origin: afwe:bootstrap
+      children:
+      - id: exclusions-engine
+        name: exclusions-engine
+        kind: module
+        purpose: First-class project & demo scoping (afwe ignore add/remove/list) with retroactive cleanup and zero foreign sidecars
+        status: planned
+        origin: human
+      - id: timeline-snapshot
+        name: timeline-snapshot
+        kind: module
+        purpose: Deterministic 4D timeline snapshot reconstruction and structural delta across turns
+        status: planned
+        origin: human
   - id: examples
     name: Examples
     kind: subsystem
