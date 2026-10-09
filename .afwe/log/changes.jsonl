@@ -112,3 +112,8 @@
 {"ts":"2026-10-09T06:16:52Z","origin":"human","kind":"turn_assume","summary":"t0011: 1 intent(s), 0 assumption(s) registered","details":{"turn":"t0011"}}
 {"ts":"2026-10-09T06:18:09Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 0 warnings)"}
 {"ts":"2026-10-09T06:19:51Z","origin":"human","kind":"turn_ready","summary":"t0011 ready: Run afwe sync in CI to materialize derived index on fresh checkouts (100%)","details":{"turn":"t0011","reasons":["OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic CI workflow and template fix"]}}
+{"ts":"2026-10-09T06:38:23Z","origin":"human","kind":"task_start","summary":"Task started: t0012: Upgrade actions/checkout to v5 for Node.js 24 runtime support [code] under contract default","details":{"task":"task-7aa309"}}
+{"ts":"2026-10-09T06:38:23Z","origin":"human","kind":"turn_begin","summary":"t0012 begun: Upgrade actions/checkout to v5 for Node.js 24 runtime support","details":{"turn":"t0012","task":"task-7aa309","nodes":[]}}
+{"ts":"2026-10-09T06:38:34Z","origin":"human","kind":"turn_assume","summary":"t0012: 1 intent(s), 0 assumption(s) registered","details":{"turn":"t0012"}}
+{"ts":"2026-10-09T06:39:30Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 0 warnings)"}
+{"ts":"2026-10-09T06:40:29Z","origin":"human","kind":"turn_ready","summary":"t0012 ready: Upgrade actions/checkout from v4 to v5 for Node.js 24 runtime support (100%)","details":{"turn":"t0012","reasons":["OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic CI workflow and template upgrade"]}}

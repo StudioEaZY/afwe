@@ -1,0 +1,17 @@
+{
+  "intents": [
+    {
+      "id": "upgrade-actions-checkout-to-v5",
+      "title": "Upgrade actions/checkout to v5 for Node.js 24 compatibility",
+      "description": "Upgrade actions/checkout from v4 to v5 across .github/workflows/afwe-gate.yml, .github/workflows/ci.yml, and onboard.rs CI_TEMPLATE to eliminate Node.js 20 deprecation warnings on GitHub Actions runners.",
+      "targets": ["crates/afwe-core/src/onboard.rs"],
+      "action": "update"
+    }
+  ],
+  "claims": [
+    {
+      "statement": "actions/checkout is upgraded to v5 across all workflow definitions and generators",
+      "kind": "postcondition"
+    }
+  ]
+}
