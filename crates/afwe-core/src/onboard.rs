@@ -25,9 +25,11 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Install or Build AFWE
+        env:
+          AFWE_INSTALL_CMD: ${{ vars.AFWE_INSTALL_COMMAND }}
         run: |
-          if [ -n "${{ vars.AFWE_INSTALL_COMMAND }}" ]; then
-            ${{ vars.AFWE_INSTALL_COMMAND }}
+          if [ -n "$AFWE_INSTALL_CMD" ]; then
+            eval "$AFWE_INSTALL_CMD"
           elif [ -f "crates/afwe-cli/Cargo.toml" ]; then
             cargo build --release -p afwe-cli
             echo "$PWD/target/release" >> $GITHUB_PATH

@@ -1,0 +1,17 @@
+id: fix-bash-syntax-in-ci-workflow
+title: Fix bash syntax error in CI workflow install step
+statement: Fix bash empty statement syntax error in afwe-gate workflow
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/onboard.rs
+from_turns:
+- t0010
+history:
+- turn: t0010
+  ts: 2026-10-09T06:10:26Z
+  statement: Fix bash empty statement syntax error in afwe-gate workflow
+created: 2026-10-09T06:10:26Z
+updated: 2026-10-09T06:10:26Z
+task: task-780bb0

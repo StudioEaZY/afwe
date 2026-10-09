@@ -1,0 +1,17 @@
+{
+  "intents": [
+    {
+      "id": "fix-bash-syntax-in-ci-workflow",
+      "title": "Fix bash syntax error in CI workflow install step",
+      "description": "Fix bash syntax error where empty vars.AFWE_INSTALL_COMMAND expansion produced an invalid empty if block. Use environment variable expansion in bash script.",
+      "targets": ["crates/afwe-core/src/onboard.rs"],
+      "action": "update"
+    }
+  ],
+  "claims": [
+    {
+      "statement": "CI install script passes bash syntax check when vars.AFWE_INSTALL_COMMAND is unset",
+      "kind": "postcondition"
+    }
+  ]
+}
