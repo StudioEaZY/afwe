@@ -1,4 +1,4 @@
-# AFWE — Architecture-First Workspace Engine
+# AFWE - Architecture-First Workspace Engine
 
 > **The folder is the product.** `.afwe/` is a persistent, multi-level, two-way model of a codebase that
 > sits between an LLM harness (Claude Code, Codex, Cursor, …) and the IDE. Rust + tree-sitter + Tauri is
