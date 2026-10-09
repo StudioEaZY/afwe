@@ -13,8 +13,8 @@ use serde_json::{json, Value};
 use std::path::Path;
 
 pub const CI_TEMPLATE: &str = r#"# AFWE architecture gate — added by `afwe onboard`.
-# Set the repository variable AFWE_INSTALL_COMMAND to whatever installs the afwe binary for your team,
-# for example: cargo install --git <your afwe repo> afwe-cli
+# If you haven't set the repository variable AFWE_INSTALL_COMMAND, this workflow
+# falls back to building afwe directly if Cargo.toml has afwe-cli, or cargo installing it.
 name: AFWE Architecture Gate
 on: [push, pull_request]
 jobs:
@@ -22,8 +22,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install AFWE
-        run: ${{ vars.AFWE_INSTALL_COMMAND }}
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install or Build AFWE
+        run: |
+          if [ -n "${{ vars.AFWE_INSTALL_COMMAND }}" ]; then
+            ${{ vars.AFWE_INSTALL_COMMAND }}
+          elif [ -f "crates/afwe-cli/Cargo.toml" ]; then
+            cargo build --release -p afwe-cli
+            echo "$PWD/target/release" >> $GITHUB_PATH
+          else
+            cargo install --git https://github.com/StudioEaZY/afwe.git afwe-cli
+          fi
       - name: The architecture matches the code
         run: afwe sync --check
       - name: Constraints, guardrails, pins and registered checks hold

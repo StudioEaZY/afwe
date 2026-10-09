@@ -1,0 +1,17 @@
+id: fix-ci-workflow-and-onboard-template
+title: Fix CI workflow with fallback install and update onboard CI template
+statement: Fix CI workflow with fallback build and update CI template in onboard
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/onboard.rs
+from_turns:
+- t0009
+history:
+- turn: t0009
+  ts: 2026-10-09T06:05:28Z
+  statement: Fix CI workflow with fallback build and update CI template in onboard
+created: 2026-10-09T06:05:28Z
+updated: 2026-10-09T06:05:28Z
+task: task-e1d2aa

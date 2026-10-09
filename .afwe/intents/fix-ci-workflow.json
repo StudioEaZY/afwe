@@ -1,0 +1,17 @@
+{
+  "intents": [
+    {
+      "id": "fix-ci-workflow-and-onboard-template",
+      "title": "Fix CI workflow with fallback install and update onboard CI template",
+      "description": "The CI workflow currently fails with exit code 127 because vars.AFWE_INSTALL_COMMAND is unset and afwe is not in PATH. Update the CI workflow and the embedded CI_TEMPLATE in onboard.rs to include a smart fallback that builds afwe-cli locally or installs it if the repository variable is not configured.",
+      "targets": ["crates/afwe-core/src/onboard.rs"],
+      "action": "update"
+    }
+  ],
+  "claims": [
+    {
+      "statement": "CI workflow installs or builds afwe reliably even when vars.AFWE_INSTALL_COMMAND is unset",
+      "kind": "postcondition"
+    }
+  ]
+}
