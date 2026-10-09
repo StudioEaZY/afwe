@@ -107,3 +107,8 @@
 {"ts":"2026-10-09T06:10:26Z","origin":"human","kind":"turn_assume","summary":"t0010: 1 intent(s), 0 assumption(s) registered","details":{"turn":"t0010"}}
 {"ts":"2026-10-09T06:11:25Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 0 warnings)"}
 {"ts":"2026-10-09T06:12:49Z","origin":"human","kind":"turn_ready","summary":"t0010 ready: Fix bash empty statement syntax error in afwe-gate workflow (100%)","details":{"turn":"t0010","reasons":["OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic CI workflow and template fix"]}}
+{"ts":"2026-10-09T06:16:37Z","origin":"human","kind":"task_start","summary":"Task started: t0011: Reconcile sync check in CI and onboard template [code] under contract default","details":{"task":"task-ba4cb3"}}
+{"ts":"2026-10-09T06:16:37Z","origin":"human","kind":"turn_begin","summary":"t0011 begun: Reconcile sync check in CI and onboard template","details":{"turn":"t0011","task":"task-ba4cb3","nodes":[]}}
+{"ts":"2026-10-09T06:16:52Z","origin":"human","kind":"turn_assume","summary":"t0011: 1 intent(s), 0 assumption(s) registered","details":{"turn":"t0011"}}
+{"ts":"2026-10-09T06:18:09Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 0 warnings)"}
+{"ts":"2026-10-09T06:19:51Z","origin":"human","kind":"turn_ready","summary":"t0011 ready: Run afwe sync in CI to materialize derived index on fresh checkouts (100%)","details":{"turn":"t0011","reasons":["OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic CI workflow and template fix"]}}

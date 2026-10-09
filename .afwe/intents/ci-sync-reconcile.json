@@ -1,0 +1,17 @@
+{
+  "intents": [
+    {
+      "id": "ci-sync-reconcile-and-template",
+      "title": "Run afwe sync in CI to materialize derived state before check",
+      "description": "Because derived index and state are deliberately excluded from git (.gitignore), a fresh CI checkout starts with never_synced. In CI, run afwe sync (or sync --dry-run) to materialize indices and verify that code and blueprint remain in sync without unmapped or uncommitted drift.",
+      "targets": ["crates/afwe-core/src/onboard.rs"],
+      "action": "update"
+    }
+  ],
+  "claims": [
+    {
+      "statement": "CI workflow successfully syncs and passes afwe gate on clean git checkouts",
+      "kind": "postcondition"
+    }
+  ]
+}

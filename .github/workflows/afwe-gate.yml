@@ -23,6 +23,8 @@ jobs:
             cargo install --git https://github.com/StudioEaZY/afwe.git afwe-cli
           fi
       - name: The architecture matches the code
-        run: afwe sync --check
+        run: |
+          afwe sync
+          afwe sync --check
       - name: Constraints, guardrails, pins and registered checks hold
         run: afwe gate --ci
