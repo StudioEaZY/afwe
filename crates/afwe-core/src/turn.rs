@@ -260,6 +260,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     if req.prompt.trim().is_empty() {
         return Err(anyhow!("turn.begin needs the prompt text (it is stored verbatim)"));
     }
+    let rollback_events = crate::rollback::reconcile(engine).unwrap_or_default();
     let snap = engine.snapshot(true)?;
     let table = &snap.table;
     let prefix = code_prefix(&snap.manifest);
@@ -461,6 +462,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         "turn": id,
         "status": "open",
         "turn_token": turn.turn_token,
+        "reconciled_rollbacks": rollback_events,
         "task": task.id,
         "scope": {"nodes": nodes, "files": brief_files},
         "unresolved_targets": unresolved,
@@ -1027,6 +1029,15 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
             turn.pin_proposals.push(pin.id);
         }
     }
+
+    let mut post_hashes = BTreeMap::new();
+    for f in &turn.touched.files {
+        let abs = root.join(f);
+        if let Ok(bytes) = std::fs::read(&abs) {
+            post_hashes.insert(f.clone(), crate::util::hash_bytes(&bytes));
+        }
+    }
+    turn.post_hashes = post_hashes;
     engine.store.save_turn(&turn)?;
     if let Some(t) = turn.task.clone() {
         for step in ["afwe_verify", "afwe_update", "afwe_sync", "afwe_log"] {

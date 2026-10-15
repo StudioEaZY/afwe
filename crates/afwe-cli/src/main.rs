@@ -1075,6 +1075,11 @@ fn run(cli: Cli) -> Result<i32> {
                     out(json, &v, render::turn_result);
                     0
                 }
+                TurnCmd::Undo { turn } => {
+                    let v = api::call(&engine, "turn.undo", json!({"turn": turn}), &origin)?;
+                    out(json, &v, render::turn_result);
+                    0
+                }
                 TurnCmd::Show { turn } => {
                     let v = api::call(&engine, "turn.get", json!({"turn": turn}), &origin)?;
                     out(json, &v, |v| serde_json::to_string_pretty(v).unwrap_or_default());
@@ -1428,6 +1433,8 @@ enum TurnCmd {
     Confirm { turn: String },
     /// Undo a turn as far as that is safe
     Revert { turn: String },
+    /// Undo a committed turn explicitly (reverts git commit and prunes generated checks)
+    Undo { turn: String },
     /// One turn in full (JSON)
     Show { turn: String },
     /// All turns

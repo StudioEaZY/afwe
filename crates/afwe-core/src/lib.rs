@@ -38,6 +38,7 @@ pub mod mission;
 pub mod model;
 pub mod onboard;
 pub mod ops;
+pub mod rollback;
 pub mod store;
 pub mod sync;
 pub mod timeline;
