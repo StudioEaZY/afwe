@@ -1,0 +1,36 @@
+{
+  "intents": [
+    {
+      "id": "lease-enforcement-and-merge-gate",
+      "action": "update",
+      "targets": ["crates/afwe-core/src/turn.rs", "crates/afwe-core/src/mission.rs"],
+      "statement": "Enforce node concurrency leases in turn assume and verify architectural gate on mission merge"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a-lease-check",
+      "text": "turn assume checks node leases and rejects with NODE_LOCKED",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "NODE_LOCKED",
+        "files": ["crates/afwe-core/src/turn.rs"]
+      }
+    },
+    {
+      "id": "a-merge-gate",
+      "text": "mission merge verifies architectural gate on merged snapshot",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "MERGE_GATE_REDO",
+        "files": ["crates/afwe-core/src/mission.rs"]
+      }
+    }
+  ],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "100% deterministic code without LLM model calls in core engine"
+    }
+  ]
+}
