@@ -1,0 +1,18 @@
+id: missions-and-leases
+title: missions-and-leases
+statement: Multi-agent autonomous missions with Git worktrees and shared node leases
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/mission.rs
+  - crates/afwe-core/src/lease.rs
+from_turns:
+- t0016
+history:
+- turn: t0016
+  ts: 2026-10-15T10:23:26Z
+  statement: Multi-agent autonomous missions with Git worktrees and shared node leases
+created: 2026-10-15T10:23:26Z
+updated: 2026-10-15T10:23:26Z
+task: task-e70fa7

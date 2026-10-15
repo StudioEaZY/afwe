@@ -1,0 +1,36 @@
+{
+  "intents": [
+    {
+      "id": "missions-and-leases",
+      "action": "create",
+      "targets": ["crates/afwe-core/src/mission.rs", "crates/afwe-core/src/lease.rs"],
+      "statement": "Multi-agent autonomous missions with Git worktrees and shared node leases"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a-mission-schema",
+      "text": "Mission schema is declared in mission.rs",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "pub struct Mission",
+        "files": ["crates/afwe-core/src/mission.rs"]
+      }
+    },
+    {
+      "id": "a-lease-schema",
+      "text": "NodeLease schema is declared in lease.rs",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "pub struct NodeLease",
+        "files": ["crates/afwe-core/src/lease.rs"]
+      }
+    }
+  ],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "100% deterministic code without LLM model calls in core engine"
+    }
+  ]
+}

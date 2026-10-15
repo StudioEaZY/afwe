@@ -629,3 +629,46 @@ pub fn escalations(v: &Value) -> String {
     out.push_str("\nTo approve: afwe escalation approve <id>\nTo reject:  afwe escalation reject <id>\n");
     out
 }
+
+pub fn missions(v: &Value) -> String {
+    let list = list_of(v);
+    if list.is_empty() {
+        return "no active or past missions\n".into();
+    }
+    let mut out = format!("Missions ({}):\n", list.len());
+    for m in list {
+        out.push_str(&format!("  • {:<12} {:<10} {:<15} {}\n", s(m, "id"), serde_json::to_string(&m["status"]).unwrap_or_default().trim_matches('"'), s(m, "orchestrator"), s(m, "title")));
+    }
+    out
+}
+
+pub fn mission_detail(m: &Value) -> String {
+    let mut out = format!("Mission {} — {}\n", s(m, "id"), s(m, "title"));
+    out.push_str(&format!("  status:       {}\n", serde_json::to_string(&m["status"]).unwrap_or_default().trim_matches('"')));
+    out.push_str(&format!("  orchestrator: {}\n", s(m, "orchestrator")));
+    out.push_str(&format!("  created:      {}\n", s(m, "created")));
+    out.push_str(&format!("  prompt:       {}\n", s(m, "prompt")));
+    let agents = list_of(&m["agents"]);
+    if !agents.is_empty() {
+        out.push_str("\nSubagents:\n");
+        for a in agents {
+            out.push_str(&format!("  • {:<12} [{}] role: {} branch: {}\n", s(a, "agent_id"), s(a, "status"), s(a, "role"), s(a, "branch")));
+            out.push_str(&format!("    worktree: {}\n", s(a, "worktree_path")));
+            out.push_str(&format!("    nodes:    {}\n", strings(&a["assigned_nodes"])));
+        }
+    }
+    out
+}
+
+pub fn leases(v: &Value) -> String {
+    let list = list_of(v);
+    if list.is_empty() {
+        return "no active node concurrency leases\n".into();
+    }
+    let mut out = format!("Active Node Leases ({}) [.git/afwe/leases.json]:\n", list.len());
+    for l in list {
+        out.push_str(&format!("  • node: {:<15} agent: {:<12} mission: {:<12} purpose: {}\n", s(l, "node_id"), s(l, "agent_id"), s(l, "mission_id"), s(l, "purpose")));
+        out.push_str(&format!("    expires_at: {}\n", l["expires_at"]));
+    }
+    out
+}
