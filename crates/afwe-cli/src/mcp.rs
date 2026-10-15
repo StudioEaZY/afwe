@@ -109,10 +109,20 @@ fn call_tool(engine: &mut Option<Engine>, start: &PathBuf, origin: &str, name: &
     let eng = engine.as_ref().unwrap();
     let spec = api::tool_specs().into_iter().find(|t| t.name == name).ok_or_else(|| anyhow::anyhow!("unknown tool `{name}`"))?;
     let mut params = args;
-    if params.get("origin").is_none() {
-        params["origin"] = json!(origin);
-    }
-    let result = api::call(eng, spec.op, params, origin)?;
+    // Disallow spoofing human origin via MCP client payload
+    let forced_origin = if let Some(o) = params.get("origin").and_then(|v| v.as_str()) {
+        if o.starts_with("human") {
+            origin.to_string()
+        } else if !o.starts_with("llm:") {
+            format!("llm:{o}")
+        } else {
+            o.to_string()
+        }
+    } else {
+        origin.to_string()
+    };
+    params["origin"] = json!(forced_origin);
+    let result = api::call(eng, spec.op, params, &forced_origin)?;
     let mut content = vec![];
     let mut is_error = false;
     match spec.op {

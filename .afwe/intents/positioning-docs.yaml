@@ -1,0 +1,19 @@
+id: positioning-docs
+title: positioning-docs
+statement: Clarify positioning, grep vs graph vs AFWE comparison, and honest claims description
+status: active
+origin: human
+attaches:
+  files:
+  - README.md
+  - docs/WALKTHROUGH.md
+  - docs/TUTORIAL.md
+from_turns:
+- t0014
+history:
+- turn: t0014
+  ts: 2026-10-15T07:50:59Z
+  statement: Clarify positioning, grep vs graph vs AFWE comparison, and honest claims description
+created: 2026-10-15T07:50:59Z
+updated: 2026-10-15T07:50:59Z
+task: task-2f5fe6

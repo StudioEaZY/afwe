@@ -14,6 +14,31 @@ AFWE is **not** a harness: it never owns the agent loop. It tells the harness wh
 answers "what applies to what I am touching?" (passive guardrails), refuses what breaks the architecture
 (active guardrails), and keeps the blueprint and the code honest with each other (drift + confidence policy).
 
+## Why AFWE Exists & Who It's For
+
+> *"Graph tools tell the agent what your code is. AFWE tells it what your code is supposed to be, and refuses changes that break that."*
+
+For decades, the human reader was the architecture guardrail. Intent lived in engineers' heads, and code review was where it was enforced. Coding agents eliminated the reader bottleneck: now intent lives neither in the stateless LLM (which begins every session fresh) nor in the human (who ships diffs without reading thousands of lines).
+
+**AFWE is double-entry bookkeeping for codebases:**
+1. Code records *what* was implemented.
+2. `.afwe/` records *why* and *what must not change* (blueprints, constraints, pins, memory).
+3. `afwe turn commit` checks both entries against each other before writing to git.
+
+### The Problem Spectrum
+
+| Question | `grep` / Search | Code Graphs / GraphRAG | AFWE (`.afwe/`) |
+| --- | :---: | :---: | :---: |
+| Where is `checkout()`? | ✓ | ✓ | ✓ |
+| What imports `Payments`? | Slow / Flat | ✓ (Graph AST) | ✓ |
+| Is `Payments` **allowed** to import UI? | ✗ | ✗ | **✓ Constraint Gate** |
+| Is this unusual timeout a bug or intentional? | ✗ | ✗ | **✓ Pin (`intentional`)** |
+| Did an agent quietly erase a feature? | ✗ | ✗ | **✓ Collateral Loss Check** |
+| Why was this architectural decision made? | ✗ | ✗ | **✓ Memory & Scoped Decisions** |
+
+- **For**: Solo founders shipping rapidly with autonomous agents (`normie`), engineering teams needing PR CI gates (`engineer`), and tech leads responsible for system coherence.
+- **Not for**: Disposable throwaway scripts or teams where engineers hand-read every single line of code.
+
 ![Studio](docs/screenshots/blueprint.png)
 
 ## What lives in `.afwe/`

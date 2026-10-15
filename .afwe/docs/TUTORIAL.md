@@ -6,19 +6,31 @@ Welcome to AFWE (**Architecture-First Workspace Engine**). This tutorial takes y
 
 ## 1. Core Philosophy: The Folder is the Product
 
-Modern AI coding agents (Claude Code, Cursor, Codex, OpenCode) suffer from **silent collateral damage**:
-- In Turn 1, the agent builds a billing integration.
-- In Turn 15, the agent refactors a UI component and accidentally breaks the billing data contract.
-- Line numbers drift, memories fade from agent context windows, and codebases slowly rot.
+AI coding agents (Claude Code, Cursor, Codex, OpenCode) rarely lose track of your code. They lose track of **why it is the way it is**.
 
-**AFWE solves this deterministically**:
+Ask two agents for a narrow-body engine of 27,000 to 35,000 lbf and you get two good, different designs. One is a two-spool engine that is cheap to maintain. The other is a three-spool engine that burns less fuel and costs more to service. Neither is wrong. Fifteen prompts later a third agent sees code that works, cannot tell which trade-off you chose on purpose, and "improves" it.
+
+That is the source of **silent collateral damage**:
+- In Turn 1, the agent builds a billing integration.
+- In Turn 15, the agent refactors a UI component and breaks the billing data contract.
+- A feature disappears and nobody declared it.
+
+Line drift and limited context windows make this worse, but the cause is that your intent was never recorded next to the code. Vendor-side memory does not fix it: it lives inside the vendor's product, not in your repository, so the next agent or the next teammate never receives it.
+
+**AFWE keeps the intent in the repo**:
 - It sits between your harness and the codebase.
-- Everything lives in `.afwe/` in human-readable, git-friendly YAML and markdown.
-- **Zero LLMs in core**: AFWE never makes internal model calls. The harness is the model, and AFWE is the deterministic verification kernel.
+- Your prompt, the agent's declared intents, your pins, memory and guardrails live in `.afwe/` as human-readable, git-friendly YAML and markdown.
+- A deterministic gate refuses changes that break what you declared: constraints, block pins and undeclared feature loss. It stops the mistakes you have written down, not every mistake.
+- **Zero LLMs in core**: AFWE never makes internal model calls. The harness is the model, and AFWE is the deterministic verification kernel. The agent still writes the claims the gate checks.
 
 ```text
 Developer Prompt ──▶ Harness (Claude / Cursor) ──▶ AFWE Turn Protocol ──▶ Verified Git Commit
 ```
+
+**What this costs, and where it stops**:
+- Someone has to maintain a record of intent. The pin budget (section 4) is tied to project size, and the gate only checks what you declared.
+- AFWE is not a harness and cannot force one to call it. The `AGENTS.md` contract is advisory. The hard stop is the generated `.github/workflows/afwe-gate.yml`, which runs `afwe gate` in CI. Without CI or a git hook, a harness that ignores the contract is not blocked.
+- Harness-specific hook installers are not built yet. See `docs/INTEGRATION.md` for manual examples.
 
 ---
 
