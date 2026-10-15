@@ -211,6 +211,12 @@ enum Cmd {
     /// Guard loosening escalation queue for human review
     #[command(subcommand)]
     Escalation(EscalationCmd),
+    /// Multi-agent autonomous missions and worktree coordination
+    #[command(subcommand)]
+    Mission(MissionCmd),
+    /// Shared node concurrency leases across worktrees
+    #[command(subcommand)]
+    Lease(LeaseCmd),
     /// Upgrade the .afwe/ folder to the current format (legacy workflows/ become intents/)
     Migrate,
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
@@ -552,6 +558,56 @@ enum EscalationCmd {
     Approve { id: String },
     /// Reject an escalation request
     Reject { id: String },
+}
+
+#[derive(Subcommand)]
+enum MissionCmd {
+    /// Create a new mission
+    Create {
+        title: String,
+        prompt: String,
+        #[arg(long)]
+        id: Option<String>,
+    },
+    /// List all missions
+    List,
+    /// Show mission details
+    Show { id: String },
+    /// Spawn a subagent into an isolated Git worktree and lease nodes
+    Spawn {
+        mission: String,
+        agent: String,
+        role: String,
+        #[arg(long, num_args = 1.., value_delimiter = ',')]
+        nodes: Vec<String>,
+    },
+    /// Merge subagent worktree branch back into main and release leases
+    Merge {
+        mission: String,
+        agent: String,
+    },
+}
+
+#[derive(Subcommand)]
+enum LeaseCmd {
+    /// List active node concurrency leases
+    List,
+    /// Acquire a node lease
+    Acquire {
+        node: String,
+        mission: String,
+        agent: String,
+        #[arg(long)]
+        purpose: Option<String>,
+        #[arg(long, default_value_t = 7200)]
+        ttl: u64,
+    },
+    /// Release a node lease
+    Release {
+        node: String,
+        mission: String,
+        agent: String,
+    },
 }
 
 #[derive(Args)]
@@ -1187,6 +1243,50 @@ fn run(cli: Cli) -> Result<i32> {
                 EscalationCmd::Reject { id } => {
                     let v = api::call(&engine, "escalation.reject", json!({"id": id}), &origin)?;
                     out(json, &v, |v| format!("escalation {id} rejected: status {}", v["status"]));
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Mission(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                MissionCmd::Create { title, prompt, id } => {
+                    let v = api::call(&engine, "mission.create", json!({"title": title, "prompt": prompt, "id": id}), &origin)?;
+                    out(json, &v, render::mission_detail);
+                }
+                MissionCmd::List => {
+                    let v = api::call(&engine, "mission.list", json!({}), &origin)?;
+                    out(json, &v, render::missions);
+                }
+                MissionCmd::Show { id } => {
+                    let v = api::call(&engine, "mission.get", json!({"id": id}), &origin)?;
+                    out(json, &v, render::mission_detail);
+                }
+                MissionCmd::Spawn { mission, agent, role, nodes } => {
+                    let v = api::call(&engine, "mission.spawn", json!({"mission": mission, "agent": agent, "role": role, "nodes": strs(&nodes)}), &origin)?;
+                    out(json, &v, |v| format!("agent `{}` spawned into worktree `{}` (branch `{}`)", v["agent_id"], v["worktree_path"], v["branch"]));
+                }
+                MissionCmd::Merge { mission, agent } => {
+                    let v = api::call(&engine, "mission.merge", json!({"mission": mission, "agent": agent}), &origin)?;
+                    out(json, &v, |v| format!("agent `{agent}` merged successfully: {} lease(s) released", v["leases_released"]));
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Lease(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                LeaseCmd::List => {
+                    let v = api::call(&engine, "lease.list", json!({}), &origin)?;
+                    out(json, &v, render::leases);
+                }
+                LeaseCmd::Acquire { node, mission, agent, purpose, ttl } => {
+                    let v = api::call(&engine, "lease.acquire", json!({"node": node, "mission": mission, "agent": agent, "purpose": purpose, "ttl": ttl}), &origin)?;
+                    out(json, &v, |v| format!("lease acquired on node `{}` until {}", v["node_id"], v["expires_at"]));
+                }
+                LeaseCmd::Release { node, mission, agent } => {
+                    let v = api::call(&engine, "lease.release", json!({"node": node, "mission": mission, "agent": agent}), &origin)?;
+                    out(json, &v, |v| format!("released: {}", v["released"]));
                 }
             }
             Ok(0)

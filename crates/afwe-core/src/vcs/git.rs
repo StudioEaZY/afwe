@@ -194,3 +194,29 @@ impl VcsProvider for GitProvider {
         }
     }
 }
+
+impl GitProvider {
+    pub fn worktree_add(root: &Path, path: &Path, branch: &str) -> Result<()> {
+        let (ok, _, err) = run(root, &args(&["worktree", "add", "-b", branch, path.to_str().unwrap_or("")]))?;
+        if !ok {
+            return Err(anyhow!("git worktree add failed: {}", err.trim()));
+        }
+        Ok(())
+    }
+
+    pub fn worktree_remove(root: &Path, path: &Path) -> Result<()> {
+        let (ok, _, err) = run(root, &args(&["worktree", "remove", "--force", path.to_str().unwrap_or("")]))?;
+        if !ok {
+            return Err(anyhow!("git worktree remove failed: {}", err.trim()));
+        }
+        Ok(())
+    }
+
+    pub fn merge_branch(root: &Path, branch: &str) -> Result<bool> {
+        let (ok, _, err) = run(root, &args(&["merge", "--no-ff", "-m", &format!("Merge branch '{branch}'"), branch]))?;
+        if !ok {
+            return Err(anyhow!("git merge failed: {}", err.trim()));
+        }
+        Ok(true)
+    }
+}
