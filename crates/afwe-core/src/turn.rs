@@ -575,6 +575,30 @@ pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
             _ => notices.push(format!("pin {} (warn): {}", c.pin, c.statement)),
         }
     }
+
+    // ── concurrency leases check ──
+    let target_nodes: Vec<String> = req
+        .intents
+        .iter()
+        .flat_map(|i| i.targets.iter().filter_map(|t| table.resolve(t)))
+        .collect();
+    if let Ok(active_leases) = crate::lease::list_active(engine) {
+        for n in &target_nodes {
+            if let Some(l) = active_leases.iter().find(|l| &l.node_id == n) {
+                let caller_agent = turn.agent.as_deref().unwrap_or(&req.origin);
+                if l.agent_id != caller_agent {
+                    errs.push((
+                        "NODE_LOCKED".into(),
+                        format!(
+                            "Node `{n}` is currently locked by agent `{}` of mission `{}` (expires at {})",
+                            l.agent_id, l.mission_id, l.expires_at
+                        ),
+                    ));
+                }
+            }
+        }
+    }
+
     if !errs.is_empty() {
         return Ok(json!({
             "status": "redo",

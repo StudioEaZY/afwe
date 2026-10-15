@@ -29,6 +29,22 @@ pub struct MissionAgent {
     pub status: String, // active | merged | failed
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct MissionInvariants {
+    #[serde(default)]
+    pub locked_pins: Vec<String>,
+    #[serde(default)]
+    pub must_not_depend: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct MissionBudget {
+    #[serde(default)]
+    pub max_escalations: u32,
+    #[serde(default)]
+    pub max_partial_losses: u32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Mission {
     pub id: String,
@@ -38,6 +54,10 @@ pub struct Mission {
     pub status: MissionStatus,
     pub created: String,
     pub updated: String,
+    #[serde(default)]
+    pub invariants: MissionInvariants,
+    #[serde(default)]
+    pub budget: MissionBudget,
     #[serde(default)]
     pub agents: Vec<MissionAgent>,
 }
@@ -66,6 +86,8 @@ pub fn create_mission(
         status: MissionStatus::Active,
         created: crate::util::now(),
         updated: crate::util::now(),
+        invariants: MissionInvariants::default(),
+        budget: MissionBudget::default(),
         agents: vec![],
     };
     save_mission(engine, &mission)?;
@@ -175,6 +197,17 @@ pub fn merge_agent(
         GitProvider::merge_branch(root, &branch)?;
     }
 
+    // Run architectural verification gate on merged root
+    let snap = engine.snapshot(true)?;
+    let report = crate::verify::verify(&snap, root, &crate::verify::VerifyOptions {
+        changed: vec![],
+        run_commands: true,
+        include_drift: false,
+    });
+    if !report.ok {
+        return Err(anyhow!("MERGE_GATE_REDO: Architectural verification failed on merge of `{agent_id}`: {} error(s)", report.errors));
+    }
+
     // Release all leases
     let released = lease::release_all_for_agent(engine, mission_id, agent_id)?;
 
@@ -193,6 +226,22 @@ pub fn merge_agent(
         "branch": branch,
         "leases_released": released,
     }))
+}
+
+pub fn pause_mission(engine: &Engine, id: &str) -> Result<Mission> {
+    let mut m = get_mission(engine, id)?;
+    m.status = MissionStatus::Paused;
+    m.updated = crate::util::now();
+    save_mission(engine, &m)?;
+    Ok(m)
+}
+
+pub fn resume_mission(engine: &Engine, id: &str) -> Result<Mission> {
+    let mut m = get_mission(engine, id)?;
+    m.status = MissionStatus::Active;
+    m.updated = crate::util::now();
+    save_mission(engine, &m)?;
+    Ok(m)
 }
 
 #[cfg(test)]

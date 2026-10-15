@@ -1,0 +1,18 @@
+id: lease-enforcement-and-merge-gate
+title: lease-enforcement-and-merge-gate
+statement: Enforce node concurrency leases in turn assume and verify architectural gate on mission merge
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/mission.rs
+from_turns:
+- t0017
+history:
+- turn: t0017
+  ts: 2026-10-15T10:44:19Z
+  statement: Enforce node concurrency leases in turn assume and verify architectural gate on mission merge
+created: 2026-10-15T10:44:19Z
+updated: 2026-10-15T10:44:19Z
+task: task-45ca0b

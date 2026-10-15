@@ -586,6 +586,10 @@ enum MissionCmd {
         mission: String,
         agent: String,
     },
+    /// Pause an ongoing mission
+    Pause { id: String },
+    /// Resume a paused mission
+    Resume { id: String },
 }
 
 #[derive(Subcommand)]
@@ -1269,6 +1273,14 @@ fn run(cli: Cli) -> Result<i32> {
                 MissionCmd::Merge { mission, agent } => {
                     let v = api::call(&engine, "mission.merge", json!({"mission": mission, "agent": agent}), &origin)?;
                     out(json, &v, |v| format!("agent `{agent}` merged successfully: {} lease(s) released", v["leases_released"]));
+                }
+                MissionCmd::Pause { id } => {
+                    let v = api::call(&engine, "mission.pause", json!({"id": id}), &origin)?;
+                    out(json, &v, |v| format!("mission `{id}` paused (status: {})", v["status"]));
+                }
+                MissionCmd::Resume { id } => {
+                    let v = api::call(&engine, "mission.resume", json!({"id": id}), &origin)?;
+                    out(json, &v, |v| format!("mission `{id}` resumed (status: {})", v["status"]));
                 }
             }
             Ok(0)

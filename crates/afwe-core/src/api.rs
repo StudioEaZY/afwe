@@ -475,6 +475,8 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         "mission.list" => j(crate::mission::list_missions(engine)?),
         "mission.spawn" => j(crate::mission::spawn_agent(engine, &req(&p, "mission")?, &req(&p, "agent")?, &req(&p, "role")?, &list(&p, "nodes"))?),
         "mission.merge" => crate::mission::merge_agent(engine, &req(&p, "mission")?, &req(&p, "agent")?),
+        "mission.pause" => j(crate::mission::pause_mission(engine, &req(&p, "id")?)?),
+        "mission.resume" => j(crate::mission::resume_mission(engine, &req(&p, "id")?)?),
         "lease.acquire" => j(crate::lease::acquire(engine, &req(&p, "node")?, &req(&p, "mission")?, &req(&p, "agent")?, &s(&p, "purpose").unwrap_or_default(), p.get("ttl").and_then(|v| v.as_u64()).unwrap_or(7200))?),
         "lease.release" => Ok(json!({"released": crate::lease::release(engine, &req(&p, "node")?, &req(&p, "mission")?, &req(&p, "agent")?)?})),
         "lease.list" => j(crate::lease::list_active(engine)?),
@@ -498,7 +500,7 @@ pub const OPS: &[&str] = &[
     "check.list", "check.add", "check.remove", "escalation.list", "escalation.approve", "escalation.reject",
     "timeline.list", "timeline.get", "timeline.diff", "timeline.search", "timeline.losses", "timeline.restore",
     "onboard.detect", "onboard.apply", "migrate", "header", "baseline.capture", "baseline.get",
-    "mission.create", "mission.get", "mission.list", "mission.spawn", "mission.merge",
+    "mission.create", "mission.get", "mission.list", "mission.spawn", "mission.merge", "mission.pause", "mission.resume",
     "lease.acquire", "lease.release", "lease.list",
 ];
 
@@ -735,6 +737,8 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_mission_list", op: "mission.list", description: "List all missions.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_mission_spawn", op: "mission.spawn", description: "Spawn a subagent into an isolated Git worktree under .afwe/worktrees/<agent_id> and lease assigned blueprint nodes.", schema: obj(json!({"mission": {"type": "string"}, "agent": {"type": "string"}, "role": {"type": "string"}, "nodes": strs}), &["mission", "agent", "role"]) },
         ToolSpec { name: "afwe_mission_merge", op: "mission.merge", description: "Merge a completed subagent worktree branch back into main, passing through the AFWE architectural gate, and release its leases.", schema: obj(json!({"mission": {"type": "string"}, "agent": {"type": "string"}}), &["mission", "agent"]) },
+        ToolSpec { name: "afwe_mission_pause", op: "mission.pause", description: "Pause an ongoing multi-agent mission.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
+        ToolSpec { name: "afwe_mission_resume", op: "mission.resume", description: "Resume a paused multi-agent mission.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
         ToolSpec { name: "afwe_lease_acquire", op: "lease.acquire", description: "Acquire a concurrency lease on a blueprint node stored in shared .git/afwe/leases.json.", schema: obj(json!({"node": {"type": "string"}, "mission": {"type": "string"}, "agent": {"type": "string"}, "purpose": {"type": "string"}, "ttl": {"type": "integer"}}), &["node", "mission", "agent"]) },
         ToolSpec { name: "afwe_lease_release", op: "lease.release", description: "Release a concurrency lease on a blueprint node.", schema: obj(json!({"node": {"type": "string"}, "mission": {"type": "string"}, "agent": {"type": "string"}}), &["node", "mission", "agent"]) },
         ToolSpec { name: "afwe_lease_list", op: "lease.list", description: "List all active node concurrency leases across all worktrees.", schema: obj(json!({}), &[]) },
