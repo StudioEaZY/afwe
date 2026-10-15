@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
 
-pub const FORMAT_VERSION: &str = "afwe/2";
+pub const FORMAT_VERSION: &str = "afwe/3";
 
 fn is_false(b: &bool) -> bool {
     !*b
@@ -1190,6 +1190,12 @@ pub struct Turn {
     pub restore: Option<RestoreRecord>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pin_proposals: Vec<String>,
+    /// Cryptographic blake3 token issued at turn.begin to prevent out-of-band cheating / tampering.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub turn_token: Option<String>,
+    /// Associated mission id when executed as part of an autonomous mission
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mission: Option<String>,
 }
 
 /// Derived (rebuildable) snapshot taken at turn.begin, used to attribute changes at commit time.
@@ -1207,4 +1213,7 @@ pub struct Baseline {
     /// node -> files that realised it at begin
     #[serde(default)]
     pub implements: BTreeMap<String, Vec<String>>,
+    /// Guard fingerprints at begin (pins, checks, constraints) for anti-tamper detection
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub guards: BTreeMap<String, String>,
 }

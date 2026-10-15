@@ -1,0 +1,27 @@
+{
+  "intents": [
+    {
+      "id": "positioning-docs",
+      "action": "update",
+      "targets": ["README.md", "docs/WALKTHROUGH.md", "docs/TUTORIAL.md"],
+      "statement": "Clarify positioning, grep vs graph vs AFWE comparison, and honest claims description"
+    },
+    {
+      "id": "authority-tiers",
+      "action": "create",
+      "targets": ["crates/afwe-core/src/model.rs", "crates/afwe-core/src/turn.rs"],
+      "statement": "Introduce authority tiers, escalation pipeline, and anti-tamper turn verification"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a-walkthrough-honest",
+      "text": "WALKTHROUGH accurately specifies regex and import graph checking",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "regex",
+        "files": ["docs/WALKTHROUGH.md"]
+      }
+    }
+  ]
+}

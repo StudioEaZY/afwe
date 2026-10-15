@@ -1,0 +1,17 @@
+id: tutorial-philosophy
+title: tutorial-philosophy
+statement: Rewrite TUTORIAL section 1 so the core problem is lost intent behind design decisions, with the engine example and honest limits
+status: active
+origin: human
+attaches:
+  files:
+  - docs/TUTORIAL.md
+from_turns:
+- t0013
+history:
+- turn: t0013
+  ts: 2026-10-09T10:09:33Z
+  statement: Rewrite TUTORIAL section 1 so the core problem is lost intent behind design decisions, with the engine example and honest limits
+created: 2026-10-09T10:09:33Z
+updated: 2026-10-09T10:09:33Z
+task: task-a06fde

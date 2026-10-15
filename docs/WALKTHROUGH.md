@@ -81,8 +81,8 @@ afwe turn commit t0001 --summary "Restructure funnel flow and remove urgency clo
 ```
 
 AFWE's gate runs:
-1. **Tree-sitter Pattern Verification**: Scans `Slide6.tsx` for `"50% off"`.
-2. **Global Funnel AST Scan**: Scans all funnel components for `"ticking-clock"`.
+1. **Regex Pattern Verification**: Scans `Slide6.tsx` for `"50% off"`.
+2. **Global Pattern Check**: Scans all funnel components for `"ticking-clock"`.
 3. **Structural Import Gate**: Verifies no forbidden cross-subsystem imports were introduced.
 4. **Pin Conflict Gate**: Confirms Lemon Squeezy contract remains untouched.
 
@@ -97,6 +97,8 @@ Once passing, AFWE commits the turn atomically with trailer `AFWE-Turn: t0001`.
 
 ---
 
-## 3. Key Takeaway
+## 3. Key Takeaway & Honest Boundary
 
-By forcing claims **before** code generation, AFWE turns messy, qualitative human prompts into **deterministic pre-commit tests**, guaranteeing architectural integrity without requiring an LLM inside the engine kernel.
+By forcing claims **before** code generation, AFWE turns messy, qualitative human prompts into **deterministic pre-commit tests (regex patterns, symbol presence, structural import edges)**, guaranteeing architectural integrity without requiring an LLM inside the engine kernel.
+
+> **Honest Limitation**: AFWE deterministically proves that all declared assumptions and claims hold true; it does not replace the requirement for agents or humans to decompose intent accurately at `turn assume`.

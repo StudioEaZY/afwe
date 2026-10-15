@@ -17,12 +17,14 @@
 
 pub mod analyze;
 pub mod api;
+pub mod authority;
 pub mod claims;
 pub mod conflict;
 pub mod context;
 pub mod contract;
 pub mod drift;
 pub mod engine;
+pub mod escalation;
 pub mod gate;
 pub mod index;
 pub mod init;

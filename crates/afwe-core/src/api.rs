@@ -64,6 +64,21 @@ fn snapshot_for(engine: &Engine, files: &[String], refresh: bool) -> Result<Snap
 /// of the most recent open task, so the harness does not have to report them separately).
 pub fn call(engine: &Engine, op: &str, params: Value, default_origin: &str) -> Result<Value> {
     let task = params.get("task").and_then(|v| v.as_str()).map(|s| s.to_string());
+    let caller_origin = origin(&params, default_origin);
+    let auth = crate::authority::authority_of(&caller_origin);
+
+    // Intercept loosening ops performed by non-human authorities
+    if let Some(desc) = crate::authority::is_loosening_op(op, &params) {
+        if !crate::authority::can_loosen(&auth, None) {
+            let esc = crate::escalation::request(engine, op, &params, &caller_origin, &desc, task.as_deref())?;
+            return Ok(json!({
+                "status": "escalated",
+                "escalation": esc.id,
+                "message": format!("Guard loosening requires human approval. Escalation `{}` requested: {}", esc.id, desc),
+            }));
+        }
+    }
+
     let result = dispatch(engine, op, params, default_origin)?;
     let step = match op {
         o if o.starts_with("memory.add") || o.starts_with("memory.update") || o.starts_with("guardrail.add") => Some("afwe_update"),
@@ -367,6 +382,27 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             Ok(json!({"ok": true}))
         }
 
+        // ───────── v3: escalations ─────────
+        "escalation.list" => j(crate::escalation::list(engine)?),
+        "escalation.approve" => {
+            let id = req(&p, "id")?;
+            let origin_str = origin(&p, default_origin);
+            if crate::authority::authority_of(&origin_str) != crate::authority::Authority::Human {
+                return Err(anyhow!("only humans can approve escalations"));
+            }
+            let esc = crate::escalation::approve(engine, &id, &origin_str)?;
+            // Execute the approved operation with human authority
+            dispatch(engine, &esc.op, esc.params, &origin_str)
+        }
+        "escalation.reject" => {
+            let id = req(&p, "id")?;
+            let origin_str = origin(&p, default_origin);
+            if crate::authority::authority_of(&origin_str) != crate::authority::Authority::Human {
+                return Err(anyhow!("only humans can reject escalations"));
+            }
+            j(crate::escalation::reject(engine, &id, &origin_str)?)
+        }
+
         // ───────── v2: timeline ─────────
         "timeline.list" => timeline::list(engine, p.get("limit").and_then(|v| v.as_u64()).unwrap_or(50) as usize),
         "timeline.get" => timeline::get(engine, &req(&p, "turn")?),
@@ -413,7 +449,8 @@ pub const OPS: &[&str] = &[
     "proposals.list", "proposal.resolve", "log.get", "log.add", "bootstrap", "ops",
     "turn.begin", "turn.assume", "turn.commit", "turn.confirm", "turn.revert", "turn.get", "turn.list", "gate",
     "intent.list", "intent.get", "pin.list", "pin.get", "pin.propose", "pin.accept", "pin.retire", "pin.budget",
-    "check.list", "check.add", "check.remove", "timeline.list", "timeline.get", "timeline.diff", "timeline.search", "timeline.losses", "timeline.restore",
+    "check.list", "check.add", "check.remove", "escalation.list", "escalation.approve", "escalation.reject",
+    "timeline.list", "timeline.get", "timeline.diff", "timeline.search", "timeline.losses", "timeline.restore",
     "onboard.detect", "onboard.apply", "migrate",
 ];
 

@@ -436,21 +436,31 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         targets: req.targets.clone(),
         scope: TurnScope { nodes: nodes.clone(), files: files.iter().map(|f| format!("{prefix}{f}")).collect() },
         status: "open".into(),
+        turn_token: Some(hash_str(&format!("{id}:{}:{}", req.prompt, now()))),
         ..Default::default()
     };
     engine.store.save_turn(&turn)?;
     engine.log(&req.origin, "turn_begin", format!("{id} begun: {}", truncate(&title, 100)), Some(json!({"turn": id, "task": task.id, "nodes": nodes})))?;
+    let mut guard_fps = BTreeMap::new();
+    for p in &pins {
+        guard_fps.insert(format!("pin:{}", p.id), format!("{}:{}:{}", p.status, p.severity, hash_str(&p.statement)));
+    }
+    for c in &snap.sources.constraints.constraints {
+        guard_fps.insert(format!("constraint:{}", c.id), format!("{}:{}", c.severity, c.phase.as_deref().unwrap_or("active")));
+    }
     let baseline = Baseline {
         head: vcs::open(&snap.manifest.vcs.provider).head(&root),
         files: tree_hashes(engine, &snap),
         symbols: symbol_map(&snap),
         implements: implements_map(&snap, &prefix),
+        guards: guard_fps,
     };
     engine.store.save_baseline(&id, &baseline)?;
 
     Ok(json!({
         "turn": id,
         "status": "open",
+        "turn_token": turn.turn_token,
         "task": task.id,
         "scope": {"nodes": nodes, "files": brief_files},
         "unresolved_targets": unresolved,
