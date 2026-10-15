@@ -110,6 +110,7 @@ pub struct ApplyOptions {
     pub ci: bool,
     pub agents_md: bool,
     pub test_command: Option<String>,
+    pub legacy: bool,
 }
 
 fn write_gitignore_if_missing(root: &Path) -> Result<bool> {
@@ -209,6 +210,12 @@ pub fn apply(root: &Path, o: ApplyOptions) -> Result<Value> {
         actions.push(".afwe/skills/afwe/SKILL.md: skill template written".into());
     }
     let (report, _) = sync(&engine, &SyncOptions { dry_run: false, origin: "human:onboard".into() })?;
+    if o.legacy {
+        let bp = crate::init::bootstrap(&engine, 2, true)?;
+        let count = crate::baseline::capture(&engine)?;
+        actions.push(format!("legacy mode: bootstrapped {} uncharted blueprint nodes", bp.nodes.len()));
+        actions.push(format!("ratchet baseline: grandfathered {} violations", count));
+    }
     engine.log("human:onboard", "onboard", format!("Onboarded with profile `{}`", o.profile), Some(json!({"actions": actions})))?;
     Ok(json!({"status": "configured", "profile": o.profile, "actions": actions, "sync": {"files": report.files, "nodes": report.nodes, "mapped": report.mapped_files}}))
 }

@@ -1,0 +1,19 @@
+id: header-and-events
+title: header-and-events
+statement: Implement invariant header with dedicated shield symbol and Studio live SSE event stream
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-cli/src/studio.rs
+from_turns:
+- t0015
+history:
+- turn: t0015
+  ts: 2026-10-15T10:08:17Z
+  statement: Implement invariant header with dedicated shield symbol and Studio live SSE event stream
+created: 2026-10-15T10:08:17Z
+updated: 2026-10-15T10:08:17Z
+task: task-0b6b20
