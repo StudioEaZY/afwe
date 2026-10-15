@@ -1196,6 +1196,9 @@ pub struct Turn {
     /// Associated mission id when executed as part of an autonomous mission
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mission: Option<String>,
+    /// Post-commit hashes of touched files, used for automated rollback / external undo reconciliation.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub post_hashes: BTreeMap<String, String>,
 }
 
 /// Derived (rebuildable) snapshot taken at turn.begin, used to attribute changes at commit time.

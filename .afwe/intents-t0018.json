@@ -1,0 +1,36 @@
+{
+  "intents": [
+    {
+      "id": "external-undo-and-rollback",
+      "action": "create",
+      "targets": ["crates/afwe-core/src/rollback.rs", "crates/afwe-core/src/turn.rs"],
+      "statement": "External undo detection, post-commit state fingerprints, and rollback reconciliation"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a-rollback-module",
+      "text": "rollback reconciliation functions defined in rollback.rs",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "pub fn reconcile",
+        "files": ["crates/afwe-core/src/rollback.rs"]
+      }
+    },
+    {
+      "id": "a-post-hashes",
+      "text": "post_hashes field on Turn in model.rs",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "pub post_hashes: BTreeMap<String, String>",
+        "files": ["crates/afwe-core/src/model.rs"]
+      }
+    }
+  ],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "100% deterministic code without LLM model calls in core engine"
+    }
+  ]
+}

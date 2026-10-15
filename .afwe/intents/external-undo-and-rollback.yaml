@@ -1,0 +1,18 @@
+id: external-undo-and-rollback
+title: external-undo-and-rollback
+statement: External undo detection, post-commit state fingerprints, and rollback reconciliation
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/turn.rs
+from_turns:
+- t0018
+history:
+- turn: t0018
+  ts: 2026-10-15T10:51:50Z
+  statement: External undo detection, post-commit state fingerprints, and rollback reconciliation
+created: 2026-10-15T10:51:50Z
+updated: 2026-10-15T10:51:50Z
+task: task-309d04
