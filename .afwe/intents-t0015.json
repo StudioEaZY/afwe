@@ -1,0 +1,33 @@
+{
+  "intents": [
+    {
+      "id": "header-and-events",
+      "action": "create",
+      "targets": ["crates/afwe-core/src/turn.rs", "crates/afwe-core/src/api.rs", "crates/afwe-cli/src/studio.rs"],
+      "statement": "Implement invariant header with dedicated shield symbol and Studio live SSE event stream"
+    },
+    {
+      "id": "legacy-uncharted-ratchet",
+      "action": "update",
+      "targets": ["crates/afwe-core/src/model.rs", "crates/afwe-core/src/gate.rs", "crates/afwe-core/src/drift.rs", "crates/afwe-core/src/verify.rs", "crates/afwe-core/src/onboard.rs"],
+      "statement": "Support status: uncharted with neutral confidence and pre-existing debt ratchet baseline"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a-shield-symbol",
+      "text": "Header contains dedicated shield symbol",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "⛨ AFWE",
+        "files": ["crates/afwe-core/src/header.rs"]
+      }
+    }
+  ],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "100% deterministic code without LLM model calls in core engine"
+    }
+  ]
+}

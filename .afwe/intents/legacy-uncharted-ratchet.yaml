@@ -1,0 +1,21 @@
+id: legacy-uncharted-ratchet
+title: legacy-uncharted-ratchet
+statement: 'Support status: uncharted with neutral confidence and pre-existing debt ratchet baseline'
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/src/onboard.rs
+from_turns:
+- t0015
+history:
+- turn: t0015
+  ts: 2026-10-15T10:08:17Z
+  statement: 'Support status: uncharted with neutral confidence and pre-existing debt ratchet baseline'
+created: 2026-10-15T10:08:17Z
+updated: 2026-10-15T10:08:17Z
+task: task-0b6b20

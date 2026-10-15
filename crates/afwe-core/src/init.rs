@@ -135,7 +135,7 @@ pub fn bootstrap(engine: &Engine, depth: usize, apply: bool) -> Result<Blueprint
             let id = crate::mapping::unique_id(ids, &name);
             ids.push(id.clone());
             let kids = build(d, dirs, depth_left - 1, generic, ids);
-            out.push(BlueprintNode { id, name: humanise(&name), kind: if kids.is_empty() { "module".into() } else { "subsystem".into() }, purpose: None, description: Some(format!("Bootstrapped from `{d}/` ({count} code files). Review and give it a purpose.")), implements: Implementation { files: vec![format!("{d}/**")], symbols: vec![] }, tags: vec!["bootstrapped".into()], status: Some("active".into()), origin: Some("afwe:bootstrap".into()), children: kids });
+            out.push(BlueprintNode { id, name: humanise(&name), kind: if kids.is_empty() { "module".into() } else { "subsystem".into() }, purpose: None, description: Some(format!("Bootstrapped from `{d}/` ({count} code files). Review and give it a purpose.")), implements: Implementation { files: vec![format!("{d}/**")], symbols: vec![] }, tags: vec!["bootstrapped".into()], status: Some("uncharted".into()), origin: Some("afwe:bootstrap".into()), children: kids });
         }
         out
     }

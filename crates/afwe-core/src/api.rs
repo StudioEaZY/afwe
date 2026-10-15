@@ -328,14 +328,49 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             j(bp)
         }
         // ───────── v2: turns (the protocol: begin → assume → commit) ─────────
-        "turn.begin" => turn::begin(engine, turn::BeginRequest { prompt: req(&p, "prompt")?, origin: origin(&p, default_origin), agent: s(&p, "agent"), targets: list(&p, "targets"), refines: list(&p, "refines"), kind: s(&p, "kind").unwrap_or("code".into()) }),
-        "turn.assume" => turn::assume(engine, &req(&p, "turn")?, turn::AssumeRequest { intents: parse_vec(&p, "intents")?, assumptions: parse_vec(&p, "assumptions")?, removes: list(&p, "removes"), overrides: parse_vec(&p, "overrides")?, origin: origin(&p, default_origin) }),
-        "turn.commit" => turn::commit(engine, &req(&p, "turn")?, turn::CommitRequest { summary: s(&p, "summary"), footer_shown: b(&p, "footer_shown", false), removes: list(&p, "removes"), touched: list(&p, "touched"), overrides: parse_vec(&p, "overrides")?, origin: origin(&p, default_origin), confirmed: b(&p, "confirmed", false) }),
+        "turn.begin" => {
+            let mut res = turn::begin(engine, turn::BeginRequest { prompt: req(&p, "prompt")?, origin: origin(&p, default_origin), agent: s(&p, "agent"), targets: list(&p, "targets"), refines: list(&p, "refines"), kind: s(&p, "kind").unwrap_or("code".into()) })?;
+            if let Some(t) = res.get("turn").and_then(|v| v.as_str()) {
+                res["header"] = json!(crate::header::render(engine, Some(t)).unwrap_or_default());
+            }
+            Ok(res)
+        }
+        "turn.assume" => {
+            let turn_id = req(&p, "turn")?;
+            let mut res = turn::assume(engine, &turn_id, turn::AssumeRequest { intents: parse_vec(&p, "intents")?, assumptions: parse_vec(&p, "assumptions")?, removes: list(&p, "removes"), overrides: parse_vec(&p, "overrides")?, origin: origin(&p, default_origin) })?;
+            res["header"] = json!(crate::header::render(engine, Some(&turn_id)).unwrap_or_default());
+            Ok(res)
+        }
+        "turn.commit" => {
+            let turn_id = req(&p, "turn")?;
+            let mut res = turn::commit(engine, &turn_id, turn::CommitRequest { summary: s(&p, "summary"), footer_shown: b(&p, "footer_shown", false), removes: list(&p, "removes"), touched: list(&p, "touched"), overrides: parse_vec(&p, "overrides")?, origin: origin(&p, default_origin), confirmed: b(&p, "confirmed", false) })?;
+            res["header"] = json!(crate::header::render(engine, Some(&turn_id)).unwrap_or_default());
+            Ok(res)
+        }
         "turn.confirm" => turn::confirm(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
         "turn.revert" => turn::revert(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
         "turn.get" => j(turn::get(engine, &req(&p, "turn")?)?),
         "turn.list" => j(turn::list(engine)?),
         "gate" => turn::gate_now(engine, &origin(&p, default_origin)),
+        "header" => {
+            let turn_id = s(&p, "turn");
+            let rendered = crate::header::render(engine, turn_id.as_deref())?;
+            Ok(json!({
+                "header": rendered,
+                "symbol": crate::header::SHIELD_SYMBOL,
+            }))
+        }
+        "baseline.capture" => {
+            let count = crate::baseline::capture(engine)?;
+            Ok(json!({
+                "captured": count,
+                "file": crate::baseline::path(),
+            }))
+        }
+        "baseline.get" => {
+            let b = crate::baseline::load(engine)?;
+            j(b)
+        }
 
         // ───────── v2: intents ─────────
         "intent.list" => j(engine.store.intents()?),
@@ -422,6 +457,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
                 ci: b(&p, "ci", true),
                 agents_md: b(&p, "agents_md", true),
                 test_command: s(&p, "test_command"),
+                legacy: b(&p, "legacy", false),
             },
         ),
         "migrate" => {
@@ -451,7 +487,7 @@ pub const OPS: &[&str] = &[
     "intent.list", "intent.get", "pin.list", "pin.get", "pin.propose", "pin.accept", "pin.retire", "pin.budget",
     "check.list", "check.add", "check.remove", "escalation.list", "escalation.approve", "escalation.reject",
     "timeline.list", "timeline.get", "timeline.diff", "timeline.search", "timeline.losses", "timeline.restore",
-    "onboard.detect", "onboard.apply", "migrate",
+    "onboard.detect", "onboard.apply", "migrate", "header", "baseline.capture", "baseline.get",
 ];
 
 fn status(engine: &Engine) -> Result<Value> {
@@ -467,7 +503,9 @@ fn status(engine: &Engine) -> Result<Value> {
         *kinds.entry(m.meta.kind.clone()).or_insert(0usize) += 1;
     }
     let sync_status = if st.last_sync.is_none() { "never_synced" } else if st.code_fingerprint != snap.code.fingerprint || st.afwe_fingerprint != engine.store.afwe_fingerprint() { "stale" } else { "in_sync" };
+    let header_str = crate::header::render(engine, None).unwrap_or_default();
     Ok(json!({
+        "header": header_str,
         "project": snap.manifest.project,
         "engine": crate::ENGINE_VERSION,
         "format": snap.manifest.format,
@@ -674,5 +712,11 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_timeline_restore", op: "timeline.restore", description: "Restore a vanished feature: 3-way merge of its last good version. apply=true opens a restore turn that is gated at commit.", schema: obj(json!({"feature": {"type": "string"}, "apply": {"type": "boolean"}}), &["feature"]) },
         ToolSpec { name: "afwe_onboard_detect", op: "onboard.detect", description: "Detect stacks, git state, configuration and the suggested test command, without changing anything.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_onboard_apply", op: "onboard.apply", description: "Configure the project with a profile (normie | engineer): policy presets, git init, CI gate, AGENTS.md block.", schema: obj(json!({"profile": {"type": "string"}, "init_git": {"type": "boolean"}, "ci": {"type": "boolean"}, "agents_md": {"type": "boolean"}, "test_command": {"type": "string"}}), &["profile"]) },
+        ToolSpec { name: "afwe_header", op: "header", description: "Single source-of-truth status header line starting with ⛨ AFWE.", schema: obj(json!({"turn": {"type": "string"}}), &[]) },
+        ToolSpec { name: "afwe_baseline_capture", op: "baseline.capture", description: "Capture current blueprint/code violations into .afwe/baseline.yaml so legacy debt does not fail new turns.", schema: obj(json!({"branch": {"type": "string"}, "label": {"type": "string"}}), &[]) },
+        ToolSpec { name: "afwe_baseline_get", op: "baseline.get", description: "Read the grandfathered violation baseline.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_escalation_list", op: "escalation.list", description: "List pending guard-loosening requests queued for human approval.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_escalation_approve", op: "escalation.approve", description: "Human approval of a queued guard-loosening escalation.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
+        ToolSpec { name: "afwe_escalation_reject", op: "escalation.reject", description: "Human rejection of a queued guard-loosening escalation.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
     ]
 }

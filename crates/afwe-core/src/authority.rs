@@ -5,7 +5,6 @@
 //! - Autonomous agents/missions have full control to mutate or loosen guards they authored themselves.
 //! - Loosening of human or foreign-tier rules triggers an Escalation instead of silently dropping checks.
 
-use crate::model::*;
 use serde_json::Value;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

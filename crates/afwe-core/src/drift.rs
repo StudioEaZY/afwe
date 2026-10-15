@@ -50,8 +50,13 @@ pub fn detect(snap: &Snapshot, only_files: Option<&[String]>) -> Vec<Finding> {
                     continue;
                 }
             }
-            if !expects_home(f) || snap.mapping.primary(&f.path).is_some() {
+            let primary_node = snap.mapping.primary(&f.path);
+            let is_uncharted = primary_node.and_then(|id| table.nodes.get(id)).and_then(|n| n.status.as_deref()) == Some("uncharted");
+            if !expects_home(f) || (primary_node.is_some() && !is_uncharted) {
                 continue;
+            }
+            if is_uncharted {
+                continue; // Uncharted files do not produce noise proposals
             }
             let (change, conf, evidence) = suggest_home(snap, f, &by_dir);
             out.push(Finding {

@@ -52,6 +52,10 @@ pub fn tree_from_blueprint(bp: &Blueprint) -> String {
 
 pub fn status(v: &Value) -> String {
     let mut o = String::new();
+    if let Some(h) = v["header"].as_str() {
+        o.push_str(h);
+        o.push_str("\n\n");
+    }
     o.push_str(&format!("AFWE {} — {}\n", s(&v["project"], "name"), s(&v["project"], "description")));
     o.push_str(&format!("sync:       {}{}\n", s(&v["sync"], "status"), v["sync"]["last_sync"].as_str().map(|t| format!(" (last {t})")).unwrap_or_default()));
     o.push_str(&format!("blueprint:  {} nodes, {} relations, {} constraints\n", v["blueprint"]["nodes"], v["blueprint"]["relations"], v["blueprint"]["constraints"]));
@@ -286,7 +290,12 @@ fn strings(v: &Value) -> String {
 
 /// The briefing a harness receives at turn.begin, for people reading it in a terminal.
 pub fn turn_briefing(v: &Value) -> String {
-    let mut out = format!("Turn {} open (task {})\n", s(v, "turn"), s(v, "task"));
+    let mut out = String::new();
+    if let Some(h) = v["header"].as_str() {
+        out.push_str(h);
+        out.push_str("\n\n");
+    }
+    out.push_str(&format!("Turn {} open (task {})\n", s(v, "turn"), s(v, "task")));
     let scope = strings(&v["scope"]["nodes"]);
     out.push_str(&format!("  scope: {}\n", if scope.is_empty() { "no node named — pass --target for precise context".to_string() } else { scope }));
     if !list_of(&v["unresolved_targets"]).is_empty() {
@@ -344,7 +353,12 @@ pub fn turn_briefing(v: &Value) -> String {
 /// Result of turn.assume / turn.commit / turn.confirm / turn.revert.
 pub fn turn_result(v: &Value) -> String {
     let id = s(v, "turn");
-    match s(v, "status") {
+    let mut header_prefix = String::new();
+    if let Some(h) = v["header"].as_str() {
+        header_prefix.push_str(h);
+        header_prefix.push_str("\n\n");
+    }
+    let body = match s(v, "status") {
         "committed" => {
             let sha = v["commit"]["sha"].as_str().map(|x| x.chars().take(7).collect::<String>());
             let mut out = format!(
@@ -404,7 +418,8 @@ pub fn turn_result(v: &Value) -> String {
             if list_of(&v["manual"]).is_empty() { String::new() } else { format!(", {} need a manual revert: {}", list_of(&v["manual"]).len(), strings(&v["manual"])) }
         ),
         _ => serde_json::to_string_pretty(v).unwrap_or_default(),
-    }
+    };
+    format!("{header_prefix}{body}")
 }
 
 pub fn turn_list(v: &Value) -> String {
@@ -577,5 +592,40 @@ pub fn onboard_apply(v: &Value) -> String {
         out.push_str(&format!("  ✔ {}\n", a.as_str().unwrap_or("")));
     }
     out.push_str("Next: `afwe studio` to see the board, or start a turn with `afwe turn begin \"…\"`.\n");
+    out
+}
+
+pub fn baseline(v: &Value) -> String {
+    if v.is_null() {
+        return "no baseline captured (run `afwe baseline capture`)\n".into();
+    }
+    let violations = list_of(&v["violations"]);
+    let mut out = format!("Ratchet Baseline: {} violation(s) grandfathered\n", violations.len());
+    if let Some(created) = v["created"].as_str() {
+        out.push_str(&format!("  created: {created}\n"));
+    }
+    if let Some(label) = v["label"].as_str() {
+        out.push_str(&format!("  label:   {label}\n"));
+    }
+    for viol in violations.iter().take(30) {
+        out.push_str(&format!("  • [{}] {} — {}\n", s(viol, "category"), s(viol, "file"), s(viol, "message")));
+    }
+    if violations.len() > 30 {
+        out.push_str(&format!("  … and {} more\n", violations.len() - 30));
+    }
+    out
+}
+
+pub fn escalations(v: &Value) -> String {
+    let list = list_of(v);
+    if list.is_empty() {
+        return "no pending escalations\n".into();
+    }
+    let mut out = format!("Pending Guard Loosening Escalations ({}):\n", list.len());
+    for e in list {
+        out.push_str(&format!("  • {:<12} {:<10} {:<15} {}\n", s(e, "id"), s(e, "status"), s(e, "requested_by"), s(e, "description")));
+        out.push_str(&format!("    op: {} params: {}\n", s(e, "op"), serde_json::to_string(&e["params"]).unwrap_or_default()));
+    }
+    out.push_str("\nTo approve: afwe escalation approve <id>\nTo reject:  afwe escalation reject <id>\n");
     out
 }

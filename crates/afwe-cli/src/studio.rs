@@ -30,7 +30,13 @@ pub fn serve(start: PathBuf, host: &str, port: u16, open_browser: bool, dist: Op
     for mut req in server.incoming_requests() {
         let path = req.url().split('?').next().unwrap_or("/").to_string();
         let method = req.method().clone();
-        let resp = if path.starts_with("/api/") {
+        let resp = if path == "/api/events" {
+            let mut r = Response::from_string("event: ping\ndata: {\"status\":\"connected\"}\n\n").with_status_code(StatusCode(200));
+            r.add_header(Header::from_bytes("Content-Type", "text/event-stream").unwrap());
+            r.add_header(Header::from_bytes("Cache-Control", "no-cache").unwrap());
+            r.add_header(Header::from_bytes("Access-Control-Allow-Origin", "*").unwrap());
+            r
+        } else if path.starts_with("/api/") {
             let mut body = String::new();
             let _ = req.as_reader().read_to_string(&mut body);
             let (status, value) = handle_api(&engine, &method, &path, &body);

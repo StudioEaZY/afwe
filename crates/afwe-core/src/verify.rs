@@ -192,6 +192,17 @@ pub fn verify(snap: &Snapshot, project_root: &Path, opts: &VerifyOptions) -> Ver
         ran.push("drift".into());
     }
 
+    // Check against pre-existing debt baseline
+    let base_opt = crate::baseline::load(&crate::Engine::at(project_root)).ok();
+    if let Some(base) = base_opt {
+        for issue in &mut issues {
+            if issue.severity == "error" && crate::baseline::is_covered(&base, issue) {
+                issue.severity = "warn".into();
+                issue.message = format!("{} [pre-existing debt: baseline covered]", issue.message);
+            }
+        }
+    }
+
     let errors = issues.iter().filter(|i| i.severity == "error").count();
     let warnings = issues.iter().filter(|i| i.severity == "warn").count();
     VerifyReport { ok: errors == 0, errors, warnings, issues, checked_files: changed, ran_checks: ran }

@@ -196,7 +196,21 @@ enum Cmd {
         no_agents: bool,
         #[arg(long)]
         test_command: Option<String>,
+        /// Legacy codebase adoption: bootstrap uncharted nodes and capture baseline ratchet
+        #[arg(long)]
+        legacy: bool,
     },
+    /// Invariant single source-of-truth status header starting with ⛨ AFWE
+    Header {
+        #[arg(long)]
+        turn: Option<String>,
+    },
+    /// Ratchet baseline: grandfather pre-existing violations on legacy codebases
+    #[command(subcommand)]
+    Baseline(BaselineCmd),
+    /// Guard loosening escalation queue for human review
+    #[command(subcommand)]
+    Escalation(EscalationCmd),
     /// Upgrade the .afwe/ folder to the current format (legacy workflows/ become intents/)
     Migrate,
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
@@ -515,6 +529,29 @@ enum LogCmd {
         #[arg(long)]
         task: Option<String>,
     },
+}
+
+#[derive(Subcommand)]
+enum BaselineCmd {
+    /// Capture current violations into .afwe/baseline.yaml
+    Capture {
+        #[arg(long)]
+        branch: Option<String>,
+        #[arg(long)]
+        label: Option<String>,
+    },
+    /// Show current ratchet baseline
+    Show,
+}
+
+#[derive(Subcommand)]
+enum EscalationCmd {
+    /// List pending guard loosening escalation requests
+    List,
+    /// Approve an escalation request
+    Approve { id: String },
+    /// Reject an escalation request
+    Reject { id: String },
 }
 
 #[derive(Args)]
@@ -1099,7 +1136,7 @@ fn run(cli: Cli) -> Result<i32> {
             out(json, &v, |v| render::gate(v, ci));
             Ok(if v["ok"].as_bool().unwrap_or(false) { 0 } else { 1 })
         }
-        Cmd::Onboard { profile, check, no_git, no_baseline, no_ci, no_agents, test_command } => {
+        Cmd::Onboard { profile, check, no_git, no_baseline, no_ci, no_agents, test_command, legacy } => {
             let root = match cli.dir.clone() {
                 Some(d) => d,
                 None => std::env::current_dir()?,
@@ -1111,9 +1148,47 @@ fn run(cli: Cli) -> Result<i32> {
             }
             let v = afwe_core::onboard::apply(
                 &root,
-                afwe_core::onboard::ApplyOptions { profile, init_git: !no_git, baseline_commit: !no_baseline, ci: !no_ci, agents_md: !no_agents, test_command },
+                afwe_core::onboard::ApplyOptions { profile, init_git: !no_git, baseline_commit: !no_baseline, ci: !no_ci, agents_md: !no_agents, test_command, legacy },
             )?;
             out(json, &v, render::onboard_apply);
+            Ok(0)
+        }
+        Cmd::Header { turn } => {
+            let engine = engine_for(&cli.dir)?;
+            let v = api::call(&engine, "header", json!({"turn": turn}), &origin)?;
+            out(json, &v, |v| v["header"].as_str().unwrap_or("").to_string());
+            Ok(0)
+        }
+        Cmd::Baseline(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                BaselineCmd::Capture { branch, label } => {
+                    let v = api::call(&engine, "baseline.capture", json!({"branch": branch, "label": label}), &origin)?;
+                    out(json, &v, render::baseline);
+                }
+                BaselineCmd::Show => {
+                    let v = api::call(&engine, "baseline.get", json!({}), &origin)?;
+                    out(json, &v, render::baseline);
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Escalation(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                EscalationCmd::List => {
+                    let v = api::call(&engine, "escalation.list", json!({}), &origin)?;
+                    out(json, &v, render::escalations);
+                }
+                EscalationCmd::Approve { id } => {
+                    let v = api::call(&engine, "escalation.approve", json!({"id": id}), &origin)?;
+                    out(json, &v, |v| format!("escalation {id} approved: {}", serde_json::to_string_pretty(v).unwrap_or_default()));
+                }
+                EscalationCmd::Reject { id } => {
+                    let v = api::call(&engine, "escalation.reject", json!({"id": id}), &origin)?;
+                    out(json, &v, |v| format!("escalation {id} rejected: status {}", v["status"]));
+                }
+            }
             Ok(0)
         }
         Cmd::Migrate => {
