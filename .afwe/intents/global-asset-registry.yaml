@@ -1,0 +1,17 @@
+id: global-asset-registry
+title: Global Asset Registry and String Interner
+statement: Provide deduplicated AssetArena, SymId, AssetId, and string interner
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/registry.rs
+from_turns:
+- t0019
+history:
+- turn: t0019
+  ts: 2026-10-16T12:17:15Z
+  statement: Provide deduplicated AssetArena, SymId, AssetId, and string interner
+created: 2026-10-16T12:17:15Z
+updated: 2026-10-16T12:17:15Z
+task: task-2928a5

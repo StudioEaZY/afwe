@@ -1,0 +1,17 @@
+id: dots-scene-graph
+title: DOTS Hierarchical Scene Graph and Component Tables
+statement: Provide SceneWorld, EntityId, dot-notation resolution, and SparseSet component tables
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/scene.rs
+from_turns:
+- t0019
+history:
+- turn: t0019
+  ts: 2026-10-16T12:17:15Z
+  statement: Provide SceneWorld, EntityId, dot-notation resolution, and SparseSet component tables
+created: 2026-10-16T12:17:15Z
+updated: 2026-10-16T12:17:15Z
+task: task-2928a5

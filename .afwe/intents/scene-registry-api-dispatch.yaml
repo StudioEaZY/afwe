@@ -1,0 +1,18 @@
+id: scene-registry-api-dispatch
+title: Register modules and API ops
+statement: Expose scene and registry endpoints via api dispatch and tool specs
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/api.rs
+from_turns:
+- t0019
+history:
+- turn: t0019
+  ts: 2026-10-16T12:17:15Z
+  statement: Expose scene and registry endpoints via api dispatch and tool specs
+created: 2026-10-16T12:17:15Z
+updated: 2026-10-16T12:17:15Z
+task: task-2928a5

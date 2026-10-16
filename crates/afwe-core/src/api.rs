@@ -483,6 +483,31 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         "lease.release" => Ok(json!({"released": crate::lease::release(engine, &req(&p, "node")?, &req(&p, "mission")?, &req(&p, "agent")?)?})),
         "lease.list" => j(crate::lease::list_active(engine)?),
 
+        // ───────── v4: scene graph & 4d timeline ─────────
+        "scene.get" => j(crate::scene::SceneWorld::build(engine)?.to_studio_json()),
+        "scene.query" => {
+            let world = crate::scene::SceneWorld::build(engine)?;
+            let q = s(&p, "query").or(s(&p, "q")).unwrap_or_default();
+            let matches: Vec<Value> = world.query(&q).iter().map(|&e| {
+                let idx = e.0 as usize;
+                json!({
+                    "id": world.identities[idx].name,
+                    "dot_path": world.identities[idx].dot_path,
+                    "kind": world.identities[idx].kind,
+                    "status": world.identities[idx].status,
+                })
+            }).collect();
+            Ok(json!({"query": q, "count": matches.len(), "matches": matches}))
+        }
+        "timeline.snapshot" => {
+            if let Some(to) = s(&p, "to") {
+                crate::timeline_4d::range_diff(engine, &req(&p, "turn")?, &to)
+            } else {
+                crate::timeline_4d::snapshot_at_turn(engine, &req(&p, "turn")?)
+            }
+        }
+        "timeline.frames" => crate::timeline_4d::timeline_frames(engine),
+
         "ops" => Ok(json!(OPS)),
         other => Err(anyhow!("unknown op `{other}` (see `ops`)")),
     }
@@ -504,6 +529,7 @@ pub const OPS: &[&str] = &[
     "onboard.detect", "onboard.apply", "migrate", "header", "baseline.capture", "baseline.get",
     "mission.create", "mission.get", "mission.list", "mission.spawn", "mission.merge", "mission.pause", "mission.resume",
     "lease.acquire", "lease.release", "lease.list",
+    "scene.get", "scene.query", "timeline.snapshot", "timeline.frames",
 ];
 
 fn status(engine: &Engine) -> Result<Value> {
@@ -746,5 +772,9 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_lease_acquire", op: "lease.acquire", description: "Acquire a concurrency lease on a blueprint node stored in shared .git/afwe/leases.json.", schema: obj(json!({"node": {"type": "string"}, "mission": {"type": "string"}, "agent": {"type": "string"}, "purpose": {"type": "string"}, "ttl": {"type": "integer"}}), &["node", "mission", "agent"]) },
         ToolSpec { name: "afwe_lease_release", op: "lease.release", description: "Release a concurrency lease on a blueprint node.", schema: obj(json!({"node": {"type": "string"}, "mission": {"type": "string"}, "agent": {"type": "string"}}), &["node", "mission", "agent"]) },
         ToolSpec { name: "afwe_lease_list", op: "lease.list", description: "List all active node concurrency leases across all worktrees.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_scene_get", op: "scene.get", description: "Get the DOTS Hierarchical Scene Graph with Component Tables and dot-notation paths.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_scene_query", op: "scene.query", description: "Query the Scene Graph using dot-notation filters (e.g. afwe.crates.*, .has(pin), .status(planned)).", schema: obj(json!({"query": {"type": "string"}}), &["query"]) },
+        ToolSpec { name: "afwe_timeline_snapshot", op: "timeline.snapshot", description: "Point-in-time 4D snapshot of the architectural scene at turn (or range diff between turn and to).", schema: obj(json!({"turn": {"type": "string"}, "to": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_timeline_frames", op: "timeline.frames", description: "Get complete 4D timeline frames for dope sheet scrubbing.", schema: obj(json!({}), &[]) },
     ]
 }

@@ -1,0 +1,50 @@
+{
+  "intents": [
+    {
+      "id": "global-asset-registry",
+      "action": "create",
+      "targets": ["crates/afwe-core/src/registry.rs"],
+      "title": "Global Asset Registry and String Interner",
+      "statement": "Provide deduplicated AssetArena, SymId, AssetId, and string interner"
+    },
+    {
+      "id": "dots-scene-graph",
+      "action": "create",
+      "targets": ["crates/afwe-core/src/scene.rs"],
+      "title": "DOTS Hierarchical Scene Graph and Component Tables",
+      "statement": "Provide SceneWorld, EntityId, dot-notation resolution, and SparseSet component tables"
+    },
+    {
+      "id": "timeline-4d-engine",
+      "action": "create",
+      "targets": ["crates/afwe-core/src/timeline_4d.rs"],
+      "title": "4D Temporal Timeline Snapshot and Delta Engine",
+      "statement": "Provide SceneFrame delta snapshots across turns and temporal diff calculation"
+    },
+    {
+      "id": "scene-registry-api-dispatch",
+      "action": "update",
+      "targets": ["crates/afwe-core/src/lib.rs", "crates/afwe-core/src/api.rs"],
+      "title": "Register modules and API ops",
+      "statement": "Expose scene and registry endpoints via api dispatch and tool specs"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "deterministic zero-LLM in-memory asset registry",
+      "claim": {
+        "type": "forbid_pattern",
+        "pattern": "llm_call|openai|anthropic",
+        "files": ["crates/afwe-core/src/registry.rs", "crates/afwe-core/src/scene.rs"]
+      }
+    }
+  ],
+  "removes": [],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "100% deterministic engine without LLM calls"
+    }
+  ]
+}
