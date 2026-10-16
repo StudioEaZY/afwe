@@ -12,7 +12,7 @@ interface TreeItem {
   workflows?: { id: string; title: string; status?: string }[];
 }
 
-export function TreePanel() {
+export function TreePanel({ onSwitchMode }: { onSwitchMode?: () => void }) {
   const { graph, selected, select, expanded, toggle, lens, setLens, run, notify } = useStore();
   const [adding, setAdding] = useState(false);
   const [newLens, setNewLens] = useState(false);
@@ -70,6 +70,11 @@ export function TreePanel() {
             </option>
           ))}
         </select>
+        {onSwitchMode && (
+          <button className="ghost small mode-switch-btn" onClick={onSwitchMode} title="Switch to DOTS Scene Outliner">
+            ⇄ Outliner
+          </button>
+        )}
       </div>
       <div className="tree">
         {roots.map((r) => (

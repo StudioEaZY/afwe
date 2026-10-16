@@ -168,4 +168,70 @@ export const api = {
   proposals: () => call("proposals.list"),
   proposal: (id: string, action: "accept" | "revert" | "review") => call("proposal.resolve", { id, action }),
   log: (tail = 50) => call("log.get", { tail }),
+
+  // ── v4: Scene Graph & 4D Timeline ──
+  scene: {
+    get: (): Promise<SceneData> => call("scene.get"),
+    query: (query: string): Promise<{ query: string; count: number; matches: any[] }> => call("scene.query", { query }),
+  },
+  timeline4d: {
+    frames: (): Promise<{ count: number; frames: TimelineFrame[] }> => call("timeline.frames"),
+    snapshot: (turn: string, to?: string): Promise<SceneData> => call("timeline.snapshot", { turn, to }),
+  },
 };
+
+export interface SceneNodeComponents {
+  impl: { files_count: number; files: string[]; symbols_count: number };
+  governance: { pins_count: number; pin_ids: string[]; constraints_count: number; guardrails_count: number };
+  verification: { checks_count: number; check_ids: string[]; confidence: number; passed: boolean };
+  lease: { is_locked: boolean; agent?: string | null; mission?: string | null };
+  delta: { status: string; delta_files: number; notes?: string | null };
+}
+
+export interface SceneNode {
+  id: string;
+  dot_path: string;
+  kind: string;
+  status: string;
+  purpose?: string | null;
+  origin: string;
+  depth: number;
+  parent: string | null;
+  children: string[];
+  components: SceneNodeComponents;
+}
+
+export interface SceneData {
+  entities_count: number;
+  nodes: SceneNode[];
+  assets: {
+    files_count: number;
+    symbols_count: number;
+    memory_count: number;
+    pins_count: number;
+    checks_count: number;
+  };
+  turn?: string;
+  prompt?: string;
+  summary?: string;
+  confidence?: number;
+  range?: {
+    from: string;
+    to: string;
+    turns_spanned: number;
+    total_files_changed: number;
+  };
+}
+
+export interface TimelineFrame {
+  turn: string;
+  ts: string;
+  status: string;
+  prompt: string;
+  summary?: string | null;
+  confidence: number;
+  touched_nodes: string[];
+  touched_files: string[];
+  pin_proposals: number;
+  checks_count: number;
+}

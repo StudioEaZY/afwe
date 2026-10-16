@@ -19,8 +19,8 @@ interface VNode {
   data: any;
 }
 
-const NODE_W = 210;
-const NODE_H = 66;
+const NODE_W = 224;
+const NODE_H = 74;
 const FILE_W = 190;
 const FILE_H = 34;
 const GAP_X = 26;
@@ -174,6 +174,7 @@ function layout(model: { nodes: Map<string, VNode>; roots: string[] }): { pos: M
 function BlueprintNodeView({ data, selected }: NodeProps) {
   const d = data as any;
   const v: VNode = d.v;
+  const { scene } = useStore();
   if (v.file) {
     return (
       <div className={`fnode ${selected ? "sel" : ""} ${d.unmapped ? "unmapped" : ""} ${d.nested ? "nested" : ""}`} title={v.data.path || ""}>
@@ -184,13 +185,20 @@ function BlueprintNodeView({ data, selected }: NodeProps) {
     );
   }
   const n = v.data;
+  const sceneNode = scene?.nodes.find((sn) => sn.id === n.id || sn.dot_path.endsWith(n.id));
+  const delta = sceneNode?.components.delta;
+  const gov = sceneNode?.components.governance;
+  const lease = sceneNode?.components.lease;
+
   return (
-    <div className={`bnode ${selected ? "sel" : ""} ${v.virtual ? "virtual" : ""} ${d.violation ? "violation" : ""} ${n.status && n.status !== "active" ? n.status : ""}`}>
+    <div
+      className={`bnode ${selected ? "sel" : ""} ${v.virtual ? "virtual" : ""} ${d.violation ? "violation" : ""} ${n.status && n.status !== "active" ? n.status : ""} ${delta ? `delta-${delta.status}` : ""}`}
+    >
       <Handle type="target" position={Position.Top} id="top" />
       <Handle type="target" position={Position.Left} id="left" />
       <div className="bhead">
         <span className="bicon">{kindIcon(v.kind)}</span>
-        <span className="bname" title={n.path || n.name}>
+        <span className="bname" title={sceneNode?.dot_path || n.path || n.name}>
           {v.name}
         </span>
         {v.hasChildren && (
@@ -203,7 +211,21 @@ function BlueprintNodeView({ data, selected }: NodeProps) {
         <span className="kind">{v.kind}</span>
         {!v.virtual && <span title="files">{n.files} f</span>}
         {!v.virtual && n.memory?.length > 0 && <span title="memory entries">{n.memory.length} m</span>}
-        {!v.virtual && n.guardrails?.length > 0 && <span title="guardrails">{n.guardrails.length} g</span>}
+        {gov && gov.pins_count > 0 && (
+          <span className="slot-badge pin" title={gov.pin_ids.join(", ")}>
+            ⛨ {gov.pins_count}
+          </span>
+        )}
+        {lease && lease.is_locked && (
+          <span className="slot-badge lease" title={`Leased by ${lease.agent}`}>
+            🔒
+          </span>
+        )}
+        {delta && delta.status !== "unchanged" && (
+          <span className={`slot-badge delta ${delta.status}`}>
+            {delta.status === "added" ? "+" : delta.status === "modified" ? "Δ" : delta.status === "plannedfuture" ? "◌" : "×"}
+          </span>
+        )}
         {n.status && n.status !== "active" && <span className="st">{n.status}</span>}
       </div>
       <Handle type="source" position={Position.Bottom} />

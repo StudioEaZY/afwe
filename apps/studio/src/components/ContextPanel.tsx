@@ -18,7 +18,7 @@ function Section({ title, hint, children, count }: { title: string; hint?: strin
   );
 }
 
-export function ContextPanel() {
+export function ContextPanel({ onSwitchMode }: { onSwitchMode?: () => void }) {
   const { graph, selected, selectedFile, select, run, notify, setView } = useStore();
   const [detail, setDetail] = useState<any>(null);
   const [ctx, setCtx] = useState<any>(null);
@@ -47,7 +47,18 @@ export function ContextPanel() {
   }, [selectedFile, graph]);
 
   const node = nodeById(graph, selected);
-  if (!graph || !node) return <aside className="panel right" />;
+  if (!graph || !node) return (
+    <aside className="panel right">
+      <div className="panel-head">
+        <span className="muted">Context</span>
+        {onSwitchMode && (
+          <button className="ghost small mode-switch-btn" onClick={onSwitchMode} title="Switch to ECS Inspector">
+            ⇄ ECS
+          </button>
+        )}
+      </div>
+    </aside>
+  );
   const parent = nodeById(graph, node.parent);
 
   const link = (id: string, label?: string) => (
@@ -78,6 +89,11 @@ export function ContextPanel() {
             Agent view
           </button>
         </span>
+        {onSwitchMode && (
+          <button className="ghost small mode-switch-btn" onClick={onSwitchMode} title="Switch to ECS Inspector">
+            ⇄ ECS
+          </button>
+        )}
       </div>
 
       {selectedFile && (

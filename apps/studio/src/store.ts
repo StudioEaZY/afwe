@@ -19,7 +19,19 @@ interface State {
   onboardOpen: boolean;
   configured: boolean | null;
 
+  // ── v4: Scene Graph & 4D Timeline ──
+  scene: import("./api").SceneData | null;
+  activeTurn: string | null;
+  compareFromTurn: string | null;
+  timelineFrames: import("./api").TimelineFrame[];
+  dotQuery: string;
+  selectedDotPath: string | null;
+
   refresh: () => Promise<void>;
+  refreshScene: () => Promise<void>;
+  scrubToTurn: (turn: string | null, toTurn?: string) => Promise<void>;
+  setDotQuery: (q: string) => void;
+  selectDotPath: (dot: string | null) => void;
   setOnboardOpen: (b: boolean) => void;
   setConfigured: (b: boolean) => void;
   setView: (v: View) => void;
@@ -50,6 +62,49 @@ export const useStore = create<State>((set, get) => ({
   busy: null,
   onboardOpen: false,
   configured: null,
+  scene: null,
+  activeTurn: null,
+  compareFromTurn: null,
+  timelineFrames: [],
+  dotQuery: "",
+  selectedDotPath: null,
+
+  refreshScene: async () => {
+    try {
+      const [scene, res] = await Promise.all([
+        api.scene.get(),
+        api.timeline4d.frames(),
+      ]);
+      set({ scene, timelineFrames: res.frames || [] });
+    } catch (e: any) {
+      console.warn("Could not load scene or frames:", e);
+    }
+  },
+
+  scrubToTurn: async (turn: string | null, toTurn?: string) => {
+    if (!turn) {
+      set({ activeTurn: null, compareFromTurn: null });
+      await get().refreshScene();
+      return;
+    }
+    try {
+      const scene = await api.timeline4d.snapshot(turn, toTurn);
+      set({ scene, activeTurn: turn, compareFromTurn: toTurn || null });
+    } catch (e: any) {
+      get().notify(`Failed to scrub to ${turn}: ${e.message || e}`);
+    }
+  },
+
+  setDotQuery: (dotQuery: string) => set({ dotQuery }),
+  selectDotPath: (selectedDotPath: string | null) => {
+    const s = get().scene;
+    let nodeId: string | null = null;
+    if (s && selectedDotPath) {
+      const match = s.nodes.find((n) => n.dot_path === selectedDotPath);
+      if (match) nodeId = match.id;
+    }
+    set({ selectedDotPath, selected: nodeId ?? get().selected, selectedFile: null });
+  },
   setOnboardOpen: (b) => set({ onboardOpen: b }),
   setConfigured: (b) => set({ configured: b }),
 
@@ -70,7 +125,15 @@ export const useStore = create<State>((set, get) => ({
     }
   },
   setView: (view) => set({ view }),
-  select: (id) => set({ selected: id, selectedFile: null }),
+  select: (id) => {
+    const s = get().scene;
+    let dot: string | null = null;
+    if (s && id) {
+      const match = s.nodes.find((n) => n.id === id || n.dot_path.endsWith(id));
+      if (match) dot = match.dot_path;
+    }
+    set({ selected: id, selectedFile: null, selectedDotPath: dot ?? get().selectedDotPath });
+  },
   selectFile: (path) => set({ selectedFile: path }),
   toggle: (id) => {
     const s = new Set(get().expanded);

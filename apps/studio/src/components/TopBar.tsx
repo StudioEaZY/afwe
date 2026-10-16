@@ -12,7 +12,7 @@ const tabs: { id: View; label: string }[] = [
 ];
 
 export function TopBar() {
-  const { graph, view, setView, setDrawer, run, notify, refresh, configured, setOnboardOpen } = useStore();
+  const { graph, view, setView, setDrawer, run, notify, refresh, configured, setOnboardOpen, activeTurn, scrubToTurn, dotQuery, setDotQuery } = useStore();
   const [syncing, setSyncing] = useState(false);
   if (!graph) return null;
   const sync = graph.sync.status;
@@ -28,10 +28,16 @@ export function TopBar() {
   return (
     <header className="topbar">
       <div className="brand">
-        <span className="logo">AFWE</span>
+        <span className="logo" title="Architecture-First Workspace Engine">⛨ AFWE</span>
         <span className="project" title={graph.project.description || ""}>
           {graph.project.name}
         </span>
+        {activeTurn && (
+          <span className="time-badge pulse" title={`Viewing historical 4D state at ${activeTurn}`}>
+            4D: {activeTurn}
+            <button className="time-close" onClick={() => scrubToTurn(null)} title="Return to HEAD">×</button>
+          </span>
+        )}
         {isTauri() && (
           <button
             className="ghost small"
@@ -50,12 +56,21 @@ export function TopBar() {
       <nav className="tabs">
         {tabs.map((t) => (
           <button key={t.id} className={view === t.id ? "tab active" : "tab"} onClick={() => setView(t.id)}>
-            {t.label}
+            {t.id === "blueprint" ? "Scene 4D" : t.label}
             {t.id === "board" && graph.board_open > 0 && <span className="badge">{graph.board_open}</span>}
           </button>
         ))}
       </nav>
       <div className="right">
+        <div className="top-omni">
+          <input
+            type="text"
+            className="omni-input"
+            placeholder="Dot search: afwe.crates.*"
+            value={dotQuery}
+            onChange={(e) => setDotQuery(e.target.value)}
+          />
+        </div>
         {configured === false && (
           <button className="ghost" onClick={() => setOnboardOpen(true)} title="Configure git, CI and the agent contract">
             set up

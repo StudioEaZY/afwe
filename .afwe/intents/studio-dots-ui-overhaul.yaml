@@ -1,0 +1,17 @@
+id: studio-dots-ui-overhaul
+title: 'Studio UI overhaul: Scene Outliner, Component Inspector, 4D Timeline Scrubber, and DOTS styling'
+statement: 'Studio UI overhaul: Scene Outliner, Component Inspector, 4D Timeline Scrubber, and DOTS styling'
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0020
+history:
+- turn: t0020
+  ts: 2026-10-16T12:39:53Z
+  statement: 'Studio UI overhaul: Scene Outliner, Component Inspector, 4D Timeline Scrubber, and DOTS styling'
+created: 2026-10-16T12:39:53Z
+updated: 2026-10-16T12:39:53Z
+task: task-f90086
