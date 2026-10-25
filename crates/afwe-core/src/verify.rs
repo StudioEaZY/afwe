@@ -132,7 +132,8 @@ pub fn verify(snap: &Snapshot, project_root: &Path, opts: &VerifyOptions) -> Ver
                     let mut candidates: Vec<&FileInfo> = if check.files.is_empty() { touched.clone() } else { snap.code.files.iter().filter(|f| files_gs.as_ref().map(|g| g.is_match(&f.path)).unwrap_or(true)).filter(|f| !scoped || changed_set.contains(f.path.as_str())).collect() };
                     candidates.sort_by(|a, b| a.path.cmp(&b.path));
                     for f in candidates {
-                        let Ok(src) = std::fs::read_to_string(project_root.join(&f.path)) else { continue };
+                        let Ok(raw) = std::fs::read_to_string(project_root.join(&f.path)) else { continue };
+                        let src = crate::claims::blank_comments(&raw, &f.language);
                         let found = re.is_match(&src);
                         if check.kind == "forbid_pattern" && found {
                             let line = src.lines().position(|l| re.is_match(l)).map(|i| i + 1).unwrap_or(0);
@@ -199,6 +200,16 @@ pub fn verify(snap: &Snapshot, project_root: &Path, opts: &VerifyOptions) -> Ver
             if issue.severity == "error" && crate::baseline::is_covered(&base, issue) {
                 issue.severity = "warn".into();
                 issue.message = format!("{} [pre-existing debt: baseline covered]", issue.message);
+            }
+        }
+    }
+
+    // Explore mode (`afwe unlock`): temporarily downgrade errors to warnings so prototyping does not block
+    if snap.manifest.policy.explore_mode {
+        for issue in &mut issues {
+            if issue.severity == "error" {
+                issue.severity = "warn".into();
+                issue.message = format!("{} [explore mode unlocked: non-blocking]", issue.message);
             }
         }
     }

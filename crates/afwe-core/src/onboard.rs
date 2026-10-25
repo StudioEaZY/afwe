@@ -22,6 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Install or Build AFWE
@@ -36,6 +38,8 @@ jobs:
           else
             cargo install --git https://github.com/StudioEaZY/afwe.git afwe-cli
           fi
+      - name: Verify tripwire manifest and base-branch guard integrity
+        run: afwe materialize --check --base "${{ github.event.pull_request.base.sha || github.event.before }}"
       - name: The architecture matches the code
         run: |
           afwe sync

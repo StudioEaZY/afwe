@@ -119,18 +119,22 @@ Passive guardrail on every edit, active guardrail after every edit:
 `afwe verify` exits `1` on errors, which makes the hook surface the violation to the agent as an error it
 has to deal with — that is the "use errors to force the agent's behaviour" part of active guardrails.
 
-### Git hooks / CI
+### Git hooks / CI / Claude Code Hooks (Preview-First Materialization)
+
+AFWE provides preview-first tripwire materialization to safely generate and manage chained git hooks and CI workflows:
 
 ```bash
-# .git/hooks/pre-commit
-changed=$(git diff --cached --name-only --diff-filter=ACMR)
-[ -n "$changed" ] && afwe verify --no-commands --changed $changed
-```
+# Preview what tripwires will be generated
+afwe materialize
 
-```yaml
-# CI
-- run: afwe sync --check            # exit 1 if blueprint and code are out of sync
-- run: afwe verify                  # exit 1 on constraint / active guardrail errors
+# Apply tripwires (chained git pre-commit hook, CI workflow, BLAKE3 manifest)
+afwe materialize --apply
+
+# Verify guardrails in CI against base branch
+afwe materialize --check --base origin/main
+
+# Cleanly remove all tripwires and unchain hooks
+afwe materialize --remove
 ```
 
 ### AGENTS.md / CLAUDE.md
@@ -177,8 +181,9 @@ Harnesses drive the turn protocol through three MCP tools (or the CLI equivalent
 
 Also available: `afwe_turn_confirm`, `afwe_turn_revert`, `afwe_turn_get`, `afwe_turn_list`, `afwe_intent_list`,
 `afwe_pin_list | propose | accept | retire | budget`, `afwe_check_list | add | remove`, `afwe_gate`,
-`afwe_timeline_list | get | diff | search | losses | restore`, `afwe_onboard_detect | apply`.
-`afwe mcp` answers `tools/list` with 49 tools.
+`afwe_timeline_list | get | diff | search | losses | restore`, `afwe_onboard_detect | apply`,
+`afwe_stats`, `afwe_guide_list | confirm`, `afwe_question_list | answer`, `afwe_materialize`, `afwe_unlock | lock`.
+`afwe mcp` answers `tools/list` with 57 tools.
 
 Rules for a harness: call `afwe_turn_begin` first and show the footer it returns while proposals are pending;
 call `afwe_turn_assume` before writing code; call `afwe_turn_commit` after writing code; treat `status: redo` as

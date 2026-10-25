@@ -21,7 +21,8 @@ Line drift and limited context windows make this worse, but the cause is that yo
 - It sits between your harness and the codebase.
 - Your prompt, the agent's declared intents, your pins, memory and guardrails live in `.afwe/` as human-readable, git-friendly YAML and markdown.
 - A deterministic gate refuses changes that break what you declared: constraints, block pins and undeclared feature loss. It stops the mistakes you have written down, not every mistake.
-- **Zero LLMs in core**: AFWE never makes internal model calls. The harness is the model, and AFWE is the deterministic verification kernel. The agent still writes the claims the gate checks.
+- **The verdict is always deterministic; LLMs propose**: AFWE never makes internal model calls. The harness or agent proposes intents and claims, while AFWE is the deterministic verification and judgment kernel. The agent writes claims that AFWE verifies with tree-sitter, AST parsing, and reproducible checks.
+- **Unified Graph + Intent + Guardrails Loop**: Code knowledge graphing (the blueprint), intent memory (turns and living intents), and tripwires (active guardrails and materialized hooks) are not separate tools; they form a single continuous architectural feedback loop.
 
 ```text
 Developer Prompt ──▶ Harness (Claude / Cursor) ──▶ AFWE Turn Protocol ──▶ Verified Git Commit
@@ -215,3 +216,63 @@ afwe timeline restore my-feature
 afwe timeline restore my-feature --apply
 ```
 AFWE executes a true 3-way merge against the last good commit, opens a new turn, and stages the restoration cleanly.
+
+---
+
+## 8. Inferred Intent, Probing Guides & Calibration
+
+AFWE infers intent from prompts, code diffs, and AST symbol changes. To avoid the echo-chamber graduation trap, inferred rules undergo rigorous verification before becoming hard guardrails:
+
+- **Probing Guides (0.85 – 0.90 confidence)**:
+  Injected into context briefings as advisory guides (`[GUIDE - ADVISORY]`). They guide the agent without blocking commits.
+- **Evidence Rubric & Hold-Out Probes**:
+  A guide does not graduate simply because an obedient agent followed it. It requires:
+  - $\ge 3$ qualifying turns touching the target scope across distinct user sessions.
+  - At least 1 hold-out probe turn where the guide was deliberately withheld from context and the agent still preserved the invariant.
+  - 0 contradictions and a model calibration trust factor $\ge 0.8$.
+- **Graduation Policy**:
+  - **Option A (Default, `policy.graduation.require_human = true`)**: Once evidence criteria are met, the guide moves to `ready_to_graduate`. One explicit human confirmation (`afwe guide confirm <id>`) promotes it to an active blocking check.
+  - **Option B (`policy.graduation.require_human = false`)**: Auto-graduates when criteria are met.
+- **Ambiguity Queue (< 0.85 confidence)**:
+  High-blast-radius ambiguities (nodes with $\ge 2$ dependents or touching shared interfaces) generate questions (`afwe question list`, `afwe question answer <id> <text>`), capped at 3 open questions per session.
+
+---
+
+## 9. Tripwires & Preview-First Materialization
+
+Tripwires enforce architectural boundaries in local Git hooks and CI:
+
+```bash
+# Preview proposed tripwire files and git hooks
+afwe materialize
+
+# Apply tripwires (creates BLAKE3 manifest, chains git pre-commit hooks, CI workflow)
+afwe materialize --apply
+
+# Verify tripwires in CI against base branch
+afwe materialize --check --base origin/main
+
+# Cleanly remove all materialized tripwires and restore git hooks
+afwe materialize --remove
+```
+
+The CI workflow verifies that PRs do not tamper with guardrails by checking against the protected base branch manifest.
+
+---
+
+## 10. Explore Mode & Stats Telemetry
+
+For early-stage prototyping or spike tasks:
+```bash
+# Temporarily relax blocking gates
+afwe unlock --reason "Spike on checkout architecture"
+
+# Re-arm deterministic blocking gates
+afwe lock
+```
+
+Inspect gate metrics, parse times, and calibration telemetry:
+```bash
+afwe stats
+```
+

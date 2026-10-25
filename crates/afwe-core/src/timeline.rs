@@ -297,6 +297,7 @@ pub fn restore(engine: &Engine, feature: &str, apply: bool, origin: &str) -> Res
         targets: vec![node.clone()],
         title: Some(format!("Restore {node}")),
         statement: None,
+        rationale: None,
     });
     engine.store.save_turn(&t)?;
     engine.log(origin, "restore", format!("Restore of `{node}` from {} opened as {tid}", good_t.id), Some(json!({"turn": tid, "conflicts": total_conflicts})))?;

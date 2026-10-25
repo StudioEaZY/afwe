@@ -425,11 +425,22 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         .unwrap_or_default();
 
     // ── record + baseline (captured after the log entry so the engine's own writes are not attributed) ──
+    let cal_store = engine.store.calibration().unwrap_or_default();
+    let next_turn_num = id.trim_start_matches('t').parse::<usize>().unwrap_or(1);
+    let (active_guides, held_out_guides) =
+        crate::calibration::select_guides_for_briefing(&cal_store.guides, next_turn_num);
+    let probing_guides_json: Vec<Value> = active_guides
+        .iter()
+        .map(|g| json!({"id": g.id, "title": g.title, "confidence": g.score, "probed_turns": g.probes.len(), "nodes": g.attaches.nodes}))
+        .collect();
+    let session_id = crate::calibration::derive_session_id(engine, req.agent.as_deref(), None);
+
     let turn = Turn {
         id: id.clone(),
         ts: now(),
         origin: req.origin.clone(),
         agent: req.agent.clone(),
+        session_id: Some(session_id.clone()),
         prompt: req.prompt.clone(),
         prompt_hash: hash_str(&req.prompt),
         task: Some(task.id.clone()),
@@ -438,6 +449,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         scope: TurnScope { nodes: nodes.clone(), files: files.iter().map(|f| format!("{prefix}{f}")).collect() },
         status: "open".into(),
         turn_token: Some(hash_str(&format!("{id}:{}:{}", req.prompt, now()))),
+        held_out_guides,
         ..Default::default()
     };
     engine.store.save_turn(&turn)?;
@@ -461,6 +473,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     Ok(json!({
         "turn": id,
         "status": "open",
+        "session_id": session_id,
         "turn_token": turn.turn_token,
         "reconciled_rollbacks": rollback_events,
         "task": task.id,
@@ -469,6 +482,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         "pins": active_pins,
         "intentional": intentional,
         "suggested_pins": suggested,
+        "probing_guides": probing_guides_json,
         "intents": intents,
         "memory": memory,
         "constraints": constraints,
@@ -773,9 +787,12 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     }
 
     // ── 4. checks ──
+    let commit_start = std::time::Instant::now();
+    let mut verify_issues: Vec<VerifyIssue> = vec![];
     let mut results: Vec<CheckResult> = vec![];
     if !code_rel.is_empty() {
         let report = verify(&snap, &root, &VerifyOptions { changed: code_rel.clone(), run_commands: true, include_drift: false });
+        verify_issues = report.issues.clone();
         for i in report.issues.iter().filter(|i| i.severity == "error") {
             blocking.push(format!("VERIFY_FAILED: {} — {}", i.id, i.message));
         }
@@ -907,6 +924,11 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         intents_resolved,
         warn_conflicts,
     });
+    if m.policy.explore_mode && !blocking.is_empty() {
+        for b in blocking.drain(..) {
+            notices.push(format!("[EXPLORE MODE UNLOCKED] {b}"));
+        }
+    }
     let outcome = gate::decide(&GateInput {
         blocking: blocking.clone(),
         confirm: confirm.clone(),
@@ -943,9 +965,26 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     let summary = turn.summary.clone().unwrap_or_default();
     turn.gate = GateRecord { decision: outcome.decision.as_str().into(), reasons: reasons.clone() };
 
+    let duration_us = commit_start.elapsed().as_micros() as u64;
+    let ast_files_parsed = code_rel.len();
+
     if outcome.decision == Decision::Redo {
         turn.status = "open".into();
         engine.store.save_turn(&turn)?;
+        let cal_store = engine.store.calibration().unwrap_or_default();
+        let judgment = crate::judgment::build_judgment(crate::judgment::BuildJudgmentInput {
+            turn_id: id,
+            table,
+            touched_nodes: &touched_list,
+            verify_issues: &verify_issues,
+            check_results: &results,
+            blocking_failures: &blocking,
+            probing_guides: vec![],
+            questions: cal_store.questions.into_iter().filter(|q| q.status == "open").collect(),
+            ast_files_parsed,
+            duration_us,
+            explore_mode: m.policy.explore_mode,
+        });
         engine.log(&req.origin, "turn_redo", format!("{id} REDO: {} blocking issue(s)", blocking.len()), Some(json!({"turn": id, "blocking": blocking})))?;
         return Ok(json!({
             "status": "redo",
@@ -956,27 +995,38 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
             "failures": blocking,
             "notices": notices,
             "checks": results,
+            "judgment": judgment,
             "required_action": "fix the failures above, then call turn.commit again. Nothing was committed.",
         }));
     }
 
-    if matches!(outcome.decision, Decision::Stage | Decision::Ready) {
-        let stage = outcome.decision == Decision::Stage;
-        turn.status = if stage { "staged".into() } else { "ready".into() };
+    if outcome.decision == Decision::Stage {
+        turn.status = "staged".into();
         engine.store.save_turn(&turn)?;
-        if stage {
-            let mut board = engine.store.board()?;
-            contract::upsert_system_item(
-                &mut board,
-                "turn",
-                id,
-                &format!("Proposal {id} ({:.0}%): {summary}", confidence * 100.0),
-                Some("accept (turn.confirm) or revert (turn.revert) — staged, not committed".into()),
-            );
-            engine.store.save_board(&board)?;
-        }
-        let kind = if stage { "turn_stage" } else { "turn_ready" };
-        engine.log(&req.origin, kind, format!("{id} {}: {summary} ({:.0}%)", turn.status, confidence * 100.0), Some(json!({"turn": id, "reasons": reasons})))?;
+        let mut board = engine.store.board()?;
+        contract::upsert_system_item(
+            &mut board,
+            "turn",
+            id,
+            &format!("Proposal {id} ({:.0}%): {summary}", confidence * 100.0),
+            Some("accept (turn.confirm) or revert (turn.revert) — staged, not committed".into()),
+        );
+        engine.store.save_board(&board)?;
+        let cal_store = engine.store.calibration().unwrap_or_default();
+        let judgment = crate::judgment::build_judgment(crate::judgment::BuildJudgmentInput {
+            turn_id: id,
+            table,
+            touched_nodes: &touched_list,
+            verify_issues: &verify_issues,
+            check_results: &results,
+            blocking_failures: &blocking,
+            probing_guides: vec![],
+            questions: cal_store.questions.into_iter().filter(|q| q.status == "open").collect(),
+            ast_files_parsed,
+            duration_us,
+            explore_mode: m.policy.explore_mode,
+        });
+        engine.log(&req.origin, "turn_stage", format!("{id} staged: {summary} ({:.0}%)", confidence * 100.0), Some(json!({"turn": id, "reasons": reasons})))?;
         return Ok(json!({
             "status": turn.status,
             "turn": id,
@@ -984,32 +1034,20 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
             "confidence": confidence,
             "confidence_parts": parts,
             "checks": results,
+            "judgment": judgment,
             "reasons": reasons,
             "files": turn.touched.files,
-            "next": if stage {
-                "not committed: confirm with turn.confirm, or revert with turn.revert. Include the footer in your reply until resolved."
-            } else {
-                "engineer manual mode: commit with git; keep the `AFWE-Turn:` trailer from this record"
-            },
+            "next": "not committed: confirm with turn.confirm, or revert with turn.revert. Include the footer in your reply until resolved.",
         }));
     }
 
-    // ── 11. commit: settle the record, run the registry's generators, then write git ──
-    turn.status = "committed".into();
-    turn.committed_at = Some(now());
+    // ── 11. ready or commit: settle confirmed assumptions, run checkgen, pin detection & calibration ──
     for a in turn.assumptions.iter_mut() {
         if a.status == "proposed" {
             a.status = "confirmed".into();
         }
     }
-    for s in &folded {
-        let mut s2 = engine.store.turn(&s.id)?.unwrap_or_else(|| s.clone());
-        s2.status = "folded".into();
-        s2.folded_into = Some(id.to_string());
-        engine.store.save_turn(&s2)?;
-        turn.folded.push(s.id.clone());
-    }
-    let made_checks = intent::checkgen(engine, &turn)?;
+    let mut made_checks = intent::checkgen(engine, &turn)?;
     if let Some((kind, sev)) = intent::detect_pin_phrase(&turn.prompt) {
         let nodes: Vec<String> = if touched_list.is_empty() { turn.scope.nodes.clone() } else { touched_list.clone() };
         if !nodes.is_empty() {
@@ -1026,8 +1064,193 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
                     intentional: kind == "intentional",
                 },
             )?;
-            turn.pin_proposals.push(pin.id);
+            if !turn.pin_proposals.contains(&pin.id) {
+                turn.pin_proposals.push(pin.id);
+            }
         }
+    }
+
+    // Phase 1: calibration rubric, probing guides & blast-radius ambiguity routing
+    let mut cal_store = engine.store.calibration().unwrap_or_default();
+    let turn_session_id = turn
+        .session_id
+        .clone()
+        .unwrap_or_else(|| crate::calibration::derive_session_id(engine, turn.agent.as_deref(), None));
+    for g in cal_store.guides.iter_mut().filter(|g| g.status == "probing") {
+        let touched_sym = crate::calibration::touches_governed_target(g, &changed_symbols, &code_rel, &snap);
+        let check_passed = claims::evaluate(&g.claim, &snap, &root, &code_rel)
+            .map(|w| w.is_none())
+            .unwrap_or(false);
+        let held_out = turn.held_out_guides.contains(&g.id);
+        let sib_consistent = crate::calibration::is_sibling_consistent(&snap, &g.attaches.nodes, Some(&g.claim));
+        crate::calibration::evaluate_probe_for_guide(
+            g,
+            &turn.id,
+            &turn_session_id,
+            touched_sym,
+            check_passed,
+            held_out,
+            &m.policy.graduation,
+            sib_consistent,
+        );
+        if g.status == "graduated" && g.graduated_check_id.is_none() {
+            let check_id = slug(&format!("grad-{}", g.id));
+            let spec = CheckSpec {
+                id: check_id.clone(),
+                title: g.title.clone(),
+                trust: CheckTrust::Deterministic,
+                authored_by: "checkgen:graduated".into(),
+                attaches: g.attaches.clone(),
+                command: None,
+                claim: Some(g.claim.clone()),
+                timeout_s: None,
+                status: "active".into(),
+                origin: Some(g.origin.clone()),
+                created: Some(now()),
+                created_from: g.created_from.clone(),
+                superseded_by: None,
+                provenance: Some("graduated".into()),
+            };
+            let _ = engine.store.save_check(&spec);
+            g.graduated_check_id = Some(check_id.clone());
+            made_checks.push(check_id);
+        }
+    }
+    let model_id = turn.agent.clone().unwrap_or_else(|| turn.origin.clone());
+    let mut low_conf_items: Vec<(String, AssumptionClaim, f64)> = Vec::new();
+    let source_nodes_for_rubric = if !turn.touched.nodes.is_empty() {
+        turn.touched.nodes.clone()
+    } else {
+        turn.scope.nodes.clone()
+    };
+    for a in turn.assumptions.iter_mut() {
+        if a.status == "confirmed" {
+            if let Some(cl) = &a.claim {
+                let sib = crate::calibration::is_sibling_consistent(&snap, &source_nodes_for_rubric, Some(cl));
+                let score = crate::calibration::compute_rubric_score(&crate::calibration::RubricEvidence {
+                    high_quality_claim: claims::is_structural_claim(cl),
+                    sibling_consistent: sib,
+                    contradicts_history: false,
+                    qualifying_probes: 0,
+                });
+                a.computed_score = Some(score);
+                if (0.85..0.90).contains(&score) {
+                    let gid = format!("guide-{}-{}", turn.id, a.id);
+                    if !cal_store.guides.iter().any(|g| g.id == gid) {
+                        cal_store.guides.push(GuideState {
+                            id: gid,
+                            title: a.text.clone(),
+                            status: "probing".into(),
+                            score,
+                            llm_reported_confidence: a.confidence,
+                            claim: cl.clone(),
+                            attaches: Attachment {
+                                nodes: source_nodes_for_rubric.clone(),
+                                files: cl.files.clone(),
+                                ..Default::default()
+                            },
+                            probes: vec![],
+                            contradictions: 0,
+                            provenance: "inferred".into(),
+                            origin: model_id.clone(),
+                            created: now(),
+                            created_from: Some(turn.id.clone()),
+                            graduated_check_id: None,
+                            confirmed_by: None,
+                            confirmed_at: None,
+                        });
+                    }
+                } else if score < 0.85 {
+                    low_conf_items.push((a.text.clone(), cl.clone(), score));
+                }
+            }
+        }
+    }
+    for (stmt, cl, _score) in low_conf_items {
+        let attach = Attachment {
+            nodes: source_nodes_for_rubric.clone(),
+            files: cl.files.clone(),
+            ..Default::default()
+        };
+        let blast = crate::calibration::assess_blast_radius(
+            &snap,
+            &attach.nodes,
+            &changed_symbols,
+            false,
+        );
+        if crate::calibration::route_low_confidence_item(
+            &mut cal_store.questions,
+            &turn.id,
+            &turn_session_id,
+            &stmt,
+            Some(cl),
+            attach,
+            &blast,
+        )
+        .is_none()
+        {
+            turn.agent_zone_rationales.push(stmt);
+        }
+    }
+    let _ = engine.store.save_calibration(&cal_store);
+    turn.checkgen = made_checks.clone();
+
+    let active_guide_ids: Vec<String> = cal_store
+        .guides
+        .iter()
+        .filter(|g| g.status == "probing" || g.status == "ready_to_graduate")
+        .map(|g| g.id.clone())
+        .collect();
+    let open_questions: Vec<AmbiguityQuestion> = cal_store
+        .questions
+        .iter()
+        .filter(|q| q.status == "open")
+        .cloned()
+        .collect();
+    let judgment = crate::judgment::build_judgment(crate::judgment::BuildJudgmentInput {
+        turn_id: id,
+        table,
+        touched_nodes: &touched_list,
+        verify_issues: &verify_issues,
+        check_results: &results,
+        blocking_failures: &blocking,
+        probing_guides: active_guide_ids,
+        questions: open_questions.clone(),
+        ast_files_parsed,
+        duration_us,
+        explore_mode: m.policy.explore_mode,
+    });
+
+    if outcome.decision == Decision::Ready {
+        turn.status = "ready".into();
+        engine.store.save_turn(&turn)?;
+        engine.log(&req.origin, "turn_ready", format!("{id} ready: {summary} ({:.0}%)", confidence * 100.0), Some(json!({"turn": id, "reasons": reasons, "checkgen": made_checks})))?;
+        return Ok(json!({
+            "status": turn.status,
+            "turn": id,
+            "strength": strength,
+            "confidence": confidence,
+            "confidence_parts": parts,
+            "checks": results,
+            "checkgen": made_checks,
+            "pin_proposals": turn.pin_proposals,
+            "judgment": judgment,
+            "questions": open_questions,
+            "reasons": reasons,
+            "files": turn.touched.files,
+            "next": "engineer manual mode: commit with git; keep the `AFWE-Turn:` trailer from this record",
+        }));
+    }
+
+    // ── 12. commit: fold proposals, sync, and write git ──
+    turn.status = "committed".into();
+    turn.committed_at = Some(now());
+    for s in &folded {
+        let mut s2 = engine.store.turn(&s.id)?.unwrap_or_else(|| s.clone());
+        s2.status = "folded".into();
+        s2.folded_into = Some(id.to_string());
+        engine.store.save_turn(&s2)?;
+        turn.folded.push(s.id.clone());
     }
 
     let mut post_hashes = BTreeMap::new();
@@ -1092,6 +1315,8 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         "confidence": confidence,
         "confidence_parts": parts,
         "checks": results,
+        "judgment": judgment,
+        "questions": open_questions,
         "notices": notices,
         "reasons": reasons,
         "folded": turn.folded,
@@ -1219,6 +1444,90 @@ mod tests {
         assert_eq!(code_prefix(&m), "app/");
         assert_eq!(to_code_rel("app/", "app/src/a.ts"), Some("src/a.ts".into()));
         assert_eq!(to_code_rel("app/", "other/a.ts"), None);
+    }
+
+    #[test]
+    fn ready_mode_turn_confirms_assumptions_and_runs_checkgen() {
+        let dir = std::env::temp_dir().join(format!("afwe-ready-{}", crate::util::short_id("t")));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(dir.join("src")).unwrap();
+        std::fs::write(dir.join("src/lib.rs"), "pub fn init() {}\n").unwrap();
+        crate::init::init(
+            &dir,
+            crate::init::InitOptions {
+                name: Some("ready-test".into()),
+                description: None,
+                root: None,
+                force: true,
+            },
+        )
+        .unwrap();
+        let engine = Engine::at(&dir);
+        crate::ops::map_node(&engine, "ready-test", &["src/**".to_string()], &[], false, "human").unwrap();
+        let mut m = engine.store.manifest().unwrap();
+        m.vcs.auto_commit = false; // engineer profile -> Decision::Ready
+        m.policy.checkgen = true;
+        engine.store.save_manifest(&m).unwrap();
+
+        let b = begin(
+            &engine,
+            BeginRequest {
+                prompt: "Keep it clean and do not change pub fn init".into(),
+                origin: "human".into(),
+                agent: None,
+                targets: vec!["src/lib.rs".into()],
+                refines: vec![],
+                kind: "code".into(),
+            },
+        )
+        .unwrap();
+        let tid = b["turn"].as_str().unwrap().to_string();
+
+        assume(
+            &engine,
+            &tid,
+            AssumeRequest {
+                intents: vec![],
+                assumptions: vec![Assumption {
+                    id: "a1".into(),
+                    text: "src/lib.rs defines helper".into(),
+                    status: "proposed".into(),
+                    confidence: Some(0.95),
+                    computed_score: None,
+                    claim: Some(AssumptionClaim {
+                        kind: "symbol_exists".into(),
+                        symbol: Some("helper".into()),
+                        files: vec!["src/lib.rs".into()],
+                        ..Default::default()
+                    }),
+                }],
+                removes: vec![],
+                overrides: vec![],
+                origin: "human".into(),
+            },
+        )
+        .unwrap();
+
+        std::fs::write(dir.join("src/lib.rs"), "pub fn init() {}\npub fn helper() {}\n").unwrap();
+        let res = commit(
+            &engine,
+            &tid,
+            CommitRequest {
+                summary: Some("Add helper".into()),
+                origin: "human".into(),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+        assert_eq!(res["status"], "ready");
+        let saved_turn = engine.store.turn(&tid).unwrap().unwrap();
+        assert_eq!(saved_turn.assumptions[0].status, "confirmed");
+        assert!(!saved_turn.checkgen.is_empty());
+        assert_eq!(engine.store.checks().unwrap().len(), 1);
+        assert!(!saved_turn.pin_proposals.is_empty());
+
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }
 

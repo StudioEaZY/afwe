@@ -47,9 +47,9 @@ pub fn leases_path(engine: &Engine) -> PathBuf {
                 }
             }
         }
-        engine.store.afwe_dir.join("leases.json")
+        engine.store.afwe_dir.join("state").join("leases.json")
     } else {
-        engine.store.afwe_dir.join("leases.json")
+        engine.store.afwe_dir.join("state").join("leases.json")
     }
 }
 

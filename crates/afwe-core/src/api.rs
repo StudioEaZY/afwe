@@ -401,8 +401,22 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             created_from: s(&p, "turn"),
             intentional: b(&p, "intentional", false),
         })?),
-        "pin.accept" => j(intent::accept_pin(engine, &req(&p, "id")?, &origin(&p, default_origin))?),
-        "pin.retire" => j(intent::retire_pin(engine, &req(&p, "id")?, s(&p, "reason"), &origin(&p, default_origin))?),
+        "pin.accept" => {
+            let caller = origin(&p, default_origin);
+            let pin = intent::accept_pin(engine, &req(&p, "id")?, &caller)?;
+            if !pin.origin.is_empty() && !pin.origin.starts_with("human") {
+                let _ = crate::calibration::record_human_outcome_in_store(engine, &pin.origin, &caller, true);
+            }
+            j(pin)
+        }
+        "pin.retire" => {
+            let caller = origin(&p, default_origin);
+            let pin = intent::retire_pin(engine, &req(&p, "id")?, s(&p, "reason"), &caller)?;
+            if !pin.origin.is_empty() && !pin.origin.starts_with("human") {
+                let _ = crate::calibration::record_human_outcome_in_store(engine, &pin.origin, &caller, false);
+            }
+            j(pin)
+        }
         "pin.budget" => match p.get("slider").and_then(|v| v.as_u64()) {
             Some(sl) => j(intent::set_slider(engine, sl as u8, &origin(&p, default_origin))?),
             None => j(intent::budget(engine)?),
@@ -428,6 +442,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
                 return Err(anyhow!("only humans can approve escalations"));
             }
             let esc = crate::escalation::approve(engine, &id, &origin_str)?;
+            let _ = crate::calibration::record_human_outcome_in_store(engine, &esc.origin, &origin_str, true);
             // Execute the approved operation with human authority
             dispatch(engine, &esc.op, esc.params, &origin_str)
         }
@@ -437,7 +452,9 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             if crate::authority::authority_of(&origin_str) != crate::authority::Authority::Human {
                 return Err(anyhow!("only humans can reject escalations"));
             }
-            j(crate::escalation::reject(engine, &id, &origin_str)?)
+            let esc = crate::escalation::reject(engine, &id, &origin_str)?;
+            let _ = crate::calibration::record_human_outcome_in_store(engine, &esc.origin, &origin_str, false);
+            j(esc)
         }
 
         // ───────── v2: timeline ─────────
@@ -508,13 +525,142 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         }
         "timeline.frames" => crate::timeline_4d::timeline_frames(engine),
 
+        // ───────── ReBorn: stats, calibration guides, questions, materialize & explore mode ─────────
+        "stats" => stats(engine),
+        "guide.list" => {
+            let cal = engine.store.calibration()?;
+            let status_filter = s(&p, "status");
+            let guides: Vec<GuideState> = cal
+                .guides
+                .into_iter()
+                .filter(|g| status_filter.as_ref().map(|st| &g.status == st).unwrap_or(true))
+                .collect();
+            Ok(json!({
+                "guides": guides,
+                "questions": cal.questions,
+                "profiles": cal.models,
+            }))
+        }
+        "guide.confirm" => {
+            let id = req(&p, "id")?;
+            let origin_str = origin(&p, default_origin);
+            if crate::authority::authority_of(&origin_str) != crate::authority::Authority::Human {
+                return Err(anyhow!("only humans can confirm and graduate probing guides"));
+            }
+            j(crate::calibration::confirm_guide(engine, &id, &origin_str)?)
+        }
+        "guide.reject" => {
+            let id = req(&p, "id")?;
+            let origin_str = origin(&p, default_origin);
+            let mut cal = engine.store.calibration()?;
+            let g = cal.guides.iter_mut().find(|g| g.id == id).ok_or_else(|| anyhow!("guide `{id}` not found"))?;
+            g.status = "retired".into();
+            let model_key = g.origin.trim_start_matches("llm:").to_string();
+            let out = g.clone();
+            if !model_key.is_empty() && model_key != "human" {
+                let profile = cal.models.entry(model_key.clone()).or_insert_with(|| ModelCalibrationProfile {
+                    model_id: model_key,
+                    ..Default::default()
+                });
+                crate::calibration::record_human_adjudication(profile, false);
+            }
+            engine.store.save_calibration(&cal)?;
+            engine.log(&origin_str, "guide_reject", format!("Rejected probing guide `{id}`"), None)?;
+            j(out)
+        }
+        "question.list" => {
+            let cal = engine.store.calibration()?;
+            let all = b(&p, "all", false);
+            let qs: Vec<AmbiguityQuestion> = cal
+                .questions
+                .into_iter()
+                .filter(|q| all || q.status == "open")
+                .collect();
+            j(qs)
+        }
+        "question.answer" => {
+            let id = req(&p, "id")?;
+            let answer = req(&p, "answer")?;
+            let make_pin = b(&p, "pin", false);
+            let origin_str = origin(&p, default_origin);
+            let mut cal = engine.store.calibration()?;
+            let q = cal.questions.iter_mut().find(|q| q.id == id).ok_or_else(|| anyhow!("question `{id}` not found"))?;
+            q.status = "answered".into();
+            q.answer = Some(answer.clone());
+            q.resolved = Some(crate::util::now());
+            let q_clone = q.clone();
+            engine.store.save_calibration(&cal)?;
+            let mut created_pin = None;
+            if make_pin {
+                let pin = intent::propose_pin(
+                    engine,
+                    PinSpec {
+                        statement: format!("{}: {}", q_clone.question, answer),
+                        kind: "decision".into(),
+                        severity: "block".into(),
+                        attaches: q_clone.attaches.clone(),
+                        reason: Some(format!("Answered ambiguity question {}", q_clone.id)),
+                        origin: origin_str.clone(),
+                        created_from: Some(q_clone.turn.clone()),
+                        intentional: false,
+                    },
+                )?;
+                created_pin = Some(pin);
+            }
+            Ok(json!({"question": q_clone, "pin": created_pin}))
+        }
+        "materialize" => {
+            let opts = crate::materialize::MaterializeOptions {
+                apply: b(&p, "apply", false),
+                remove: b(&p, "remove", false),
+                check: b(&p, "check", false),
+                base: s(&p, "base"),
+                native_tests: b(&p, "native_tests", false),
+                git_hooks: b(&p, "git_hooks", false),
+                ci: b(&p, "ci", false),
+                claude_hooks: b(&p, "claude_hooks", false),
+                agents_md: b(&p, "agents_md", false),
+            };
+            crate::materialize::run(engine, opts)
+        }
+        "unlock" => {
+            let origin_str = origin(&p, default_origin);
+            if crate::authority::authority_of(&origin_str) != crate::authority::Authority::Human {
+                return Err(anyhow!("only humans can enable explore mode (`afwe unlock`)"));
+            }
+            let mut m = engine.store.manifest()?;
+            m.policy.explore_mode = true;
+            engine.store.save_manifest(&m)?;
+            engine.log(&origin_str, "unlock", "Explore mode unlocked: blocking checks downgraded to warnings", None)?;
+            Ok(json!({
+                "status": "unlocked",
+                "explore_mode": true,
+                "message": "Explore mode enabled. Blocking checks are downgraded to warnings until you run `afwe lock`."
+            }))
+        }
+        "lock" => {
+            let origin_str = origin(&p, default_origin);
+            let mut m = engine.store.manifest()?;
+            m.policy.explore_mode = false;
+            engine.store.save_manifest(&m)?;
+            let snap = engine.snapshot(true)?;
+            let root = engine.store.code_root(&snap.manifest);
+            let report = verify(&snap, &root, &VerifyOptions { changed: vec![], run_commands: false, include_drift: true });
+            engine.log(&origin_str, "lock", format!("Explore mode locked: verify {}", if report.ok { "ok" } else { "found issues" }), None)?;
+            Ok(json!({
+                "status": "locked",
+                "explore_mode": false,
+                "verify": report,
+            }))
+        }
+
         "ops" => Ok(json!(OPS)),
         other => Err(anyhow!("unknown op `{other}` (see `ops`)")),
     }
 }
 
 pub const OPS: &[&str] = &[
-    "status", "graph", "context", "verify", "sync", "drift", "search", "file.read",
+    "status", "stats", "graph", "context", "verify", "sync", "drift", "search", "file.read",
     "blueprint.get", "blueprint.add", "blueprint.move", "blueprint.update", "blueprint.remove", "blueprint.map", "blueprint.unmap", "blueprint.relate", "blueprint.unrelate", "blueprint.constrain", "blueprint.unconstrain", "blueprint.edit",
     "memory.list", "memory.get", "memory.add", "memory.update", "memory.remove",
     "guardrail.list", "guardrail.add", "guardrail.remove",
@@ -530,7 +676,63 @@ pub const OPS: &[&str] = &[
     "mission.create", "mission.get", "mission.list", "mission.spawn", "mission.merge", "mission.pause", "mission.resume",
     "lease.acquire", "lease.release", "lease.list",
     "scene.get", "scene.query", "timeline.snapshot", "timeline.frames",
+    "guide.list", "guide.confirm", "guide.reject", "question.list", "question.answer",
+    "materialize", "unlock", "lock",
 ];
+
+fn stats(engine: &Engine) -> Result<Value> {
+    let snap = engine.snapshot(false)?;
+    let pins = engine.store.pins()?;
+    let checks = engine.store.checks()?;
+    let turns = engine.store.turns()?;
+    let cal = engine.store.calibration()?;
+    let planned_nodes = snap.table.nodes.values().filter(|n| n.status.as_deref() == Some("planned")).count();
+    let active_nodes = snap.table.nodes.len().saturating_sub(planned_nodes);
+    let active_pins = pins.iter().filter(|p| p.status == "active").count();
+    let proposed_pins = pins.iter().filter(|p| p.status == "proposed").count();
+    let active_checks = checks.iter().filter(|c| c.status == "active").count();
+    let superseded_checks = checks.iter().filter(|c| c.status == "superseded").count();
+    let probing_guides = cal.guides.iter().filter(|g| g.status == "probing").count();
+    let ready_guides = cal.guides.iter().filter(|g| g.status == "ready_to_graduate").count();
+    let graduated_guides = cal.guides.iter().filter(|g| g.status == "graduated").count();
+    let open_questions = cal.questions.iter().filter(|q| q.status == "open").count();
+
+    Ok(json!({
+        "project": snap.manifest.project.name,
+        "explore_mode": snap.manifest.policy.explore_mode,
+        "graduation_require_human": snap.manifest.policy.graduation.require_human,
+        "blueprint": {
+            "total_nodes": snap.table.nodes.len(),
+            "active_nodes": active_nodes,
+            "planned_nodes": planned_nodes,
+            "relations": snap.sources.relations.relations.len(),
+            "constraints": snap.sources.constraints.constraints.len(),
+        },
+        "pins": {
+            "active": active_pins,
+            "proposed": proposed_pins,
+            "total": pins.len(),
+        },
+        "checks": {
+            "active": active_checks,
+            "superseded": superseded_checks,
+            "total": checks.len(),
+        },
+        "guides": {
+            "probing": probing_guides,
+            "ready_to_graduate": ready_guides,
+            "graduated": graduated_guides,
+            "open_questions": open_questions,
+        },
+        "turns": {
+            "total": turns.len(),
+            "committed": turns.iter().filter(|t| t.status == "committed").count(),
+            "ready": turns.iter().filter(|t| t.status == "ready").count(),
+            "staged": turns.iter().filter(|t| t.status == "staged").count(),
+        },
+        "calibration_profiles": cal.models,
+    }))
+}
 
 fn status(engine: &Engine) -> Result<Value> {
     let snap = engine.snapshot(false)?;
@@ -776,5 +978,13 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_scene_query", op: "scene.query", description: "Query the Scene Graph using dot-notation filters (e.g. afwe.crates.*, .has(pin), .status(planned)).", schema: obj(json!({"query": {"type": "string"}}), &["query"]) },
         ToolSpec { name: "afwe_timeline_snapshot", op: "timeline.snapshot", description: "Point-in-time 4D snapshot of the architectural scene at turn (or range diff between turn and to).", schema: obj(json!({"turn": {"type": "string"}, "to": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_timeline_frames", op: "timeline.frames", description: "Get complete 4D timeline frames for dope sheet scrubbing.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_stats", op: "stats", description: "Architectural governance metrics: blueprint nodes (active/planned), pins, standing checks (active/superseded), probing guides, open ambiguity questions, and per-model calibration trust factors.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_guide_list", op: "guide.list", description: "List 85%–90% probing guides, ready-to-graduate guides, open ambiguity questions, and model calibration profiles.", schema: obj(json!({"status": {"type": "string"}}), &[]) },
+        ToolSpec { name: "afwe_guide_confirm", op: "guide.confirm", description: "Human confirmation of a probing or ready-to-graduate guide, promoting it to an active standing check.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
+        ToolSpec { name: "afwe_question_list", op: "question.list", description: "List open high-blast-radius (<85% confidence) architectural ambiguity questions.", schema: obj(json!({"all": {"type": "boolean"}}), &[]) },
+        ToolSpec { name: "afwe_question_answer", op: "question.answer", description: "Answer an architectural ambiguity question and optionally promote the decision to an active pin.", schema: obj(json!({"id": {"type": "string"}, "answer": {"type": "string"}, "pin": {"type": "boolean"}}), &["id", "answer"]) },
+        ToolSpec { name: "afwe_materialize", op: "materialize", description: "Preview-first tripwire generator (`apply`, `remove`, `check`, `base`). Materializes git hooks, CI gate, native tests, AGENTS.md marker blocks, and BLAKE3 manifest.", schema: obj(json!({"apply": {"type": "boolean"}, "remove": {"type": "boolean"}, "check": {"type": "boolean"}, "base": {"type": "string"}, "native_tests": {"type": "boolean"}, "git_hooks": {"type": "boolean"}, "ci": {"type": "boolean"}, "claude_hooks": {"type": "boolean"}, "agents_md": {"type": "boolean"}}), &[]) },
+        ToolSpec { name: "afwe_unlock", op: "unlock", description: "Enable Explore Mode (`policy.explore_mode = true`) so blocking checks are downgraded to warnings during active prototyping/refactoring.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_lock", op: "lock", description: "Disable Explore Mode (`policy.explore_mode = false`) and re-verify the full architecture.", schema: obj(json!({}), &[]) },
     ]
 }

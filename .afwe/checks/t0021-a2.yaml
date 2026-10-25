@@ -1,0 +1,20 @@
+id: t0021-a2
+title: calibration module exists in afwe-core
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-cli
+  - afwe-core
+  - crates
+  files:
+  - crates/afwe-core/src/calibration.rs
+claim:
+  type: require_file
+  files:
+  - crates/afwe-core/src/calibration.rs
+status: active
+origin: afwe:checkgen
+created: 2026-10-25T11:59:53Z
+created_from: t0021
+provenance: confirmed

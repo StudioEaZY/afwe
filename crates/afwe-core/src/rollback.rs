@@ -217,6 +217,8 @@ mod tests {
             origin: None,
             created: None,
             created_from: Some("t0099".into()),
+            superseded_by: None,
+            provenance: None,
         };
         engine.store.save_check(&check).unwrap();
         assert_eq!(engine.store.checks().unwrap().len(), 1);

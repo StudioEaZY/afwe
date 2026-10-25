@@ -1,0 +1,17 @@
+id: reborn-core
+title: Phase 0-4 ReBorn core engine
+statement: Implement Ready-mode checkgen, comment-aware claims, evidence-based calibration & graduation, TurnJudgment, preview-first materialize, authority env-var downgrade, and explore mode
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0021
+history:
+- turn: t0021
+  ts: 2026-10-25T11:27:30Z
+  statement: Implement Ready-mode checkgen, comment-aware claims, evidence-based calibration & graduation, TurnJudgment, preview-first materialize, authority env-var downgrade, and explore mode
+created: 2026-10-25T11:27:30Z
+updated: 2026-10-25T11:27:30Z
+task: task-7ac8d8

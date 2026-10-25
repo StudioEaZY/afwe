@@ -22,3 +22,20 @@ constraints:
   severity: error
   phase: planned
   rationale: 'Future direction: CLI will talk to timeline snapshot via public api.rs only'
+- id: afwe-core-bridges-must-not-depend-on-studio
+  rule: must_not_depend
+  from: graphify-bridge
+  to:
+  - studio
+  - studio-prompt-gateway
+  severity: error
+  phase: planned
+  rationale: 'Planned ecosystem bridges in afwe-core must remain headless and never depend on Studio UI'
+- id: delta-bridge-must-not-depend-on-afwe-cli
+  rule: must_not_depend
+  from: delta-acp-bridge
+  to:
+  - afwe-cli
+  severity: error
+  phase: planned
+  rationale: 'Planned DeltaDB/ACP bridge lives in afwe-core and is exposed only through api.rs'

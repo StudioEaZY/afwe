@@ -116,8 +116,10 @@ afwe onboard --profile normie    # git, CI gate, AGENTS.md, profile (idempotent)
 afwe turn begin "Add tagging to search" --target src/workspace/**   # briefing for the harness
 afwe turn commit t0001           # gate, then commit with the AFWE-Turn trailer (or stage / REDO)
 afwe gate                        # whole-project gate (what CI runs)
+afwe materialize --apply         # materialize tripwires (chained git hooks, CI gate, BLAKE3 manifest)
+afwe stats                       # architectural governance & calibration metrics
 afwe studio                      # Studio in the browser (http://localhost:4242)
-afwe mcp                         # MCP server on stdio for your harness (49 tools)
+afwe mcp                         # MCP server on stdio for your harness (57 tools)
 ```
 
 For an already-populated example: `cd examples/demo-project && afwe status` (see its README).

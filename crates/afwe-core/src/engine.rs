@@ -41,14 +41,26 @@ impl Engine {
 
     /// Load sources + code model. `refresh` forces re‑analysis; otherwise the cached
     /// `index/code.json` is used when present.
+    /// Automatically rebuilds missing gitignored `.afwe/index/` and `.afwe/state/` directories
+    /// on first use (e.g. in fresh git/Delta worktrees).
     pub fn snapshot(&self, refresh: bool) -> Result<Snapshot> {
+        let index_missing = !self.store.p("index/index.json").exists();
+        let state_missing = !self.store.p("state").exists();
+        if index_missing || state_missing {
+            let _ = std::fs::create_dir_all(self.store.p("index/baselines"));
+            let _ = std::fs::create_dir_all(self.store.p("state"));
+        }
         let sources = self.store.sources()?;
         let manifest = sources.manifest.clone().expect("manifest");
         let (code, fresh) = match (refresh, self.store.code_model()?) {
             (false, Some(c)) => (c, false),
             _ => (self.analyzer(&manifest).analyze()?, true),
         };
-        self.build(manifest, sources, code, fresh)
+        let snap = self.build(manifest, sources, code, fresh)?;
+        if index_missing {
+            let _ = self.persist_derived(&snap);
+        }
+        Ok(snap)
     }
 
     pub fn snapshot_with_code(&self, code: CodeModel) -> Result<Snapshot> {

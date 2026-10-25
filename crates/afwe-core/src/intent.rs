@@ -53,8 +53,8 @@ pub fn upsert_intents(engine: &Engine, turn: &Turn, decls: &[TurnIntent], table:
             .clone()
             .or_else(|| intent.statement.clone())
             .unwrap_or_else(|| truncate(turn.prompt.trim(), 400));
-        if intent.statement.as_deref() != Some(statement.as_str()) {
-            intent.history.push(IntentRevision { turn: turn.id.clone(), ts: now(), statement: statement.clone() });
+        if intent.statement.as_deref() != Some(statement.as_str()) || d.rationale.is_some() {
+            intent.history.push(IntentRevision { turn: turn.id.clone(), ts: now(), statement: statement.clone(), rationale: d.rationale.clone() });
             intent.statement = Some(statement);
         }
         for n in nodes {
@@ -336,10 +336,36 @@ pub fn run_check(c: &CheckSpec, snap: &Snapshot, root: &Path, scope: &[String]) 
 
 /// checkgen (default app): every *confirmed* assumption claim becomes a standing deterministic check
 /// authored by `checkgen`, so later prompts are verified against it without anyone writing a test.
+/// Also supersedes standing checks when a turn explicitly removes or replaces their target node.
 pub fn checkgen(engine: &Engine, turn: &Turn) -> Result<Vec<String>> {
+    // Supersede standing checks attached to removed or replaced nodes
+    let mut removed_or_replaced: BTreeSet<String> = turn.removes.iter().cloned().collect();
+    for it in &turn.intents {
+        if matches!(it.action.as_str(), "remove" | "replace") {
+            removed_or_replaced.extend(it.targets.iter().cloned());
+        }
+    }
+    if !removed_or_replaced.is_empty() {
+        for mut existing in engine.store.checks()? {
+            if existing.status == "active"
+                && !existing.attaches.nodes.is_empty()
+                && existing.attaches.nodes.iter().all(|n| removed_or_replaced.contains(n))
+            {
+                existing.status = "superseded".into();
+                existing.superseded_by = Some(turn.id.clone());
+                engine.store.save_check(&existing)?;
+            }
+        }
+    }
+
     if !engine.store.manifest()?.policy.checkgen {
         return Ok(vec![]);
     }
+    let source_nodes: Vec<String> = if !turn.touched.nodes.is_empty() {
+        turn.touched.nodes.clone()
+    } else {
+        turn.scope.nodes.clone()
+    };
     let mut made = vec![];
     for a in turn.assumptions.iter().filter(|a| a.status == "confirmed") {
         let Some(claim) = &a.claim else { continue };
@@ -347,12 +373,19 @@ pub fn checkgen(engine: &Engine, turn: &Turn) -> Result<Vec<String>> {
         if engine.store.check(&id)?.is_some() {
             continue;
         }
+        let files = if !claim.files.is_empty() {
+            claim.files.clone()
+        } else if source_nodes.is_empty() {
+            turn.touched.files.clone()
+        } else {
+            vec![]
+        };
         let spec = CheckSpec {
             id: id.clone(),
             title: a.text.clone(),
             trust: CheckTrust::Deterministic,
             authored_by: "checkgen".into(),
-            attaches: Attachment { nodes: claim.to_nodes.clone(), files: claim.files.clone(), ..Default::default() },
+            attaches: Attachment { nodes: source_nodes.clone(), files, ..Default::default() },
             command: None,
             claim: Some(claim.clone()),
             timeout_s: None,
@@ -360,6 +393,8 @@ pub fn checkgen(engine: &Engine, turn: &Turn) -> Result<Vec<String>> {
             origin: Some("afwe:checkgen".into()),
             created: Some(now()),
             created_from: Some(turn.id.clone()),
+            superseded_by: None,
+            provenance: Some("confirmed".into()),
         };
         engine.store.save_check(&spec)?;
         made.push(id);
@@ -390,5 +425,48 @@ mod tests {
         assert_eq!(detect_pin_phrase("no, keep it like that"), Some(("decision", "confirm")));
         assert_eq!(detect_pin_phrase("this is intentional, fix the rest"), Some(("intentional", "block")));
         assert_eq!(detect_pin_phrase("make the button blue"), None);
+    }
+
+    #[test]
+    fn checkgen_binds_forbid_import_to_source_nodes_and_supersedes_removed() {
+        let dir = std::env::temp_dir().join(format!("afwe-checkgen-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        crate::init::init(&dir, crate::init::InitOptions { name: Some("test".into()), description: None, root: None, force: true }).unwrap();
+        let engine = Engine::at(&dir);
+
+        let t1 = Turn {
+            id: "t0001".into(),
+            scope: TurnScope { nodes: vec!["payments".into()], files: vec![] },
+            touched: TurnTouched { nodes: vec!["payments".into()], files: vec!["src/payments/a.rs".into()], symbols: vec![] },
+            assumptions: vec![Assumption {
+                id: "a1".into(),
+                text: "Payments does not import UI".into(),
+                claim: Some(AssumptionClaim {
+                    kind: "forbid_import".into(),
+                    to_nodes: vec!["ui".into()],
+                    ..Default::default()
+                }),
+                status: "confirmed".into(),
+                ..Default::default()
+            }],
+            ..Default::default()
+        };
+        let made = checkgen(&engine, &t1).unwrap();
+        assert_eq!(made, vec!["t0001-a1".to_string()]);
+        let saved = engine.store.check("t0001-a1").unwrap().unwrap();
+        assert_eq!(saved.attaches.nodes, vec!["payments".to_string()]);
+
+        // Now turn t0002 removes `payments` -> check t0001-a1 should be superseded
+        let t2 = Turn {
+            id: "t0002".into(),
+            removes: vec!["payments".into()],
+            ..Default::default()
+        };
+        checkgen(&engine, &t2).unwrap();
+        let after = engine.store.check("t0001-a1").unwrap().unwrap();
+        assert_eq!(after.status, "superseded");
+        assert_eq!(after.superseded_by.as_deref(), Some("t0002"));
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

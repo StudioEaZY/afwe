@@ -17,6 +17,13 @@ nodes:
     - bootstrapped
     status: active
     origin: afwe:bootstrap
+    children:
+    - id: studio-prompt-gateway
+      name: studio-prompt-gateway
+      kind: module
+      purpose: 'Deferred because DOTS scene graph and 4D timeline data layer must be wired to calibration/probing state before adding interactive prompt composition UI. Trigger to start: after Phase 1 calibration store and Phase 2 TurnJudgment API endpoints are live.'
+      status: planned
+      origin: human
   - id: crates
     name: Crates
     kind: subsystem
@@ -62,6 +69,54 @@ nodes:
         name: timeline-snapshot
         kind: module
         purpose: Deterministic 4D timeline snapshot reconstruction and structural delta across turns
+        status: planned
+        origin: human
+      - id: parallel-leaf-to-root
+        name: parallel-leaf-to-root
+        kind: module
+        purpose: 'Deferred because tree-sitter AST checks run in milliseconds sequentially on a single repo; async/thread-pool orchestration adds complexity before external validators exist. Trigger to start: when external validator latency exceeds 200ms per turn or Phase 2 leaf-to-root sequential runner is stable.'
+        status: planned
+        origin: human
+      - id: fix-reask-patcher
+        name: fix-reask-patcher
+        kind: module
+        purpose: 'Deferred because deterministic AST codemods require language-specific rewrite rules and quarantine integration first. Trigger to start: after Phase 2 TurnJudgment and Phase 3 quarantine backup are proven in production.'
+        status: planned
+        origin: human
+      - id: external-linter-adapters
+        name: external-linter-adapters
+        kind: module
+        purpose: 'Deferred because built-in AST claims (forbid_symbol, export_exists, symbol_signature) must cover 90% of zero-config checks first. Trigger to start: when users request custom ruff/clippy/semgrep JSON output parsing into ValidatorJudgment.'
+        status: planned
+        origin: human
+      - id: graphify-bridge
+        name: graphify-bridge
+        kind: module
+        purpose: 'Deferred because native tree-sitter graphing must be self-sufficient out of the box before adding optional external graph ingestion. Trigger to start: when users with existing graphify-out/graph.json artifacts request automatic blueprint hydration.'
+        status: planned
+        origin: human
+      - id: delta-acp-bridge
+        name: delta-acp-bridge
+        kind: module
+        purpose: 'Deferred because turn ledger external_provenance schema must stabilize before building a live SQLite/ACP reader for DeltaDB. Trigger to start: when DeltaDB stabilizes its local thread/checkpoint schema or ACP session metadata spec.'
+        status: planned
+        origin: human
+      - id: beads-bridge
+        name: beads-bridge
+        kind: module
+        purpose: 'Deferred because core turn-to-intent-to-check loop takes priority over third-party issue tracker sync. Trigger to start: when multi-agent missions require external .beads/ task graph import.'
+        status: planned
+        origin: human
+      - id: multi-harness-hooks
+        name: multi-harness-hooks
+        kind: module
+        purpose: 'Deferred because preview-first git hooks, CI gate, and opt-in Claude Code hooks cover primary enforcement first. Trigger to start: after Phase 3 materialize --apply / --remove is validated with zero destructive rollbacks.'
+        status: planned
+        origin: human
+      - id: hold-out-tuning
+        name: hold-out-tuning
+        kind: module
+        purpose: 'Deferred because basic deterministic hold-out probing in Phase 1 must collect real data before tuning adaptive hold-out frequencies. Trigger to start: after collecting >=50 multi-session probing turns across dogfooded repositories.'
         status: planned
         origin: human
   - id: examples

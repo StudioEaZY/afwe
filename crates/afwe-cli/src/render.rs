@@ -337,6 +337,17 @@ pub fn turn_briefing(v: &Value) -> String {
             out.push_str(&format!("  • {} ({}, by {})\n", s(c, "id"), s(c, "trust"), s(c, "authored_by")));
         }
     }
+    if !list_of(&v["probing_guides"]).is_empty() {
+        out.push_str("PROBING GUIDES (85%–90% confidence — steering, non-blocking):\n");
+        for g in list_of(&v["probing_guides"]) {
+            out.push_str(&format!(
+                "  • {} ({:.0}%): {}\n",
+                s(g, "id"),
+                g["confidence"].as_f64().unwrap_or(0.85) * 100.0,
+                s(g, "title")
+            ));
+        }
+    }
     if !list_of(&v["unresolved_proposals"]).is_empty() {
         out.push_str("PROPOSALS STAGED (not committed):\n");
         for p in list_of(&v["unresolved_proposals"]) {
@@ -375,6 +386,18 @@ pub fn turn_result(v: &Value) -> String {
             }
             for r in list_of(&v["notices"]) {
                 out.push_str(&format!("  • {}\n", r.as_str().unwrap_or("")));
+            }
+            if !list_of(&v["questions"]).is_empty() {
+                out.push_str("  ? Open architectural question(s) (non-blocking):\n");
+                for q in list_of(&v["questions"]) {
+                    out.push_str(&format!(
+                        "    • {} [{}] {} — {}\n",
+                        s(q, "id"),
+                        s(q, "why_asking"),
+                        s(q, "question"),
+                        s(q, "status")
+                    ));
+                }
             }
             out
         }
@@ -671,4 +694,142 @@ pub fn leases(v: &Value) -> String {
         out.push_str(&format!("    expires_at: {}\n", l["expires_at"]));
     }
     out
+}
+
+pub fn stats(v: &Value) -> String {
+    let mut o = format!(
+        "AFWE Stats — {} (explore_mode={}, graduation.require_human={})\n",
+        s(v, "project"),
+        v["explore_mode"],
+        v["graduation_require_human"]
+    );
+    o.push_str(&format!(
+        "  blueprint: {} total nodes ({} active, {} planned), {} relations, {} constraints\n",
+        v["blueprint"]["total_nodes"],
+        v["blueprint"]["active_nodes"],
+        v["blueprint"]["planned_nodes"],
+        v["blueprint"]["relations"],
+        v["blueprint"]["constraints"]
+    ));
+    o.push_str(&format!(
+        "  pins:      {} active, {} proposed ({} total)\n",
+        v["pins"]["active"], v["pins"]["proposed"], v["pins"]["total"]
+    ));
+    o.push_str(&format!(
+        "  checks:    {} active, {} superseded ({} total)\n",
+        v["checks"]["active"], v["checks"]["superseded"], v["checks"]["total"]
+    ));
+    o.push_str(&format!(
+        "  guides:    {} probing, {} ready_to_graduate, {} graduated, {} open question(s)\n",
+        v["guides"]["probing"],
+        v["guides"]["ready_to_graduate"],
+        v["guides"]["graduated"],
+        v["guides"]["open_questions"]
+    ));
+    o.push_str(&format!(
+        "  turns:     {} total ({} committed, {} ready, {} staged)\n",
+        v["turns"]["total"], v["turns"]["committed"], v["turns"]["ready"], v["turns"]["staged"]
+    ));
+    if let Some(profiles) = v["calibration_profiles"].as_object() {
+        if !profiles.is_empty() {
+            o.push_str("  calibration profiles:\n");
+            for (k, p) in profiles {
+                o.push_str(&format!(
+                    "    • {:<20} trust_factor={:.3} (outcomes: {} total, {} accepted, {} rejected)\n",
+                    k,
+                    p["trust_factor"].as_f64().unwrap_or(1.0),
+                    p["human_outcomes_total"],
+                    p["human_accepted"],
+                    p["human_rejected"]
+                ));
+            }
+        }
+    }
+    o
+}
+
+pub fn guides(v: &Value) -> String {
+    let list = list_of(&v["guides"]);
+    if list.is_empty() {
+        return "no probing guides recorded\n".into();
+    }
+    let mut o = format!("Probing & Graduated Guides ({}):\n", list.len());
+    for g in list {
+        o.push_str(&format!(
+            "  • {:<20} [{:<17}] {:>3.0}% (probes: {}, contradictions: {}) — {}\n",
+            s(g, "id"),
+            s(g, "status"),
+            g["score"].as_f64().unwrap_or(0.0) * 100.0,
+            g["probes"].as_array().map(|a| a.len()).unwrap_or(0),
+            g["contradictions"],
+            s(g, "title")
+        ));
+    }
+    o.push_str("\nTo confirm & graduate: afwe guide confirm <id>\nTo reject & retire:    afwe guide reject <id>\n");
+    o
+}
+
+pub fn questions(v: &Value) -> String {
+    let list = list_of(v);
+    if list.is_empty() {
+        return "no open architectural ambiguity questions\n".into();
+    }
+    let mut o = format!("Architectural Ambiguity Questions ({}):\n", list.len());
+    for q in list {
+        o.push_str(&format!(
+            "  • {:<16} [{:<8}] ({}) — {}\n",
+            s(q, "id"),
+            s(q, "status"),
+            s(q, "why_asking"),
+            s(q, "question")
+        ));
+    }
+    o.push_str("\nAnswer with: afwe question answer <id> \"<answer>\" [--pin]\n");
+    o
+}
+
+pub fn materialize(v: &Value) -> String {
+    if v.get("ok").is_some() {
+        let ok = v["ok"].as_bool().unwrap_or(false);
+        if ok {
+            return format!(
+                "materialize check passed ({} tripwire file(s) verified{})\n",
+                v["checked_files"],
+                v["base"].as_str().map(|b| format!(", base ref `{b}` verified")).unwrap_or_default()
+            );
+        }
+        let mut o = String::from("materialize check FAILED:\n");
+        for f in list_of(&v["failures"]) {
+            o.push_str(&format!("  ✖ {}\n", f.as_str().unwrap_or("")));
+        }
+        return o;
+    }
+    match s(v, "status") {
+        "preview" => {
+            let mut o = String::from("Materialize Preview (no files written):\n");
+            for a in list_of(&v["actions"]) {
+                o.push_str(&format!("  • {}\n", a.as_str().unwrap_or("")));
+            }
+            for f in list_of(&v["files"]) {
+                o.push_str(&format!("    - {} ({} bytes, blake3={})\n", s(f, "path"), f["bytes"], s(f, "blake3")));
+            }
+            o.push_str(&format!("\n→ {}\n", s(v, "next")));
+            o
+        }
+        "applied" => {
+            let mut o = format!("Materialized tripwires (manifest: {}):\n", s(v, "manifest"));
+            for a in list_of(&v["actions"]) {
+                o.push_str(&format!("  ✔ {}\n", a.as_str().unwrap_or("")));
+            }
+            o
+        }
+        "removed" => {
+            let mut o = String::from("Removed materialized tripwires:\n");
+            for r in list_of(&v["removed"]) {
+                o.push_str(&format!("  • {}\n", r.as_str().unwrap_or("")));
+            }
+            o
+        }
+        _ => serde_json::to_string_pretty(v).unwrap_or_default(),
+    }
 }

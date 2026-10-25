@@ -114,6 +114,12 @@ pub struct Policy {
     /// Generate standing checks from confirmed assumptions (the default `checkgen` app).
     #[serde(default = "default_true")]
     pub checkgen: bool,
+    /// Evidence-based probing and graduation policy (85%..90% -> >=90%).
+    #[serde(default)]
+    pub graduation: GraduationPolicy,
+    /// Explore mode (`afwe unlock` / `afwe lock`): temporarily converts blocking checks into warnings while prototyping.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub explore_mode: bool,
 }
 fn d_auto() -> f64 {
     0.70
@@ -130,6 +136,36 @@ impl Default for Policy {
             fail_on_violation: true,
             pins: PinPolicy::default(),
             checkgen: true,
+            graduation: GraduationPolicy::default(),
+            explore_mode: false,
+        }
+    }
+}
+
+/// Graduation policy for probing guides (85%..90%) transitioning to blocking checks (>=90%).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GraduationPolicy {
+    /// Option A (default true): independent evidence moves a guide to `ready_to_graduate`,
+    /// requiring one human confirmation (`afwe guide confirm <id>`) to become blocking.
+    /// Option B (false): fully automatic graduation when evidence criteria are met.
+    #[serde(default = "default_true")]
+    pub require_human: bool,
+    /// Minimum distinct sessions with qualifying AST-symbol probes (default 3).
+    #[serde(default = "default_min_probe_sessions")]
+    pub min_probe_sessions: usize,
+    /// Require at least one hold-out probe where the guide was omitted from `turn.begin` (default true).
+    #[serde(default = "default_true")]
+    pub require_hold_out: bool,
+}
+fn default_min_probe_sessions() -> usize {
+    3
+}
+impl Default for GraduationPolicy {
+    fn default() -> Self {
+        Self {
+            require_human: true,
+            min_probe_sessions: 3,
+            require_hold_out: true,
         }
     }
 }
@@ -901,6 +937,9 @@ pub struct IntentRevision {
     pub turn: String,
     pub ts: String,
     pub statement: String,
+    /// Agent or human rationale (context only; never gates commits).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rationale: Option<String>,
 }
 
 /// Optional node-based design graph (the former `workflows/` documents live here).
@@ -1019,7 +1058,7 @@ pub struct CheckSpec {
     pub claim: Option<AssumptionClaim>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub timeout_s: Option<u64>,
-    /// active | retired
+    /// active | retired | superseded
     #[serde(default = "default_active")]
     pub status: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1028,14 +1067,20 @@ pub struct CheckSpec {
     pub created: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub created_from: Option<String>,
+    /// Turn or check id that superseded this check when its target was removed/replaced.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub superseded_by: Option<String>,
+    /// inferred | confirmed | graduated
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub provenance: Option<String>,
 }
 
 // ───────────────────────────── v2: turns (append-only ledger) ─────────────────────────────
 
 /// A declarative, tree-sitter / regex checkable statement an agent makes before writing code.
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
 pub struct AssumptionClaim {
-    /// forbid_pattern | require_pattern | forbid_import | symbol_exists | require_file
+    /// forbid_pattern | require_pattern | forbid_import | symbol_exists | require_file | forbid_symbol | export_exists | symbol_signature
     #[serde(rename = "type")]
     pub kind: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1046,6 +1091,9 @@ pub struct AssumptionClaim {
     pub files: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub to_nodes: Vec<String>,
+    /// When false (default), comments are blanked before evaluating pattern claims.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub include_comments: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1057,6 +1105,12 @@ pub struct Assumption {
     /// proposed | confirmed | failed
     #[serde(default)]
     pub status: String,
+    /// Model-stated confidence (stored as metadata only; never used directly as the rubric score).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub confidence: Option<f64>,
+    /// Deterministic rubric score computed by `calibration.rs`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub computed_score: Option<f64>,
 }
 
 /// A decomposed piece of a prompt: what the turn intends to do to which nodes.
@@ -1071,6 +1125,9 @@ pub struct TurnIntent {
     pub title: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub statement: Option<String>,
+    /// Agent's stated reasoning (context only; never gates commits).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rationale: Option<String>,
 }
 
 /// An explicit, reasoned exception to a pin.
@@ -1199,6 +1256,143 @@ pub struct Turn {
     /// Post-commit hashes of touched files, used for automated rollback / external undo reconciliation.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub post_hashes: BTreeMap<String, String>,
+    /// Distinct session or thread identifier (from harness `thread_id` or derived from agent + 30m activity gap).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_id: Option<String>,
+    /// Optional provenance link to external systems (e.g. DeltaDB thread, Claude session).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub external_provenance: Option<ExternalProvenance>,
+    /// Standing check IDs generated by `checkgen` on this turn.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub checkgen: Vec<String>,
+    /// Guide IDs intentionally held out from `turn.begin` on this turn to test independent compliance.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub held_out_guides: Vec<String>,
+    /// Silent local/leaf rationales recorded below 0.85 without interrupting the developer.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub agent_zone_rationales: Vec<String>,
+}
+
+/// Optional provenance metadata linking a turn to an external conversational workspace.
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+pub struct ExternalProvenance {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub provider: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub thread_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub checkpoint_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_uri: Option<String>,
+}
+
+// ───────────────────────────── ReBorn: calibration, probing guides & ask queue ─────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+pub struct ProbeRecord {
+    pub turn: String,
+    pub session_id: String,
+    pub symbol: String,
+    #[serde(default)]
+    pub held_out: bool,
+}
+
+fn default_inferred() -> String {
+    "inferred".into()
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GuideState {
+    pub id: String,
+    pub title: String,
+    /// probing | ready_to_graduate | graduated | demoted | retired
+    pub status: String,
+    pub score: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub llm_reported_confidence: Option<f64>,
+    pub claim: AssumptionClaim,
+    #[serde(default, skip_serializing_if = "Attachment::is_empty")]
+    pub attaches: Attachment,
+    #[serde(default)]
+    pub probes: Vec<ProbeRecord>,
+    #[serde(default)]
+    pub contradictions: usize,
+    /// inferred | confirmed | graduated
+    #[serde(default = "default_inferred")]
+    pub provenance: String,
+    #[serde(default)]
+    pub origin: String,
+    #[serde(default)]
+    pub created: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created_from: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub graduated_check_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub confirmed_by: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub confirmed_at: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct AmbiguityQuestion {
+    pub id: String,
+    pub turn: String,
+    pub session_id: String,
+    pub question: String,
+    pub why_asking: String,
+    /// exported_symbol | cross_subsystem | contradicts_history
+    #[serde(default)]
+    pub blast_reasons: Vec<String>,
+    pub blast_score: usize,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub proposed_claim: Option<AssumptionClaim>,
+    #[serde(default, skip_serializing_if = "Attachment::is_empty")]
+    pub attaches: Attachment,
+    /// open | deferred | answered | dismissed
+    pub status: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub answer: Option<String>,
+    pub created: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub resolved: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ModelCalibrationProfile {
+    pub model_id: String,
+    #[serde(default)]
+    pub human_accepted: usize,
+    #[serde(default)]
+    pub human_rejected: usize,
+    #[serde(default = "default_trust_factor")]
+    pub trust_factor: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub updated_at: Option<String>,
+}
+fn default_trust_factor() -> f64 {
+    1.0
+}
+impl Default for ModelCalibrationProfile {
+    fn default() -> Self {
+        Self {
+            model_id: "default".into(),
+            human_accepted: 0,
+            human_rejected: 0,
+            trust_factor: 1.0,
+            updated_at: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CalibrationStore {
+    #[serde(default)]
+    pub models: BTreeMap<String, ModelCalibrationProfile>,
+    #[serde(default)]
+    pub guides: Vec<GuideState>,
+    #[serde(default)]
+    pub questions: Vec<AmbiguityQuestion>,
 }
 
 /// Derived (rebuildable) snapshot taken at turn.begin, used to attribute changes at commit time.

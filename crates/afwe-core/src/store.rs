@@ -638,6 +638,14 @@ impl Store {
         self.read_json(&format!("index/baselines/{turn}.json"))
     }
 
+    // ── calibration, probing guides & ambiguity questions ──
+    pub fn calibration(&self) -> Result<CalibrationStore> {
+        Ok(self.read_json("state/calibration.json")?.unwrap_or_default())
+    }
+    pub fn save_calibration(&self, c: &CalibrationStore) -> Result<()> {
+        self.write_json("state/calibration.json", c)
+    }
+
     // ── migration of legacy workflows/ into intents/ ──
     pub fn migrate_workflows(&self) -> Result<usize> {
         let legacy: Vec<Workflow> = load_dir(self, "workflows")?;

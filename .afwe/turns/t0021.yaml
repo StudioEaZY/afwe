@@ -1,0 +1,532 @@
+id: t0021
+ts: 2026-10-25T11:27:13Z
+origin: human
+prompt: 'Implement AFWE ReBorn: Phase 0-4 (Ready-mode checkgen, comment-aware claims, evidence-based calibration & graduation, TurnJudgment, preview-first materialize, authority env-var downgrade, explore mode, and deferred roadmap)'
+prompt_hash: 2135c7d01ffaad2e
+task: task-7ac8d8
+targets:
+- crates/afwe-core/src/lib.rs
+- crates/afwe-core/src/turn.rs
+- crates/afwe-core/src/claims.rs
+- crates/afwe-core/src/intent.rs
+- crates/afwe-core/src/engine.rs
+- crates/afwe-core/src/lease.rs
+- crates/afwe-core/src/model.rs
+- crates/afwe-core/src/calibration.rs
+- crates/afwe-core/src/judgment.rs
+- crates/afwe-core/src/materialize.rs
+- crates/afwe-core/src/authority.rs
+- crates/afwe-core/src/ops.rs
+- crates/afwe-core/src/api.rs
+- crates/afwe-core/src/contract.rs
+- crates/afwe-core/src/init.rs
+- crates/afwe-core/src/onboard.rs
+- crates/afwe-cli/src/main.rs
+- crates/afwe-cli/src/mcp.rs
+- README.md
+- docs/TUTORIAL.md
+- docs/INTEGRATION.md
+- docs/SPEC.md
+scope:
+  nodes:
+  - afwe
+  - afwe-2
+  - afwe-core
+  - afwe-cli
+  files:
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - README.md
+  - docs/TUTORIAL.md
+  - docs/INTEGRATION.md
+  - docs/SPEC.md
+intents:
+- id: reborn-core
+  action: update
+  targets:
+  - afwe-core
+  title: Phase 0-4 ReBorn core engine
+  statement: Implement Ready-mode checkgen, comment-aware claims, evidence-based calibration & graduation, TurnJudgment, preview-first materialize, authority env-var downgrade, and explore mode
+- id: reborn-cli
+  action: update
+  targets:
+  - afwe-cli
+  title: Phase 0-4 ReBorn CLI & MCP
+  statement: Expose stats, guide, materialize, unlock/lock CLI commands and MCP tools
+assumptions:
+- id: a1
+  text: afwe-core does not import afwe-cli
+  claim:
+    type: forbid_import
+    files:
+    - crates/afwe-core/**
+    to_nodes:
+    - afwe-cli
+  status: confirmed
+  computed_score: 0.85
+- id: a2
+  text: calibration module exists in afwe-core
+  claim:
+    type: require_file
+    files:
+    - crates/afwe-core/src/calibration.rs
+  status: confirmed
+  computed_score: 0.6
+- id: a3
+  text: judgment module exists in afwe-core
+  claim:
+    type: require_file
+    files:
+    - crates/afwe-core/src/judgment.rs
+  status: confirmed
+  computed_score: 0.6
+- id: a4
+  text: materialize module exists in afwe-core
+  claim:
+    type: require_file
+    files:
+    - crates/afwe-core/src/materialize.rs
+  status: confirmed
+  computed_score: 0.6
+overrides:
+- pin: pin-5babbe
+  reason: Preserves 100% determinism with zero model calls in core; pure AST & tree-sitter mechanisms
+status: ready
+touched:
+  nodes:
+  - afwe-cli
+  - afwe-core
+  - crates
+  files:
+  - .afwe/blueprint/blueprint.yaml
+  - .afwe/blueprint/constraints.yaml
+  - .afwe/docs/SPEC.md
+  - .afwe/docs/TUTORIAL.md
+  - .afwe/intents/reborn-cli.yaml
+  - .afwe/intents/reborn-core.yaml
+  - .afwe/skills/afwe/SKILL.md
+  - README.md
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/calibration.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/judgment.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/materialize.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/verify.rs
+  - docs/INTEGRATION.md
+  - docs/SPEC.md
+  - docs/TUTORIAL.md
+  symbols:
+  - crates/afwe-cli/src/main.rs::Cmd
+  - crates/afwe-cli/src/main.rs::GuideCmd
+  - crates/afwe-cli/src/main.rs::QuestionCmd
+  - crates/afwe-cli/src/main.rs::run
+  - crates/afwe-cli/src/render.rs::guides
+  - crates/afwe-cli/src/render.rs::materialize
+  - crates/afwe-cli/src/render.rs::questions
+  - crates/afwe-cli/src/render.rs::stats
+  - crates/afwe-cli/src/render.rs::turn_briefing
+  - crates/afwe-cli/src/render.rs::turn_result
+  - crates/afwe-core/src/api.rs::OPS
+  - crates/afwe-core/src/api.rs::dispatch
+  - crates/afwe-core/src/api.rs::stats
+  - crates/afwe-core/src/api.rs::tool_specs
+  - crates/afwe-core/src/authority.rs::KNOWN_AGENT_ENV_VARS
+  - crates/afwe-core/src/authority.rs::authority_of
+  - crates/afwe-core/src/authority.rs::authority_of_with_env
+  - crates/afwe-core/src/authority.rs::detected_agent_env
+  - crates/afwe-core/src/authority.rs::is_loosening_op
+  - crates/afwe-core/src/authority.rs::tests
+  - crates/afwe-core/src/authority.rs::tests.agent_env_vars_downgrade_human_origin_to_agent
+  - crates/afwe-core/src/authority.rs::tests.gui_invocation_without_tty_or_agent_env_stays_human
+  - crates/afwe-core/src/calibration.rs::ASK_THRESHOLD
+  - crates/afwe-core/src/calibration.rs::BlastAssessment
+  - crates/afwe-core/src/calibration.rs::BlastAssessment.is_high_blast
+  - crates/afwe-core/src/calibration.rs::BlastAssessment.reasons
+  - crates/afwe-core/src/calibration.rs::BlastAssessment.score
+  - crates/afwe-core/src/calibration.rs::GRADUATE_THRESHOLD
+  - crates/afwe-core/src/calibration.rs::MAX_OPEN_QUESTIONS_PER_SESSION
+  - crates/afwe-core/src/calibration.rs::RubricEvidence
+  - crates/afwe-core/src/calibration.rs::assess_blast_radius
+  - crates/afwe-core/src/calibration.rs::compute_rubric_score
+  - crates/afwe-core/src/calibration.rs::confirm_guide
+  - crates/afwe-core/src/calibration.rs::derive_session_id
+  - crates/afwe-core/src/calibration.rs::evaluate_probe_for_guide
+  - crates/afwe-core/src/calibration.rs::is_sibling_consistent
+  - crates/afwe-core/src/calibration.rs::record_human_adjudication
+  - crates/afwe-core/src/calibration.rs::record_human_outcome_in_store
+  - crates/afwe-core/src/calibration.rs::route_low_confidence_item
+  - crates/afwe-core/src/calibration.rs::select_guides_for_briefing
+  - crates/afwe-core/src/calibration.rs::tests
+  - crates/afwe-core/src/calibration.rs::tests.blast_radius_filters_leaf_items_and_caps_session_questions_at_3
+  - crates/afwe-core/src/calibration.rs::tests.obeyed_guide_only_without_hold_out_does_not_graduate_and_same_session_counts_once
+  - crates/afwe-core/src/calibration.rs::tests.rubric_produces_documented_scores_and_caps_contradictions
+  - crates/afwe-core/src/calibration.rs::tests.trust_factor_unchanged_under_10_human_outcomes_and_clamped
+  - crates/afwe-core/src/calibration.rs::touches_governed_target
+  - crates/afwe-core/src/claims.rs::CLAIM_TYPES
+  - crates/afwe-core/src/claims.rs::blank_comments
+  - crates/afwe-core/src/claims.rs::blank_comments_fallback
+  - crates/afwe-core/src/claims.rs::blank_ranges_utf8
+  - crates/afwe-core/src/claims.rs::blank_tree_comments
+  - crates/afwe-core/src/claims.rs::evaluate
+  - crates/afwe-core/src/claims.rs::is_structural_claim
+  - crates/afwe-core/src/claims.rs::tests
+  - crates/afwe-core/src/claims.rs::tests.blank_comments_preserves_urls_globs_python_hashes_and_line_numbers
+  - crates/afwe-core/src/claims.rs::validate
+  - crates/afwe-core/src/contract.rs::AFWE_SKILL_MD
+  - crates/afwe-core/src/engine.rs::Engine.snapshot
+  - crates/afwe-core/src/intent.rs::checkgen
+  - crates/afwe-core/src/intent.rs::tests
+  - crates/afwe-core/src/intent.rs::tests.checkgen_binds_forbid_import_to_source_nodes_and_supersedes_removed
+  - crates/afwe-core/src/intent.rs::upsert_intents
+  - crates/afwe-core/src/judgment.rs::BuildJudgmentInput
+  - crates/afwe-core/src/judgment.rs::JudgmentAction
+  - crates/afwe-core/src/judgment.rs::JudgmentTelemetry
+  - crates/afwe-core/src/judgment.rs::TurnJudgment
+  - crates/afwe-core/src/judgment.rs::ValidatorJudgment
+  - crates/afwe-core/src/judgment.rs::build_judgment
+  - crates/afwe-core/src/judgment.rs::scope_level_for_nodes
+  - crates/afwe-core/src/judgment.rs::scope_rank
+  - crates/afwe-core/src/judgment.rs::tests
+  - crates/afwe-core/src/judgment.rs::tests.leaf_to_root_ordering_and_structural_telemetry
+  - crates/afwe-core/src/lease.rs::leases_path
+  - crates/afwe-core/src/lib.rs::calibration
+  - crates/afwe-core/src/lib.rs::judgment
+  - crates/afwe-core/src/lib.rs::materialize
+  - crates/afwe-core/src/materialize.rs::AGENTS_BEGIN
+  - crates/afwe-core/src/materialize.rs::AGENTS_END
+  - crates/afwe-core/src/materialize.rs::CHAIN_BEGIN
+  - crates/afwe-core/src/materialize.rs::CHAIN_END
+  - crates/afwe-core/src/materialize.rs::GuardrailManifest
+  - crates/afwe-core/src/materialize.rs::MANIFEST_REL_PATH
+  - crates/afwe-core/src/materialize.rs::MaterializeOptions
+  - crates/afwe-core/src/materialize.rs::MaterializeOptions.effective_layers
+  - crates/afwe-core/src/materialize.rs::chain_git_pre_commit
+  - crates/afwe-core/src/materialize.rs::check_manifest
+  - crates/afwe-core/src/materialize.rs::git_commit_exists
+  - crates/afwe-core/src/materialize.rs::git_show_file
+  - crates/afwe-core/src/materialize.rs::remove_all
+  - crates/afwe-core/src/materialize.rs::resolve_git_hooks_dir
+  - crates/afwe-core/src/materialize.rs::run
+  - crates/afwe-core/src/materialize.rs::save_quarantine_backup
+  - crates/afwe-core/src/materialize.rs::tests
+  - crates/afwe-core/src/materialize.rs::tests.missing_base_ref_fails_loudly_with_actionable_fetch_command
+  - crates/afwe-core/src/materialize.rs::tests.preview_first_apply_check_and_remove_cycle
+  - crates/afwe-core/src/materialize.rs::unchain_git_pre_commit
+  - crates/afwe-core/src/materialize.rs::write_agents_marker_block
+  - crates/afwe-core/src/model.rs::AmbiguityQuestion
+  - crates/afwe-core/src/model.rs::Assumption
+  - crates/afwe-core/src/model.rs::AssumptionClaim
+  - crates/afwe-core/src/model.rs::CalibrationStore
+  - crates/afwe-core/src/model.rs::CheckSpec
+  - crates/afwe-core/src/model.rs::ExternalProvenance
+  - crates/afwe-core/src/model.rs::GraduationPolicy
+  - crates/afwe-core/src/model.rs::GraduationPolicy[Default].default
+  - crates/afwe-core/src/model.rs::GuideState
+  - crates/afwe-core/src/model.rs::IntentRevision
+  - crates/afwe-core/src/model.rs::ModelCalibrationProfile
+  - crates/afwe-core/src/model.rs::ModelCalibrationProfile[Default].default
+  - crates/afwe-core/src/model.rs::Policy
+  - crates/afwe-core/src/model.rs::Policy[Default].default
+  - crates/afwe-core/src/model.rs::ProbeRecord
+  - crates/afwe-core/src/model.rs::Turn
+  - crates/afwe-core/src/model.rs::TurnIntent
+  - crates/afwe-core/src/model.rs::default_inferred
+  - crates/afwe-core/src/model.rs::default_min_probe_sessions
+  - crates/afwe-core/src/model.rs::default_trust_factor
+  - crates/afwe-core/src/onboard.rs::CI_TEMPLATE
+  - crates/afwe-core/src/rollback.rs::tests
+  - crates/afwe-core/src/rollback.rs::tests.test_undo_prunes_generated_checks
+  - crates/afwe-core/src/store.rs::Store.calibration
+  - crates/afwe-core/src/store.rs::Store.save_calibration
+  - crates/afwe-core/src/timeline.rs::restore
+  - crates/afwe-core/src/turn.rs::begin
+  - crates/afwe-core/src/turn.rs::commit
+  - crates/afwe-core/src/turn.rs::tests
+  - crates/afwe-core/src/turn.rs::tests.ready_mode_turn_confirms_assumptions_and_runs_checkgen
+  - crates/afwe-core/src/verify.rs::verify
+implements:
+  afwe-2:
+  - packages/afwe/README.md
+  - packages/afwe/bin/afwe.js
+  - packages/afwe/package.json
+  afwe-cli:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  afwe-core:
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/baseline.rs
+  - crates/afwe-core/src/calibration.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/escalation.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/header.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/judgment.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/materialize.rs
+  - crates/afwe-core/src/mission.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/registry.rs
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/scene.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/timeline_4d.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  crates:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/baseline.rs
+  - crates/afwe-core/src/calibration.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/escalation.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/header.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/judgment.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/materialize.rs
+  - crates/afwe-core/src/mission.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/registry.rs
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/scene.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/timeline_4d.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  demo-project:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  examples:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  - examples/multi-intent-funnel/package.json
+  - examples/multi-intent-funnel/src/Slide1.tsx
+  - examples/multi-intent-funnel/src/Slide5.tsx
+  - examples/multi-intent-funnel/src/Slide6.tsx
+  - examples/multi-intent-funnel/src/index.tsx
+  scripts:
+  - scripts/build.sh
+  - scripts/demo.sh
+  - scripts/dev.sh
+  - scripts/install.ps1
+  - scripts/install.sh
+  studio:
+  - apps/studio/index.html
+  - apps/studio/package-lock.json
+  - apps/studio/package.json
+  - apps/studio/src-tauri/Cargo.toml
+  - apps/studio/src-tauri/README.md
+  - apps/studio/src-tauri/build.rs
+  - apps/studio/src-tauri/capabilities/default.json
+  - apps/studio/src-tauri/src/lib.rs
+  - apps/studio/src-tauri/src/main.rs
+  - apps/studio/src-tauri/tauri.conf.json
+  - apps/studio/src/App.tsx
+  - apps/studio/src/api.ts
+  - apps/studio/src/components/BoardView.tsx
+  - apps/studio/src/components/BottomBar.tsx
+  - apps/studio/src/components/ComponentInspector.tsx
+  - apps/studio/src/components/ContextPanel.tsx
+  - apps/studio/src/components/DriftDrawer.tsx
+  - apps/studio/src/components/ErrorBoundary.tsx
+  - apps/studio/src/components/GraphView.tsx
+  - apps/studio/src/components/MemoryView.tsx
+  - apps/studio/src/components/Modal.tsx
+  - apps/studio/src/components/OnboardingModal.tsx
+  - apps/studio/src/components/PinsView.tsx
+  - apps/studio/src/components/SceneOutliner.tsx
+  - apps/studio/src/components/SearchPalette.tsx
+  - apps/studio/src/components/TimelineScrubber4D.tsx
+  - apps/studio/src/components/TimelineView.tsx
+  - apps/studio/src/components/TopBar.tsx
+  - apps/studio/src/components/TreePanel.tsx
+  - apps/studio/src/components/WorkflowView.tsx
+  - apps/studio/src/main.tsx
+  - apps/studio/src/store.ts
+  - apps/studio/src/styles.css
+  - apps/studio/tsconfig.json
+  - apps/studio/vite.config.ts
+  - apps/studio/web-dist/assets/core-DhEqZVGG.js
+  - apps/studio/web-dist/assets/index-Bm5VbKL3.css
+  - apps/studio/web-dist/assets/index-C8d3tB1H.js
+  - apps/studio/web-dist/index.html
+checks:
+- id: afwe-verify
+  title: constraints and active guardrails
+  trust: deterministic
+  authored_by: afwe
+  passed: true
+  blocking: true
+- id: project-tests
+  title: cargo test
+  trust: deterministic
+  authored_by: human
+  passed: true
+  blocking: true
+- id: claim:a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+- id: claim:a2
+  title: calibration module exists in afwe-core
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+- id: claim:a3
+  title: judgment module exists in afwe-core
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+- id: claim:a4
+  title: materialize module exists in afwe-core
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+strength: deterministic
+confidence: 1.0
+confidence_parts:
+  clarity: 1.0
+  mapping: 1.0
+  pins: 1.0
+  verification: 1.0
+gate:
+  decision: ready
+  reasons:
+  - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Preserves 100% determinism with zero model calls in core; pure AST & tree-sitter mechanisms'
+footer_shown: false
+summary: 'ReBorn Phases 0-4: deterministic checkgen in Ready mode, tree-sitter comment blanking & AST claims, evidence-based confidence rubric & hold-out probing guides, sequential leaf-to-root TurnJudgment, preview-first BLAKE3 materialize tripwires, and explore mode'
+turn_token: 5a5a6f7793815234
+checkgen:
+- t0021-a1
+- t0021-a2
+- t0021-a3
+- t0021-a4

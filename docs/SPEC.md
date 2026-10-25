@@ -492,3 +492,29 @@ Every other engine layer—mapping, retrieval index, drift detection, context ex
 - **Onboarding / Import**: Running `afwe onboard` auto-detects the project tech stacks and maps the directory structure to the initial blueprint via `afwe bootstrap`.
 - **Agent Self-Extension**: AI agents in pair-programming mode can add Tree-Sitter language grammars, verify them with `cargo test`, and commit them through the turn protocol (`turn begin` → `turn assume` → `turn commit`) in a single prompt cycle.
 
+---
+
+## 14. ReBorn Verification, Tripwires & Calibration
+
+### 14.1 Comment Blanking & AST Claims
+Pattern checks and active guardrails automatically execute across comment-blanked source text (`blank_comments`) using Tree-Sitter AST parse trees or string-aware state machines, ensuring that URLs, globs, or comments never trigger false positives. In addition to regex patterns, AFWE supports AST structural claims:
+- `forbid_symbol`: forbids forbidden AST symbol definitions in scoped files.
+- `export_exists`: verifies that a public exported symbol exists in scoped ASTs.
+- `symbol_signature`: checks signature substrings for a named symbol.
+
+### 14.2 Evidence Rubric & Probing Guides
+Inferred rules with confidence between 0.85 and 0.90 are designated as advisory `ProbingGuide`s. They are injected into context briefings as `[GUIDE - ADVISORY]` without blocking commits.
+- **Graduation Criteria**: Requires $\ge 3$ qualifying turns touching the scope across distinct user sessions, $\ge 1$ hold-out probe turn (where the guide was withheld from context), 0 contradictions, and model trust factor $\ge 0.8$.
+- **Graduation Mode**: By default (`policy.graduation.require_human = true`, Option A), ready guides require one human confirmation (`afwe guide confirm <id>`) to become blocking checks. When set to `false` (Option B), they graduate automatically.
+- **Ambiguities (< 0.85)**: High-blast-radius ambiguities generate questions queued in `state/calibration.json` (`AmbiguityQuestion`), capped at 3 open questions per session.
+
+### 14.3 Tripwire Materialization & BLAKE3 Manifest
+`afwe materialize` generates local and CI enforcement files:
+- `.git/hooks/pre-commit`: chained execution that preserves existing husky/pre-commit scripts.
+- `.github/workflows/afwe-gate.yml`: CI workflow running with `actions/checkout@v5`, `fetch-depth: 0`, and `afwe materialize --check --base <ref>`.
+- `.afwe/guardrails/manifest.yaml`: BLAKE3 file hashes of all active and passive guardrails. PR verification compares PR changes against the protected base branch manifest to prevent agents from tampering with guardrails.
+
+### 14.4 Explore Mode
+When `policy.explore_mode: true` is active (enabled via `afwe unlock --reason "..."`), blocking checks and constraints are downgraded to warnings, allowing rapid exploratory prototyping. Running `afwe lock` re-arms deterministic gating.
+
+

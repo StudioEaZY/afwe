@@ -217,10 +217,76 @@ enum Cmd {
     /// Shared node concurrency leases across worktrees
     #[command(subcommand)]
     Lease(LeaseCmd),
+    /// Architectural governance metrics (blueprint, pins, checks, probing guides, calibration)
+    Stats,
+    /// Probing guides (85%–90% confidence) and graduation confirmation
+    #[command(subcommand)]
+    Guide(GuideCmd),
+    /// High-blast-radius (<85% confidence) architectural ambiguity questions
+    #[command(subcommand)]
+    Question(QuestionCmd),
+    /// Preview-first tripwire materializer (git hooks, CI gate, native tests, AGENTS.md, BLAKE3 manifest)
+    Materialize {
+        /// Write the selected tripwire layers and BLAKE3 manifest
+        #[arg(long)]
+        apply: bool,
+        /// Remove materialized tripwires and restore chained hooks
+        #[arg(long)]
+        remove: bool,
+        /// Verify BLAKE3 hashes against manifest (and optional --base ref)
+        #[arg(long)]
+        check: bool,
+        /// Base git ref or SHA to verify protected guards against in CI
+        #[arg(long)]
+        base: Option<String>,
+        #[arg(long)]
+        native_tests: bool,
+        #[arg(long)]
+        git_hooks: bool,
+        #[arg(long)]
+        ci: bool,
+        #[arg(long)]
+        claude_hooks: bool,
+        #[arg(long)]
+        agents_md: bool,
+    },
+    /// Enable Explore Mode: downgrade blocking checks to warnings during active refactoring
+    Unlock,
+    /// Disable Explore Mode and re-verify the full architecture
+    Lock,
     /// Upgrade the .afwe/ folder to the current format (legacy workflows/ become intents/)
     Migrate,
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
     Call { op: String, params: Option<String> },
+}
+
+#[derive(Subcommand)]
+enum GuideCmd {
+    /// List probing, ready_to_graduate, and graduated guides
+    List {
+        #[arg(long)]
+        status: Option<String>,
+    },
+    /// Confirm and graduate a guide to an active blocking check
+    Confirm { id: String },
+    /// Reject and retire a probing guide
+    Reject { id: String },
+}
+
+#[derive(Subcommand)]
+enum QuestionCmd {
+    /// List open ambiguity questions
+    List {
+        #[arg(long)]
+        all: bool,
+    },
+    /// Answer an ambiguity question (optionally promoting it to a pin)
+    Answer {
+        id: String,
+        answer: String,
+        #[arg(long)]
+        pin: bool,
+    },
 }
 
 #[derive(Subcommand)]
@@ -1306,6 +1372,94 @@ fn run(cli: Cli) -> Result<i32> {
                     out(json, &v, |v| format!("released: {}", v["released"]));
                 }
             }
+            Ok(0)
+        }
+        Cmd::Stats => {
+            let engine = engine_for(&cli.dir)?;
+            let v = api::call(&engine, "stats", json!({}), &origin)?;
+            out(json, &v, render::stats);
+            Ok(0)
+        }
+        Cmd::Guide(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                GuideCmd::List { status } => {
+                    let v = api::call(&engine, "guide.list", json!({"status": status}), &origin)?;
+                    out(json, &v, render::guides);
+                }
+                GuideCmd::Confirm { id } => {
+                    let v = api::call(&engine, "guide.confirm", json!({"id": id}), &origin)?;
+                    out(json, &v, |v| format!("guide `{id}` graduated to active check `{}`", s_of(v, "id")));
+                }
+                GuideCmd::Reject { id } => {
+                    let v = api::call(&engine, "guide.reject", json!({"id": id}), &origin)?;
+                    out(json, &v, |_| format!("guide `{id}` retired"));
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Question(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                QuestionCmd::List { all } => {
+                    let v = api::call(&engine, "question.list", json!({"all": all}), &origin)?;
+                    out(json, &v, render::questions);
+                }
+                QuestionCmd::Answer { id, answer, pin } => {
+                    let v = api::call(&engine, "question.answer", json!({"id": id, "answer": answer, "pin": pin}), &origin)?;
+                    out(json, &v, |v| {
+                        let mut msg = format!("question `{id}` answered");
+                        if !v["pin"].is_null() {
+                            msg.push_str(&format!(" → promoted to pin `{}`", s_of(&v["pin"], "id")));
+                        }
+                        msg
+                    });
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Materialize { apply, remove, check, base, native_tests, git_hooks, ci, claude_hooks, agents_md } => {
+            let engine = engine_for(&cli.dir)?;
+            let v = api::call(
+                &engine,
+                "materialize",
+                json!({
+                    "apply": apply,
+                    "remove": remove,
+                    "check": check,
+                    "base": base,
+                    "native_tests": native_tests,
+                    "git_hooks": git_hooks,
+                    "ci": ci,
+                    "claude_hooks": claude_hooks,
+                    "agents_md": agents_md,
+                }),
+                &origin,
+            )?;
+            out(json, &v, render::materialize);
+            if check && !v["ok"].as_bool().unwrap_or(false) {
+                return Ok(1);
+            }
+            Ok(0)
+        }
+        Cmd::Unlock => {
+            let engine = engine_for(&cli.dir)?;
+            let v = api::call(&engine, "unlock", json!({}), &origin)?;
+            out(json, &v, |v| s_of(v, "message"));
+            Ok(0)
+        }
+        Cmd::Lock => {
+            let engine = engine_for(&cli.dir)?;
+            let v = api::call(&engine, "lock", json!({}), &origin)?;
+            out(json, &v, |v| {
+                let ok = v["verify"]["ok"].as_bool().unwrap_or(false);
+                format!(
+                    "Explore mode locked. Architecture verification: {} ({} error(s), {} warning(s))",
+                    if ok { "ok" } else { "failed" },
+                    v["verify"]["errors"],
+                    v["verify"]["warnings"]
+                )
+            });
             Ok(0)
         }
         Cmd::Migrate => {
