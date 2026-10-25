@@ -2,7 +2,7 @@
 //! Tauri shell all call `call(engine, op, params)`. Ops are stable names; params are JSON.
 
 use crate::context::{build_context, ContextQuery};
-use crate::contract::{self, TaskStart};
+use crate::contract;
 use crate::drift;
 use crate::intent::{self, PinSpec};
 use crate::onboard;
@@ -79,20 +79,7 @@ pub fn call(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         }
     }
 
-    let result = dispatch(engine, op, params, default_origin)?;
-    let step = match op {
-        o if o.starts_with("memory.add") || o.starts_with("memory.update") || o.starts_with("guardrail.add") => Some("afwe_update"),
-        o if o.starts_with("blueprint.") && o != "blueprint.get" => Some("afwe_blueprint"),
-        o if o.starts_with("workflow.") && !matches!(o, "workflow.get" | "workflow.list") => Some("afwe_workflow"),
-        _ => None,
-    };
-    if let Some(step) = step {
-        let _ = contract::mark_step(engine, task.as_deref(), step);
-        if step == "afwe_blueprint" || step == "afwe_workflow" {
-            let _ = contract::mark_step(engine, task.as_deref(), "afwe_update");
-        }
-    }
-    Ok(result)
+    dispatch(engine, op, params, default_origin)
 }
 
 fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> Result<Value> {
@@ -228,28 +215,15 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             Ok(json!({"ok": true}))
         }
 
-        // ───────── workflows ─────────
+        // ───────── workflows (retired; delegated to intents) ─────────
         "workflow.list" => {
             let ws = engine.store.workflows()?;
             Ok(json!(ws.iter().map(|w| json!({"id": w.id, "title": w.title, "status": w.status, "origin": w.origin, "nodes": w.nodes.len(), "edges": w.edges.len(), "targets": w.targets, "updated": w.updated, "task": w.task})).collect::<Vec<_>>()))
         }
         "workflow.get" => j(engine.store.workflow(&req(&p, "id")?)?),
-        "workflow.new" => j(ops::workflow_new(engine, &req(&p, "title")?, s(&p, "id"), s(&p, "description"), s(&p, "prompt"), list(&p, "targets"), s(&p, "task"), &origin(&p, default_origin))?),
-        "workflow.add_node" => {
-            let (w, n) = ops::workflow_add_node(engine, ops::WfAddNode { workflow: req(&p, "workflow")?, kind: s(&p, "kind").unwrap_or("step".into()), title: req(&p, "title")?, text: s(&p, "text"), after: s(&p, "after"), edge_kind: s(&p, "edge_kind"), id: s(&p, "id"), position: p.get("position").and_then(|v| serde_json::from_value(v.clone()).ok()) }, &origin(&p, default_origin))?;
-            Ok(json!({"workflow": w, "node": n}))
+        "workflow.new" | "workflow.add_node" | "workflow.link" | "workflow.set" | "workflow.upsert" | "workflow.remove" | "workflow.promote" => {
+            Err(anyhow!("Legacy v1 workflows have been retired. Use Living Intents (.afwe/intents/) or the turn protocol (turn begin -> assume -> commit)."))
         }
-        "workflow.link" => j(ops::workflow_link(engine, &req(&p, "workflow")?, &req(&p, "from")?, &req(&p, "to")?, &s(&p, "kind").unwrap_or("then".into()), b(&p, "remove", false), &origin(&p, default_origin))?),
-        "workflow.set" => j(ops::workflow_set(engine, &req(&p, "workflow")?, s(&p, "node").as_deref(), p.get("patch").unwrap_or(&p), &origin(&p, default_origin))?),
-        "workflow.upsert" => {
-            let w: Workflow = serde_json::from_value(p.get("workflow").cloned().ok_or_else(|| anyhow!("missing `workflow`"))?)?;
-            j(ops::workflow_upsert(engine, w, &origin(&p, default_origin))?)
-        }
-        "workflow.remove" => {
-            ops::workflow_remove(engine, &req(&p, "id")?, &origin(&p, default_origin))?;
-            Ok(json!({"ok": true}))
-        }
-        "workflow.promote" => j(ops::workflow_promote(engine, &req(&p, "id")?, s(&p, "parent").as_deref(), &origin(&p, default_origin))?),
 
         // ───────── lenses ─────────
         "lens.list" => j(engine.store.lenses()?),
@@ -268,7 +242,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             Ok(json!({"ok": true}))
         }
 
-        // ───────── contracts / tasks / board ─────────
+        // ───────── contracts / tasks / board (retired; delegated to turn protocol) ─────────
         "contract.list" => j(engine.store.contracts()?),
         "contract.get" => {
             let cs = engine.store.contracts()?;
@@ -279,27 +253,8 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let cs = engine.store.contracts()?;
             Ok(json!({"markdown": contract::render_agents_block(&m.project.name, &cs)}))
         }
-        "task.start" => {
-            let cs = engine.store.contracts()?;
-            let (task, items) = contract::task_start(engine, &cs, TaskStart { title: req(&p, "title")?, kind: s(&p, "kind").unwrap_or("code".into()), files: list(&p, "files"), nodes: list(&p, "nodes"), origin: origin(&p, default_origin), workflow: s(&p, "workflow") })?;
-            let c = contract::select_contract(&cs, &task.kind);
-            Ok(json!({"task": task, "obligations": items, "contract": c}))
-        }
-        "task.done" => j(contract::task_done(engine, s(&p, "task").as_deref(), s(&p, "message").as_deref(), &origin(&p, default_origin))?),
-        "task.step" => j(contract::mark_step(engine, s(&p, "task").as_deref(), &req(&p, "action")?)?),
-        "board.get" => {
-            let board = engine.store.board()?;
-            let open = board.items.iter().filter(|i| i.status == "open").count();
-            Ok(json!({"open": open, "tasks": board.tasks, "items": board.items}))
-        }
-        "board.dismiss" => {
-            let mut board = engine.store.board()?;
-            let id = req(&p, "id")?;
-            let it = board.items.iter_mut().find(|i| i.id == id).ok_or_else(|| anyhow!("board item not found"))?;
-            it.status = "dismissed".into();
-            it.resolved = Some(crate::util::now());
-            engine.store.save_board(&board)?;
-            Ok(json!({"ok": true}))
+        "task.start" | "task.done" | "task.step" | "board.get" | "board.dismiss" => {
+            Ok(json!({"status": "retired", "message": "Task and Board obligation tracking has been superseded by the Turn protocol (turns/tNNNN.yaml)."}))
         }
 
         // ───────── proposals ─────────
@@ -919,15 +874,7 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_memory_find", op: "memory.list", description: "Find memory entries by kind, node, tag, file or free text.", schema: obj(json!({"kind": {"type": "string"}, "node": {"type": "string"}, "tag": {"type": "string"}, "file": {"type": "string"}, "q": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_memory_update", op: "memory.update", description: "Update a memory entry (title, body, status, applies_to, files, symbols, tags).", schema: obj(json!({"id": {"type": "string"}, "patch": {"type": "object"}}), &["id", "patch"]) },
         ToolSpec { name: "afwe_guardrail_add", op: "guardrail.add", description: "Add a guardrail. passive = statement + scope (+ exceptions) injected as context; active = checks [{type: command|forbid_import|forbid_pattern|require_pattern|require_file, ...}] enforced by afwe_verify.", schema: obj(json!({"guardrail": {"type": "object"}}), &["guardrail"]) },
-        ToolSpec { name: "afwe_workflow_get", op: "workflow.get", description: "Read a node-based workflow (intent → design → steps → components with mapping/provenance).", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
-        ToolSpec { name: "afwe_workflow_list", op: "workflow.list", description: "List node-based workflows.", schema: obj(json!({}), &[]) },
-        ToolSpec { name: "afwe_workflow_upsert", op: "workflow.upsert", description: "Create or replace a node-based workflow. Put the user's prompt verbatim in a `prompt` node (provenance), then intent/design/step/component/decision/question nodes and edges (then|refines|depends|produces). Set origin to your model name.", schema: obj(json!({"workflow": {"type": "object", "description": "{id?, title, description?, status?, targets?, nodes:[{id,kind,title,text?,status?,maps_to?}], edges:[{from,to,kind?}]}"}}), &["workflow"]) },
-        ToolSpec { name: "afwe_workflow_promote", op: "workflow.promote", description: "Turn a workflow's component nodes into planned blueprint nodes under a parent.", schema: obj(json!({"id": {"type": "string"}, "parent": {"type": "string"}}), &["id"]) },
         ToolSpec { name: "afwe_lens_get", op: "lens.get", description: "Resolve a custom abstraction (lens) into a view tree.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
-        ToolSpec { name: "afwe_contract", op: "contract.get", description: "The contract (ordered obligations) for a task kind: code|bugfix|refactor|architecture|feature|workflow.", schema: obj(json!({"task_kind": {"type": "string"}}), &[]) },
-        ToolSpec { name: "afwe_task_start", op: "task.start", description: "Open a task on the Board; creates contract obligations that later tool calls tick off.", schema: obj(json!({"title": {"type": "string"}, "kind": {"type": "string"}, "files": strs, "nodes": strs, "workflow": {"type": "string"}}), &["title"]) },
-        ToolSpec { name: "afwe_task_done", op: "task.done", description: "Log completion of a task (message = what changed and why). Reports unfulfilled obligations.", schema: obj(json!({"task": {"type": "string"}, "message": {"type": "string"}}), &[]) },
-        ToolSpec { name: "afwe_board", op: "board.get", description: "Board/Tasks: open contract obligations, pending proposals, uncertain reconciliations, stale references.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_proposals", op: "proposals.list", description: "Pending architecture proposals (<50% confidence changes AFWE will not apply on its own).", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_proposal_resolve", op: "proposal.resolve", description: "accept | revert | review a proposal (review = impact on memory, guardrails, constraints, files).", schema: obj(json!({"id": {"type": "string"}, "action": {"type": "string"}}), &["id", "action"]) },
         ToolSpec { name: "afwe_log", op: "log.add", description: "Append a note to the change log (kind: note|complete|decision).", schema: obj(json!({"message": {"type": "string"}, "kind": {"type": "string"}, "task": {"type": "string"}}), &["message"]) },

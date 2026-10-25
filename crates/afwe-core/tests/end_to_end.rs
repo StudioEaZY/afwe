@@ -41,7 +41,6 @@ fn blueprint_sync_context_verify_roundtrip() {
     let dir = tmp_project("roundtrip");
     let e = engine(&dir);
     assert!(dir.join(".afwe/afwe.yaml").exists());
-    assert!(dir.join(".afwe/contracts/default.yaml").exists());
 
     c(&e, "blueprint.add", json!({"name": "Payments", "kind": "subsystem", "purpose": "Charging users", "files": ["src/payments/**"]}));
     c(&e, "blueprint.add", json!({"name": "Identity", "purpose": "User model", "files": ["src/identity/**"]}));
@@ -163,26 +162,11 @@ fn rename_detection_keeps_identity_without_line_numbers() {
 }
 
 #[test]
-fn contracts_track_obligations_and_lenses_do_not_touch_the_blueprint() {
-    let dir = tmp_project("contract");
+fn lenses_do_not_touch_blueprint_and_workflow_graduation_preserves_intent() {
+    let dir = tmp_project("lens-and-grad");
     let e = engine(&dir);
     c(&e, "blueprint.add", json!({"name": "Payments", "files": ["src/payments/**"]}));
     c(&e, "blueprint.add", json!({"name": "Identity", "files": ["src/identity/**"]}));
-    c(&e, "blueprint.add", json!({"name": "UI", "files": ["src/ui/**"]}));
-    c(&e, "blueprint.add", json!({"name": "Worker", "files": ["services/**"]}));
-
-    let t = c(&e, "task.start", json!({"title": "Add refunds", "kind": "code", "files": ["src/payments/checkout.ts"]}));
-    let task = t["task"]["id"].as_str().unwrap().to_string();
-    assert_eq!(t["obligations"].as_array().unwrap().len(), 5); // context, verify, update, sync, log (implement is the harness's)
-    let ids: std::collections::HashSet<String> = t["obligations"].as_array().unwrap().iter().map(|o| o["id"].as_str().unwrap().to_string()).collect();
-    assert_eq!(ids.len(), 5, "board item ids must be unique");
-
-    c(&e, "context", json!({"files": ["src/payments/checkout.ts"], "task": task}));
-    c(&e, "memory.add", json!({"kind": "decision", "title": "Refunds are async", "applies_to": ["payments"], "task": task}));
-    c(&e, "sync", json!({"task": task}));
-    let done = c(&e, "task.done", json!({"task": task, "message": "refunds added"}));
-    // verify was never run successfully → still owed
-    assert_eq!(done["unfulfilled"], json!(["afwe_verify"]), "{done}");
 
     let before = fs::read_to_string(dir.join(".afwe/blueprint/blueprint.yaml")).unwrap();
     c(&e, "lens.save", json!({"lens": {"id": "", "name": "Money view", "groups": [{"name": "Money", "nodes": ["payments", "identity"]}]}}));
@@ -191,15 +175,45 @@ fn contracts_track_obligations_and_lenses_do_not_touch_the_blueprint() {
     let after = fs::read_to_string(dir.join(".afwe/blueprint/blueprint.yaml")).unwrap();
     assert_eq!(before, after, "a lens must have zero impact on the blueprint");
 
-    // workflow: prompt retained as provenance, component promoted into a planned node
-    let w = c(&e, "workflow.new", json!({"title": "Refund flow", "prompt": "Please add refunds", "origin": "llm:test-model"}));
-    assert_eq!(w["nodes"][0]["kind"], "prompt");
-    assert_eq!(w["nodes"][0]["origin"], "llm:test-model");
-    c(&e, "workflow.add_node", json!({"workflow": "refund-flow", "kind": "component", "title": "Refund service", "text": "issues refunds"}));
-    let created = c(&e, "workflow.promote", json!({"id": "refund-flow", "parent": "payments"}));
-    assert_eq!(created[0]["status"], "planned");
-    let g = c(&e, "graph", json!({}));
-    assert!(g["nodes"].as_array().unwrap().iter().any(|n| n["name"] == "Refund service" && n["parent"] == "payments"));
+    // legacy workflow graduation test: simulating legacy .afwe/workflows/*.yaml
+    let wf_dir = dir.join(".afwe/workflows");
+    fs::create_dir_all(&wf_dir).unwrap();
+    let legacy_yaml = r#"
+id: refund-flow
+title: Refund flow
+description: Handles refunds
+status: active
+origin: llm:test
+targets: ["payments"]
+nodes:
+  - id: prompt-1
+    kind: prompt
+    title: Original user prompt
+    text: Please add refunds
+    origin: llm:test
+  - id: comp-1
+    kind: component
+    title: Refund service
+    text: issues refunds
+edges: []
+"#;
+    fs::write(wf_dir.join("refund-flow.yaml"), legacy_yaml).unwrap();
+    assert!(wf_dir.join("refund-flow.yaml").exists());
+
+    // run graduation
+    let graduated = e.store.graduate_legacy_data().unwrap();
+    assert_eq!(graduated, 1, "should graduate 1 legacy workflow");
+    assert!(!wf_dir.exists(), "workflows directory should be removed after graduation");
+
+    // verify intent exists in intents/
+    let intent = e.store.intent("refund-flow").unwrap().expect("graduated intent should exist");
+    assert_eq!(intent.id, "refund-flow");
+    assert_eq!(intent.title, "Refund flow");
+    assert_eq!(intent.statement.as_deref(), Some("Please add refunds"));
+    assert!(intent.graph.is_some(), "intent should preserve the node graph");
+
+    // subsequent check should do 0 work without bloat
+    assert_eq!(e.store.graduate_legacy_data().unwrap(), 0);
 
     let _ = fs::remove_dir_all(&dir);
 }

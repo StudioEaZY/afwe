@@ -50,6 +50,8 @@ impl Engine {
             let _ = std::fs::create_dir_all(self.store.p("index/baselines"));
             let _ = std::fs::create_dir_all(self.store.p("state"));
         }
+        // One-time check & graduation of legacy v1 workflows/contracts without bloat
+        let _ = self.store.graduate_legacy_data();
         let sources = self.store.sources()?;
         let manifest = sources.manifest.clone().expect("manifest");
         let (code, fresh) = match (refresh, self.store.code_model()?) {

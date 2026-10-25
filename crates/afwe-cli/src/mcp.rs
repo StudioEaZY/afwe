@@ -98,7 +98,7 @@ fn write(out: &mut std::io::Stdout, v: &Value) {
 fn instructions(engine: Option<&Engine>) -> String {
     let name = engine.and_then(|e| e.store.manifest().ok()).map(|m| m.project.name).unwrap_or("this project".into());
     format!(
-        "AFWE keeps a persistent architectural model of `{name}` in .afwe/. Contract: (1) before editing call afwe_context with the files you will touch and respect the decisions/exceptions/guardrails it returns; (2) reuse existing nodes before creating new ones; (3) after editing call afwe_verify on the changed files and fix errors instead of silencing them; (4) record decisions/exceptions with afwe_memory_add, capture feature intent as a workflow with afwe_workflow_upsert; (5) call afwe_sync, then afwe_task_done. The blueprint is the structural reality of the project – verify your work against it; if code and blueprint disagree, say so rather than silently reinterpreting the architecture."
+        "AFWE keeps a persistent architectural model of `{name}` in .afwe/. Contract: (1) before editing call afwe_turn_begin and afwe_turn_assume to declare intents & claims and inspect context/pins/guides; (2) reuse existing nodes before creating new ones; (3) after editing call afwe_verify on the changed files and fix errors instead of silencing them; (4) record architectural decisions with afwe_memory_add; (5) call afwe_turn_commit to verify and commit through the deterministic gate. The blueprint is the structural reality of the project – verify your work against it; if code and blueprint disagree, say so rather than silently reinterpreting the architecture."
     )
 }
 

@@ -119,7 +119,7 @@ afwe gate                        # whole-project gate (what CI runs)
 afwe materialize --apply         # materialize tripwires (chained git hooks, CI gate, BLAKE3 manifest)
 afwe stats                       # architectural governance & calibration metrics
 afwe studio                      # Studio in the browser (http://localhost:4242)
-afwe mcp                         # MCP server on stdio for your harness (57 tools)
+afwe mcp                         # MCP server on stdio for your harness (49 tools)
 ```
 
 For an already-populated example: `cd examples/demo-project && afwe status` (see its README).

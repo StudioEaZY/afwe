@@ -309,6 +309,9 @@ impl Store {
                 out.push(c);
             }
         }
+        if out.is_empty() {
+            out = crate::contract::default_contracts();
+        }
         Ok(out)
     }
     pub fn save_contract(&self, c: &Contract) -> Result<()> {
@@ -646,13 +649,33 @@ impl Store {
         self.write_json("state/calibration.json", c)
     }
 
-    // ── migration of legacy workflows/ into intents/ ──
-    pub fn migrate_workflows(&self) -> Result<usize> {
-        let legacy: Vec<Workflow> = load_dir(self, "workflows")?;
-        let n = legacy.len();
-        for w in legacy {
-            self.save_workflow(&w)?;
+    // ── graduation & migration of legacy workflows/ & contracts/ ──
+    pub fn graduate_legacy_data(&self) -> Result<usize> {
+        let mut count = 0;
+        let wf_dir = self.p("workflows");
+        if wf_dir.is_dir() {
+            let legacy: Vec<Workflow> = load_dir(self, "workflows")?;
+            for w in legacy {
+                self.save_workflow(&w)?;
+                count += 1;
+            }
+            let _ = fs::remove_dir_all(&wf_dir);
         }
-        Ok(n)
+        let contracts_dir = self.p("contracts");
+        if contracts_dir.is_dir() {
+            let files = list_files(&contracts_dir, "yaml");
+            let only_defaults = files.iter().all(|f| {
+                let name = f.file_stem().and_then(|s| s.to_str()).unwrap_or("");
+                name == "default" || name == "architecture"
+            });
+            if only_defaults {
+                let _ = fs::remove_dir_all(&contracts_dir);
+            }
+        }
+        Ok(count)
+    }
+
+    pub fn migrate_workflows(&self) -> Result<usize> {
+        self.graduate_legacy_data()
     }
 }

@@ -1,0 +1,18 @@
+id: retire-v1-workflows
+title: Retire v1 workflows and task obligation tracking
+statement: Graduate legacy workflows into living intents and retire v1 task obligation tracking
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  - afwe-cli
+from_turns:
+- t0022
+history:
+- turn: t0022
+  ts: 2026-10-25T21:05:34Z
+  statement: Graduate legacy workflows into living intents and retire v1 task obligation tracking
+created: 2026-10-25T21:05:34Z
+updated: 2026-10-25T21:05:34Z
+task: task-0b650e

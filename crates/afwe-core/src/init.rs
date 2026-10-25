@@ -75,11 +75,6 @@ pub fn init(project_root: &Path, opts: InitOptions) -> Result<Store> {
     for d in ["guardrails/passive", "guardrails/active", "intents", "pins", "checks", "turns", "abstractions", "index/baselines", "state", "log"] {
         std::fs::create_dir_all(store.p(d))?;
     }
-    if store.contracts()?.is_empty() {
-        for c in crate::contract::default_contracts() {
-            store.save_contract(&c)?;
-        }
-    }
     store.write_text("skills/afwe/SKILL.md", crate::contract::AFWE_SKILL_MD)?;
     store.write_text("docs/TUTORIAL.md", include_str!("../../../docs/TUTORIAL.md"))?;
     store.write_text("docs/WALKTHROUGH.md", include_str!("../../../docs/WALKTHROUGH.md"))?;

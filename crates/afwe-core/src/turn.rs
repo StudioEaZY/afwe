@@ -14,7 +14,7 @@
 use crate::analyze::build_globset;
 use crate::claims;
 use crate::conflict;
-use crate::contract::{self, TaskStart};
+use crate::contract;
 use crate::engine::{Engine, Snapshot};
 use crate::gate::{self, ConfidenceInput, Decision, GateInput};
 use crate::intent::{self, PinSpec};
@@ -411,18 +411,10 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         Some(s)
     };
 
-    // ── task (the Board shows its contract obligations) ──
-    let contracts = engine.store.contracts()?;
-    let kind = if contract::select_contract(&contracts, &req.kind).is_some() { req.kind.clone() } else { "code".into() };
+    // ── task identifier (v1 board obligations retired; turn ledger is source of truth) ──
     let title = truncate(req.prompt.lines().next().unwrap_or("").trim(), 90);
-    let (task, _) = contract::task_start(
-        engine,
-        &contracts,
-        TaskStart { title: format!("{id}: {title}"), kind: kind.clone(), files: brief_files.clone(), nodes: chain.iter().cloned().collect(), origin: req.origin.clone(), workflow: None },
-    )?;
-    let obligations: Vec<Value> = contract::select_contract(&contracts, &kind)
-        .map(|c| c.steps.iter().map(|s| json!({"step": s.id, "action": s.action, "instruction": s.instruction})).collect())
-        .unwrap_or_default();
+    let task_id = format!("task-{id}");
+    let obligations: Vec<Value> = vec![];
 
     // ── record + baseline (captured after the log entry so the engine's own writes are not attributed) ──
     let cal_store = engine.store.calibration().unwrap_or_default();
@@ -443,7 +435,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         session_id: Some(session_id.clone()),
         prompt: req.prompt.clone(),
         prompt_hash: hash_str(&req.prompt),
-        task: Some(task.id.clone()),
+        task: Some(task_id.clone()),
         refines: req.refines.clone(),
         targets: req.targets.clone(),
         scope: TurnScope { nodes: nodes.clone(), files: files.iter().map(|f| format!("{prefix}{f}")).collect() },
@@ -453,7 +445,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         ..Default::default()
     };
     engine.store.save_turn(&turn)?;
-    engine.log(&req.origin, "turn_begin", format!("{id} begun: {}", truncate(&title, 100)), Some(json!({"turn": id, "task": task.id, "nodes": nodes})))?;
+    engine.log(&req.origin, "turn_begin", format!("{id} begun: {}", truncate(&title, 100)), Some(json!({"turn": id, "task": task_id, "nodes": nodes})))?;
     let mut guard_fps = BTreeMap::new();
     for p in &pins {
         guard_fps.insert(format!("pin:{}", p.id), format!("{}:{}:{}", p.status, p.severity, hash_str(&p.statement)));
@@ -476,7 +468,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         "session_id": session_id,
         "turn_token": turn.turn_token,
         "reconciled_rollbacks": rollback_events,
-        "task": task.id,
+        "task": task_id,
         "scope": {"nodes": nodes, "files": brief_files},
         "unresolved_targets": unresolved,
         "pins": active_pins,
@@ -1262,12 +1254,6 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     }
     turn.post_hashes = post_hashes;
     engine.store.save_turn(&turn)?;
-    if let Some(t) = turn.task.clone() {
-        for step in ["afwe_verify", "afwe_update", "afwe_sync", "afwe_log"] {
-            let _ = contract::mark_step(engine, Some(&t), step);
-        }
-        let _ = contract::task_done(engine, Some(&t), Some(&summary), &req.origin);
-    }
     let (sync_report, _) = sync(engine, &SyncOptions { dry_run: false, origin: req.origin.clone() })?;
 
     // git: scoped commit with the trailer. A failed commit leaves the turn `ready`, never half-committed.

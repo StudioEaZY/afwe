@@ -183,7 +183,7 @@ Also available: `afwe_turn_confirm`, `afwe_turn_revert`, `afwe_turn_get`, `afwe_
 `afwe_pin_list | propose | accept | retire | budget`, `afwe_check_list | add | remove`, `afwe_gate`,
 `afwe_timeline_list | get | diff | search | losses | restore`, `afwe_onboard_detect | apply`,
 `afwe_stats`, `afwe_guide_list | confirm`, `afwe_question_list | answer`, `afwe_materialize`, `afwe_unlock | lock`.
-`afwe mcp` answers `tools/list` with 57 tools.
+`afwe mcp` answers `tools/list` with 49 tools.
 
 Rules for a harness: call `afwe_turn_begin` first and show the footer it returns while proposals are pending;
 call `afwe_turn_assume` before writing code; call `afwe_turn_commit` after writing code; treat `status: redo` as
