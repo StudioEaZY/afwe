@@ -1,0 +1,179 @@
+---
+// ConstraintGeometry.astro - Interactive Node Geometry & Constraints Visualizer
+---
+
+<div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/80 dark:bg-obsidian-850/80 p-5 backdrop-blur-sm shadow-sm transition-all">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-400 dark:border-obsidian-700 pb-3 mb-4">
+    <div>
+      <h3 class="text-sm font-semibold text-parchment-900 dark:text-obsidian-100 flex items-center gap-2">
+        <span>Constraints are Geometry</span>
+        <span class="rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono px-2 py-0.5 border border-emerald-500/20">Active Kernel Gate</span>
+      </h3>
+      <p class="text-xs text-parchment-600 dark:text-obsidian-400 italic mt-0.5">
+        "If an arrow points the wrong way, you see it instantly."
+      </p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="toggle-explore-mode" class="text-xs font-mono px-3 py-1 rounded border border-parchment-400 dark:border-obsidian-700 hover:bg-parchment-200 dark:hover:bg-obsidian-800 text-parchment-800 dark:text-obsidian-200 transition-colors">
+        Toggle Mode: <span id="explore-label" class="font-bold text-emerald-600 dark:text-emerald-400">Strict Lock</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="relative w-full h-[280px] bg-parchment-50 dark:bg-obsidian-900/60 rounded-lg border border-parchment-300 dark:border-obsidian-800 overflow-hidden flex items-center justify-center">
+    <svg viewBox="0 0 540 280" class="w-full h-full select-none">
+      <defs>
+        <!-- Green Arrow Marker -->
+        <marker id="arrow-green" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981" />
+        </marker>
+        <!-- Red Arrow Marker -->
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#ef4444" />
+        </marker>
+        <!-- Amber Arrow Marker (Explore Mode) -->
+        <marker id="arrow-amber" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b" />
+        </marker>
+      </defs>
+
+      <!-- Center Node: Checkout -->
+      <g transform="translate(270, 140)">
+        <rect x="-55" y="-22" width="110" height="44" rx="8" class="fill-white dark:fill-obsidian-800 stroke-parchment-500 dark:stroke-obsidian-600 stroke-2" />
+        <text y="-2" text-anchor="middle" class="text-xs font-bold fill-parchment-900 dark:fill-obsidian-100">Checkout</text>
+        <text y="12" text-anchor="middle" class="text-[9px] font-mono fill-emerald-600 dark:fill-emerald-400 font-semibold">[Focus Node]</text>
+      </g>
+
+      <!-- Node: Payments -->
+      <g transform="translate(110, 60)">
+        <rect x="-45" y="-18" width="90" height="36" rx="6" class="fill-white dark:fill-obsidian-800 stroke-emerald-500 stroke-1" />
+        <text y="4" text-anchor="middle" class="text-xs font-medium fill-parchment-900 dark:fill-obsidian-200">Payments</text>
+      </g>
+
+      <!-- Node: Orders -->
+      <g transform="translate(430, 60)">
+        <rect x="-45" y="-18" width="90" height="36" rx="6" class="fill-white dark:fill-obsidian-800 stroke-emerald-500 stroke-1" />
+        <text y="4" text-anchor="middle" class="text-xs font-medium fill-parchment-900 dark:fill-obsidian-200">Orders</text>
+      </g>
+
+      <!-- Node: Auth (Pinned) -->
+      <g transform="translate(110, 220)">
+        <rect x="-45" y="-18" width="90" height="36" rx="6" class="fill-white dark:fill-obsidian-800 stroke-indigo-500 stroke-1" />
+        <text y="4" text-anchor="middle" class="text-xs font-medium fill-parchment-900 dark:fill-obsidian-200">Auth 🔒</text>
+      </g>
+
+      <!-- Node: Presentation UI -->
+      <g transform="translate(430, 220)">
+        <rect x="-45" y="-18" width="90" height="36" rx="6" class="fill-white dark:fill-obsidian-800 stroke-emerald-500 stroke-1" />
+        <text y="4" text-anchor="middle" class="text-xs font-medium fill-parchment-900 dark:fill-obsidian-200">Web UI</text>
+      </g>
+
+      <!-- Valid Connections (Green) -->
+      <line x1="225" y1="125" x2="145" y2="75" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)" />
+      <line x1="315" y1="125" x2="395" y2="75" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)" />
+      <line x1="225" y1="155" x2="145" y2="205" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)" />
+      <line x1="315" y1="155" x2="395" y2="205" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)" />
+
+      <!-- Forbidden Connection: Payments -> UI (Cross-cutting violation) -->
+      <path id="violation-line" d="M 155 70 C 270 20, 320 200, 385 220" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#arrow-red)" />
+
+      <!-- Violation Indicator Pill -->
+      <g id="violation-badge" transform="translate(270, 75)">
+        <rect x="-110" y="-12" width="220" height="24" rx="12" class="fill-red-500/10 stroke-red-500 stroke-1" />
+        <text y="4" text-anchor="middle" class="text-[10px] font-mono font-bold fill-red-600 dark:fill-red-400">
+          ✕ Payments ➔ UI (must_not_depend)
+        </text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="mt-3 flex flex-wrap items-center justify-between text-xs font-mono text-parchment-600 dark:text-obsidian-400">
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-1.5">
+        <span class="size-2 rounded-full bg-emerald-500"></span>
+        <span>Allowed Flow</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="size-2 rounded-full bg-red-500"></span>
+        <span id="violation-legend">Blocking Violation</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="size-2 rounded-full bg-indigo-500"></span>
+        <span>Locked Pin</span>
+      </div>
+    </div>
+    <div id="violation-status-text" class="text-red-600 dark:text-red-400 font-semibold">
+      Gate Status: REFUSES COMMIT (exit code 1)
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupConstraintGeometry() {
+    const toggleBtn = document.getElementById('toggle-explore-mode');
+    const label = document.getElementById('explore-label');
+    const line = document.getElementById('violation-line');
+    const badge = document.getElementById('violation-badge');
+    const legend = document.getElementById('violation-legend');
+    const statusText = document.getElementById('violation-status-text');
+
+    let isExplore = false;
+
+    if (!toggleBtn) return;
+
+    toggleBtn.addEventListener('click', () => {
+      isExplore = !isExplore;
+
+      if (isExplore) {
+        if (label) {
+          label.textContent = 'Explore Mode';
+          label.className = 'font-bold text-amber-500';
+        }
+        if (line) {
+          line.setAttribute('stroke', '#f59e0b');
+          line.setAttribute('marker-end', 'url(#arrow-amber)');
+        }
+        if (badge) {
+          const rect = badge.querySelector('rect');
+          const text = badge.querySelector('text');
+          if (rect) rect.className = 'fill-amber-500/10 stroke-amber-500 stroke-1';
+          if (text) {
+            text.className = 'text-[10px] font-mono font-bold fill-amber-600 dark:fill-amber-400';
+            text.textContent = '⚠ Warning: Payments ➔ UI (Advisory)';
+          }
+        }
+        if (legend) legend.textContent = 'Advisory Warning';
+        if (statusText) {
+          statusText.textContent = 'Gate Status: PROCEED WITH WARNING (`afwe unlock`)';
+          statusText.className = 'text-amber-600 dark:text-amber-400 font-semibold';
+        }
+      } else {
+        if (label) {
+          label.textContent = 'Strict Lock';
+          label.className = 'font-bold text-emerald-600 dark:text-emerald-400';
+        }
+        if (line) {
+          line.setAttribute('stroke', '#ef4444');
+          line.setAttribute('marker-end', 'url(#arrow-red)');
+        }
+        if (badge) {
+          const rect = badge.querySelector('rect');
+          const text = badge.querySelector('text');
+          if (rect) rect.className = 'fill-red-500/10 stroke-red-500 stroke-1';
+          if (text) {
+            text.className = 'text-[10px] font-mono font-bold fill-red-600 dark:fill-red-400';
+            text.textContent = '✕ Payments ➔ UI (must_not_depend)';
+          }
+        }
+        if (legend) legend.textContent = 'Blocking Violation';
+        if (statusText) {
+          statusText.textContent = 'Gate Status: REFUSES COMMIT (exit code 1)';
+          statusText.className = 'text-red-600 dark:text-red-400 font-semibold';
+        }
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupConstraintGeometry);
+  document.addEventListener('astro:after-swap', setupConstraintGeometry);
+</script>

@@ -1,0 +1,100 @@
+---
+// validators/index.astro - Hub of AST Claims & Guardrails (Guardrails AI-inspired)
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+
+const validators = [
+  {
+    id: "forbid_symbol",
+    title: "forbid_symbol",
+    category: "AST Structural Claim",
+    trust: "Deterministic",
+    description: "Forbids forbidden AST symbol definitions (functions, classes, structs) in scoped files using Tree-Sitter parsing.",
+    example: `{ "type": "forbid_symbol", "symbol": "raw_sql_query", "files": ["src/api/**"] }`
+  },
+  {
+    id: "export_exists",
+    title: "export_exists",
+    category: "AST Structural Claim",
+    trust: "Deterministic",
+    description: "Verifies that a public exported symbol exists in the parsed AST, preventing silent deletion of required API functions.",
+    example: `{ "type": "export_exists", "symbol": "process_payment", "files": ["src/payments/mod.rs"] }`
+  },
+  {
+    id: "symbol_signature",
+    title: "symbol_signature",
+    category: "AST Structural Claim",
+    trust: "Deterministic",
+    description: "Validates that a symbol signature contains specific required parameter substrings without running an external compiler.",
+    example: `{ "type": "symbol_signature", "symbol": "checkout", "contains": "tenant_id: &str" }`
+  },
+  {
+    id: "must_not_depend",
+    title: "must_not_depend",
+    category: "Boundary Constraint",
+    trust: "Deterministic",
+    description: "Enforces directional architecture isolation: refuses any import or symbol reference crossing forbidden subsystem boundaries.",
+    example: `afwe blueprint constrain Payments --must-not-depend UI --why "Headless worker isolation"`
+  },
+  {
+    id: "may_depend_only",
+    title: "may_depend_only",
+    category: "Boundary Constraint",
+    trust: "Deterministic",
+    description: "Whitelist boundary rule: guarantees a module only imports strictly authorized dependencies.",
+    example: `afwe blueprint constrain Identity --may-depend-only Database,Shared --why "Zero business logic leaks"`
+  },
+  {
+    id: "blank_comments",
+    title: "blank_comments",
+    category: "ReBorn AST Normalizer",
+    trust: "Deterministic",
+    description: "Tree-Sitter comment-blanking engine. Strips inline and doc comments before regex pattern checks to eliminate false positives in URLs and explanations.",
+    example: `// Automatically applied to all pattern checks in AFWE ReBorn Phase 0-4`
+  }
+];
+---
+
+<DocsLayout
+  title="Validators & Claims Hub"
+  description="Built-in AST structural claims, constraints, and active guardrails enforced by the AFWE deterministic kernel."
+  activeSection="validators"
+>
+  <div class="space-y-8 py-4">
+    <!-- Header -->
+    <header class="border-b border-parchment-300 dark:border-obsidian-800 pb-6">
+      <nav class="flex items-center gap-2 text-xs font-mono text-parchment-500 dark:text-obsidian-400 mb-2">
+        <a href="/" class="hover:text-emerald-600 dark:hover:text-emerald-400">Docs</a>
+        <span>/</span>
+        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">Validators Hub</span>
+      </nav>
+      <h1 class="text-3xl font-bold tracking-tight text-parchment-900 dark:text-white font-sans">
+        Validators & Claims Hub
+      </h1>
+      <p class="mt-2 text-base text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Deterministic, AST-aware invariants enforced by the AFWE kernel before Git commits.
+      </p>
+    </header>
+
+    <!-- Grid of Validator Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {validators.map(v => (
+        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/80 dark:bg-obsidian-850/80 p-4.5 flex flex-col justify-between space-y-3 shadow-xs">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-mono text-sm font-bold text-parchment-900 dark:text-white">{v.title}</span>
+              <span class="rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono px-2 py-0.5 border border-emerald-500/20 font-semibold">
+                {v.trust}
+              </span>
+            </div>
+            <div class="text-[11px] font-mono text-parchment-500 dark:text-obsidian-400 uppercase tracking-wide mb-1.5">{v.category}</div>
+            <p class="text-xs text-parchment-700 dark:text-obsidian-300 leading-relaxed">{v.description}</p>
+          </div>
+
+          <div class="rounded-lg bg-parchment-100 dark:bg-obsidian-900 p-2.5 font-mono text-[11px] text-emerald-700 dark:text-emerald-400 border border-parchment-300 dark:border-obsidian-800 overflow-x-auto">
+            {v.example}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</DocsLayout>

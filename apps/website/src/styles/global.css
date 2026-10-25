@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-canvas: #fbfaf7;
+    --bg-surface: #ffffff;
+    --bg-subtle: #f4efe6;
+    --border-subtle: #e5ded1;
+    --border-strong: #d6cebf;
+    --text-primary: #1f242e;
+    --text-muted: #6e7687;
+    --brand-emerald: #10b981;
+    --brand-indigo: #6366f1;
+    --brand-amber: #f59e0b;
+    --brand-crimson: #ef4444;
+    --brand-cyan: #06b6d4;
+  }
+
+  .dark {
+    --bg-canvas: #0c0e12;
+    --bg-surface: #13161c;
+    --bg-subtle: #181c24;
+    --border-subtle: #262c38;
+    --border-strong: #323a4a;
+    --text-primary: #f1f3f7;
+    --text-muted: #8a94a6;
+  }
+
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Delta-inspired 45-degree diagonal line hatch overlay */
+.bg-hatch-pattern {
+  background-image: repeating-linear-gradient(
+    45deg,
+    currentColor 0,
+    currentColor 1px,
+    transparent 0,
+    transparent 6px
+  );
+}
+
+/* Subtle architectural dot grid */
+.bg-grid-dots {
+  background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Unmapped territory hatched indicator */
+.unmapped-hatch {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(148, 163, 184, 0.15),
+    rgba(148, 163, 184, 0.15) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+/* Custom minimal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.25);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.4);
+}
+
+/* Receipts styling */
+.receipt-card {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+}
+
+.dark .receipt-card {
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.4), 0 2px 8px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* Stamped status badge effect */
+.stamp-badge {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 800;
+  border-width: 1.5px;
+  border-style: solid;
+}

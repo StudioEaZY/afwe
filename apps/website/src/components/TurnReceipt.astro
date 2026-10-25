@@ -1,0 +1,181 @@
+---
+// TurnReceipt.astro - Interactive Turn Audit Receipt Card
+---
+
+<div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white dark:bg-obsidian-850 p-6 receipt-card transition-all">
+  <div class="flex items-center justify-between border-b border-dashed border-parchment-400 dark:border-obsidian-700 pb-3 mb-4">
+    <div class="flex items-center gap-3">
+      <span class="font-mono text-sm font-bold text-parchment-900 dark:text-obsidian-100">Turn #482</span>
+      <span class="text-xs text-parchment-600 dark:text-obsidian-400 font-mono">2026-10-25 14:32:00 UTC</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="toggle-receipt-sim" class="text-[11px] font-mono px-2.5 py-1 rounded border border-parchment-400 dark:border-obsidian-700 hover:bg-parchment-200 dark:hover:bg-obsidian-800 text-parchment-700 dark:text-obsidian-300 transition-colors">
+        Simulate Violation (REDO)
+      </button>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <div class="text-[11px] font-mono text-parchment-600 dark:text-obsidian-400 uppercase mb-1">Developer Prompt</div>
+    <p class="font-mono text-xs text-parchment-900 dark:text-obsidian-200 bg-parchment-100 dark:bg-obsidian-900 p-2.5 rounded border border-parchment-300 dark:border-obsidian-800">
+      "Refactor checkout flow to support guest payments without touching core auth"
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5 font-mono text-xs">
+    <!-- Left Column: Declared AST Claims -->
+    <div class="p-3.5 rounded bg-parchment-50 dark:bg-obsidian-900/60 border border-parchment-300 dark:border-obsidian-800">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-parchment-200 dark:border-obsidian-800">
+        <span class="font-semibold text-parchment-800 dark:text-obsidian-200">Claims (Declared)</span>
+        <span id="receipt-claims-count" class="text-[10px] text-emerald-600 dark:text-emerald-400">4/4 verified</span>
+      </div>
+      <ul id="receipt-claims-list" class="space-y-1.5 text-xs">
+        <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+          <span>✓</span>
+          <span>No features removed</span>
+        </li>
+        <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+          <span>✓</span>
+          <span>Checkout still works (unit tests)</span>
+        </li>
+        <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+          <span>✓</span>
+          <span>AST Export: process_guest_payment</span>
+        </li>
+        <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+          <span>✓</span>
+          <span>Comments blanked (zero regex false pos)</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Right Column: Deterministic Checks -->
+    <div class="p-3.5 rounded bg-parchment-50 dark:bg-obsidian-900/60 border border-parchment-300 dark:border-obsidian-800">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-parchment-200 dark:border-obsidian-800">
+        <span class="font-semibold text-parchment-800 dark:text-obsidian-200">Checks (Deterministic)</span>
+        <span id="receipt-checks-count" class="text-[10px] text-emerald-600 dark:text-emerald-400">3/3 passed</span>
+      </div>
+      <ul id="receipt-checks-list" class="space-y-1.5 text-xs">
+        <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+          <span>✓</span>
+          <span>Constraints passed (must_not_depend UI)</span>
+        </li>
+        <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+          <span>✓</span>
+          <span>Pins respected (Auth locked)</span>
+        </li>
+        <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+          <span>✓</span>
+          <span>Collateral loss: 0 undeclared</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Result Banner & Git Trailer -->
+  <div id="receipt-result-box" class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300">
+    <div class="flex items-center gap-3">
+      <span id="receipt-stamp" class="stamp-badge px-3 py-1 text-xs rounded bg-afwe-commit text-white border-emerald-600">
+        COMMIT
+      </span>
+      <span id="receipt-msg" class="text-xs font-mono">
+        All claims verified & boundaries preserved.
+      </span>
+    </div>
+    <div class="font-mono text-xs text-parchment-700 dark:text-obsidian-300">
+      Trailer: <code class="px-1.5 py-0.5 rounded bg-white/60 dark:bg-obsidian-800 text-[11px] font-bold text-parchment-900 dark:text-obsidian-100">AFWE-Turn: 482</code>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupTurnReceipt() {
+    const toggleBtn = document.getElementById('toggle-receipt-sim');
+    const resultBox = document.getElementById('receipt-result-box');
+    const stamp = document.getElementById('receipt-stamp');
+    const msg = document.getElementById('receipt-msg');
+    const checksList = document.getElementById('receipt-checks-list');
+    const checksCount = document.getElementById('receipt-checks-count');
+
+    let isViolated = false;
+
+    if (!toggleBtn) return;
+
+    toggleBtn.addEventListener('click', () => {
+      isViolated = !isViolated;
+
+      if (isViolated) {
+        toggleBtn.textContent = 'Reset to Normal (COMMIT)';
+        toggleBtn.className = 'text-[11px] font-mono px-2.5 py-1 rounded bg-afwe-redo text-white border border-red-700 font-bold';
+        
+        if (stamp) {
+          stamp.textContent = 'REDO';
+          stamp.className = 'stamp-badge px-3 py-1 text-xs rounded bg-afwe-redo text-white border-red-700';
+        }
+        if (msg) {
+          msg.textContent = 'Gated: Payments attempted to import UI without contract update.';
+        }
+        if (resultBox) {
+          resultBox.className = 'flex flex-wrap items-center justify-between gap-3 p-3.5 rounded bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-400';
+        }
+        if (checksCount) {
+          checksCount.textContent = '2/3 passed (1 violation)';
+          checksCount.className = 'text-[10px] text-red-600 dark:text-red-400 font-bold';
+        }
+        if (checksList) {
+          checksList.innerHTML = `
+            <li class="flex items-center gap-2 text-red-600 dark:text-red-400 font-bold">
+              <span>✕</span>
+              <span>Constraint failed: Payments must_not_depend UI</span>
+            </li>
+            <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+              <span>✓</span>
+              <span>Pins respected (Auth locked)</span>
+            </li>
+            <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+              <span>✓</span>
+              <span>Collateral loss: 0</span>
+            </li>
+          `;
+        }
+      } else {
+        toggleBtn.textContent = 'Simulate Violation (REDO)';
+        toggleBtn.className = 'text-[11px] font-mono px-2.5 py-1 rounded border border-parchment-400 dark:border-obsidian-700 hover:bg-parchment-200 dark:hover:bg-obsidian-800 text-parchment-700 dark:text-obsidian-300 transition-colors';
+        
+        if (stamp) {
+          stamp.textContent = 'COMMIT';
+          stamp.className = 'stamp-badge px-3 py-1 text-xs rounded bg-afwe-commit text-white border-emerald-600';
+        }
+        if (msg) {
+          msg.textContent = 'All claims verified & boundaries preserved.';
+        }
+        if (resultBox) {
+          resultBox.className = 'flex flex-wrap items-center justify-between gap-3 p-3.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300';
+        }
+        if (checksCount) {
+          checksCount.textContent = '3/3 passed';
+          checksCount.className = 'text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold';
+        }
+        if (checksList) {
+          checksList.innerHTML = `
+            <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+              <span>✓</span>
+              <span>Constraints passed (must_not_depend UI)</span>
+            </li>
+            <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+              <span>✓</span>
+              <span>Pins respected (Auth locked)</span>
+            </li>
+            <li class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+              <span>✓</span>
+              <span>Collateral loss: 0 undeclared</span>
+            </li>
+          `;
+        }
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupTurnReceipt);
+  document.addEventListener('astro:after-swap', setupTurnReceipt);
+</script>

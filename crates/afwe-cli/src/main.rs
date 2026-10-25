@@ -1,6 +1,7 @@
 //! `afwe` — command line for the Architecture-First Workspace Engine.
 //! Also hosts the MCP server (`afwe mcp`) and the web studio (`afwe studio`).
 
+mod docs;
 mod mcp;
 mod render;
 mod studio;
@@ -143,6 +144,19 @@ enum Cmd {
     /// Open the Studio (web mode) — the Tauri desktop app uses the same engine
     Studio {
         #[arg(long, default_value_t = 4242)]
+        port: u16,
+        #[arg(long)]
+        no_open: bool,
+        /// Serve a built frontend from this directory instead of the embedded one
+        #[arg(long)]
+        dist: Option<PathBuf>,
+        /// Bind address
+        #[arg(long, default_value = "127.0.0.1")]
+        host: String,
+    },
+    /// Open the Documentation & Concepts website (web mode)
+    Docs {
+        #[arg(long, default_value_t = 4243)]
         port: u16,
         #[arg(long)]
         no_open: bool,
@@ -1104,6 +1118,10 @@ fn run(cli: Cli) -> Result<i32> {
         Cmd::Studio { port, no_open, dist, host } => {
             let start = cli.dir.clone().unwrap_or(std::env::current_dir()?);
             studio::serve(start, &host, port, !no_open, dist)?;
+            Ok(0)
+        }
+        Cmd::Docs { port, no_open, dist, host } => {
+            docs::serve(&host, port, !no_open, dist)?;
             Ok(0)
         }
         Cmd::Turn(cmd) => {

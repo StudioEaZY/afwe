@@ -1,0 +1,353 @@
+id: t0023
+ts: 2026-10-25T23:12:58Z
+origin: human
+prompt: Build AFWE ReBorn website and afwe docs CLI server
+prompt_hash: 8810c22197717e72
+task: task-t0023
+targets:
+- crates/afwe-cli/src/main.rs
+scope:
+  nodes:
+  - afwe
+  - afwe-2
+  - afwe-cli
+  files:
+  - crates/afwe-cli/src/main.rs
+intents:
+- id: reborn-website
+  action: create
+  targets:
+  - afwe
+  title: AFWE ReBorn Website Application
+  statement: Build Astro and Tailwind CSS documentation and concept website inspired by delta.dev, graphify, and guardrails ai
+- id: cli-docs-server
+  action: update
+  targets:
+  - afwe-cli
+  title: CLI Docs Command and Server
+  statement: Expose afwe docs command in CLI to serve static documentation assets
+assumptions:
+- id: a1
+  text: afwe-core does not import afwe-cli
+  claim:
+    type: forbid_import
+    files:
+    - crates/afwe-core/**
+    to_nodes:
+    - afwe-cli
+  status: confirmed
+  computed_score: 0.85
+status: ready
+touched:
+  nodes:
+  - afwe-cli
+  - crates
+  files:
+  - .afwe/intents-t0023.json
+  - .afwe/intents/cli-docs-server.yaml
+  - .afwe/intents/reborn-website.yaml
+  - apps/website/astro.config.mjs
+  - apps/website/dist/_astro/core-concepts.B2OL5j1D.css
+  - apps/website/dist/docs/concepts/core-concepts/index.html
+  - apps/website/dist/docs/getting-started/quick-start/index.html
+  - apps/website/dist/docs/reference/cli/index.html
+  - apps/website/dist/docs/reference/mcp/index.html
+  - apps/website/dist/docs/validators/index.html
+  - apps/website/dist/index.html
+  - apps/website/package.json
+  - apps/website/pnpm-lock.yaml
+  - apps/website/src/components/AtlasRadar.astro
+  - apps/website/src/components/ConstraintGeometry.astro
+  - apps/website/src/components/IsometricLayers.astro
+  - apps/website/src/components/SearchModal.astro
+  - apps/website/src/components/TurnReceipt.astro
+  - apps/website/src/layouts/DocsLayout.astro
+  - apps/website/src/pages/docs/concepts/core-concepts.astro
+  - apps/website/src/pages/docs/getting-started/quick-start.astro
+  - apps/website/src/pages/docs/reference/cli.astro
+  - apps/website/src/pages/docs/reference/mcp.astro
+  - apps/website/src/pages/docs/validators/index.astro
+  - apps/website/src/pages/index.astro
+  - apps/website/src/styles/global.css
+  - apps/website/tailwind.config.mjs
+  - apps/website/tsconfig.json
+  - crates/afwe-cli/src/docs.rs
+  - crates/afwe-cli/src/main.rs
+  symbols:
+  - crates/afwe-cli/src/docs.rs::EMBEDDED_DOCS
+  - crates/afwe-cli/src/docs.rs::mime
+  - crates/afwe-cli/src/docs.rs::serve
+  - crates/afwe-cli/src/docs.rs::serve_static
+  - crates/afwe-cli/src/docs.rs::with_mime
+  - crates/afwe-cli/src/main.rs::Cmd
+  - crates/afwe-cli/src/main.rs::docs
+  - crates/afwe-cli/src/main.rs::run
+implements:
+  afwe-2:
+  - packages/afwe/README.md
+  - packages/afwe/bin/afwe.js
+  - packages/afwe/package.json
+  afwe-cli:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/docs.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  afwe-core:
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/baseline.rs
+  - crates/afwe-core/src/calibration.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/escalation.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/header.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/judgment.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/materialize.rs
+  - crates/afwe-core/src/mission.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/registry.rs
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/scene.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/timeline_4d.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  crates:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/docs.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/baseline.rs
+  - crates/afwe-core/src/calibration.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/escalation.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/header.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/judgment.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/materialize.rs
+  - crates/afwe-core/src/mission.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/registry.rs
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/scene.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/timeline_4d.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  demo-project:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  examples:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  - examples/multi-intent-funnel/package.json
+  - examples/multi-intent-funnel/src/Slide1.tsx
+  - examples/multi-intent-funnel/src/Slide5.tsx
+  - examples/multi-intent-funnel/src/Slide6.tsx
+  - examples/multi-intent-funnel/src/index.tsx
+  scripts:
+  - scripts/build.sh
+  - scripts/demo.sh
+  - scripts/dev.sh
+  - scripts/install.ps1
+  - scripts/install.sh
+  studio:
+  - apps/studio/index.html
+  - apps/studio/package-lock.json
+  - apps/studio/package.json
+  - apps/studio/src-tauri/Cargo.toml
+  - apps/studio/src-tauri/README.md
+  - apps/studio/src-tauri/build.rs
+  - apps/studio/src-tauri/capabilities/default.json
+  - apps/studio/src-tauri/src/lib.rs
+  - apps/studio/src-tauri/src/main.rs
+  - apps/studio/src-tauri/tauri.conf.json
+  - apps/studio/src/App.tsx
+  - apps/studio/src/api.ts
+  - apps/studio/src/components/BoardView.tsx
+  - apps/studio/src/components/BottomBar.tsx
+  - apps/studio/src/components/ComponentInspector.tsx
+  - apps/studio/src/components/ContextPanel.tsx
+  - apps/studio/src/components/DriftDrawer.tsx
+  - apps/studio/src/components/ErrorBoundary.tsx
+  - apps/studio/src/components/GraphView.tsx
+  - apps/studio/src/components/MemoryView.tsx
+  - apps/studio/src/components/Modal.tsx
+  - apps/studio/src/components/OnboardingModal.tsx
+  - apps/studio/src/components/PinsView.tsx
+  - apps/studio/src/components/SceneOutliner.tsx
+  - apps/studio/src/components/SearchPalette.tsx
+  - apps/studio/src/components/TimelineScrubber4D.tsx
+  - apps/studio/src/components/TimelineView.tsx
+  - apps/studio/src/components/TopBar.tsx
+  - apps/studio/src/components/TreePanel.tsx
+  - apps/studio/src/components/WorkflowView.tsx
+  - apps/studio/src/main.tsx
+  - apps/studio/src/store.ts
+  - apps/studio/src/styles.css
+  - apps/studio/tsconfig.json
+  - apps/studio/vite.config.ts
+  - apps/studio/web-dist/assets/core-DhEqZVGG.js
+  - apps/studio/web-dist/assets/index-Bm5VbKL3.css
+  - apps/studio/web-dist/assets/index-C8d3tB1H.js
+  - apps/studio/web-dist/index.html
+checks:
+- id: afwe-verify
+  title: constraints and active guardrails
+  trust: deterministic
+  authored_by: afwe
+  passed: true
+  blocking: true
+- id: project-tests
+  title: cargo test
+  trust: deterministic
+  authored_by: human
+  passed: true
+  blocking: true
+- id: claim:a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+- id: t0021-a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0021-a2
+  title: calibration module exists in afwe-core
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0021-a3
+  title: judgment module exists in afwe-core
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0021-a4
+  title: materialize module exists in afwe-core
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0022-a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+strength: deterministic
+confidence: 0.58
+confidence_parts:
+  clarity: 1.0
+  mapping: 0.58
+  pins: 1.0
+  verification: 1.0
+gate:
+  decision: ready
+footer_shown: true
+summary: 'feat: AFWE ReBorn website and afwe docs CLI server'
+turn_token: 5f9b1e1d28c837c4
+session_id: sess-cbf30d
+checkgen:
+- t0023-a1

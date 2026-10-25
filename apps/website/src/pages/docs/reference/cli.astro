@@ -1,0 +1,83 @@
+---
+// cli.astro - CLI Commands Reference
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+
+const commands = [
+  {
+    cmd: "afwe turn begin \"<prompt>\" --target <files>",
+    desc: "Starts a turn, computes file baseline hashes, and outputs turn briefing (pins, scoped nodes, active guardrails)."
+  },
+  {
+    cmd: "afwe turn assume <turn> --file <json>",
+    desc: "Registers intents and AST claims before the agent modifies code. Rejects undeclared targets or schema errors."
+  },
+  {
+    cmd: "afwe turn commit <turn>",
+    desc: "Runs deterministic leaf-to-root validation, executes registered checks, checks pins & collateral losses, and commits to git with AFWE-Turn trailer."
+  },
+  {
+    cmd: "afwe materialize",
+    desc: "Previews or applies tamper-proof BLAKE3 manifest (.afwe/guardrails/manifest.yaml), chained pre-commit hooks, and CI workflows."
+  },
+  {
+    cmd: "afwe unlock --reason \"<reason>\" / afwe lock",
+    desc: "Toggles Explore Mode: downgrades blocking checks to advisory warnings for rapid prototyping spikes; lock re-arms gates."
+  },
+  {
+    cmd: "afwe sync",
+    desc: "Performs Tree-Sitter parsing across source code, detects drift, reconciles mapped nodes, and updates index."
+  },
+  {
+    cmd: "afwe stats",
+    desc: "Prints gate metrics, AST parse durations, model calibration profiles, and rubric accuracy telemetry."
+  },
+  {
+    cmd: "afwe studio",
+    desc: "Launches the visual AFWE Studio web interface on http://localhost:4242."
+  },
+  {
+    cmd: "afwe docs",
+    desc: "Serves the official documentation and concepts website locally on http://localhost:4243."
+  },
+  {
+    cmd: "afwe mcp",
+    desc: "Runs the stdio JSON-RPC 2.0 Model Context Protocol (MCP) server providing 57 architectural tools to coding harnesses."
+  }
+];
+---
+
+<DocsLayout
+  title="CLI Reference"
+  description="Complete CLI commands reference for AFWE ReBorn."
+  activeSection="reference"
+>
+  <div class="space-y-8 py-4">
+    <!-- Header -->
+    <header class="border-b border-parchment-300 dark:border-obsidian-800 pb-6">
+      <nav class="flex items-center gap-2 text-xs font-mono text-parchment-500 dark:text-obsidian-400 mb-2">
+        <a href="/" class="hover:text-emerald-600 dark:hover:text-emerald-400">Docs</a>
+        <span>/</span>
+        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">CLI Reference</span>
+      </nav>
+      <h1 class="text-3xl font-bold tracking-tight text-parchment-900 dark:text-white font-sans">
+        CLI Reference
+      </h1>
+      <p class="mt-2 text-base text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Command line utilities for architectural governance, turns, materialization, and verification.
+      </p>
+    </header>
+
+    <div class="space-y-4">
+      {commands.map(c => (
+        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/80 dark:bg-obsidian-850/80 p-4 font-mono text-xs shadow-xs">
+          <div class="text-emerald-700 dark:text-emerald-400 font-bold mb-1.5 text-sm select-all">
+            {c.cmd}
+          </div>
+          <p class="text-parchment-700 dark:text-obsidian-300 font-sans text-xs leading-relaxed">
+            {c.desc}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</DocsLayout>

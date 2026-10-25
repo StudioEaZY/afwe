@@ -1,0 +1,31 @@
+{
+  "intents": [
+    {
+      "id": "reborn-website",
+      "action": "create",
+      "targets": ["afwe"],
+      "title": "AFWE ReBorn Website Application",
+      "statement": "Build Astro and Tailwind CSS documentation and concept website inspired by delta.dev, graphify, and guardrails ai"
+    },
+    {
+      "id": "cli-docs-server",
+      "action": "update",
+      "targets": ["afwe-cli"],
+      "title": "CLI Docs Command and Server",
+      "statement": "Expose afwe docs command in CLI to serve static documentation assets"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ],
+  "removes": [],
+  "overrides": []
+}

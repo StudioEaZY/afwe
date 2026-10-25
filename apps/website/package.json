@@ -1,0 +1,17 @@
+{
+  "name": "afwe-website",
+  "type": "module",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev --port 4321",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.5",
+    "astro": "^5.4.1",
+    "tailwindcss": "^3.4.17"
+  }
+}

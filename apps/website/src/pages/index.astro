@@ -1,0 +1,176 @@
+---
+// index.astro - Landing Page
+import DocsLayout from '../layouts/DocsLayout.astro';
+import AtlasRadar from '../components/AtlasRadar.astro';
+import TurnReceipt from '../components/TurnReceipt.astro';
+import IsometricLayers from '../components/IsometricLayers.astro';
+---
+
+<DocsLayout
+  title="Your code. Its memory. Its rules."
+  description="AFWE — Architecture-First Workspace Engine. The folder is the product. Double-entry bookkeeping for autonomous coding."
+  activeSection="overview"
+>
+  <div class="space-y-16 py-6">
+    <!-- Hero Section -->
+    <section class="space-y-6 text-center sm:text-left">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono">
+        <span class="size-2 rounded-full bg-afwe-commit animate-pulse"></span>
+        <span>AFWE ReBorn Phase 0–4 is Live</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-parchment-900 dark:text-white font-sans leading-[1.15]">
+        Your code. <span class="text-emerald-600 dark:text-emerald-400">Its memory.</span> Its rules.
+      </h1>
+
+      <p class="text-base sm:text-lg text-parchment-700 dark:text-obsidian-300 max-w-2xl leading-relaxed">
+        AFWE keeps a living record of what your code is <em>supposed to be</em> — and makes sure autonomous coding agents follow the plan. <strong>Double-entry bookkeeping for codebases.</strong>
+      </p>
+
+      <!-- Quick Action CTAs -->
+      <div class="flex flex-wrap items-center gap-3 pt-2">
+        <a href="/docs/concepts/core-concepts" class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs font-mono shadow-sm hover:shadow transition-all">
+          Explore Core Concepts →
+        </a>
+        <a href="/docs/getting-started/quick-start" class="px-5 py-2.5 rounded-lg border border-parchment-400 dark:border-obsidian-700 hover:bg-parchment-200 dark:hover:bg-obsidian-850 text-parchment-800 dark:text-obsidian-200 text-xs font-mono transition-all">
+          Quick Start (5 Min)
+        </a>
+      </div>
+
+      <!-- Quick Install Box -->
+      <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-parchment-50 dark:bg-obsidian-900 p-4 font-mono text-xs max-w-xl text-left">
+        <div class="text-[10px] text-parchment-500 dark:text-obsidian-500 uppercase tracking-wide mb-2 flex items-center justify-between">
+          <span>Quick Install & Onboard</span>
+          <span>Rust 1.75+</span>
+        </div>
+        <div class="space-y-1 text-parchment-800 dark:text-obsidian-200">
+          <div><span class="text-emerald-600 dark:text-emerald-400">$</span> cargo install afwe</div>
+          <div><span class="text-emerald-600 dark:text-emerald-400">$</span> cd my-project && afwe onboard --profile normie</div>
+          <div><span class="text-emerald-600 dark:text-emerald-400">$</span> afwe turn begin "Add guest checkout" --target src/payments/**</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- First Screen / System Health Overview -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+        <div>
+          <h2 class="text-xl font-bold text-parchment-900 dark:text-white font-sans">1. The First Screen (Overview)</h2>
+          <p class="text-xs text-parchment-600 dark:text-obsidian-400 font-mono mt-0.5">Clean, calm, and quiet. The default view shows the system is healthy.</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-mono text-emerald-600 dark:text-emerald-400">
+          <span class="size-2 rounded-full bg-emerald-500"></span>
+          <span>Everything balances</span>
+        </div>
+      </div>
+
+      <!-- Metric Tiles Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
+        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-3.5">
+          <div class="text-parchment-600 dark:text-obsidian-400 text-[11px] mb-1">Features</div>
+          <div class="text-2xl font-bold text-parchment-900 dark:text-white">12</div>
+          <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">+2 proposals waiting</div>
+        </div>
+        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-3.5">
+          <div class="text-parchment-600 dark:text-obsidian-400 text-[11px] mb-1">Constraints</div>
+          <div class="text-2xl font-bold text-parchment-900 dark:text-white">28</div>
+          <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">All satisfied (0 violations)</div>
+        </div>
+        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-3.5">
+          <div class="text-parchment-600 dark:text-obsidian-400 text-[11px] mb-1">Pins</div>
+          <div class="text-2xl font-bold text-parchment-900 dark:text-white">3</div>
+          <div class="text-[10px] text-indigo-600 dark:text-indigo-400 mt-1">Locked by you (human)</div>
+        </div>
+        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-3.5">
+          <div class="text-parchment-600 dark:text-obsidian-400 text-[11px] mb-1">Recent Turns</div>
+          <div class="text-2xl font-bold text-parchment-900 dark:text-white">5</div>
+          <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">Last 24h (all verified)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Codebase Atlas Showcase -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-parchment-900 dark:text-white font-sans">2. The Codebase Atlas</h2>
+          <p class="text-xs text-parchment-600 dark:text-obsidian-400 font-mono mt-0.5">Explore structure. See what's known, what's inferred, and what's unmapped.</p>
+        </div>
+        <a href="/docs/concepts/core-concepts#the-blueprint" class="text-xs font-mono text-emerald-600 dark:text-emerald-400 hover:underline">
+          View Blueprint Docs →
+        </a>
+      </div>
+
+      <AtlasRadar />
+    </section>
+
+    <!-- Double-Entry Bookkeeping Comparison Matrix -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-parchment-900 dark:text-white font-sans">Why AFWE Exists & The Problem Spectrum</h2>
+      <div class="overflow-x-auto rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 font-mono text-xs">
+        <table class="w-full text-left">
+          <thead class="border-b border-parchment-400 dark:border-obsidian-700 bg-parchment-50 dark:bg-obsidian-900 text-parchment-600 dark:text-obsidian-400">
+            <tr>
+              <th class="p-3">Question / Invariant</th>
+              <th class="p-3 text-center">grep / Search</th>
+              <th class="p-3 text-center">GraphRAG / Linters</th>
+              <th class="p-3 text-center text-emerald-600 dark:text-emerald-400 font-bold">AFWE (.afwe/)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-parchment-300 dark:divide-obsidian-800 text-parchment-800 dark:text-obsidian-200">
+            <tr>
+              <td class="p-3 font-medium">Where is checkout()?</td>
+              <td class="p-3 text-center text-emerald-600">✓</td>
+              <td class="p-3 text-center text-emerald-600">✓</td>
+              <td class="p-3 text-center text-emerald-600 font-bold">✓ (AST Index)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium">What imports Payments?</td>
+              <td class="p-3 text-center text-amber-500">Flat text</td>
+              <td class="p-3 text-center text-emerald-600">✓ Graph AST</td>
+              <td class="p-3 text-center text-emerald-600 font-bold">✓ (Scene Graph)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium">Is Payments ALLOWED to import UI?</td>
+              <td class="p-3 text-center text-red-500">✕</td>
+              <td class="p-3 text-center text-red-500">✕</td>
+              <td class="p-3 text-center text-emerald-600 font-bold">✓ Constraint Gate</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium">Is this odd timeout a bug or intentional?</td>
+              <td class="p-3 text-center text-red-500">✕</td>
+              <td class="p-3 text-center text-red-500">✕</td>
+              <td class="p-3 text-center text-emerald-600 font-bold">✓ Pin (intentional)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium">Did an agent silently delete a feature?</td>
+              <td class="p-3 text-center text-red-500">✕</td>
+              <td class="p-3 text-center text-red-500">✕</td>
+              <td class="p-3 text-center text-emerald-600 font-bold">✓ Collateral Loss Check</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium">Why was this architectural decision made?</td>
+              <td class="p-3 text-center text-red-500">✕</td>
+              <td class="p-3 text-center text-red-500">✕</td>
+              <td class="p-3 text-center text-emerald-600 font-bold">✓ Memory & Scoped YAML</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- The 5 Layers & Turn Receipt Preview -->
+    <section class="space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-parchment-900 dark:text-white font-sans">3. Unified Architecture & Audit Receipts</h2>
+        <p class="text-xs text-parchment-600 dark:text-obsidian-400 font-mono mt-0.5">Every change is a receipt. Simple, clear, and checkable.</p>
+      </div>
+
+      <IsometricLayers />
+
+      <div class="mt-4">
+        <TurnReceipt />
+      </div>
+    </section>
+  </div>
+</DocsLayout>

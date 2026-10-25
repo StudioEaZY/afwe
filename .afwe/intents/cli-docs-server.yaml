@@ -1,0 +1,17 @@
+id: cli-docs-server
+title: CLI Docs Command and Server
+statement: Expose afwe docs command in CLI to serve static documentation assets
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+from_turns:
+- t0023
+history:
+- turn: t0023
+  ts: 2026-10-25T23:14:40Z
+  statement: Expose afwe docs command in CLI to serve static documentation assets
+created: 2026-10-25T23:14:40Z
+updated: 2026-10-25T23:43:01Z
+task: task-t0023

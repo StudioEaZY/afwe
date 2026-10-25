@@ -1,0 +1,204 @@
+---
+// AtlasRadar.astro - Interactive Codebase Atlas Sunburst / Polar Radar
+---
+
+<div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-5 backdrop-blur-sm shadow-sm transition-all">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-400 dark:border-obsidian-700 pb-4 mb-4">
+    <div class="flex items-center gap-2.5">
+      <div class="size-2.5 rounded-full bg-afwe-commit animate-pulse"></div>
+      <span class="text-xs font-mono font-medium tracking-wide text-parchment-700 dark:text-obsidian-400 uppercase">Interactive Codebase Atlas</span>
+      <span class="rounded bg-parchment-200 dark:bg-obsidian-800 px-2 py-0.5 text-[11px] font-mono text-parchment-800 dark:text-obsidian-200">Radial Mode</span>
+    </div>
+    <div class="flex items-center gap-4 text-xs font-mono">
+      <div class="flex items-center gap-1.5 text-parchment-700 dark:text-obsidian-300">
+        <span class="size-2 rounded-full bg-afwe-commit"></span>
+        <span>Mapped (82%)</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-parchment-700 dark:text-obsidian-300">
+        <span class="size-2 rounded-full bg-afwe-inferred"></span>
+        <span>Inferred (12%)</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-parchment-700 dark:text-obsidian-300">
+        <span class="size-2 rounded-full bg-afwe-unmapped"></span>
+        <span>Unmapped (6%)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+    <!-- SVG Sunburst Polar Radar -->
+    <div class="lg:col-span-7 flex justify-center py-2 relative">
+      <svg viewBox="0 0 440 440" class="w-full max-w-[380px] h-auto select-none transition-all drop-shadow-sm">
+        <defs>
+          <pattern id="unmapped-stripes" width="6" height="6" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="6" stroke="#94a3b8" stroke-width="2" stroke-opacity="0.35" />
+          </pattern>
+        </defs>
+
+        <!-- Outer Ring (Components) -->
+        <circle cx="220" cy="220" r="195" fill="none" stroke="currentColor" class="text-parchment-400 dark:text-obsidian-700" stroke-dasharray="4 4" stroke-width="1" />
+        
+        <!-- Sector 1: Backend (Mapped - Green) -->
+        <path id="sector-backend" d="M 220 50 A 170 170 0 0 1 370 145 L 316 172 A 110 110 0 0 0 220 110 Z"
+          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
+          data-node="Backend" data-files="128" data-status="Mapped" data-deps="Database, Shared, Core" data-mustnot="UI, Mobile" data-pins="2"
+        />
+
+        <!-- Sector 2: Services (Mapped - Green) -->
+        <path id="sector-services" d="M 370 145 A 170 170 0 0 1 370 295 L 316 268 A 110 110 0 0 0 316 172 Z"
+          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
+          data-node="Services" data-files="96" data-status="Mapped" data-deps="Data, Shared" data-mustnot="Presentation" data-pins="1"
+        />
+
+        <!-- Sector 3: Data (Inferred - Orange dashed) -->
+        <path id="sector-data" d="M 370 295 A 170 170 0 0 1 270 380 L 252 324 A 110 110 0 0 0 316 268 Z"
+          class="cursor-pointer transition-all duration-200 fill-amber-500/25 hover:fill-amber-500/45 stroke-amber-500 dark:stroke-amber-400 stroke-1 stroke-dasharray-[3,3]"
+          data-node="Data" data-files="64" data-status="Inferred" data-deps="Infrastructure" data-mustnot="None" data-pins="0"
+        />
+
+        <!-- Sector 4: Infrastructure (Unmapped - Hatched) -->
+        <path id="sector-infra" d="M 270 380 A 170 170 0 0 1 170 380 L 188 324 A 110 110 0 0 0 252 324 Z"
+          fill="url(#unmapped-stripes)" class="cursor-pointer transition-all duration-200 stroke-slate-400 dark:stroke-slate-500 stroke-1"
+          data-node="Infrastructure" data-files="41" data-status="Unmapped Territory" data-deps="Unknown" data-mustnot="Unknown" data-pins="0"
+        />
+
+        <!-- Sector 5: Shared (Mapped - Green) -->
+        <path id="sector-shared" d="M 170 380 A 170 170 0 0 1 70 295 L 124 268 A 110 110 0 0 0 188 324 Z"
+          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
+          data-node="Shared" data-files="73" data-status="Mapped" data-deps="None (Independent)" data-mustnot="UI, Backend" data-pins="1"
+        />
+
+        <!-- Sector 6: Core (Mapped - Green) -->
+        <path id="sector-core" d="M 70 295 A 170 170 0 0 1 70 145 L 124 172 A 110 110 0 0 0 124 268 Z"
+          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
+          data-node="Core Engine" data-files="118" data-status="Mapped" data-deps="Shared" data-mustnot="All Outer Layers" data-pins="3"
+        />
+
+        <!-- Sector 7: UI / Web (Mapped - Green) -->
+        <path id="sector-web" d="M 70 145 A 170 170 0 0 1 220 50 L 220 110 A 110 110 0 0 0 124 172 Z"
+          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
+          data-node="Web Presentation" data-files="42" data-status="Mapped" data-deps="Backend, Core" data-mustnot="Database Direct" data-pins="0"
+        />
+
+        <!-- Inner Core Node: Acme App (Root) -->
+        <circle cx="220" cy="220" r="54" class="fill-white dark:fill-obsidian-900 stroke-parchment-500 dark:stroke-obsidian-600 stroke-1 cursor-pointer hover:stroke-afwe-commit" />
+        <text x="220" y="215" text-anchor="middle" class="text-[12px] font-semibold fill-parchment-900 dark:fill-obsidian-100">Acme App</text>
+        <text x="220" y="230" text-anchor="middle" class="text-[9px] font-mono fill-parchment-700 dark:fill-obsidian-400">(root blueprint)</text>
+
+        <!-- Subsystem Labels -->
+        <text x="280" y="105" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Backend</text>
+        <text x="330" y="225" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Services</text>
+        <text x="285" y="315" class="text-[10px] font-medium fill-amber-800 dark:fill-amber-300 pointer-events-none">Data ?</text>
+        <text x="220" y="360" text-anchor="middle" class="text-[9px] font-medium fill-slate-700 dark:fill-slate-400 pointer-events-none">Infra ▨</text>
+        <text x="140" y="315" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Shared</text>
+        <text x="90" y="225" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Core</text>
+        <text x="140" y="105" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Web UI</text>
+
+        <!-- Padlock / Pin Markers -->
+        <g transform="translate(290, 80) scale(0.65)">
+          <rect x="0" y="4" width="12" height="10" rx="2" fill="#6366f1"/>
+          <path d="M 2 4 V 2 A 4 4 0 0 1 10 2 V 4" fill="none" stroke="#6366f1" stroke-width="2"/>
+        </g>
+        <g transform="translate(100, 205) scale(0.65)">
+          <rect x="0" y="4" width="12" height="10" rx="2" fill="#6366f1"/>
+          <path d="M 2 4 V 2 A 4 4 0 0 1 10 2 V 4" fill="none" stroke="#6366f1" stroke-width="2"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Inspector Panel for Selected Node -->
+    <div class="lg:col-span-5 bg-parchment-100 dark:bg-obsidian-900 border border-parchment-400 dark:border-obsidian-700 rounded-lg p-4 font-sans text-xs">
+      <div class="flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2.5 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="size-2 rounded-full bg-afwe-commit"></span>
+          <span id="atlas-node-title" class="font-semibold text-sm text-parchment-900 dark:text-obsidian-100">Backend</span>
+        </div>
+        <span id="atlas-node-badge" class="rounded px-2 py-0.5 font-mono text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">Mapped</span>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <div class="text-[11px] font-mono text-parchment-700 dark:text-obsidian-400 uppercase mb-1">Structure & Files</div>
+          <p id="atlas-node-files" class="text-parchment-900 dark:text-obsidian-200 font-mono text-xs">128 source files (backend/api/, services/, models/)</p>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-mono text-parchment-700 dark:text-obsidian-400 uppercase mb-1">Relationships</div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-1.5 text-parchment-800 dark:text-obsidian-200">
+              <span class="text-emerald-600 dark:text-emerald-400 font-bold">→</span>
+              <span>Depends on: <strong id="atlas-node-deps" class="font-medium">Database, Shared, Core</strong></span>
+            </div>
+            <div class="flex items-center gap-1.5 text-afwe-redo font-medium">
+              <span>✕</span>
+              <span>Must not depend on: <strong id="atlas-node-mustnot" class="font-bold underline">UI, Mobile</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-mono text-parchment-700 dark:text-obsidian-400 uppercase mb-1">Architectural Constraints & Pins</div>
+          <div class="rounded bg-white dark:bg-obsidian-850 p-2 border border-parchment-300 dark:border-obsidian-700 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-parchment-800 dark:text-obsidian-200 font-medium">Headless Worker Isolation</span>
+              <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold uppercase">Enforced</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-[11px] text-parchment-700 dark:text-obsidian-400">
+              <span class="text-afwe-pinned font-bold">🔒</span>
+              <span id="atlas-node-pins">2 active human pins locked</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-mono text-parchment-700 dark:text-obsidian-400 uppercase mb-1">Memory & Rationale</div>
+          <p class="text-parchment-700 dark:text-obsidian-300 text-[11px] italic">
+            "API layer must remain independent of presentation layer to enable headless worker execution."
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupAtlasRadar() {
+    const sectors = document.querySelectorAll('[data-node]');
+    const title = document.getElementById('atlas-node-title');
+    const badge = document.getElementById('atlas-node-badge');
+    const files = document.getElementById('atlas-node-files');
+    const deps = document.getElementById('atlas-node-deps');
+    const mustnot = document.getElementById('atlas-node-mustnot');
+    const pins = document.getElementById('atlas-node-pins');
+
+    sectors.forEach(s => {
+      s.addEventListener('click', () => {
+        const node = s.getAttribute('data-node');
+        const count = s.getAttribute('data-files');
+        const status = s.getAttribute('data-status');
+        const d = s.getAttribute('data-deps');
+        const m = s.getAttribute('data-mustnot');
+        const p = s.getAttribute('data-pins');
+
+        if (title) title.textContent = node;
+        if (badge) {
+          badge.textContent = status;
+          if (status === 'Mapped') {
+            badge.className = 'rounded px-2 py-0.5 font-mono text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20';
+          } else if (status === 'Inferred') {
+            badge.className = 'rounded px-2 py-0.5 font-mono text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20';
+          } else {
+            badge.className = 'rounded px-2 py-0.5 font-mono text-[10px] font-semibold bg-slate-500/10 text-slate-700 dark:text-slate-400 border border-slate-500/20';
+          }
+        }
+        if (files) files.textContent = `${count} source files in this node`;
+        if (deps) deps.textContent = d;
+        if (mustnot) mustnot.textContent = m;
+        if (pins) pins.textContent = `${p} active human pin(s) locked`;
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupAtlasRadar);
+  document.addEventListener('astro:after-swap', setupAtlasRadar);
+</script>

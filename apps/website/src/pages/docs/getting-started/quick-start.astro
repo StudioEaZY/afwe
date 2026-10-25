@@ -1,0 +1,115 @@
+---
+// quick-start.astro - 5 Minute Quick Start Guide
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+
+const headings = [
+  { depth: 2, slug: "install", text: "1. Install AFWE Engine" },
+  { depth: 2, slug: "onboard", text: "2. Initialize & Onboard" },
+  { depth: 2, slug: "blueprint", text: "3. Define Blueprints & Constraints" },
+  { depth: 2, slug: "turn", text: "4. Run Your First Turn" },
+  { depth: 2, slug: "studio", text: "5. Launch Studio & Tripwires" }
+];
+---
+
+<DocsLayout
+  title="Quick Start"
+  description="Get started with AFWE ReBorn in 5 minutes: install the engine, map your blueprint, and run your first verified turn."
+  activeSection="quickstart"
+  headings={headings}
+>
+  <div class="space-y-10 py-4">
+    <!-- Header -->
+    <header class="border-b border-parchment-300 dark:border-obsidian-800 pb-6">
+      <nav class="flex items-center gap-2 text-xs font-mono text-parchment-500 dark:text-obsidian-400 mb-2">
+        <a href="/" class="hover:text-emerald-600 dark:hover:text-emerald-400">Docs</a>
+        <span>/</span>
+        <span class="text-parchment-800 dark:text-obsidian-200">Getting Started</span>
+        <span>/</span>
+        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">Quick Start</span>
+      </nav>
+      <h1 class="text-3xl font-bold tracking-tight text-parchment-900 dark:text-white font-sans">
+        Quick Start (5 Minutes)
+      </h1>
+      <p class="mt-2 text-base text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        From zero to an architecturally governed codebase with deterministic pre-commit gates.
+      </p>
+    </header>
+
+    <!-- Step 1: Install -->
+    <section id="install" class="space-y-3 scroll-mt-20">
+      <h2 class="text-xl font-bold text-parchment-900 dark:text-white">1. Install AFWE Engine</h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300">
+        AFWE is written in Rust with Tree-Sitter. Build it with cargo or install the pre-compiled binary:
+      </p>
+      <div class="rounded-lg bg-obsidian-900 p-3 font-mono text-xs text-emerald-400 border border-obsidian-800">
+        cargo install afwe
+      </div>
+      <p class="text-xs text-parchment-600 dark:text-obsidian-400 font-mono">
+        Verify installation: <code class="text-parchment-900 dark:text-white">afwe --version</code>
+      </p>
+    </section>
+
+    <!-- Step 2: Onboard -->
+    <section id="onboard" class="space-y-3 scroll-mt-20">
+      <h2 class="text-xl font-bold text-parchment-900 dark:text-white">2. Initialize & Onboard</h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300">
+        Navigate to your project root and run <code class="font-mono text-xs">afwe onboard</code>. AFWE detects your tech stack, generates <code class="font-mono text-xs">.afwe/</code>, and creates the architecture contract in <code class="font-mono text-xs">AGENTS.md</code>:
+      </p>
+      <div class="rounded-lg bg-obsidian-900 p-3 font-mono text-xs text-emerald-400 border border-obsidian-800 space-y-1">
+        <div>cd your-project</div>
+        <div>afwe onboard --profile normie</div>
+      </div>
+      <p class="text-xs text-parchment-600 dark:text-obsidian-400">
+        Use <code class="font-mono text-xs">--profile normie</code> for autonomous AI coding or <code class="font-mono text-xs">--profile engineer</code> for team PR CI gates.
+      </p>
+    </section>
+
+    <!-- Step 3: Define Blueprints -->
+    <section id="blueprint" class="space-y-3 scroll-mt-20">
+      <h2 class="text-xl font-bold text-parchment-900 dark:text-white">3. Define Blueprints & Constraints</h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300">
+        Declare your major subsystems and enforce structural boundaries:
+      </p>
+      <div class="rounded-lg bg-obsidian-900 p-3 font-mono text-xs text-emerald-400 border border-obsidian-800 space-y-1">
+        <div># Map subsystems</div>
+        <div>afwe blueprint add Payments --kind subsystem --purpose "Charging users" --files 'src/payments/**'</div>
+        <div>afwe blueprint add Identity --purpose "User authentication" --files 'src/identity/**'</div>
+        <div class="pt-1"># Enforce boundary: Payments must never import UI directly</div>
+        <div>afwe blueprint constrain Payments --must-not-depend UI --why "Runs headless in queue workers"</div>
+        <div class="pt-1"># Lock a human decision as a pin</div>
+        <div>afwe memory add decision "Stripe webhook idempotency key is required" --applies-to Payments</div>
+      </div>
+    </section>
+
+    <!-- Step 4: Run First Turn -->
+    <section id="turn" class="space-y-3 scroll-mt-20">
+      <h2 class="text-xl font-bold text-parchment-900 dark:text-white">4. Run Your First Turn</h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300">
+        Execute changes using the deterministic 3-step turn protocol:
+      </p>
+      <div class="rounded-lg bg-obsidian-900 p-3 font-mono text-xs text-emerald-400 border border-obsidian-800 space-y-1">
+        <div># 1. Begin turn (agent gets briefing)</div>
+        <div>afwe turn begin "Add Apple Pay support" --target src/payments/**</div>
+        <div class="pt-1"># 2. Agent assumes intents and AST claims</div>
+        <div>afwe turn assume t0001 --file claims.json</div>
+        <div class="pt-1"># ... Harness writes code ...</div>
+        <div class="pt-1"># 3. Commit turn through the deterministic gate</div>
+        <div>afwe turn commit t0001</div>
+      </div>
+      <p class="text-xs text-parchment-600 dark:text-obsidian-400">
+        If constraints are violated, AFWE returns a <strong>REDO</strong> with exact leaf-to-root diagnostics and refuses to write to Git.
+      </p>
+    </section>
+
+    <!-- Step 5: Studio & Tripwires -->
+    <section id="studio" class="space-y-3 scroll-mt-20">
+      <h2 class="text-xl font-bold text-parchment-900 dark:text-white">5. Launch Studio & Tripwires</h2>
+      <div class="rounded-lg bg-obsidian-900 p-3 font-mono text-xs text-emerald-400 border border-obsidian-800 space-y-1">
+        <div># Launch visual Studio (http://localhost:4242)</div>
+        <div>afwe studio</div>
+        <div class="pt-1"># Materialize BLAKE3 tripwires and chained pre-commit hooks</div>
+        <div>afwe materialize --apply</div>
+      </div>
+    </section>
+  </div>
+</DocsLayout>

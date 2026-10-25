@@ -1,0 +1,17 @@
+id: reborn-website
+title: AFWE ReBorn Website Application
+statement: Build Astro and Tailwind CSS documentation and concept website inspired by delta.dev, graphify, and guardrails ai
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe
+from_turns:
+- t0023
+history:
+- turn: t0023
+  ts: 2026-10-25T23:14:40Z
+  statement: Build Astro and Tailwind CSS documentation and concept website inspired by delta.dev, graphify, and guardrails ai
+created: 2026-10-25T23:14:40Z
+updated: 2026-10-25T23:43:01Z
+task: task-t0023

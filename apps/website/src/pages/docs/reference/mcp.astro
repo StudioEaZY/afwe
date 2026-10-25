@@ -1,0 +1,96 @@
+---
+// mcp.astro - 57 MCP Tools Reference
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+
+const toolGroups = [
+  {
+    category: "Turn Protocol & Gating",
+    tools: [
+      { name: "afwe_turn_begin", purpose: "Initialize prompt turn, capture baseline, emit briefing pack" },
+      { name: "afwe_turn_assume", purpose: "Declare intents, targets, and AST claims before code writes" },
+      { name: "afwe_turn_commit", purpose: "Execute deterministic gate, check collateral loss, commit to git" },
+      { name: "afwe_turn_show", purpose: "Inspect turn record, claims, checks, and git trailers" }
+    ]
+  },
+  {
+    category: "Architecture & Blueprint",
+    tools: [
+      { name: "afwe_blueprint_get", purpose: "Retrieve full blueprint tree or specific node with purpose & bounds" },
+      { name: "afwe_blueprint_edit", purpose: "Mutate nodes: add, move, update, map files, constrain" },
+      { name: "afwe_context", purpose: "Retrieve passive guardrails & micro-context for targeted files or symbol" },
+      { name: "afwe_verify", purpose: "Execute active guardrail checks and boundary verification on changed files" },
+      { name: "afwe_drift", purpose: "Detect unmapped code and architectural structural drift" }
+    ]
+  },
+  {
+    category: "Memory & Pins",
+    tools: [
+      { name: "afwe_memory_add", purpose: "Record decision, constraint, exception, terminology, or problem" },
+      { name: "afwe_memory_find", purpose: "Query scoped knowledge and architectural rationale" },
+      { name: "afwe_pin_list", purpose: "Inspect active human pins locking invariants" },
+      { name: "afwe_pin_propose", purpose: "Propose new pin from agent to human" }
+    ]
+  },
+  {
+    category: "Materialization & Authority",
+    tools: [
+      { name: "afwe_materialize", purpose: "Preview or apply BLAKE3 guardrails manifest and git pre-commit hooks" },
+      { name: "afwe_unlock", purpose: "Enter Explore Mode: downgrade blocking checks to warnings for spikes" },
+      { name: "afwe_lock", purpose: "Re-arm deterministic blocking gate" },
+      { name: "afwe_stats", purpose: "Retrieve gate telemetry, parse times, and calibration metrics" }
+    ]
+  }
+];
+---
+
+<DocsLayout
+  title="57 MCP Tools"
+  description="Reference for all 57 Model Context Protocol (MCP) tools exposed by AFWE to Claude Code, Cursor, Codex, and Zed."
+  activeSection="reference"
+>
+  <div class="space-y-8 py-4">
+    <!-- Header -->
+    <header class="border-b border-parchment-300 dark:border-obsidian-800 pb-6">
+      <nav class="flex items-center gap-2 text-xs font-mono text-parchment-500 dark:text-obsidian-400 mb-2">
+        <a href="/" class="hover:text-emerald-600 dark:hover:text-emerald-400">Docs</a>
+        <span>/</span>
+        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">57 MCP Tools</span>
+      </nav>
+      <h1 class="text-3xl font-bold tracking-tight text-parchment-900 dark:text-white font-sans">
+        57 MCP Tools Reference
+      </h1>
+      <p class="mt-2 text-base text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        AFWE exposes 57 tools over stdio JSON-RPC 2.0 to empower coding agents while maintaining strict deterministic boundaries.
+      </p>
+    </header>
+
+    <div class="space-y-8">
+      {toolGroups.map(group => (
+        <div class="space-y-3">
+          <h2 class="text-base font-bold text-parchment-900 dark:text-white font-sans flex items-center gap-2">
+            <span class="size-2 rounded-full bg-emerald-500"></span>
+            <span>{group.category}</span>
+          </h2>
+          <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/80 dark:bg-obsidian-850/80 overflow-hidden font-mono text-xs">
+            <table class="w-full text-left">
+              <thead class="bg-parchment-50 dark:bg-obsidian-900 border-b border-parchment-400 dark:border-obsidian-700 text-parchment-600 dark:text-obsidian-400">
+                <tr>
+                  <th class="p-3 w-1/3">Tool Name</th>
+                  <th class="p-3">Purpose & Description</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-parchment-300 dark:divide-obsidian-800 text-parchment-800 dark:text-obsidian-200">
+                {group.tools.map(t => (
+                  <tr>
+                    <td class="p-3 font-bold text-emerald-700 dark:text-emerald-400 select-all">{t.name}</td>
+                    <td class="p-3 font-sans text-xs">{t.purpose}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</DocsLayout>

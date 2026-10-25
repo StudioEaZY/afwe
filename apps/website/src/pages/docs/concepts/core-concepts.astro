@@ -1,0 +1,293 @@
+---
+// core-concepts.astro - ReBorn Core Concepts (Inspired by delta.dev/docs/concepts/core-concepts)
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import AtlasRadar from '../../../components/AtlasRadar.astro';
+import TurnReceipt from '../../../components/TurnReceipt.astro';
+import ConstraintGeometry from '../../../components/ConstraintGeometry.astro';
+import IsometricLayers from '../../../components/IsometricLayers.astro';
+
+const headings = [
+  { depth: 2, slug: "turns", text: "Turns: where intent meets reality" },
+  { depth: 2, slug: "the-blueprint", text: "The Blueprint: what code is supposed to be" },
+  { depth: 2, slug: "constraints-are-geometry", text: "Constraints are Geometry" },
+  { depth: 2, slug: "tripwires", text: "Tripwires: where boundaries are guarded" },
+  { depth: 2, slug: "calibration", text: "Probing Guides & Calibration Rubric" },
+  { depth: 2, slug: "explore-mode", text: "Explore Mode & Authority" },
+  { depth: 2, slug: "timeline-4d", text: "4D Timeline: time as a dial" },
+  { depth: 2, slug: "how-they-fit-together", text: "How They Fit Together" }
+];
+---
+
+<DocsLayout
+  title="Core Concepts"
+  description="What turns, blueprint, constraints, and tripwires mean in AFWE ReBorn, and how each compares to the concepts you already know."
+  activeSection="concepts"
+  headings={headings}
+>
+  <div class="space-y-12 py-4">
+    <!-- Breadcrumb & Header -->
+    <header class="border-b border-parchment-300 dark:border-obsidian-800 pb-6">
+      <nav class="flex items-center gap-2 text-xs font-mono text-parchment-500 dark:text-obsidian-400 mb-2">
+        <a href="/" class="hover:text-emerald-600 dark:hover:text-emerald-400">Docs</a>
+        <span>/</span>
+        <span class="text-parchment-800 dark:text-obsidian-200">Concepts</span>
+        <span>/</span>
+        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">Core Concepts</span>
+      </nav>
+      <h1 class="text-3xl font-bold tracking-tight text-parchment-900 dark:text-white font-sans">
+        Core Concepts
+      </h1>
+      <p class="mt-2 text-base text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        What <em>turn</em>, <em>blueprint</em>, <em>constraint</em>, and <em>tripwire</em> mean in AFWE ReBorn, and how each compares to the meaning you already know.
+      </p>
+    </header>
+
+    <!-- Callout Quote -->
+    <div class="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4.5 text-sm text-parchment-800 dark:text-obsidian-200">
+      <div class="flex gap-3">
+        <span class="text-emerald-600 dark:text-emerald-400 text-lg font-bold">❝</span>
+        <div>
+          <strong class="text-parchment-900 dark:text-white">Graph tools tell the agent what your code is.</strong>
+          <span class="block mt-0.5">AFWE tells it what your code is <em>supposed to be</em>, and refuses changes that break that.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 1: Turns -->
+    <section id="turns" class="space-y-4 scroll-mt-20">
+      <h2 class="text-2xl font-bold tracking-tight text-parchment-900 dark:text-white flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+        <span>Turns: where intent meets reality</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-normal">Protocol</span>
+      </h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Delta organizes work into <em>threads</em>. In AFWE, every prompt is a <strong>Turn</strong>. AFWE never runs the agent loop or calls an LLM internally: the harness (Claude Code, Cursor, Codex) is the model, and AFWE is the <strong>deterministic verification kernel</strong>.
+      </p>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Every turn is structured into an atomic 3-step loop:
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs my-4">
+        <div class="p-3 rounded-lg border border-parchment-400 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-850">
+          <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mb-1">STEP 1</div>
+          <div class="font-bold text-parchment-900 dark:text-obsidian-100">turn begin</div>
+          <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-1 font-sans">
+            Gathers briefing: scoped nodes, active pins, living intents, and registered checks.
+          </p>
+        </div>
+        <div class="p-3 rounded-lg border border-parchment-400 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-850">
+          <div class="text-[10px] text-amber-600 dark:text-amber-400 font-bold mb-1">STEP 2</div>
+          <div class="font-bold text-parchment-900 dark:text-obsidian-100">turn assume</div>
+          <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-1 font-sans">
+            Agent declares intents and AST claims <em>before</em> editing any source code.
+          </p>
+        </div>
+        <div class="p-3 rounded-lg border border-parchment-400 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-850">
+          <div class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold mb-1">STEP 3</div>
+          <div class="font-bold text-parchment-900 dark:text-obsidian-100">turn commit</div>
+          <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-1 font-sans">
+            Deterministic gating: checks AST claims, collateral losses, constraints, and pins.
+          </p>
+        </div>
+      </div>
+
+      <div class="my-6">
+        <div class="text-xs font-mono text-parchment-500 dark:text-obsidian-400 mb-2">Interactive Turn Receipt:</div>
+        <TurnReceipt />
+      </div>
+    </section>
+
+    <!-- Section 2: The Blueprint -->
+    <section id="the-blueprint" class="space-y-4 scroll-mt-20">
+      <h2 class="text-2xl font-bold tracking-tight text-parchment-900 dark:text-white flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+        <span>The Blueprint: what code is supposed to be</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-normal">Scene Graph</span>
+      </h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Delta has <em>projects</em>. AFWE has the <strong>Blueprint</strong> (<code class="text-xs font-mono px-1 py-0.5 rounded bg-parchment-200 dark:bg-obsidian-800">.afwe/blueprint/blueprint.yaml</code>). The blueprint is a deterministic hierarchical AST scene graph representing structural reality:
+      </p>
+      <ul class="list-disc list-inside space-y-1.5 text-sm text-parchment-700 dark:text-obsidian-300">
+        <li><strong>Product ➔ Subsystems ➔ Modules ➔ Components</strong>: Every file and symbol resolves to exactly one node (or surfaces as unmapped drift).</li>
+        <li><strong>Purpose Mapping</strong>: Records <em>why</em> each component exists. When an agent touches code, it receives this intent as micro-context.</li>
+        <li><strong>Active Pins</strong>: Human-locked decisions (<code class="text-xs font-mono">intentional</code> bugs, <code class="text-xs font-mono">keep it like that</code>) that autonomous refactors cannot touch.</li>
+      </ul>
+
+      <div class="my-6">
+        <div class="text-xs font-mono text-parchment-500 dark:text-obsidian-400 mb-2">Explore the Radial Codebase Atlas:</div>
+        <AtlasRadar />
+      </div>
+    </section>
+
+    <!-- Section 3: Constraints are Geometry -->
+    <section id="constraints-are-geometry" class="space-y-4 scroll-mt-20">
+      <h2 class="text-2xl font-bold tracking-tight text-parchment-900 dark:text-white flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+        <span>Constraints are Geometry</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-700 dark:text-red-400 font-normal">Active Gating</span>
+      </h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Architecture rules are not vague prose suggestions in markdown files that LLMs conveniently forget when context fills up. In AFWE, <strong>constraints are geometry</strong>. If an agent adds an import that violates a declared boundary (<code class="text-xs font-mono">must_not_depend</code>), the turn gate refuses the commit immediately.
+      </p>
+
+      <div class="my-6">
+        <ConstraintGeometry />
+      </div>
+    </section>
+
+    <!-- Section 4: Tripwires -->
+    <section id="tripwires" class="space-y-4 scroll-mt-20">
+      <h2 class="text-2xl font-bold tracking-tight text-parchment-900 dark:text-white flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+        <span>Tripwires: where boundaries are guarded</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 font-normal">Materialize</span>
+      </h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Delta has <em>worktrees</em>. AFWE has <strong>Tripwires & Materialization</strong>. When you run <code class="text-xs font-mono">afwe materialize --apply</code>, AFWE generates zero-overhead, tamper-proof architectural tripwires:
+      </p>
+
+      <div class="space-y-3 font-mono text-xs my-4">
+        <div class="p-3 rounded-lg border border-parchment-300 dark:border-obsidian-800 bg-white/70 dark:bg-obsidian-850">
+          <div class="text-cyan-600 dark:text-cyan-400 font-bold mb-0.5">1. .afwe/guardrails/manifest.yaml (BLAKE3)</div>
+          <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] font-sans">
+            Cryptographic BLAKE3 manifest of all guardrails. CI compares PRs against the protected base branch manifest to prevent agents from silently deleting guardrails.
+          </p>
+        </div>
+        <div class="p-3 rounded-lg border border-parchment-300 dark:border-obsidian-800 bg-white/70 dark:bg-obsidian-850">
+          <div class="text-cyan-600 dark:text-cyan-400 font-bold mb-0.5">2. Chained Pre-Commit Git Hook</div>
+          <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] font-sans">
+            Executes fast verification locally while preserving existing Husky or Python pre-commit hooks.
+          </p>
+        </div>
+        <div class="p-3 rounded-lg border border-parchment-300 dark:border-obsidian-800 bg-white/70 dark:bg-obsidian-850">
+          <div class="text-cyan-600 dark:text-cyan-400 font-bold mb-0.5">3. GitHub Actions CI Gate</div>
+          <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] font-sans">
+            Runs <code class="px-1 py-0.5 rounded bg-parchment-200 dark:bg-obsidian-800">afwe materialize --check --base origin/main</code> to block non-compliant PRs.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Calibration & Probing Guides -->
+    <section id="calibration" class="space-y-4 scroll-mt-20">
+      <h2 class="text-2xl font-bold tracking-tight text-parchment-900 dark:text-white flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+        <span>Probing Guides & Calibration Rubric</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 font-normal">Anti-Echo Chamber</span>
+      </h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        In ReBorn, confidence is calculated from an <strong>additive deterministic rubric</strong>, never from raw LLM floats:
+      </p>
+
+      <div class="p-4 rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-parchment-50 dark:bg-obsidian-900 font-mono text-xs space-y-2">
+        <div class="flex justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-1.5">
+          <span>Base Rubric Floor</span>
+          <span class="font-bold text-parchment-900 dark:text-white">0.50</span>
+        </div>
+        <div class="flex justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-1.5 text-emerald-600 dark:text-emerald-400">
+          <span>+ High-quality AST/symbol/import claim</span>
+          <span class="font-bold">+0.25</span>
+        </div>
+        <div class="flex justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-1.5 text-emerald-600 dark:text-emerald-400">
+          <span>+ Consistent with sibling modules under same subsystem</span>
+          <span class="font-bold">+0.10</span>
+        </div>
+        <div class="flex justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-1.5 text-emerald-600 dark:text-emerald-400">
+          <span>+ Qualifying probes across distinct sessions (max 5)</span>
+          <span class="font-bold">+0.02 each</span>
+        </div>
+        <div class="flex justify-between text-red-600 dark:text-red-400 pt-1 font-bold">
+          <span>Contradiction with active pin or prior answer</span>
+          <span>CAPS AT 0.40</span>
+        </div>
+      </div>
+
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Inferred rules with confidence between <strong>0.85 and 0.90</strong> become <strong>Probing Guides</strong> (<code class="text-xs font-mono">[GUIDE - ADVISORY]</code>). They guide the agent without blocking commits. To graduate to a blocking check, AFWE requires at least 1 <em>hold-out probe turn</em> (where the rule was deliberately withheld from context and the invariant was still preserved).
+      </p>
+    </section>
+
+    <!-- Section 6: Explore Mode -->
+    <section id="explore-mode" class="space-y-4 scroll-mt-20">
+      <h2 class="text-2xl font-bold tracking-tight text-parchment-900 dark:text-white flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+        <span>Explore Mode & Authority</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-700 dark:text-purple-400 font-normal">Spikes</span>
+      </h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Strict constraints are essential for shipping production code, but during early research or architectural spikes, you want velocity.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 font-mono text-xs">
+        <div class="p-3.5 rounded-lg border border-amber-300 dark:border-amber-800/60 bg-amber-500/5">
+          <div class="font-bold text-amber-700 dark:text-amber-400 mb-1">afwe unlock --reason "..."</div>
+          <p class="text-parchment-700 dark:text-obsidian-300 font-sans text-xs">
+            Activates <em>Explore Mode</em>: blocking checks and constraints downgrade to advisory warnings.
+          </p>
+        </div>
+        <div class="p-3.5 rounded-lg border border-emerald-300 dark:border-emerald-800/60 bg-emerald-500/5">
+          <div class="font-bold text-emerald-700 dark:text-emerald-400 mb-1">afwe lock</div>
+          <p class="text-parchment-700 dark:text-obsidian-300 font-sans text-xs">
+            Re-arms the deterministic gate, enforcing leaf-to-root <code class="text-[11px]">TurnJudgment</code> verification.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: 4D Timeline -->
+    <section id="timeline-4d" class="space-y-4 scroll-mt-20">
+      <h2 class="text-2xl font-bold tracking-tight text-parchment-900 dark:text-white flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+        <span>4D Timeline: time as a dial</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-700 dark:text-blue-400 font-normal">DOTS Engine</span>
+      </h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Git commits tell you <em>which files changed</em>. AFWE's 4D timeline tells you <em>which features evolved, appeared, or disappeared</em>.
+      </p>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        If an agent inadvertently removes a feature during a refactor, AFWE displays it as a <strong>ghost node</strong> on the timeline. Restoring it is a single command:
+      </p>
+      <div class="rounded-lg bg-obsidian-900 p-3 font-mono text-xs text-emerald-400 border border-obsidian-800">
+        afwe timeline restore guest-checkout --apply
+      </div>
+      <p class="text-xs text-parchment-600 dark:text-obsidian-400 font-sans">
+        AFWE performs a true 3-way merge against the last good commit, opens a new turn, and stages the restoration cleanly.
+      </p>
+    </section>
+
+    <!-- Section 8: How They Fit Together -->
+    <section id="how-they-fit-together" class="space-y-4 scroll-mt-20">
+      <h2 class="text-2xl font-bold tracking-tight text-parchment-900 dark:text-white flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+        <span>How They Fit Together</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-normal">Unified System</span>
+      </h2>
+      <p class="text-sm text-parchment-700 dark:text-obsidian-300 leading-relaxed">
+        Code knowledge graphing, intent memory, and tripwires are not separate tools; they form a single continuous architectural feedback loop:
+      </p>
+
+      <div class="my-6">
+        <IsometricLayers />
+      </div>
+
+      <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-parchment-50 dark:bg-obsidian-900 p-5 font-mono text-xs">
+        <div class="text-[11px] text-parchment-500 dark:text-obsidian-400 mb-2 uppercase tracking-wide">The Continuous Architecture Loop</div>
+        <pre class="overflow-x-auto text-parchment-800 dark:text-obsidian-200">
+Developer Prompt
+       │
+       ▼
+  [turn begin] ──── Briefing: Scoped nodes, active pins, AST claims
+       │
+       ▼
+ Harness (Claude / Cursor) ──▶ Writes code in isolated working tree
+       │
+       ▼
+ [turn commit] ─── Deterministic Gate (Constraints + Claims + BLAKE3)
+       │
+       ├─ Pass ──▶ Verified Git Commit (AFWE-Turn: trailer)
+       └─ Fail ──▶ REDO with structured leaf-to-root diagnostics
+        </pre>
+      </div>
+
+      <div class="flex items-center justify-between pt-6 border-t border-parchment-300 dark:border-obsidian-800">
+        <a href="/docs/getting-started/quick-start" class="text-xs font-mono text-emerald-600 dark:text-emerald-400 hover:underline">
+          ← Getting Started (Quick Start)
+        </a>
+        <a href="/docs/validators" class="text-xs font-mono text-emerald-600 dark:text-emerald-400 hover:underline">
+          Validators Hub →
+        </a>
+      </div>
+    </section>
+  </div>
+</DocsLayout>
