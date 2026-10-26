@@ -1,8 +1,8 @@
 ---
 // AfweIsometricHero.astro - Animated 3D Isometric 3-Layer Architecture Visualization
-// Layer 1 (Top): Intent — What the code is supposed to be.
-// Layer 2 (Middle): Implementation — What the code actually does.
-// Layer 3 (Bottom): Structure & History — How it all fits together and evolves.
+// Layer 1 (Top): Intent: What the code is supposed to be.
+// Layer 2 (Middle): Implementation: What the code actually does.
+// Layer 3 (Bottom): Structure: How it all fits together and evolves.
 interface Props {
   class?: string;
 }
@@ -10,10 +10,10 @@ interface Props {
 const { class: className = "" } = Astro.props;
 ---
 
-<div class={`relative w-full max-w-[620px] mx-auto select-none ${className}`}>
-  <!-- The 3D Levitating Glass Plates SVG -->
-  <div class="relative w-full aspect-[1000/1050] drop-shadow-xl">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1050" width="100%" height="100%" class="w-full h-full">
+<div class={`relative w-full max-w-[760px] mx-auto select-none ${className}`}>
+  <!-- The 3D Levitating Glass Plates SVG with Non-Overlapping Callout Leader Lines -->
+  <div class="relative w-full aspect-[1440/1050] drop-shadow-xl">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1050" width="100%" height="100%" class="w-full h-full">
       <defs>
         <!-- Soft Ambient Floor Shadow -->
         <filter id="floor-shadow" x="-30%" y="-30%" width="160%" height="160%">
@@ -401,36 +401,45 @@ const { class: className = "" } = Astro.props;
           <rect x="489" y="319" width="22" height="19" rx="2.5" fill="url(#emblem-grad)" stroke="#8e9991" stroke-width="1" />
         </g>
       </g>
+
+      <!-- CALLOUT LEADER LINES & LABELS (Cleanly positioned to the right of the 3D plates) -->
+      <g id="hero-plate-callouts" class="hidden sm:inline">
+        <!-- Top Plate Callout: Intent -->
+        <g class="float-top">
+          <!-- Horizontal leader line from plate vertex (900, 300) to callout anchor (1000, 300) -->
+          <line x1="900" y1="300" x2="1000" y2="300" stroke="#758477" stroke-width="2" stroke-dasharray="4,4" stroke-opacity="0.8" />
+          <circle cx="1000" cy="300" r="4.5" fill="#292D2B" class="dark:fill-white" />
+          <circle cx="1000" cy="300" r="8" fill="none" stroke="#758477" stroke-width="1.5" stroke-opacity="0.6" />
+          
+          <!-- Label Text -->
+          <text x="1025" y="295" font-family="'IBM Plex Sans', Inter, sans-serif" font-size="22" font-weight="700" fill="#292D2B" class="dark:fill-white">Intent</text>
+          <text x="1025" y="320" font-family="'IBM Plex Sans', Inter, sans-serif" font-size="14" font-weight="400" fill="#525A56" class="dark:fill-[#C7C4BB]">What the code is supposed to be.</text>
+        </g>
+
+        <!-- Middle Plate Callout: Implementation -->
+        <g class="float-mid">
+          <!-- Horizontal leader line from plate vertex (900, 490) to callout anchor (1000, 490) -->
+          <line x1="900" y1="490" x2="1000" y2="490" stroke="#758477" stroke-width="2" stroke-dasharray="4,4" stroke-opacity="0.8" />
+          <circle cx="1000" cy="490" r="4.5" fill="#758477" />
+          <circle cx="1000" cy="490" r="8" fill="none" stroke="#758477" stroke-width="1.5" stroke-opacity="0.6" />
+          
+          <!-- Label Text -->
+          <text x="1025" y="485" font-family="'IBM Plex Sans', Inter, sans-serif" font-size="22" font-weight="700" fill="#292D2B" class="dark:fill-white">Implementation</text>
+          <text x="1025" y="510" font-family="'IBM Plex Sans', Inter, sans-serif" font-size="14" font-weight="400" fill="#525A56" class="dark:fill-[#C7C4BB]">What the code actually does.</text>
+        </g>
+
+        <!-- Bottom Plate Callout: Structure -->
+        <g class="float-bot">
+          <!-- Horizontal leader line from plate vertex (900, 680) to callout anchor (1000, 680) -->
+          <line x1="900" y1="680" x2="1000" y2="680" stroke="#758477" stroke-width="2" stroke-dasharray="4,4" stroke-opacity="0.8" />
+          <circle cx="1000" cy="680" r="4.5" fill="#292D2B" class="dark:fill-white" />
+          <circle cx="1000" cy="680" r="8" fill="none" stroke="#758477" stroke-width="1.5" stroke-opacity="0.6" />
+          
+          <!-- Label Text -->
+          <text x="1025" y="675" font-family="'IBM Plex Sans', Inter, sans-serif" font-size="22" font-weight="700" fill="#292D2B" class="dark:fill-white">Structure</text>
+          <text x="1025" y="700" font-family="'IBM Plex Sans', Inter, sans-serif" font-size="14" font-weight="400" fill="#525A56" class="dark:fill-[#C7C4BB]">How it all fits together and evolves.</text>
+        </g>
+      </g>
     </svg>
-  </div>
-
-  <!-- Pointers and Layer Labels (Matching Reference Image) -->
-  <div class="hidden sm:block absolute inset-y-0 right-0 w-48 pointer-events-none font-sans">
-    <!-- Top Layer Callout: Intent -->
-    <div class="absolute top-[16%] right-0 flex items-center gap-2">
-      <span class="size-2 rounded-full bg-graphite dark:bg-stone-300"></span>
-      <div>
-        <div class="font-bold text-xs text-graphite dark:text-stone-100">Intent</div>
-        <div class="text-[11px] text-graphite/70 dark:text-stone-400">What the code is supposed to be.</div>
-      </div>
-    </div>
-
-    <!-- Middle Layer Callout: Implementation -->
-    <div class="absolute top-[48%] right-0 flex items-center gap-2">
-      <span class="size-2 rounded-full bg-survey-500"></span>
-      <div>
-        <div class="font-bold text-xs text-graphite dark:text-stone-100">Implementation</div>
-        <div class="text-[11px] text-graphite/70 dark:text-stone-400">What the code actually does.</div>
-      </div>
-    </div>
-
-    <!-- Bottom Layer Callout: Structure -->
-    <div class="absolute top-[78%] right-0 flex items-center gap-2">
-      <span class="size-2 rounded-full bg-graphite dark:bg-stone-300"></span>
-      <div>
-        <div class="font-bold text-xs text-graphite dark:text-stone-100">Structure</div>
-        <div class="text-[11px] text-graphite/70 dark:text-stone-400">How it all fits together and evolves.</div>
-      </div>
-    </div>
   </div>
 </div>

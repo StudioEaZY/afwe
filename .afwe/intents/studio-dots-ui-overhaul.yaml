@@ -1,6 +1,6 @@
 id: studio-dots-ui-overhaul
-title: Studio UI overhaul with adaptive Radial and Topology views
-statement: Studio UI overhaul with adaptive Radial and Topology views, contextual progressive Inspector, and 5-page layout
+title: Fix Attachment & API response shape mismatches across Studio pages
+statement: Normalize Attachment objects ({nodes, files, symbols, global}) and unwrap API envelope responses ({turns}, {currently_missing}, {guides, questions, profiles}, {memory}) across hierarchy.ts, TimelinePage, ChecksPage, DecisionsPage, NodeInspector, and SettingsPage
 status: active
 origin: human
 attaches:
@@ -9,6 +9,7 @@ attaches:
 from_turns:
 - t0020
 - t0024
+- t0026
 history:
 - turn: t0020
   ts: 2026-10-16T12:39:53Z
@@ -16,6 +17,9 @@ history:
 - turn: t0024
   ts: 2026-10-26T00:17:42Z
   statement: Studio UI overhaul with adaptive Radial and Topology views, contextual progressive Inspector, and 5-page layout
+- turn: t0026
+  ts: 2026-10-26T11:35:58Z
+  statement: Normalize Attachment objects ({nodes, files, symbols, global}) and unwrap API envelope responses ({turns}, {currently_missing}, {guides, questions, profiles}, {memory}) across hierarchy.ts, TimelinePage, ChecksPage, DecisionsPage, NodeInspector, and SettingsPage
 created: 2026-10-16T12:39:53Z
-updated: 2026-10-26T00:17:42Z
+updated: 2026-10-26T11:35:58Z
 task: task-f90086

@@ -19,15 +19,31 @@ export const TimelinePage: React.FC = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [turnList, lossList] = await Promise.all([
+      const [turnRes, lossRes] = await Promise.all([
         api.timeline.list(40),
         api.timeline.losses(),
       ]);
-      setTurns(turnList || []);
-      setLosses(lossList || []);
-      if (turnList && turnList.length > 0) {
-        setSelectedTurn(turnList[0]);
-        loadDiff(turnList[0].id);
+      const rawTurns = Array.isArray(turnRes)
+        ? turnRes
+        : Array.isArray(turnRes?.turns)
+        ? turnRes.turns
+        : [];
+      const normalizedTurns = rawTurns.map((t: any) => ({
+        ...t,
+        id: t.id || t.turn,
+      }));
+      const rawLosses = Array.isArray(lossRes)
+        ? lossRes
+        : Array.isArray(lossRes?.currently_missing)
+        ? lossRes.currently_missing
+        : Array.isArray(lossRes?.history)
+        ? lossRes.history
+        : [];
+      setTurns(normalizedTurns);
+      setLosses(rawLosses);
+      if (normalizedTurns.length > 0) {
+        setSelectedTurn(normalizedTurns[0]);
+        loadDiff(normalizedTurns[0].id);
       }
     } catch (e: any) {
       notify(`Could not load timeline: ${e.message || e}`);
@@ -39,7 +55,13 @@ export const TimelinePage: React.FC = () => {
   const loadDiff = async (turnId: string) => {
     try {
       const res = await api.timeline.diff(turnId);
-      setDiffText(typeof res === "string" ? res : JSON.stringify(res, null, 2));
+      if (typeof res === "string") {
+        setDiffText(res);
+      } else if (res && typeof res.patch === "string") {
+        setDiffText(res.patch.trim() || `Turn #${turnId} (${res.committed ? "committed" : "worktree"}): no file diff changes.`);
+      } else {
+        setDiffText(JSON.stringify(res, null, 2));
+      }
     } catch {
       setDiffText("No patch available for this turn.");
     }
@@ -88,25 +110,33 @@ export const TimelinePage: React.FC = () => {
                 Features that were implemented and vanished in subsequent turns.
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "8px" }}>
-                {losses.slice(0, 3).map((l: any, idx: number) => (
-                  <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11.5px" }}>
-                    <span style={{ fontWeight: 500, color: "#1D1C1A" }}>{l.feature || l.id}</span>
-                    <button
-                      onClick={() => handleRestoreFeature(l.feature || l.id)}
-                      style={{
-                        background: "#87661A",
-                        color: "#FFFFFF",
-                        border: "none",
-                        padding: "2px 8px",
-                        borderRadius: "4px",
-                        fontSize: "10.5px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Restore 3-way
-                    </button>
-                  </div>
-                ))}
+                {losses.slice(0, 5).map((l: any, idx: number) => {
+                  const featureId = l.node || l.feature || l.id;
+                  const featureLabel = l.name ? `${l.name} (${featureId})` : featureId;
+                  return (
+                    <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11.5px", gap: "8px" }}>
+                      <div>
+                        <span style={{ fontWeight: 600, color: "#1D1C1A" }}>{featureLabel}</span>
+                        {l.lost_in && <span style={{ color: "#87661A", marginLeft: "6px", fontSize: "10.5px" }}>lost in #{l.lost_in}</span>}
+                      </div>
+                      <button
+                        onClick={() => handleRestoreFeature(featureId)}
+                        style={{
+                          background: "#87661A",
+                          color: "#FFFFFF",
+                          border: "none",
+                          padding: "2px 8px",
+                          borderRadius: "4px",
+                          fontSize: "10.5px",
+                          cursor: "pointer",
+                          flexShrink: 0,
+                        }}
+                      >
+                        Restore 3-way
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -202,13 +232,46 @@ export const TimelinePage: React.FC = () => {
               </div>
 
               {/* Summary / Prompt Box */}
-              <div style={{ background: "#FFFFFF", border: "1px solid #E5E0D5", borderRadius: "8px", padding: "16px", marginBottom: "20px" }}>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "#6B675D", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
-                  Turn Statement
+              <div style={{ background: "#FFFFFF", border: "1px solid #E5E0D5", borderRadius: "8px", padding: "16px", marginBottom: "16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: 700, color: "#6B675D", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                    Turn Statement & Gate Verdict
+                  </div>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    {selectedTurn.gate && (
+                      <span
+                        style={{
+                          fontSize: "10.5px",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          padding: "2px 8px",
+                          borderRadius: "4px",
+                          background: selectedTurn.gate === "commit" || selectedTurn.gate === "ready" ? "#E8F3ED" : selectedTurn.gate === "redo" ? "#FDECE9" : "#FAF3DB",
+                          color: selectedTurn.gate === "commit" || selectedTurn.gate === "ready" ? "#2E7A57" : selectedTurn.gate === "redo" ? "#B23A2B" : "#87661A",
+                        }}
+                      >
+                        Gate: {typeof selectedTurn.gate === "string" ? selectedTurn.gate : selectedTurn.gate.decision}
+                      </span>
+                    )}
+                    {selectedTurn.confidence !== undefined && (
+                      <span style={{ fontSize: "11px", color: "#4A463E", fontWeight: 600 }}>
+                        Confidence: {Math.round(selectedTurn.confidence * 100)}%
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div style={{ fontSize: "14px", color: "#1D1C1A", fontWeight: 500 }}>
                   {selectedTurn.summary || selectedTurn.prompt}
                 </div>
+                {Array.isArray(selectedTurn.reasons) && selectedTurn.reasons.length > 0 && (
+                  <div style={{ marginTop: "10px", paddingTop: "8px", borderTop: "1px solid #ECE7D9", display: "flex", flexDirection: "column", gap: "4px" }}>
+                    {selectedTurn.reasons.map((r: string, idx: number) => (
+                      <div key={idx} style={{ fontSize: "11.5px", color: "#6B675D" }}>
+                        • {r}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Patch Diff Box */}

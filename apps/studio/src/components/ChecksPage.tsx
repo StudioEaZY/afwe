@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "../store";
 import { api } from "../api";
+import { formatAttachment } from "../lib/hierarchy";
 
 export const ChecksPage: React.FC = () => {
   const { graph, notify, run } = useStore();
@@ -128,7 +129,7 @@ export const ChecksPage: React.FC = () => {
                     <div>
                       <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{pin.statement}</div>
                       <div style={{ fontSize: "11px", color: "#6B675D", marginTop: "2px" }}>
-                        Attaches to: {(pin.attaches || []).join(", ") || "Global"} · {pin.severity}
+                        Attaches to: {formatAttachment(pin.attaches)} · {pin.severity}
                       </div>
                     </div>
                     <button
@@ -224,7 +225,7 @@ export const ChecksPage: React.FC = () => {
               >
                 <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{c.id}</div>
                 <div style={{ fontSize: "11.5px", color: "#6B675D", marginTop: "3px" }}>
-                  {c.from} {c.kind} {(c.to || []).join(", ")}
+                  {c.from} {c.rule || c.kind} {Array.isArray(c.to) ? c.to.join(", ") : String(c.to || "")}
                 </div>
               </div>
             ))}

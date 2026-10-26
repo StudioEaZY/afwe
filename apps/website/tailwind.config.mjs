@@ -74,10 +74,10 @@ export default {
         }
       },
       fontFamily: {
-        serif: ['Newsreader', 'Georgia', 'serif'],
+        serif: ['"IBM Plex Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
         sans: ['"IBM Plex Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'Geist Mono', 'Fira Code', 'Consolas', 'monospace'],
-        display: ['Newsreader', 'Georgia', 'serif'],
+        display: ['"IBM Plex Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
       }
     },
   },

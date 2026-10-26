@@ -14,7 +14,7 @@ interface Props {
 
 const {
   title,
-  description = "AFWE — Architecture-First Workspace Engine. Your code. Its memory. Its rules.",
+  description = "AFWE: Architecture-First Workspace Engine. Your code. Its memory. Its rules.",
   activeSection = "concepts",
   headings = [],
   wide = false
@@ -26,12 +26,12 @@ const {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{title} — AFWE ReBorn</title>
+  <title>{title} · AFWE ReBorn</title>
   <meta name="description" content={description} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script is:inline>
     // Theme initialization
     (function () {
@@ -84,14 +84,8 @@ const {
         </a>
       </nav>
 
-      <!-- Right: Health Pill, Search, Theme, GitHub -->
+      <!-- Right: Search, Theme, GitHub -->
       <div class="flex items-center gap-3">
-        <!-- Health Pill -->
-        <a href="/docs/concepts/core-concepts#first-screen" class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-survey-500/30 bg-survey-500/10 text-survey-700 dark:text-survey-light text-xs font-mono hover:bg-survey-500/20 transition-colors">
-          <span class="size-2 rounded-full bg-survey-500"></span>
-          <span>Everything balances • 3 pins</span>
-        </a>
-
         <!-- Search Button (Cmd+K) -->
         <button data-open-search class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-stone-400/60 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 hover:border-graphite/40 dark:hover:border-obsidian-600 text-xs font-mono text-graphite/70 dark:text-obsidian-400 transition-all shadow-xs">
           <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -143,12 +137,12 @@ const {
             <div class="text-[11px] font-bold text-parchment-500 dark:text-obsidian-500 uppercase tracking-wider mb-2">Introduction</div>
             <ul class="space-y-1">
               <li>
-                <a href="/" class="block px-2.5 py-1.5 rounded hover:bg-parchment-200 dark:hover:bg-obsidian-850 text-parchment-800 dark:text-obsidian-300 hover:text-black dark:hover:text-white transition-colors">
+                <a href="/docs" class={`block px-2.5 py-1.5 rounded transition-colors ${activeSection === 'overview' ? 'bg-parchment-300 dark:bg-obsidian-800 text-black dark:text-white font-bold' : 'hover:bg-parchment-200 dark:hover:bg-obsidian-850 text-parchment-800 dark:text-obsidian-300 hover:text-black dark:hover:text-white'}`}>
                   Overview & Philosophy
                 </a>
               </li>
               <li>
-                <a href="/docs/getting-started/quick-start" class="block px-2.5 py-1.5 rounded hover:bg-parchment-200 dark:hover:bg-obsidian-850 text-parchment-800 dark:text-obsidian-300 hover:text-black dark:hover:text-white transition-colors">
+                <a href="/docs/getting-started/quick-start" class={`block px-2.5 py-1.5 rounded transition-colors ${activeSection === 'quickstart' ? 'bg-parchment-300 dark:bg-obsidian-800 text-black dark:text-white font-bold' : 'hover:bg-parchment-200 dark:hover:bg-obsidian-850 text-parchment-800 dark:text-obsidian-300 hover:text-black dark:hover:text-white'}`}>
                   Quick Start (5 Min)
                 </a>
               </li>

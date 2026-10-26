@@ -1,6 +1,7 @@
 ---
 // AtlasRadar.astro - Architectural Codebase Atlas Sunburst & Navigation System
 // Fully accessible, interactive, WCAG AAA/AA compliant cartographic interface
+import AfweWordmark from './AfweWordmark.astro';
 ---
 
 <div class="w-full rounded-2xl border-2 border-parchment-400 dark:border-obsidian-700 bg-gradient-to-b from-[#fbf8f1] to-[#f4eee0] dark:from-[#13161c] dark:to-[#0c0e13] text-parchment-900 dark:text-obsidian-100 shadow-xl overflow-hidden font-sans select-none transition-all">
@@ -9,17 +10,17 @@
     <!-- Brand / Title -->
     <div class="flex items-center gap-3">
       <div class="flex items-center gap-2">
-        <span class="font-serif font-bold text-xl tracking-tight text-parchment-900 dark:text-white">AFWE</span>
+        <AfweWordmark class="h-5 w-auto" />
         <span class="hidden sm:inline text-xs text-parchment-600 dark:text-obsidian-400 font-sans pl-2 border-l border-parchment-300 dark:border-obsidian-700">
           Your code. Its memory. Its rules.
         </span>
       </div>
     </div>
 
-    <!-- Health Overview Pill -->
-    <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-600/30 bg-emerald-500/10 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs font-mono font-medium">
-      <span class="size-2 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse"></span>
-      <span>Everything balances. 3 pins · 2 proposals waiting</span>
+    <!-- Telemetry Status Pill -->
+    <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full border border-survey-500/30 bg-survey-500/10 text-survey-700 dark:text-survey-light text-xs font-mono font-medium">
+      <span class="size-2 rounded-full bg-survey-500 animate-pulse"></span>
+      <span>Deterministic Gate Active: 0 drift</span>
     </div>
 
     <!-- Quick Search Pill Mockup -->
@@ -789,7 +790,7 @@
           <div class="flex items-center gap-2">
             <span class="text-sm">🛡️</span>
             <span class="text-xs font-mono font-bold uppercase tracking-wider text-parchment-800 dark:text-obsidian-200">Recent Turns</span>
-            <span class="text-xs text-parchment-600 dark:text-obsidian-400 hidden sm:inline">— The latest verified changes to your codebase</span>
+            <span class="text-xs text-parchment-600 dark:text-obsidian-400 hidden sm:inline">: The latest verified changes to your codebase</span>
           </div>
           <a href="/docs/concepts/core-concepts#turns" class="text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">View all turns ›</a>
         </div>

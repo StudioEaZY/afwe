@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "../store";
 import { api } from "../api";
+import { formatAttachment } from "../lib/hierarchy";
 
 export const DecisionsPage: React.FC = () => {
   const { graph, notify, run } = useStore();
@@ -21,17 +22,37 @@ export const DecisionsPage: React.FC = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [qs, gs, ps, ms] = await Promise.all([
+      const [qsRes, gsRes, psRes, msRes] = await Promise.all([
         api.calibration.questions(true),
         api.calibration.guides(true),
         api.proposals(),
         api.memory.list(),
       ]);
-      setQuestions(qs || []);
-      setGuides(gs || []);
-      setProposals(ps || []);
-      setMemories(ms || []);
-      if (qs && qs.length > 0) {
+      const qs = Array.isArray(qsRes)
+        ? qsRes
+        : Array.isArray(qsRes?.questions)
+        ? qsRes.questions
+        : [];
+      const gs = Array.isArray(gsRes)
+        ? gsRes
+        : Array.isArray(gsRes?.guides)
+        ? gsRes.guides
+        : [];
+      const ps = Array.isArray(psRes)
+        ? psRes
+        : Array.isArray(psRes?.proposals)
+        ? psRes.proposals
+        : [];
+      const ms = Array.isArray(msRes)
+        ? msRes
+        : Array.isArray(msRes?.memory)
+        ? msRes.memory
+        : [];
+      setQuestions(qs);
+      setGuides(gs);
+      setProposals(ps);
+      setMemories(ms);
+      if (qs.length > 0) {
         setSelectedQuestion(qs[0]);
       }
     } catch (e: any) {
@@ -115,7 +136,7 @@ export const DecisionsPage: React.FC = () => {
                     >
                       <div style={{ fontWeight: 600, color: "#1D1C1A", fontSize: "13px" }}>{q.question}</div>
                       <div style={{ fontSize: "11px", color: "#6B675D", marginTop: "3px" }}>
-                        Scope: {(q.attaches || []).join(", ") || "Global"} · Confidence: {Math.round((q.confidence || 0.75) * 100)}%
+                        Scope: {formatAttachment(q.attaches)} · Blast score: {q.blast_score ?? 5}
                       </div>
                       {selectedQuestion?.id === q.id && (
                         <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -186,9 +207,9 @@ export const DecisionsPage: React.FC = () => {
                         fontSize: "12px",
                       }}
                     >
-                      <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{g.claim?.text || g.id}</div>
+                      <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{g.title || g.claim?.text || g.id}</div>
                       <div style={{ fontSize: "11px", color: "#2E7A57", marginTop: "3px" }}>
-                        Confidence: {Math.round((g.confidence || 0.88) * 100)}% · Qualified by multi-session evidence
+                        Score: {Math.round(((g.score ?? g.confidence) || 0.88) * 100)}% · Scope: {formatAttachment(g.attaches)} · {g.probes?.length || 0} session probe(s)
                       </div>
                       <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
                         <button
@@ -250,9 +271,9 @@ export const DecisionsPage: React.FC = () => {
                       fontSize: "12px",
                     }}
                   >
-                    <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{p.title || p.id}</div>
+                    <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{p.finding?.summary || p.title || p.id}</div>
                     <div style={{ fontSize: "11px", color: "#6B675D", marginTop: "3px" }}>
-                      Origin: {p.origin || "drift"} · Kind: {p.kind}
+                      Status: {p.status || "pending"} · Kind: {p.finding?.kind || p.kind || "drift"}
                     </div>
                     <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
                       <button

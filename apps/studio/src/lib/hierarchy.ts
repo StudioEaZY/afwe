@@ -138,6 +138,31 @@ export interface TopologyEdge {
 }
 
 /**
+ * Normalize an AFWE `Attachment` object (`{ nodes, files, symbols, global }`) or legacy string array into a flat string array.
+ */
+export function extractAttachmentItems(att: any): string[] {
+  if (!att) return [];
+  if (Array.isArray(att)) return att;
+  if (typeof att === "object") {
+    const out: string[] = [];
+    if (Array.isArray(att.nodes)) out.push(...att.nodes);
+    if (Array.isArray(att.files)) out.push(...att.files);
+    if (Array.isArray(att.symbols)) out.push(...att.symbols);
+    if (att.global && out.length === 0) out.push("Global");
+    return out;
+  }
+  return [];
+}
+
+/**
+ * Format an `Attachment` object or array into a human-readable comma-separated string.
+ */
+export function formatAttachment(att: any): string {
+  const items = extractAttachmentItems(att);
+  return items.length > 0 ? items.join(", ") : "Global";
+}
+
+/**
  * Build the multi-layer hierarchy tree from graph snapshot.
  */
 export function buildHierarchyTree(graph: any): HierarchyNode {
@@ -180,7 +205,7 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
   const pinsByNode = new Set<string>();
   for (const pin of pins) {
     if (pin.status === "active" && pin.attaches) {
-      for (const att of pin.attaches) {
+      for (const att of extractAttachmentItems(pin.attaches)) {
         pinsByNode.add(att);
       }
     }
@@ -189,7 +214,7 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
   const questionsByNode = new Set<string>();
   for (const q of calibration.questions || []) {
     if (q.status === "open" && q.attaches) {
-      for (const att of q.attaches) {
+      for (const att of extractAttachmentItems(q.attaches)) {
         questionsByNode.add(att);
       }
     }

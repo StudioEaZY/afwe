@@ -1,0 +1,22 @@
+{
+  "intents": [
+    {
+      "id": "studio-dots-ui-overhaul",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Fix Attachment & API response shape mismatches across Studio pages",
+      "statement": "Normalize Attachment objects ({nodes, files, symbols, global}) and unwrap API envelope responses ({turns}, {currently_missing}, {guides, questions, profiles}, {memory}) across hierarchy.ts, TimelinePage, ChecksPage, DecisionsPage, NodeInspector, and SettingsPage"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ]
+}

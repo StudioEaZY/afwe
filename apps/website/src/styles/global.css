@@ -60,8 +60,8 @@
   }
 
   h1, h2, h3, .font-serif-display {
-    font-family: 'Newsreader', Georgia, serif;
-    letter-spacing: -0.015em;
+    font-family: 'IBM Plex Sans', Inter, system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.02em;
   }
 }
 

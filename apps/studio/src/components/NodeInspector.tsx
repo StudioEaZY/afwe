@@ -146,7 +146,7 @@ export const NodeInspector: React.FC = () => {
         statement: `Protect critical behaviors in ${selectedEntity.label}`,
         kind: "decision",
         severity: "block",
-        attaches: [selectedEntity.id],
+        nodes: [selectedEntity.id],
       });
       notify(`Pinned ${selectedEntity.label}`);
     });
@@ -414,7 +414,7 @@ export const NodeInspector: React.FC = () => {
               >
                 <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{c.id}</div>
                 <div style={{ fontSize: "11.5px", color: "#6B675D", marginTop: "4px" }}>
-                  {c.kind}: {c.from} must not depend on {(c.to || []).join(", ")}
+                  {c.rule || c.kind}: {c.from} → {Array.isArray(c.to) ? c.to.join(", ") : String(c.to || "")}
                 </div>
               </div>
             ))}

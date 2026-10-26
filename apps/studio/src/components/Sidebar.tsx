@@ -11,7 +11,7 @@ export const Sidebar: React.FC = () => {
 
   const navItems: { key: View; label: string; sub: string; icon: string; badge?: number; badgeColor?: string }[] = [
     { key: "overview", label: "Overview", sub: "The big picture", icon: "⌘" },
-    { key: "timeline", label: "Timeline", sub: "See the journey", icon: "⏱" },
+    { key: "timeline", label: "Timeline & Turns", sub: "Turn ledger & 4D stream", icon: "⏱" },
     { key: "checks", label: "Checks", sub: "Rules & tripwires", icon: "✓", badge: violationsCount > 0 ? violationsCount : undefined, badgeColor: "#B23A2B" },
     { key: "decisions", label: "Decisions", sub: "Human queue", icon: "⚖", badge: questionsCount > 0 ? questionsCount : undefined, badgeColor: "#C98A3C" },
     { key: "settings", label: "Settings", sub: "Engine & policy", icon: "⚙" },

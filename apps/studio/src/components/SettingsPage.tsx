@@ -143,9 +143,14 @@ export const SettingsPage: React.FC = () => {
             ) : (
               Object.entries(modelProfiles).map(([modelId, prof]: [string, any]) => (
                 <div key={modelId} style={{ padding: "12px", borderRadius: "6px", background: "#FAF8F3", border: "1px solid #ECE7D9", fontSize: "12px" }}>
-                  <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{modelId}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{modelId}</div>
+                    <span style={{ fontSize: "11px", fontWeight: 600, color: "#2E7A57" }}>
+                      Trust Factor: {(prof.trust_factor ?? 1.0).toFixed(2)}×
+                    </span>
+                  </div>
                   <div style={{ fontSize: "11px", color: "#6B675D", marginTop: "2px" }}>
-                    Proposals: {prof.total_proposals || 0} · Confirmed: {prof.confirmed_by_human || 0} · Rejected: {prof.rejected_by_human || 0}
+                    Accepted by human: {prof.human_accepted ?? prof.confirmed_by_human ?? 0} · Rejected: {prof.human_rejected ?? prof.rejected_by_human ?? 0}
                   </div>
                 </div>
               ))
