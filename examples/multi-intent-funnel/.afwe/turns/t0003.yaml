@@ -1,0 +1,73 @@
+{
+  "id": "t0003",
+  "ts": "2026-10-23T16:30:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Mount Stripe Elements container and seat state management",
+  "prompt_hash": "f1a2b3c4d5e60003",
+  "task": "funnel-stripe-seats",
+  "targets": [
+    "stripe-checkout",
+    "seat-configurator"
+  ],
+  "status": "committed",
+  "touched": {
+    "nodes": [
+      "stripe-checkout",
+      "seat-configurator"
+    ],
+    "files": [
+      "src/conversion/stripeElements.ts",
+      "src/activation/funnelState.ts"
+    ]
+  },
+  "implements": {
+    "growth-funnel": [
+      "src/Slide1.tsx"
+    ],
+    "acquisition-stage": [
+      "src/Slide1.tsx"
+    ],
+    "seat-configurator": [
+      "src/activation/funnelState.ts"
+    ],
+    "pricing-tiers": [
+      "src/conversion/pricingEngine.ts"
+    ],
+    "stripe-checkout": [
+      "src/conversion/stripeElements.ts"
+    ],
+    "telemetry-stage": [
+      "src/telemetry/eventSink.ts"
+    ],
+    "slide-3-roi-calculator": [
+      "src/activation/calculatorWorker.ts"
+    ],
+    "ab-cohort-sticky-cookie": [
+      "src/telemetry/cookieStorage.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-no-utm-in-checkout",
+      "title": "stripe checkout does not import utmTracker",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.95,
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "Stripe elements integration mounted"
+    ]
+  },
+  "summary": "Mount Stripe Elements container and seat state management",
+  "session_id": "sess-funnel-03",
+  "checkgen": [
+    "chk-no-utm-in-checkout"
+  ]
+}

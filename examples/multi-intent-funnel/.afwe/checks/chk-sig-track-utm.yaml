@@ -1,0 +1,21 @@
+{
+  "id": "chk-sig-track-utm",
+  "title": "trackUtmVisit signature takes campaign and source",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "traffic-attribution"
+    ]
+  },
+  "claim": {
+    "type": "symbol_signature",
+    "symbol": "src/acquisition/utmTracker.ts::trackUtmVisit",
+    "pattern": "\\(campaign:\\s*string,\\s*source:\\s*string\\)"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-25T10:00:00Z",
+  "created_from": "t0006",
+  "provenance": "confirmed"
+}

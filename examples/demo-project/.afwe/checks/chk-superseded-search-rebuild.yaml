@@ -1,0 +1,18 @@
+{
+  "id": "chk-superseded-search-rebuild",
+  "title": "search index rebuilds synchronously on every insert",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "workspace-search"
+    ]
+  },
+  "command": "npm test -- test/search-sync.test.ts",
+  "status": "superseded",
+  "superseded_by": "chk-no-raw-db-in-search",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T08:00:00Z",
+  "created_from": "t0001",
+  "provenance": "confirmed"
+}

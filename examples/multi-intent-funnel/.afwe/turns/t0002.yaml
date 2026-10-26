@@ -1,0 +1,87 @@
+{
+  "id": "t0002",
+  "ts": "2026-10-23T11:00:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Implement dynamic pricing tier engine and UTM visit tracking",
+  "prompt_hash": "f1a2b3c4d5e60002",
+  "task": "funnel-pricing-utm",
+  "targets": [
+    "pricing-tiers",
+    "traffic-attribution"
+  ],
+  "status": "committed",
+  "touched": {
+    "nodes": [
+      "pricing-tiers",
+      "traffic-attribution"
+    ],
+    "files": [
+      "src/conversion/pricingEngine.ts",
+      "src/acquisition/utmTracker.ts"
+    ]
+  },
+  "implements": {
+    "growth-funnel": [
+      "src/Slide1.tsx"
+    ],
+    "acquisition-stage": [
+      "src/Slide1.tsx"
+    ],
+    "traffic-attribution": [
+      "src/acquisition/utmTracker.ts"
+    ],
+    "pricing-tiers": [
+      "src/conversion/pricingEngine.ts"
+    ],
+    "conversion-stage": [
+      "src/Slide5.tsx",
+      "src/Slide6.tsx"
+    ],
+    "telemetry-stage": [
+      "src/telemetry/eventSink.ts"
+    ],
+    "slide-2-social-proof": [
+      "src/acquisition/logos.svg"
+    ],
+    "slide-3-roi-calculator": [
+      "src/activation/calculatorWorker.ts"
+    ],
+    "ab-cohort-sticky-cookie": [
+      "src/telemetry/cookieStorage.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-no-conversion-in-acquisition",
+      "title": "acquisition does not import conversion-stage",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    },
+    {
+      "id": "chk-export-calculate-tier-price",
+      "title": "calculateTierPrice export exists",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.98,
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "Pricing calculation and UTM attribution confirmed"
+    ]
+  },
+  "summary": "Implement dynamic pricing tier engine and UTM visit tracking",
+  "session_id": "sess-funnel-02",
+  "checkgen": [
+    "chk-no-conversion-in-acquisition",
+    "chk-no-raw-sink-in-activation",
+    "chk-export-calculate-tier-price"
+  ]
+}

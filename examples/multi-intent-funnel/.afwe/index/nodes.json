@@ -1,0 +1,352 @@
+{
+  "ab-cohort-router": {
+    "path": "Growth Funnel.Telemetry Stage.A/B Cohort Router",
+    "name": "A/B Cohort Router",
+    "kind": "module",
+    "depth": 2,
+    "parent": "telemetry-stage",
+    "files": [
+      "src/telemetry/abCohort.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-deterministic-cohorts",
+      "term-ab-cohort",
+      "prob-split-test-sample-ratio-mismatch"
+    ],
+    "guardrails": []
+  },
+  "ab-cohort-sticky-cookie": {
+    "path": "Growth Funnel.Telemetry Stage.A/B Cohort Sticky Cookie",
+    "name": "A/B Cohort Sticky Cookie",
+    "kind": "module",
+    "depth": 2,
+    "parent": "telemetry-stage",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "acquisition-stage": {
+    "path": "Growth Funnel.Acquisition Stage",
+    "name": "Acquisition Stage",
+    "kind": "stage",
+    "depth": 1,
+    "parent": "growth-funnel",
+    "files": [
+      "src/Slide1.tsx",
+      "src/acquisition/roiCalculator.ts",
+      "src/acquisition/utmTracker.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "con-acquisition-conversion-isolation"
+    ],
+    "guardrails": []
+  },
+  "activation-stage": {
+    "path": "Growth Funnel.Activation Stage",
+    "name": "Activation Stage",
+    "kind": "stage",
+    "depth": 1,
+    "parent": "growth-funnel",
+    "files": [
+      "src/Slide3.tsx",
+      "src/Slide4.tsx",
+      "src/activation/funnelState.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "con-activation-headless-events"
+    ],
+    "guardrails": []
+  },
+  "behavioral-event-sink": {
+    "path": "Growth Funnel.Telemetry Stage.Behavioral Event Sink",
+    "name": "Behavioral Event Sink",
+    "kind": "module",
+    "depth": 2,
+    "parent": "telemetry-stage",
+    "files": [
+      "src/telemetry/eventSink.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "exc-local-dev-event-log",
+      "prob-ad-blocker-telemetry"
+    ],
+    "guardrails": []
+  },
+  "conversion-stage": {
+    "path": "Growth Funnel.Conversion Stage",
+    "name": "Conversion Stage",
+    "kind": "stage",
+    "depth": 1,
+    "parent": "growth-funnel",
+    "files": [
+      "src/Slide5.tsx",
+      "src/Slide6.tsx",
+      "src/conversion/pricingEngine.ts",
+      "src/conversion/stripeElements.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "con-acquisition-conversion-isolation"
+    ],
+    "guardrails": []
+  },
+  "currency-symbol-pill": {
+    "path": "Growth Funnel.Conversion Stage.Pricing Tiers.Enterprise Quote Modal.Currency Symbol Pill",
+    "name": "Currency Symbol Pill",
+    "kind": "widget",
+    "depth": 4,
+    "parent": "enterprise-quote-modal",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "enterprise-quote-modal": {
+    "path": "Growth Funnel.Conversion Stage.Pricing Tiers.Enterprise Quote Modal",
+    "name": "Enterprise Quote Modal",
+    "kind": "variation",
+    "depth": 3,
+    "parent": "pricing-tiers",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "growth-funnel": {
+    "path": "Growth Funnel",
+    "name": "Growth Funnel",
+    "kind": "funnel",
+    "depth": 0,
+    "files": [],
+    "symbols": [],
+    "memory": [
+      "term-funnel-stage"
+    ],
+    "guardrails": []
+  },
+  "hero-badge-animator": {
+    "path": "Growth Funnel.Acquisition Stage.Hero Experience.Hero Variant B.Hero Badge Animator",
+    "name": "Hero Badge Animator",
+    "kind": "widget",
+    "depth": 4,
+    "parent": "hero-variant-b",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "hero-experience": {
+    "path": "Growth Funnel.Acquisition Stage.Hero Experience",
+    "name": "Hero Experience",
+    "kind": "module",
+    "depth": 2,
+    "parent": "acquisition-stage",
+    "files": [
+      "src/Slide1.tsx"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "hero-variant-a": {
+    "path": "Growth Funnel.Acquisition Stage.Hero Experience.Hero Variant A",
+    "name": "Hero Variant A",
+    "kind": "variation",
+    "depth": 3,
+    "parent": "hero-experience",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "hero-variant-b": {
+    "path": "Growth Funnel.Acquisition Stage.Hero Experience.Hero Variant B",
+    "name": "Hero Variant B",
+    "kind": "variation",
+    "depth": 3,
+    "parent": "hero-experience",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "pricing-tiers": {
+    "path": "Growth Funnel.Conversion Stage.Pricing Tiers",
+    "name": "Pricing Tiers",
+    "kind": "module",
+    "depth": 2,
+    "parent": "conversion-stage",
+    "files": [
+      "src/Slide5.tsx",
+      "src/conversion/pricingEngine.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "con-pricing-formula-immutability"
+    ],
+    "guardrails": []
+  },
+  "roi-benchmark": {
+    "path": "Growth Funnel.Acquisition Stage.ROI Benchmark",
+    "name": "ROI Benchmark",
+    "kind": "module",
+    "depth": 2,
+    "parent": "acquisition-stage",
+    "files": [
+      "src/acquisition/roiCalculator.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "exc-direct-roi-quote"
+    ],
+    "guardrails": []
+  },
+  "seat-configurator": {
+    "path": "Growth Funnel.Activation Stage.Seat Configurator",
+    "name": "Seat Configurator",
+    "kind": "module",
+    "depth": 2,
+    "parent": "activation-stage",
+    "files": [
+      "src/Slide3.tsx",
+      "src/activation/funnelState.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "seat-slider-stepper": {
+    "path": "Growth Funnel.Activation Stage.Seat Configurator.Seat Slider Stepper",
+    "name": "Seat Slider Stepper",
+    "kind": "variation",
+    "depth": 3,
+    "parent": "seat-configurator",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "seat-tooltip-badge": {
+    "path": "Growth Funnel.Activation Stage.Seat Configurator.Seat Slider Stepper.Seat Tooltip Badge",
+    "name": "Seat Tooltip Badge",
+    "kind": "widget",
+    "depth": 4,
+    "parent": "seat-slider-stepper",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "seat-volume-matrix": {
+    "path": "Growth Funnel.Activation Stage.Seat Configurator.Seat Volume Matrix",
+    "name": "Seat Volume Matrix",
+    "kind": "variation",
+    "depth": 3,
+    "parent": "seat-configurator",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "security-qualification": {
+    "path": "Growth Funnel.Activation Stage.Security Qualification",
+    "name": "Security Qualification",
+    "kind": "module",
+    "depth": 2,
+    "parent": "activation-stage",
+    "files": [
+      "src/Slide4.tsx"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "slide-2-social-proof": {
+    "path": "Growth Funnel.Acquisition Stage.Slide 2 Social Proof",
+    "name": "Slide 2 Social Proof",
+    "kind": "module",
+    "depth": 2,
+    "parent": "acquisition-stage",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "slide-3-roi-calculator": {
+    "path": "Growth Funnel.Activation Stage.Slide 3 ROI Calculator",
+    "name": "Slide 3 ROI Calculator",
+    "kind": "module",
+    "depth": 2,
+    "parent": "activation-stage",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "stripe-checkout": {
+    "path": "Growth Funnel.Conversion Stage.Stripe Checkout",
+    "name": "Stripe Checkout",
+    "kind": "module",
+    "depth": 2,
+    "parent": "conversion-stage",
+    "files": [
+      "src/Slide6.tsx",
+      "src/conversion/stripeElements.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-stripe-elements-only",
+      "exc-preview-demo-mode",
+      "prob-stripe-iframe-load-latency"
+    ],
+    "guardrails": []
+  },
+  "telemetry-stage": {
+    "path": "Growth Funnel.Telemetry Stage",
+    "name": "Telemetry Stage",
+    "kind": "stage",
+    "depth": 1,
+    "parent": "growth-funnel",
+    "files": [
+      "src/telemetry/abCohort.ts",
+      "src/telemetry/eventSink.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "con-activation-headless-events"
+    ],
+    "guardrails": []
+  },
+  "tier-card-toggle": {
+    "path": "Growth Funnel.Conversion Stage.Pricing Tiers.Tier Card Toggle",
+    "name": "Tier Card Toggle",
+    "kind": "variation",
+    "depth": 3,
+    "parent": "pricing-tiers",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "traffic-attribution": {
+    "path": "Growth Funnel.Acquisition Stage.Traffic Attribution",
+    "name": "Traffic Attribution",
+    "kind": "module",
+    "depth": 2,
+    "parent": "acquisition-stage",
+    "files": [
+      "src/acquisition/utmTracker.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-session-storage-attribution",
+      "term-utm-parameters"
+    ],
+    "guardrails": []
+  }
+}

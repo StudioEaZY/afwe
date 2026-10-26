@@ -5,38 +5,72 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Official Light Mode Brand Tokens
+        paper: {
+          DEFAULT: '#F5F3ED',
+          50: '#FAF8F3',
+          100: '#F5F3ED',
+          200: '#EBE7DD',
+          300: '#E0DBD0',
+        },
+        graphite: {
+          DEFAULT: '#292D2B',
+          900: '#1A1D1B',
+          800: '#292D2B',
+          700: '#3D4340',
+          600: '#525A56',
+        },
+        survey: {
+          DEFAULT: '#758477',
+          light: '#8D9B8F',
+          dark: '#5C6B5E',
+          50: '#F3F6F4',
+          100: '#E2E8E4',
+          500: '#758477',
+          600: '#5F6F61',
+          700: '#4A574C',
+        },
+        stone: {
+          DEFAULT: '#C7C4BB',
+          light: '#DDD9D0',
+          dark: '#A8A49B',
+          300: '#DDD9D0',
+          400: '#C7C4BB',
+          500: '#B0ACA2',
+        },
+        // Existing Extended Parchment & Obsidian tokens
         parchment: {
-          50: '#faf7f0',   // primary canvas
-          100: '#f4efe4',  // paper surface
-          200: '#eae2d3',  // elevated container
-          300: '#ded4c2',  // interactive hover
-          400: '#c5b8a0',  // high-contrast border
-          500: '#948770',  // muted icon stroke
-          600: '#575043',  // WCAG AA body muted (5.8:1)
-          700: '#3c362c',  // WCAG AAA secondary text (9.5:1)
-          800: '#231f18',  // WCAG AAA deep body (14.2:1)
-          900: '#14120e',  // WCAG AAA ink black (17.5:1)
+          50: '#FAF8F3',
+          100: '#F5F3ED',
+          200: '#EBE7DD',
+          300: '#DDD9D0',
+          400: '#C7C4BB',
+          500: '#9E9A90',
+          600: '#5C5850',
+          700: '#3D3A34',
+          800: '#292D2B',
+          900: '#1A1D1B',
         },
         obsidian: {
-          950: '#0a0c0f',  // master dark canvas
-          900: '#12151c',  // dark surface card
-          850: '#181c26',  // dark elevated surface
-          800: '#222836',  // dark interactive button
-          700: '#343c4f',  // high-contrast dark border
-          600: '#4c566e',  // dark muted icons
-          400: '#a3adbe',  // WCAG AA dark secondary text (6.5:1)
-          300: '#ccd4e0',  // WCAG AAA dark primary body (11.0:1)
-          200: '#e4e8f0',  // WCAG AAA dark heading (15.0:1)
-          100: '#f5f7fa',  // WCAG AAA crisp white-slate (18.2:1)
+          950: '#0E1110',
+          900: '#141816',
+          850: '#1B211E',
+          800: '#242C28',
+          700: '#333D38',
+          600: '#47544E',
+          400: '#8E9E95',
+          300: '#BDCCC4',
+          200: '#DDE6E2',
+          100: '#F5F8F6',
         },
         afwe: {
-          commit: '#16a34a',
-          stage: '#d97706',
-          redo: '#dc2626',
-          inferred: '#ea580c',
-          pinned: '#4f46e5',
-          unmapped: '#64748b',
-          advisory: '#0891b2',
+          commit: '#15803D',
+          stage: '#B45309',
+          redo: '#B91C1C',
+          inferred: '#C2410C',
+          pinned: '#4338CA',
+          unmapped: '#64748B',
+          advisory: '#0E7490',
         }
       },
       fontFamily: {

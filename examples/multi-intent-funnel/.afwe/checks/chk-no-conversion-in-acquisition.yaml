@@ -1,0 +1,28 @@
+{
+  "id": "chk-no-conversion-in-acquisition",
+  "title": "acquisition does not import conversion-stage",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "acquisition-stage",
+      "conversion-stage"
+    ]
+  },
+  "claim": {
+    "type": "forbid_import",
+    "files": [
+      "src/acquisition/**",
+      "src/Slide1.tsx",
+      "src/Slide2.tsx"
+    ],
+    "to_nodes": [
+      "conversion-stage"
+    ]
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T10:00:00Z",
+  "created_from": "t0002",
+  "provenance": "confirmed"
+}

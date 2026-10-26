@@ -1,0 +1,21 @@
+{
+  "id": "chk-sig-assign-cohort",
+  "title": "assignFunnelCohort signature takes visitorId string",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "ab-cohort-router"
+    ]
+  },
+  "claim": {
+    "type": "symbol_signature",
+    "symbol": "src/telemetry/abCohort.ts::assignFunnelCohort",
+    "pattern": "\\(visitorId:\\s*string\\)"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-25T11:00:00Z",
+  "created_from": "t0006",
+  "provenance": "confirmed"
+}

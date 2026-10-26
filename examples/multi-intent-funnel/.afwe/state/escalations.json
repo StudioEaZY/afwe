@@ -1,0 +1,43 @@
+[
+  {
+    "id": "esc-disable-cohort-sticky",
+    "created_at": "2026-10-26T08:35:00Z",
+    "op": "retire_pin",
+    "description": "Agent attempted to retire intentional pin pin-ab-cohort-sticky to re-randomize visitor cohorts on refresh",
+    "params": {
+      "pin_id": "pin-ab-cohort-sticky",
+      "reason": "Testing traffic volume"
+    },
+    "origin": "llm:gpt-4o",
+    "turn": "t0010",
+    "status": "rejected",
+    "decided_by": "human:growth-lead",
+    "decided_at": "2026-10-26T08:45:00Z"
+  },
+  {
+    "id": "esc-loosen-acquisition-conversion",
+    "created_at": "2026-10-26T09:50:00Z",
+    "op": "modify_constraint",
+    "description": "Agent requested loosening constraint c-acquisition-no-conversion to import pricing engine into Slide 2",
+    "params": {
+      "constraint_id": "c-acquisition-no-conversion"
+    },
+    "origin": "llm:claude-sonnet-4-5",
+    "turn": "t0011",
+    "status": "rejected",
+    "decided_by": "human:founder",
+    "decided_at": "2026-10-26T10:00:00Z"
+  },
+  {
+    "id": "esc-approve-annual-discount",
+    "created_at": "2026-10-25T14:45:00Z",
+    "op": "add_pin",
+    "description": "Approve 20% annual discount pricing calculation pin",
+    "params": {
+      "pin_statement": "Annual plans discounted by 20% compared to monthly rate"
+    },
+    "origin": "llm:gpt-4o",
+    "turn": "t0008",
+    "status": "pending"
+  }
+]

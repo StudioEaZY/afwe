@@ -1,0 +1,28 @@
+{
+  "leases": [
+    {
+      "node_id": "stripe-checkout",
+      "mission_id": "m-conversion-opt",
+      "agent_id": "subagent-stripe-checkout",
+      "acquired_at": "2026-10-26T09:00:00Z",
+      "expires_at": 1793020801,
+      "purpose": "Implementing 3D Secure 2.0 challenge flow"
+    },
+    {
+      "node_id": "enterprise-quote-modal",
+      "mission_id": "m-conversion-opt",
+      "agent_id": "subagent-stripe-checkout",
+      "acquired_at": "2026-10-26T09:00:00Z",
+      "expires_at": 1793020801,
+      "purpose": "Adding currency pill formatter"
+    },
+    {
+      "node_id": "ab-cohort-router",
+      "mission_id": "m-ab-testing-framework",
+      "agent_id": "subagent-ab-router",
+      "acquired_at": "2026-10-26T08:00:00Z",
+      "expires_at": 1793017201,
+      "purpose": "Auditing hash distribution consistency"
+    }
+  ]
+}

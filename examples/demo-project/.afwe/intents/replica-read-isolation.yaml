@@ -1,0 +1,22 @@
+{
+  "id": "replica-read-isolation",
+  "title": "Isolate realtime dashboard heartbeats to read replicas",
+  "statement": "Health workers query read replicas with acceptable eventual consistency to protect primary DB throughput.",
+  "status": "active",
+  "origin": "human:architect",
+  "attaches": {
+    "nodes": [
+      "realtime-status-worker"
+    ]
+  },
+  "history": [
+    {
+      "turn": "t0006",
+      "ts": "2026-10-24T19:30:00Z",
+      "statement": "Lock replica read policy"
+    }
+  ],
+  "pins": [
+    "pin-d95a5b"
+  ]
+}

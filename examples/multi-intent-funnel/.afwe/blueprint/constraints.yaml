@@ -1,0 +1,29 @@
+constraints:
+- id: c-acquisition-no-conversion
+  rule: must_not_depend
+  from: acquisition-stage
+  to:
+  - conversion-stage
+  rationale: Acquisition slides must not directly import checkout or payment processing engines.
+  severity: error
+- id: c-activation-no-raw-sink
+  rule: must_not_depend
+  from: activation-stage
+  to:
+  - telemetry-stage
+  rationale: Activation slides must dispatch events through event bus, never instantiate RawEventSink directly.
+  severity: error
+- id: c-checkout-no-acquisition-internals
+  rule: must_not_depend
+  from: stripe-checkout
+  to:
+  - traffic-attribution
+  rationale: Stripe checkout elements must remain isolated from raw UTM query parsing logic.
+  severity: error
+- id: c-telemetry-pure-headless
+  rule: must_not_depend
+  from: telemetry-stage
+  to:
+  - conversion-stage
+  rationale: Telemetry sink must remain headless and never depend on checkout or UI presentation state.
+  severity: error

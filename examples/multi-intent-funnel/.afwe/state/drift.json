@@ -1,0 +1,253 @@
+{
+  "generated": "2026-10-26T11:20:22Z",
+  "findings": [
+    {
+      "id": "empty:5b98b309bb",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Growth Funnel.Acquisition Stage.Hero Experience.Hero Variant A is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "hero-variant-a"
+      ]
+    },
+    {
+      "id": "empty:6ca7201dfe",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Growth Funnel.Acquisition Stage.Hero Experience.Hero Variant B.Hero Badge Animator is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "hero-badge-animator"
+      ]
+    },
+    {
+      "id": "empty:3fb478b1d5",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Growth Funnel.Acquisition Stage.Slide 2 Social Proof is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "slide-2-social-proof"
+      ]
+    },
+    {
+      "id": "empty:508a7c5a35",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Growth Funnel.Activation Stage.Seat Configurator.Seat Volume Matrix is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "seat-volume-matrix"
+      ]
+    },
+    {
+      "id": "empty:bebaecdad6",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Growth Funnel.Activation Stage.Seat Configurator.Seat Slider Stepper.Seat Tooltip Badge is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "seat-tooltip-badge"
+      ]
+    },
+    {
+      "id": "empty:c289454370",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Growth Funnel.Activation Stage.Slide 3 ROI Calculator is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "slide-3-roi-calculator"
+      ]
+    },
+    {
+      "id": "empty:2f4862d151",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Growth Funnel.Conversion Stage.Pricing Tiers.Tier Card Toggle is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "tier-card-toggle"
+      ]
+    },
+    {
+      "id": "empty:c15c43eab3",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Growth Funnel.Conversion Stage.Pricing Tiers.Enterprise Quote Modal.Currency Symbol Pill is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "currency-symbol-pill"
+      ]
+    },
+    {
+      "id": "empty:ed38d480b7",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Growth Funnel.Telemetry Stage.A/B Cohort Sticky Cookie is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "ab-cohort-sticky-cookie"
+      ]
+    }
+  ],
+  "applied": [],
+  "proposed": [
+    {
+      "id": "unmapped:a34ef01a13",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/Slide2.tsx` has no blueprint home; maybe a new node `src`",
+      "evidence": [
+        "siblings are split across 5 nodes",
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "hero-experience",
+        "name": "src",
+        "files": [
+          "src/**"
+        ]
+      },
+      "files": [
+        "src/Slide2.tsx"
+      ]
+    },
+    {
+      "id": "unmapped:221096f563",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/affiliate-webhook/partnerPostback.ts` has no blueprint home; maybe a new node `affiliate-webhook`",
+      "evidence": [
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "hero-experience",
+        "name": "affiliate-webhook",
+        "files": [
+          "src/affiliate-webhook/**"
+        ]
+      },
+      "files": [
+        "src/affiliate-webhook/partnerPostback.ts"
+      ]
+    },
+    {
+      "id": "unmapped:a82ab0b8cb",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/index.tsx` has no blueprint home; maybe a new node `src`",
+      "evidence": [
+        "siblings are split across 5 nodes",
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "hero-experience",
+        "name": "src",
+        "files": [
+          "src/**"
+        ]
+      },
+      "files": [
+        "src/index.tsx"
+      ]
+    },
+    {
+      "id": "unmapped:486170b645",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/legacy-pixel/fbPixel.ts` has no blueprint home; maybe a new node `legacy-pixel`",
+      "evidence": [
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "hero-experience",
+        "name": "legacy-pixel",
+        "files": [
+          "src/legacy-pixel/**"
+        ]
+      },
+      "files": [
+        "src/legacy-pixel/fbPixel.ts"
+      ]
+    },
+    {
+      "id": "unmapped:429cdace79",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/seo-scraper/metaHydrator.ts` has no blueprint home; maybe a new node `seo-scraper`",
+      "evidence": [
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "hero-experience",
+        "name": "seo-scraper",
+        "files": [
+          "src/seo-scraper/**"
+        ]
+      },
+      "files": [
+        "src/seo-scraper/metaHydrator.ts"
+      ]
+    },
+    {
+      "id": "unmapped:12704dab69",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/unmapped-experiments/exitIntentModal.tsx` has no blueprint home; maybe a new node `unmapped-experiments`",
+      "evidence": [
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "hero-experience",
+        "name": "unmapped-experiments",
+        "files": [
+          "src/unmapped-experiments/**"
+        ]
+      },
+      "files": [
+        "src/unmapped-experiments/exitIntentModal.tsx"
+      ]
+    },
+    {
+      "id": "unsupported:5dbb7713be",
+      "kind": "unsupported_relation",
+      "severity": "info",
+      "confidence": 0.3,
+      "summary": "blueprint declares Growth Funnel.Acquisition Stage.Hero Experience → Growth Funnel.Acquisition Stage.ROI Benchmark but no import edge supports it (planned, or stale?)",
+      "evidence": [],
+      "change": {
+        "op": "remove_relation",
+        "from": "hero-experience",
+        "to": "roi-benchmark"
+      },
+      "nodes": [
+        "hero-experience",
+        "roi-benchmark"
+      ]
+    }
+  ],
+  "uncertain": []
+}

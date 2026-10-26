@@ -1,0 +1,184 @@
+{
+  "con-acquisition-conversion-isolation": {
+    "kind": "constraint",
+    "title": "Decouple acquisition slides from checkout",
+    "path": "memory/constraints/con-acquisition-conversion-isolation.md",
+    "nodes": [
+      "acquisition-stage",
+      "conversion-stage"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "con-activation-headless-events": {
+    "kind": "constraint",
+    "title": "Activation slide telemetry abstraction",
+    "path": "memory/constraints/con-activation-headless-events.md",
+    "nodes": [
+      "activation-stage",
+      "telemetry-stage"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "con-pricing-formula-immutability": {
+    "kind": "constraint",
+    "title": "Dynamic pricing formula transparency",
+    "path": "memory/constraints/con-pricing-formula-immutability.md",
+    "nodes": [
+      "pricing-tiers"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-deterministic-cohorts": {
+    "kind": "decision",
+    "title": "Deterministic A/B cohort assignment",
+    "path": "memory/decisions/dec-deterministic-cohorts.md",
+    "nodes": [
+      "ab-cohort-router"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-session-storage-attribution": {
+    "kind": "decision",
+    "title": "Session-scoped UTM attribution",
+    "path": "memory/decisions/dec-session-storage-attribution.md",
+    "nodes": [
+      "traffic-attribution"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-stripe-elements-only": {
+    "kind": "decision",
+    "title": "Zero raw credit card field handling",
+    "path": "memory/decisions/dec-stripe-elements-only.md",
+    "nodes": [
+      "stripe-checkout"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "exc-direct-roi-quote": {
+    "kind": "exception",
+    "title": "Exception: Direct pricing estimate read permitted in ROI benchmark slide",
+    "path": "memory/exceptions/exc-direct-roi-quote.md",
+    "nodes": [
+      "roi-benchmark"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "exc-local-dev-event-log": {
+    "kind": "exception",
+    "title": "Exception: Console event logging permitted in development mode",
+    "path": "memory/exceptions/exc-local-dev-event-log.md",
+    "nodes": [
+      "behavioral-event-sink"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "exc-preview-demo-mode": {
+    "kind": "exception",
+    "title": "Exception: Instant mock card fill in demo preview harness",
+    "path": "memory/exceptions/exc-preview-demo-mode.md",
+    "nodes": [
+      "stripe-checkout"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "prob-ad-blocker-telemetry": {
+    "kind": "problem",
+    "title": "Brave and uBlock Origin blocking beacon telemetry",
+    "path": "memory/problems/prob-ad-blocker-telemetry.md",
+    "nodes": [
+      "behavioral-event-sink"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "prob-split-test-sample-ratio-mismatch": {
+    "kind": "problem",
+    "title": "Sample ratio mismatch on mobile WebKit",
+    "path": "memory/problems/prob-split-test-sample-ratio-mismatch.md",
+    "nodes": [
+      "ab-cohort-router"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "prob-stripe-iframe-load-latency": {
+    "kind": "problem",
+    "title": "Stripe Elements iframe mounting delay on 3G connections",
+    "path": "memory/problems/prob-stripe-iframe-load-latency.md",
+    "nodes": [
+      "stripe-checkout"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "term-ab-cohort": {
+    "kind": "terminolog",
+    "title": "A/B Cohort Allocation",
+    "path": "memory/terminology/term-ab-cohort.md",
+    "nodes": [
+      "ab-cohort-router"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "term-funnel-stage": {
+    "kind": "terminolog",
+    "title": "Stage vs Slide",
+    "path": "memory/terminology/term-funnel-stage.md",
+    "nodes": [
+      "growth-funnel"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "term-utm-parameters": {
+    "kind": "terminolog",
+    "title": "UTM Campaign Query Parameters",
+    "path": "memory/terminology/term-utm-parameters.md",
+    "nodes": [
+      "traffic-attribution"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  }
+}

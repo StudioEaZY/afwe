@@ -1,0 +1,10 @@
+{
+  "id": "event-naming-convention",
+  "mode": "passive",
+  "statement": "Event bus topics should follow domain:action dot notation.",
+  "scope": {
+    "files": [
+      "src/events/**"
+    ]
+  }
+}

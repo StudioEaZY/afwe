@@ -1,0 +1,22 @@
+{
+  "id": "pci-compliant-checkout",
+  "title": "Isolated PCI-DSS compliant checkout tokenization",
+  "statement": "Stripe Elements mounted inside isolated container. Zero credit card numbers touch application heap.",
+  "status": "active",
+  "origin": "human:secops",
+  "attaches": {
+    "nodes": [
+      "stripe-checkout"
+    ]
+  },
+  "history": [
+    {
+      "turn": "t0003",
+      "ts": "2026-10-23T16:30:00Z",
+      "statement": "Mount Stripe Elements container"
+    }
+  ],
+  "pins": [
+    "pin-stripe-pci-isolation"
+  ]
+}

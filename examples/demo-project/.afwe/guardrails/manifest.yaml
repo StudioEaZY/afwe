@@ -1,0 +1,6 @@
+version: 1
+generated_at: "2026-10-26T10:00:00Z"
+entries:
+  .afwe/guardrails/generated_checks_test.sh: "b3_5f91a0c441b2"
+  .afwe/guardrails/pre-commit: "b3_7e20b1c93a04"
+  .github/workflows/afwe-gate.yml: "b3_8d44e12c40ff"

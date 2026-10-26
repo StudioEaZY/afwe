@@ -1,0 +1,34 @@
+{
+  "id": "m-billing-v2",
+  "title": "Billing V2 Upgrade & Proration Hardening",
+  "prompt": "Refactor proration and invoice store with multi-currency support",
+  "orchestrator": "human:finops",
+  "status": "Active",
+  "created": "2026-10-25T10:00:00Z",
+  "updated": "2026-10-26T09:00:00Z",
+  "invariants": {
+    "locked_pins": [
+      "pin-stripe-idempotency"
+    ],
+    "must_not_depend": [
+      "workspace->billing"
+    ]
+  },
+  "budget": {
+    "max_escalations": 2,
+    "max_partial_losses": 0
+  },
+  "agents": [
+    {
+      "agent_id": "subagent-proration",
+      "role": "Proration Specialist",
+      "branch": "mission/m-billing-v2/proration",
+      "worktree_path": ".afwe/worktrees/m-billing-v2-proration",
+      "assigned_nodes": [
+        "proration-calculator",
+        "idempotency-key-hasher"
+      ],
+      "status": "active"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "deterministic-cohort-allocation",
+  "title": "Deterministic 30-day split-test cohort stickiness",
+  "statement": "Visitor ID hash assigns user to Variant A or B with 30-day stickiness to protect test validity.",
+  "status": "active",
+  "origin": "human:growth-lead",
+  "attaches": {
+    "nodes": [
+      "ab-cohort-router"
+    ]
+  },
+  "history": [
+    {
+      "turn": "t0006",
+      "ts": "2026-10-24T19:30:00Z",
+      "statement": "Lock cohort stickiness pin"
+    }
+  ],
+  "pins": [
+    "pin-ab-cohort-sticky"
+  ]
+}

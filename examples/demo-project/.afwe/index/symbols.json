@@ -69,6 +69,30 @@
     "start_line": 7,
     "end_line": 7
   },
+  "src/auth/jwtSigner.ts::TokenPayload": {
+    "id": "src/auth/jwtSigner.ts::TokenPayload",
+    "file": "src/auth/jwtSigner.ts",
+    "name": "TokenPayload",
+    "qualified": "TokenPayload",
+    "kind": "interface",
+    "structural": "interface:TokenPayload",
+    "fingerprint": "ac56bde0c494a72d",
+    "start_line": 2,
+    "end_line": 6,
+    "exported": true
+  },
+  "src/auth/jwtSigner.ts::signJwtToken": {
+    "id": "src/auth/jwtSigner.ts::signJwtToken",
+    "file": "src/auth/jwtSigner.ts",
+    "name": "signJwtToken",
+    "qualified": "signJwtToken",
+    "kind": "function",
+    "structural": "function:signJwtToken",
+    "fingerprint": "b3b6182d60a09849",
+    "start_line": 8,
+    "end_line": 15,
+    "exported": true
+  },
   "src/auth/oauth.ts::OAuthProfile": {
     "id": "src/auth/oauth.ts::OAuthProfile",
     "file": "src/auth/oauth.ts",
@@ -201,6 +225,66 @@
     "end_line": 9,
     "exported": true
   },
+  "src/billing/checkout/CheckoutController.ts::CheckoutController": {
+    "id": "src/billing/checkout/CheckoutController.ts::CheckoutController",
+    "file": "src/billing/checkout/CheckoutController.ts",
+    "name": "CheckoutController",
+    "qualified": "CheckoutController",
+    "kind": "class",
+    "structural": "class:CheckoutController",
+    "fingerprint": "1f1f4f1be5d7aa4a",
+    "start_line": 6,
+    "end_line": 18,
+    "exported": true
+  },
+  "src/billing/checkout/CheckoutController.ts::CheckoutController.checkout": {
+    "id": "src/billing/checkout/CheckoutController.ts::CheckoutController.checkout",
+    "file": "src/billing/checkout/CheckoutController.ts",
+    "name": "checkout",
+    "qualified": "CheckoutController.checkout",
+    "kind": "method",
+    "structural": "class:CheckoutController/method:checkout",
+    "fingerprint": "5bdb84f48bc662c6",
+    "start_line": 13,
+    "end_line": 17,
+    "exported": true
+  },
+  "src/billing/checkout/CheckoutController.ts::CheckoutController.constructor": {
+    "id": "src/billing/checkout/CheckoutController.ts::CheckoutController.constructor",
+    "file": "src/billing/checkout/CheckoutController.ts",
+    "name": "constructor",
+    "qualified": "CheckoutController.constructor",
+    "kind": "method",
+    "structural": "class:CheckoutController/method:constructor",
+    "fingerprint": "b142b86cce74f9cd",
+    "start_line": 7,
+    "end_line": 11,
+    "exported": true
+  },
+  "src/billing/proration.ts::calculateProration": {
+    "id": "src/billing/proration.ts::calculateProration",
+    "file": "src/billing/proration.ts",
+    "name": "calculateProration",
+    "qualified": "calculateProration",
+    "kind": "function",
+    "structural": "function:calculateProration",
+    "fingerprint": "14ba385113010c46",
+    "start_line": 2,
+    "end_line": 5,
+    "exported": true
+  },
+  "src/billing/proration.ts::hashIdempotencyKey": {
+    "id": "src/billing/proration.ts::hashIdempotencyKey",
+    "file": "src/billing/proration.ts",
+    "name": "hashIdempotencyKey",
+    "qualified": "hashIdempotencyKey",
+    "kind": "function",
+    "structural": "function:hashIdempotencyKey",
+    "fingerprint": "7300456c8b42034e",
+    "start_line": 7,
+    "end_line": 9,
+    "exported": true
+  },
   "src/canvas/CanvasRenderer.tsx::CanvasRenderer": {
     "id": "src/canvas/CanvasRenderer.tsx::CanvasRenderer",
     "file": "src/canvas/CanvasRenderer.tsx",
@@ -247,6 +331,18 @@
     "fingerprint": "c4b61dc403c1220d",
     "start_line": 1,
     "end_line": 1,
+    "exported": true
+  },
+  "src/cli-tools/seedRunner.ts::seedWorkspaceDefaults": {
+    "id": "src/cli-tools/seedRunner.ts::seedWorkspaceDefaults",
+    "file": "src/cli-tools/seedRunner.ts",
+    "name": "seedWorkspaceDefaults",
+    "qualified": "seedWorkspaceDefaults",
+    "kind": "function",
+    "structural": "function:seedWorkspaceDefaults",
+    "fingerprint": "970d125aa95fa01a",
+    "start_line": 2,
+    "end_line": 4,
     "exported": true
   },
   "src/dashboard/Dashboard.tsx::Dashboard": {
@@ -356,6 +452,18 @@
     "end_line": 3,
     "exported": true
   },
+  "src/experiments/aiSuggest.ts::suggestWorkspaceTags": {
+    "id": "src/experiments/aiSuggest.ts::suggestWorkspaceTags",
+    "file": "src/experiments/aiSuggest.ts",
+    "name": "suggestWorkspaceTags",
+    "qualified": "suggestWorkspaceTags",
+    "kind": "function",
+    "structural": "function:suggestWorkspaceTags",
+    "fingerprint": "1260c110ee069ce7",
+    "start_line": 2,
+    "end_line": 5,
+    "exported": true
+  },
   "src/identity/user.ts::User": {
     "id": "src/identity/user.ts::User",
     "file": "src/identity/user.ts",
@@ -392,16 +500,40 @@
     "end_line": 7,
     "exported": true
   },
-  "src/notifications/mailer.ts::sendMail": {
-    "id": "src/notifications/mailer.ts::sendMail",
-    "file": "src/notifications/mailer.ts",
-    "name": "sendMail",
-    "qualified": "sendMail",
+  "src/legacy-sync/xmlImporter.ts::parseLegacyXmlBatch": {
+    "id": "src/legacy-sync/xmlImporter.ts::parseLegacyXmlBatch",
+    "file": "src/legacy-sync/xmlImporter.ts",
+    "name": "parseLegacyXmlBatch",
+    "qualified": "parseLegacyXmlBatch",
     "kind": "function",
-    "structural": "function:sendMail",
-    "fingerprint": "10aae74c4dade147",
-    "start_line": 3,
+    "structural": "function:parseLegacyXmlBatch",
+    "fingerprint": "877308fd9f0d2af9",
+    "start_line": 2,
     "end_line": 5,
+    "exported": true
+  },
+  "src/notifications/mailer.ts::EmailPayload": {
+    "id": "src/notifications/mailer.ts::EmailPayload",
+    "file": "src/notifications/mailer.ts",
+    "name": "EmailPayload",
+    "qualified": "EmailPayload",
+    "kind": "interface",
+    "structural": "interface:EmailPayload",
+    "fingerprint": "6b777ccfe1361bbe",
+    "start_line": 2,
+    "end_line": 6,
+    "exported": true
+  },
+  "src/notifications/mailer.ts::sendTransactionalEmail": {
+    "id": "src/notifications/mailer.ts::sendTransactionalEmail",
+    "file": "src/notifications/mailer.ts",
+    "name": "sendTransactionalEmail",
+    "qualified": "sendTransactionalEmail",
+    "kind": "function",
+    "structural": "function:sendTransactionalEmail",
+    "fingerprint": "99791dc687f91598",
+    "start_line": 8,
+    "end_line": 11,
     "exported": true
   },
   "src/payments/checkout.ts::Cart": {
@@ -464,18 +596,6 @@
     "end_line": 5,
     "exported": true
   },
-  "src/workspace/library/Library.ts::Item": {
-    "id": "src/workspace/library/Library.ts::Item",
-    "file": "src/workspace/library/Library.ts",
-    "name": "Item",
-    "qualified": "Item",
-    "kind": "interface",
-    "structural": "interface:Item",
-    "fingerprint": "9005f64e2e1ab703",
-    "start_line": 3,
-    "end_line": 3,
-    "exported": true
-  },
   "src/workspace/library/Library.ts::Library": {
     "id": "src/workspace/library/Library.ts::Library",
     "file": "src/workspace/library/Library.ts",
@@ -483,9 +603,9 @@
     "qualified": "Library",
     "kind": "class",
     "structural": "class:Library",
-    "fingerprint": "3ef2aece5bfae8d9",
-    "start_line": 5,
-    "end_line": 10,
+    "fingerprint": "58027f3098373401",
+    "start_line": 6,
+    "end_line": 30,
     "exported": true
   },
   "src/workspace/library/Library.ts::Library.add": {
@@ -495,9 +615,9 @@
     "qualified": "Library.add",
     "kind": "method",
     "structural": "class:Library/method:add",
-    "fingerprint": "3cbee106c893520c",
-    "start_line": 7,
-    "end_line": 7,
+    "fingerprint": "05cadfb7f41b83c2",
+    "start_line": 11,
+    "end_line": 13,
     "exported": true
   },
   "src/workspace/library/Library.ts::Library.all": {
@@ -507,21 +627,45 @@
     "qualified": "Library.all",
     "kind": "method",
     "structural": "class:Library/method:all",
-    "fingerprint": "88f0a8aa449ca6ec",
+    "fingerprint": "5a94f9e168affcd9",
+    "start_line": 19,
+    "end_line": 21,
+    "exported": true
+  },
+  "src/workspace/library/Library.ts::Library.constructor": {
+    "id": "src/workspace/library/Library.ts::Library.constructor",
+    "file": "src/workspace/library/Library.ts",
+    "name": "constructor",
+    "qualified": "Library.constructor",
+    "kind": "method",
+    "structural": "class:Library/method:constructor",
+    "fingerprint": "7376d84499aead9a",
     "start_line": 9,
     "end_line": 9,
     "exported": true
   },
-  "src/workspace/library/Library.ts::Library.recent": {
-    "id": "src/workspace/library/Library.ts::Library.recent",
+  "src/workspace/library/Library.ts::Library.get": {
+    "id": "src/workspace/library/Library.ts::Library.get",
     "file": "src/workspace/library/Library.ts",
-    "name": "recent",
-    "qualified": "Library.recent",
+    "name": "get",
+    "qualified": "Library.get",
     "kind": "method",
-    "structural": "class:Library/method:recent",
-    "fingerprint": "62886530344bbc8c",
-    "start_line": 8,
-    "end_line": 8,
+    "structural": "class:Library/method:get",
+    "fingerprint": "50aa377909575fea",
+    "start_line": 15,
+    "end_line": 17,
+    "exported": true
+  },
+  "src/workspace/library/Library.ts::Library.tagItem": {
+    "id": "src/workspace/library/Library.ts::Library.tagItem",
+    "file": "src/workspace/library/Library.ts",
+    "name": "tagItem",
+    "qualified": "Library.tagItem",
+    "kind": "method",
+    "structural": "class:Library/method:tagItem",
+    "fingerprint": "d4ab53f3b136ed82",
+    "start_line": 23,
+    "end_line": 29,
     "exported": true
   },
   "src/workspace/preview/Preview.ts::preview": {
@@ -547,16 +691,76 @@
     "start_line": 4,
     "end_line": 4
   },
-  "src/workspace/search/Search.ts::search": {
-    "id": "src/workspace/search/Search.ts::search",
+  "src/workspace/search/Search.ts::SearchIndex": {
+    "id": "src/workspace/search/Search.ts::SearchIndex",
+    "file": "src/workspace/search/Search.ts",
+    "name": "SearchIndex",
+    "qualified": "SearchIndex",
+    "kind": "class",
+    "structural": "class:SearchIndex",
+    "fingerprint": "65cd9d444e1d368e",
+    "start_line": 5,
+    "end_line": 21,
+    "exported": true
+  },
+  "src/workspace/search/Search.ts::SearchIndex.directDbLookup": {
+    "id": "src/workspace/search/Search.ts::SearchIndex.directDbLookup",
+    "file": "src/workspace/search/Search.ts",
+    "name": "directDbLookup",
+    "qualified": "SearchIndex.directDbLookup",
+    "kind": "method",
+    "structural": "class:SearchIndex/method:directDbLookup",
+    "fingerprint": "99483218651f79ff",
+    "start_line": 18,
+    "end_line": 20,
+    "exported": true
+  },
+  "src/workspace/search/Search.ts::SearchIndex.search": {
+    "id": "src/workspace/search/Search.ts::SearchIndex.search",
     "file": "src/workspace/search/Search.ts",
     "name": "search",
-    "qualified": "search",
+    "qualified": "SearchIndex.search",
+    "kind": "method",
+    "structural": "class:SearchIndex/method:search",
+    "fingerprint": "1534c06492cc8303",
+    "start_line": 8,
+    "end_line": 16,
+    "exported": true
+  },
+  "src/workspace/tagging/ColorWheel.ts::TAG_PALETTE": {
+    "id": "src/workspace/tagging/ColorWheel.ts::TAG_PALETTE",
+    "file": "src/workspace/tagging/ColorWheel.ts",
+    "name": "TAG_PALETTE",
+    "qualified": "TAG_PALETTE",
+    "kind": "const",
+    "structural": "const:TAG_PALETTE",
+    "fingerprint": "d778c4c77ca70962",
+    "start_line": 2,
+    "end_line": 2,
+    "exported": true
+  },
+  "src/workspace/tagging/ColorWheel.ts::getTagColor": {
+    "id": "src/workspace/tagging/ColorWheel.ts::getTagColor",
+    "file": "src/workspace/tagging/ColorWheel.ts",
+    "name": "getTagColor",
+    "qualified": "getTagColor",
     "kind": "function",
-    "structural": "function:search",
-    "fingerprint": "8aca39357d8526b6",
-    "start_line": 3,
-    "end_line": 6,
+    "structural": "function:getTagColor",
+    "fingerprint": "61d0bf4fceb8ed44",
+    "start_line": 4,
+    "end_line": 9,
+    "exported": true
+  },
+  "src/workspace/tagging/ColorWheel.ts::renderTagPill": {
+    "id": "src/workspace/tagging/ColorWheel.ts::renderTagPill",
+    "file": "src/workspace/tagging/ColorWheel.ts",
+    "name": "renderTagPill",
+    "qualified": "renderTagPill",
+    "kind": "function",
+    "structural": "function:renderTagPill",
+    "fingerprint": "0d1d6aa3f0f7066a",
+    "start_line": 11,
+    "end_line": 13,
     "exported": true
   },
   "src/workspace/tagging/Tags.ts::Tag": {

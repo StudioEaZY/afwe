@@ -1,0 +1,22 @@
+{
+  "id": "ai-smart-categorization",
+  "title": "AI-assisted tag suggestions for workspace library documents",
+  "statement": "Suggest tags based on document text keywords with opt-in human confirmation.",
+  "status": "draft",
+  "origin": "human:pm",
+  "attaches": {
+    "nodes": [
+      "workspace-tagging"
+    ]
+  },
+  "history": [
+    {
+      "turn": "t0007",
+      "ts": "2026-10-25T11:00:00Z",
+      "statement": "Draft proposed AI tag suggestion engine"
+    }
+  ],
+  "pins": [
+    "pin-ai-tag-auto-apply"
+  ]
+}

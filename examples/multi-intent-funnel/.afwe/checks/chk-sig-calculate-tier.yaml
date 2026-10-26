@@ -1,0 +1,21 @@
+{
+  "id": "chk-sig-calculate-tier",
+  "title": "calculateTierPrice takes string and number returning number",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "pricing-tiers"
+    ]
+  },
+  "claim": {
+    "type": "symbol_signature",
+    "symbol": "src/conversion/pricingEngine.ts::calculateTierPrice",
+    "pattern": "\\(tier:\\s*string,\\s*seats:\\s*number\\):\\s*number"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-24T16:00:00Z",
+  "created_from": "t0005",
+  "provenance": "confirmed"
+}

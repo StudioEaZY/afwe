@@ -1,0 +1,89 @@
+{
+  "id": "t0004",
+  "ts": "2026-10-24T10:15:00Z",
+  "origin": "human",
+  "agent": "gpt-4o",
+  "prompt": "Integrate A/B cohort router and ROI benchmark calculator",
+  "prompt_hash": "f1a2b3c4d5e60004",
+  "task": "funnel-ab-roi",
+  "targets": [
+    "ab-cohort-router",
+    "roi-benchmark"
+  ],
+  "status": "committed",
+  "overrides": [
+    {
+      "pin": "pin-hardcoded-starter-price",
+      "reason": "Dynamic formula replaces hardcoded $29 starter plan price"
+    }
+  ],
+  "touched": {
+    "nodes": [
+      "ab-cohort-router",
+      "roi-benchmark"
+    ],
+    "files": [
+      "src/telemetry/abCohort.ts",
+      "src/acquisition/roiCalculator.ts"
+    ]
+  },
+  "implements": {
+    "growth-funnel": [
+      "src/Slide1.tsx"
+    ],
+    "roi-benchmark": [
+      "src/acquisition/roiCalculator.ts"
+    ],
+    "traffic-attribution": [
+      "src/acquisition/utmTracker.ts"
+    ],
+    "seat-configurator": [
+      "src/activation/funnelState.ts"
+    ],
+    "pricing-tiers": [
+      "src/conversion/pricingEngine.ts"
+    ],
+    "stripe-checkout": [
+      "src/conversion/stripeElements.ts"
+    ],
+    "ab-cohort-router": [
+      "src/telemetry/abCohort.ts"
+    ],
+    "ab-cohort-sticky-cookie": [
+      "src/telemetry/cookieStorage.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-export-assign-cohort",
+      "title": "assignFunnelCohort export exists",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    },
+    {
+      "id": "chk-forbid-alert-prompt",
+      "title": "forbid alert in funnel slides",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.94,
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "OVERRIDDEN pin pin-hardcoded-starter-price: Dynamic pricing",
+      "A/B router verified"
+    ]
+  },
+  "summary": "Integrate A/B cohort router and ROI benchmark calculator",
+  "session_id": "sess-funnel-04",
+  "checkgen": [
+    "chk-export-assign-cohort",
+    "chk-forbid-alert-prompt"
+  ]
+}

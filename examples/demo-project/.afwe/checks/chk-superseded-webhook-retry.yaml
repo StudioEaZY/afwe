@@ -1,0 +1,23 @@
+{
+  "id": "chk-superseded-webhook-retry",
+  "title": "legacy webhook retry dispatches immediately without backoff",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "legacy-webhook-retry"
+    ]
+  },
+  "claim": {
+    "type": "require_file",
+    "files": [
+      "src/realtime/legacyWebhook.ts"
+    ]
+  },
+  "status": "superseded",
+  "superseded_by": "t0003",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T08:30:00Z",
+  "created_from": "t0001",
+  "provenance": "confirmed"
+}

@@ -1,0 +1,78 @@
+---
+// AfweWordmark.astro - Official AFWE Geometric Wordmark
+// Glyphs: Caret Chevron (A) · Dual Bar F (F) · Triple Line Column (W) · Triple Bar (E)
+interface Props {
+  withSubtitle?: boolean;
+  class?: string;
+}
+
+const { withSubtitle = false, class: className = "h-6 w-auto" } = Astro.props;
+---
+
+{withSubtitle ? (
+  <svg 
+    viewBox="0 0 132 38" 
+    class={`${className} text-graphite dark:text-obsidian-100 fill-current select-none`} 
+    role="img" 
+    aria-label="AFWE — The Intent Layer For Your Codebase"
+  >
+    <!-- Glyphs (Stroke: currentColor) -->
+    <g stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <!-- 'A' Glyph (Clean architectural apex chevron) -->
+      <path d="M 4 23 L 15 3.5 L 26 23" />
+      
+      <!-- 'F' Glyph (Top bar, spine, middle bar) -->
+      <line x1="40" y1="3.5" x2="62" y2="3.5" />
+      <path d="M 40 3.5 V 23" />
+      <line x1="40" y1="13.2" x2="58" y2="13.2" />
+      
+      <!-- 'W' Glyph (Three vertical rhythm pillars, center shorter) -->
+      <line x1="75" y1="2" x2="75" y2="23" />
+      <line x1="83" y1="7.5" x2="83" y2="23" />
+      <line x1="91" y1="2" x2="91" y2="23" />
+      
+      <!-- 'E' Glyph (Three horizontal parallel bars) -->
+      <line x1="104" y1="3.5" x2="126" y2="3.5" />
+      <line x1="104" y1="13.2" x2="126" y2="13.2" />
+      <line x1="104" y1="23" x2="126" y2="23" />
+    </g>
+
+    <!-- Subtitle: THE INTENT LAYER FOR YOUR CODEBASE -->
+    <text 
+      x="65" 
+      y="34.5" 
+      text-anchor="middle" 
+      font-size="3.2" 
+      font-weight="600" 
+      letter-spacing="0.22em" 
+      font-family="'IBM Plex Sans', sans-serif" 
+      class="fill-current opacity-85"
+    >
+      THE INTENT LAYER FOR YOUR CODEBASE
+    </text>
+  </svg>
+) : (
+  <svg 
+    viewBox="0 0 132 26" 
+    class={`${className} text-graphite dark:text-obsidian-100 fill-current select-none`} 
+    role="img" 
+    aria-label="AFWE"
+  >
+    <g stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <!-- 'A' -->
+      <path d="M 4 23 L 15 3.5 L 26 23" />
+      <!-- 'F' -->
+      <line x1="40" y1="3.5" x2="62" y2="3.5" />
+      <path d="M 40 3.5 V 23" />
+      <line x1="40" y1="13.2" x2="58" y2="13.2" />
+      <!-- 'W' -->
+      <line x1="75" y1="2" x2="75" y2="23" />
+      <line x1="83" y1="7.5" x2="83" y2="23" />
+      <line x1="91" y1="2" x2="91" y2="23" />
+      <!-- 'E' -->
+      <line x1="104" y1="3.5" x2="126" y2="3.5" />
+      <line x1="104" y1="13.2" x2="126" y2="13.2" />
+      <line x1="104" y1="23" x2="126" y2="23" />
+    </g>
+  </svg>
+)}

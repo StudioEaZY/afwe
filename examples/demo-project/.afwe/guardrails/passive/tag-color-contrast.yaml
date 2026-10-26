@@ -1,0 +1,10 @@
+{
+  "id": "tag-color-contrast",
+  "mode": "passive",
+  "statement": "Color palette hex codes should provide sufficient contrast against white background.",
+  "scope": {
+    "files": [
+      "src/workspace/tagging/**"
+    ]
+  }
+}

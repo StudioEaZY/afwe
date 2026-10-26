@@ -1,0 +1,19 @@
+{
+  "id": "forbid-eval-in-slides",
+  "mode": "active",
+  "statement": "Funnel slides must never execute eval or dynamic Function constructor.",
+  "scope": {
+    "files": [
+      "src/**/*.tsx"
+    ]
+  },
+  "checks": [
+    {
+      "type": "forbid_pattern",
+      "pattern": "\\beval\\s*\\(",
+      "files": [
+        "src/**/*.tsx"
+      ]
+    }
+  ]
+}

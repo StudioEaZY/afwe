@@ -1,0 +1,16 @@
+{
+  "id": "pin-legacy-tracking-pixel",
+  "statement": "Facebook legacy pixel must fire on every slide view.",
+  "kind": "preference",
+  "attaches": {
+    "nodes": [
+      "telemetry-stage"
+    ]
+  },
+  "severity": "warn",
+  "status": "retired",
+  "origin": "human:legacy-marketer",
+  "created": "2026-10-23T07:00:00Z",
+  "retired": "2026-10-24T08:00:00Z",
+  "reason": "migrated-to-server-side-capi"
+}

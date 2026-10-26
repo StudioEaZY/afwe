@@ -1,0 +1,21 @@
+{
+  "id": "chk-sig-hash-idemp",
+  "title": "hashIdempotencyKey takes string and returns string",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "idempotency-key-hasher"
+    ]
+  },
+  "claim": {
+    "type": "symbol_signature",
+    "symbol": "src/billing/proration.ts::hashIdempotencyKey",
+    "pattern": "\\(key:\\s*string\\):\\s*string"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-25T10:00:00Z",
+  "created_from": "t0006",
+  "provenance": "confirmed"
+}

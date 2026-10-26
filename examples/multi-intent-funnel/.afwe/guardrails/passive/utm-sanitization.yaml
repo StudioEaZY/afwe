@@ -1,0 +1,10 @@
+{
+  "id": "utm-sanitization",
+  "mode": "passive",
+  "statement": "UTM campaign query parameters should be lowercase trimmed strings.",
+  "scope": {
+    "files": [
+      "src/acquisition/utmTracker.ts"
+    ]
+  }
+}

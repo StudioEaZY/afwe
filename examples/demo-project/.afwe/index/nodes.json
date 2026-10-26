@@ -1,240 +1,412 @@
 {
-  "authentication": {
-    "path": "Demo Product.Authentication",
-    "name": "Authentication",
-    "kind": "subsystem",
-    "depth": 1,
-    "parent": "demo-product",
+  "auth-api": {
+    "path": "Pulse SaaS Product.Identity Subsystem.Auth API",
+    "name": "Auth API",
+    "kind": "module",
+    "depth": 2,
+    "parent": "identity",
     "files": [],
     "symbols": [],
     "memory": [],
-    "guardrails": [
-      "replica-reads"
-    ]
+    "guardrails": []
   },
-  "canvas-renderer": {
-    "path": "Demo Product.Dashboard.Canvas Renderer",
-    "name": "Canvas Renderer",
-    "kind": "component",
+  "billing": {
+    "path": "Pulse SaaS Product.Billing Subsystem",
+    "name": "Billing Subsystem",
+    "kind": "subsystem",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [
+      "src/billing/checkout/CheckoutController.ts",
+      "src/billing/proration.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "con-workspace-billing-boundary"
+    ],
+    "guardrails": []
+  },
+  "billing-checkout": {
+    "path": "Pulse SaaS Product.Billing Subsystem.Billing Checkout",
+    "name": "Billing Checkout",
+    "kind": "module",
     "depth": 2,
-    "parent": "dashboard",
+    "parent": "billing",
     "files": [
-      "src/canvas/CanvasRenderer.tsx"
+      "src/billing/checkout/CheckoutController.ts"
     ],
     "symbols": [],
     "memory": [
-      "lighthouse-exception",
-      "renderer-strategy"
+      "con-idempotency-key-mandatory"
     ],
-    "guardrails": [
-      "interactive-rendering-priority",
-      "replica-reads"
-    ]
+    "guardrails": []
   },
-  "dashboard": {
-    "path": "Demo Product.Dashboard",
-    "name": "Dashboard",
-    "kind": "subsystem",
-    "depth": 1,
-    "parent": "demo-product",
-    "files": [
-      "src/dashboard/Dashboard.tsx",
-      "src/dashboard/Widget.tsx"
-    ],
+  "billing-plans": {
+    "path": "Pulse SaaS Product.Billing Subsystem.Billing Plans",
+    "name": "Billing Plans",
+    "kind": "module",
+    "depth": 2,
+    "parent": "billing",
+    "files": [],
     "symbols": [],
-    "memory": [
-      "lighthouse-exception",
-      "dashboard-rendering"
-    ],
-    "guardrails": [
-      "interactive-rendering-priority",
-      "one-renderer",
-      "replica-reads"
-    ]
+    "memory": [],
+    "guardrails": []
   },
-  "data": {
-    "path": "Demo Product.Data",
-    "name": "Data",
-    "kind": "subsystem",
-    "depth": 1,
-    "parent": "demo-product",
-    "files": [
-      "src/data/db.ts",
-      "src/data/replica.ts"
-    ],
+  "db-client": {
+    "path": "Pulse SaaS Product.Platform Infrastructure.Database Client",
+    "name": "Database Client",
+    "kind": "module",
+    "depth": 2,
+    "parent": "platform",
+    "files": [],
     "symbols": [],
-    "memory": [
-      "replica-read-policy",
-      "replication-lag"
-    ],
-    "guardrails": [
-      "replica-reads"
-    ]
+    "memory": [],
+    "guardrails": []
   },
   "demo-product": {
-    "path": "Demo Product",
-    "name": "Demo Product",
+    "path": "Pulse SaaS Product",
+    "name": "Pulse SaaS Product",
     "kind": "product",
     "depth": 0,
     "files": [],
     "symbols": [],
     "memory": [],
-    "guardrails": [
-      "replica-reads"
-    ]
+    "guardrails": []
   },
-  "identity": {
-    "path": "Demo Product.Identity",
-    "name": "Identity",
-    "kind": "subsystem",
-    "depth": 1,
-    "parent": "demo-product",
-    "files": [
-      "src/identity/user.ts"
-    ],
-    "symbols": [],
-    "memory": [],
-    "guardrails": [
-      "replica-reads"
-    ]
-  },
-  "oauth": {
-    "path": "Demo Product.Authentication.OAuth",
-    "name": "OAuth",
+  "event-bus": {
+    "path": "Pulse SaaS Product.Platform Infrastructure.Event Bus",
+    "name": "Event Bus",
     "kind": "module",
     "depth": 2,
-    "parent": "authentication",
-    "files": [
-      "src/auth/oauth.ts"
-    ],
+    "parent": "platform",
+    "files": [],
     "symbols": [],
     "memory": [],
-    "guardrails": [
-      "replica-reads"
-    ]
+    "guardrails": []
   },
-  "payments": {
-    "path": "Demo Product.Payments",
-    "name": "Payments",
+  "http-server": {
+    "path": "Pulse SaaS Product.Platform Infrastructure.HTTP Server",
+    "name": "HTTP Server",
+    "kind": "module",
+    "depth": 2,
+    "parent": "platform",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "idempotency-key-hasher": {
+    "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator.Idempotency Key Hasher",
+    "name": "Idempotency Key Hasher",
+    "kind": "widget",
+    "depth": 4,
+    "parent": "proration-calculator",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "identity": {
+    "path": "Pulse SaaS Product.Identity Subsystem",
+    "name": "Identity Subsystem",
     "kind": "subsystem",
     "depth": 1,
     "parent": "demo-product",
     "files": [
+      "src/auth/auth.ts",
+      "src/auth/jwtSigner.ts",
+      "src/auth/oauth.ts",
+      "src/auth/session.ts",
+      "src/auth/sessionStore.ts",
+      "src/data/db.ts",
+      "src/data/replica.ts",
+      "src/identity/user.ts",
       "src/payments/checkout.ts",
       "src/payments/stripe.ts"
     ],
     "symbols": [],
-    "memory": [
-      "payments-boundary"
-    ],
-    "guardrails": [
-      "replica-reads",
-      "payments-boundary"
-    ]
+    "memory": [],
+    "guardrails": []
   },
-  "realtime-status-worker": {
-    "path": "Demo Product.Realtime Status Worker",
-    "name": "Realtime Status Worker",
-    "kind": "service",
-    "depth": 1,
-    "parent": "demo-product",
-    "files": [
-      "services/status_worker.py"
-    ],
-    "symbols": [],
-    "memory": [
-      "replication-lag"
-    ],
-    "guardrails": [
-      "replica-reads"
-    ]
-  },
-  "sessions": {
-    "path": "Demo Product.Authentication.Sessions",
-    "name": "Sessions",
+  "invoice-pdf-watermark": {
+    "path": "Pulse SaaS Product.Billing Subsystem.Invoice PDF Watermark",
+    "name": "Invoice PDF Watermark",
     "kind": "module",
     "depth": 2,
-    "parent": "authentication",
+    "parent": "billing",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "invoice-store": {
+    "path": "Pulse SaaS Product.Billing Subsystem.Invoice Store",
+    "name": "Invoice Store",
+    "kind": "module",
+    "depth": 2,
+    "parent": "billing",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "jwt-signer": {
+    "path": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer",
+    "name": "JWT Signer",
+    "kind": "component",
+    "depth": 3,
+    "parent": "auth-api",
     "files": [
-      "src/auth/auth.ts",
-      "src/auth/session.ts",
-      "src/auth/sessionStore.ts"
+      "src/auth/jwtSigner.ts"
     ],
     "symbols": [],
     "memory": [
-      "auth-session-expiry"
+      "dec-jwt-stateless",
+      "con-secret-entropy"
     ],
-    "guardrails": [
-      "replica-reads"
-    ]
+    "guardrails": []
   },
-  "ui": {
-    "path": "Demo Product.UI",
-    "name": "UI",
-    "kind": "library",
-    "depth": 1,
-    "parent": "demo-product",
-    "files": [
-      "src/ui/Button.tsx",
-      "src/ui/Layout.tsx"
-    ],
+  "legacy-webhook-retry": {
+    "path": "Pulse SaaS Product.Realtime Subsystem.Legacy Webhook Retry",
+    "name": "Legacy Webhook Retry",
+    "kind": "module",
+    "depth": 2,
+    "parent": "realtime",
+    "files": [],
     "symbols": [],
     "memory": [],
-    "guardrails": [
-      "replica-reads"
-    ]
+    "guardrails": []
   },
-  "workspace": {
-    "path": "Demo Product.Workspace",
-    "name": "Workspace",
+  "oauth-callback": {
+    "path": "Pulse SaaS Product.Identity Subsystem.Auth API.OAuth Callback",
+    "name": "OAuth Callback",
+    "kind": "component",
+    "depth": 3,
+    "parent": "auth-api",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "platform": {
+    "path": "Pulse SaaS Product.Platform Infrastructure",
+    "name": "Platform Infrastructure",
     "kind": "subsystem",
     "depth": 1,
     "parent": "demo-product",
     "files": [],
     "symbols": [],
-    "memory": [
-      "workspace"
+    "memory": [],
+    "guardrails": []
+  },
+  "proration-calculator": {
+    "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator",
+    "name": "Proration Calculator",
+    "kind": "component",
+    "depth": 3,
+    "parent": "stripe-gateway",
+    "files": [
+      "src/billing/proration.ts"
     ],
-    "guardrails": [
-      "replica-reads"
-    ]
+    "symbols": [],
+    "memory": [
+      "term-proration",
+      "prob-proration-rounding-drift"
+    ],
+    "guardrails": []
+  },
+  "realtime": {
+    "path": "Pulse SaaS Product.Realtime Subsystem",
+    "name": "Realtime Subsystem",
+    "kind": "subsystem",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "realtime-presence": {
+    "path": "Pulse SaaS Product.Realtime Subsystem.Realtime Presence",
+    "name": "Realtime Presence",
+    "kind": "module",
+    "depth": 2,
+    "parent": "realtime",
+    "files": [],
+    "symbols": [],
+    "memory": [
+      "term-presence-heartbeat",
+      "prob-zombie-websockets"
+    ],
+    "guardrails": []
+  },
+  "realtime-status-worker": {
+    "path": "Pulse SaaS Product.Realtime Subsystem.Realtime Status Worker",
+    "name": "Realtime Status Worker",
+    "kind": "module",
+    "depth": 2,
+    "parent": "realtime",
+    "files": [],
+    "symbols": [],
+    "memory": [
+      "dec-replica-reads",
+      "exc-realtime-admin-override",
+      "term-presence-heartbeat"
+    ],
+    "guardrails": []
+  },
+  "session-token": {
+    "path": "Pulse SaaS Product.Identity Subsystem.Session Token",
+    "name": "Session Token",
+    "kind": "module",
+    "depth": 2,
+    "parent": "identity",
+    "files": [
+      "src/auth/session.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-jwt-stateless"
+    ],
+    "guardrails": []
+  },
+  "stripe-gateway": {
+    "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway",
+    "name": "Stripe Gateway",
+    "kind": "module",
+    "depth": 2,
+    "parent": "billing",
+    "files": [],
+    "symbols": [],
+    "memory": [
+      "con-idempotency-key-mandatory",
+      "exc-billing-test-bypass"
+    ],
+    "guardrails": []
+  },
+  "stripe-webhook-verifier": {
+    "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Stripe Webhook Verifier",
+    "name": "Stripe Webhook Verifier",
+    "kind": "component",
+    "depth": 3,
+    "parent": "stripe-gateway",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "tag-color-wheel": {
+    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel",
+    "name": "Tag Color Wheel",
+    "kind": "component",
+    "depth": 3,
+    "parent": "workspace-tagging",
+    "files": [
+      "src/workspace/tagging/ColorWheel.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "prob-tag-color-collision"
+    ],
+    "guardrails": []
+  },
+  "tag-normaliser": {
+    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Normaliser",
+    "name": "Tag Normaliser",
+    "kind": "component",
+    "depth": 3,
+    "parent": "workspace-tagging",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "tag-pill-renderer": {
+    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel.Tag Pill Renderer",
+    "name": "Tag Pill Renderer",
+    "kind": "widget",
+    "depth": 4,
+    "parent": "tag-color-wheel",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "token-entropy-guard": {
+    "path": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer.Token Entropy Guard",
+    "name": "Token Entropy Guard",
+    "kind": "widget",
+    "depth": 4,
+    "parent": "jwt-signer",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "user-store": {
+    "path": "Pulse SaaS Product.Identity Subsystem.User Store",
+    "name": "User Store",
+    "kind": "module",
+    "depth": 2,
+    "parent": "identity",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "workspace": {
+    "path": "Pulse SaaS Product.Workspace Subsystem",
+    "name": "Workspace Subsystem",
+    "kind": "subsystem",
+    "depth": 1,
+    "parent": "demo-product",
+    "files": [
+      "src/canvas/CanvasRenderer.tsx",
+      "src/workspace/library/Library.ts",
+      "src/workspace/preview/Preview.ts",
+      "src/workspace/search/Search.ts",
+      "src/workspace/tagging/ColorWheel.ts",
+      "src/workspace/tagging/Tags.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "con-workspace-billing-boundary"
+    ],
+    "guardrails": []
+  },
+  "workspace-bulk-export": {
+    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Bulk Export",
+    "name": "Workspace Bulk Export",
+    "kind": "module",
+    "depth": 2,
+    "parent": "workspace",
+    "files": [],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
   },
   "workspace-library": {
-    "path": "Demo Product.Workspace.Library",
-    "name": "Library",
+    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+    "name": "Workspace Library",
     "kind": "module",
     "depth": 2,
     "parent": "workspace",
     "files": [
+      "src/dashboard/Dashboard.tsx",
+      "src/dashboard/Widget.tsx",
+      "src/ui/Button.tsx",
+      "src/ui/Layout.tsx",
       "src/workspace/library/Library.ts"
     ],
     "symbols": [],
-    "memory": [],
-    "guardrails": [
-      "replica-reads"
-    ]
-  },
-  "workspace-preview": {
-    "path": "Demo Product.Workspace.Preview",
-    "name": "Preview",
-    "kind": "module",
-    "depth": 2,
-    "parent": "workspace",
-    "files": [
-      "src/workspace/preview/Preview.ts"
-    ],
-    "symbols": [],
     "memory": [
-      "renderer-strategy"
+      "term-workspace-item"
     ],
-    "guardrails": [
-      "one-renderer",
-      "replica-reads"
-    ]
+    "guardrails": []
   },
   "workspace-search": {
-    "path": "Demo Product.Workspace.Search",
-    "name": "Search",
+    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Search",
+    "name": "Workspace Search",
     "kind": "module",
     "depth": 2,
     "parent": "workspace",
@@ -242,24 +414,25 @@
       "src/workspace/search/Search.ts"
     ],
     "symbols": [],
-    "memory": [],
-    "guardrails": [
-      "replica-reads"
-    ]
+    "memory": [
+      "exc-search-direct-query"
+    ],
+    "guardrails": []
   },
   "workspace-tagging": {
-    "path": "Demo Product.Workspace.Tagging",
-    "name": "Tagging",
+    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging",
+    "name": "Workspace Tagging",
     "kind": "module",
     "depth": 2,
     "parent": "workspace",
     "files": [
+      "src/workspace/tagging/ColorWheel.ts",
       "src/workspace/tagging/Tags.ts"
     ],
     "symbols": [],
-    "memory": [],
-    "guardrails": [
-      "replica-reads"
-    ]
+    "memory": [
+      "dec-flat-tags"
+    ],
+    "guardrails": []
   }
 }

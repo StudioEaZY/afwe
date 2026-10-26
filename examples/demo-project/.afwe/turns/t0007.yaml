@@ -1,0 +1,54 @@
+{
+  "id": "t0007",
+  "ts": "2026-10-25T11:00:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Propose AI tag suggestion experiment in uncharted experiments folder",
+  "prompt_hash": "a1b2c3d4e5f60007",
+  "task": "pulse-ai-suggest",
+  "targets": [
+    "workspace-tagging"
+  ],
+  "status": "staged",
+  "touched": {
+    "nodes": [
+      "workspace-tagging"
+    ],
+    "files": [
+      "src/experiments/aiSuggest.ts"
+    ]
+  },
+  "implements": {
+    "workspace-tagging": [
+      "src/workspace/tagging/Tags.ts",
+      "src/experiments/aiSuggest.ts"
+    ]
+  },
+  "pin_proposals": [
+    "pin-ai-tag-auto-apply"
+  ],
+  "checks": [
+    {
+      "id": "chk-ai-opt-in",
+      "title": "ai suggestions require manual confirmation",
+      "trust": "generated",
+      "authored_by": "agent",
+      "passed": true,
+      "blocking": false
+    }
+  ],
+  "strength": "generated",
+  "confidence": 0.78,
+  "gate": {
+    "decision": "stage",
+    "reasons": [
+      "CONFIRM pin pin-tag-colors-accessible held",
+      "Proposed pin pin-ai-tag-auto-apply awaiting review"
+    ]
+  },
+  "summary": "Propose AI tag suggestion experiment in uncharted experiments folder",
+  "session_id": "sess-ai-07",
+  "agent_zone_rationales": [
+    "Leaf heuristic: aiSuggest extracts keywords with length > 5"
+  ]
+}

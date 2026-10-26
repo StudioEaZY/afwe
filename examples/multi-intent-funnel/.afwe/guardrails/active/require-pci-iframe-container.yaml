@@ -1,0 +1,19 @@
+{
+  "id": "require-pci-iframe-container",
+  "mode": "active",
+  "statement": "Slide 6 checkout must maintain card-element-container mount node.",
+  "scope": {
+    "files": [
+      "src/Slide6.tsx"
+    ]
+  },
+  "checks": [
+    {
+      "type": "require_pattern",
+      "pattern": "id=\"card-element-container\"",
+      "files": [
+        "src/Slide6.tsx"
+      ]
+    }
+  ]
+}

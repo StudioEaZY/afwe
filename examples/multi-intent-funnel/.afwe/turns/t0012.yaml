@@ -1,0 +1,48 @@
+{
+  "id": "t0012",
+  "ts": "2026-10-26T10:30:00Z",
+  "origin": "human",
+  "agent": "gemini-2-5-pro",
+  "prompt": "Directly instantiate RawEventSink inside Slide 4 Security slide",
+  "prompt_hash": "f1a2b3c4d5e60012",
+  "task": "funnel-hack-raw-sink",
+  "targets": [
+    "security-qualification"
+  ],
+  "status": "abandoned",
+  "touched": {
+    "nodes": [
+      "security-qualification"
+    ],
+    "files": [
+      "src/Slide4.tsx"
+    ]
+  },
+  "implements": {
+    "security-qualification": [
+      "src/Slide4.tsx"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-no-raw-sink-in-activation",
+      "title": "activation does not import eventSink raw class",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": false,
+      "blocking": true,
+      "message": "Constraint c-activation-no-raw-sink violated: Slide4.tsx instantiates RawEventSink"
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.1,
+  "gate": {
+    "decision": "redo",
+    "reasons": [
+      "CONSTRAINT_VIOLATION: activation-stage must_not_depend on telemetry-stage",
+      "Agent reask required: route through event bus dispatcher"
+    ]
+  },
+  "summary": "Instantiate RawEventSink in Slide 4 (BLOCKED by boundary constraint)",
+  "session_id": "sess-redo-12"
+}

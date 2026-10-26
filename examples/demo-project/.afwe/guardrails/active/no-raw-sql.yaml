@@ -1,0 +1,22 @@
+{
+  "id": "no-raw-sql",
+  "mode": "active",
+  "statement": "All database queries must go through the DatabaseClient interface. Raw sql strings in controllers forbidden.",
+  "scope": {
+    "files": [
+      "src/billing/**",
+      "src/workspace/**",
+      "src/auth/**"
+    ]
+  },
+  "checks": [
+    {
+      "type": "forbid_pattern",
+      "pattern": "\\brawQuery\\s*\\(",
+      "files": [
+        "src/billing/**",
+        "src/workspace/**"
+      ]
+    }
+  ]
+}

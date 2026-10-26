@@ -1,0 +1,15 @@
+{
+  "id": "pin-invoice-pdf-retention",
+  "statement": "Invoice receipts must be retained indefinitely with immutable SHA256 checksums.",
+  "kind": "constraint",
+  "attaches": {
+    "nodes": [
+      "invoice-store"
+    ]
+  },
+  "severity": "confirm",
+  "status": "active",
+  "origin": "human:legal",
+  "created": "2026-10-24T14:20:00Z",
+  "reason": "tax-compliance-eu"
+}

@@ -1,0 +1,92 @@
+---
+// blog/index.astro - Technical Engineering Blog
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+
+const posts = [
+  {
+    slug: 'why-graphrag-isnt-enough',
+    title: "Why GraphRAG Isn't Enough: Double-Entry Bookkeeping for Codebases",
+    date: 'October 24, 2026',
+    author: 'AFWE Core Architecture Team',
+    category: 'Architecture & Foundations',
+    readTime: '6 min read',
+    summary: 'Vector databases and dependency graphs show your agents what code is. They cannot tell what code was supposed to be. Here is why autonomous development requires double-entry architectural accounting.'
+  },
+  {
+    slug: 'constraints-as-geometry',
+    title: 'Constraints as Geometry: Active Gating vs Prose Suggestions',
+    date: 'October 18, 2026',
+    author: 'AFWE Core Architecture Team',
+    category: 'Formal Verification',
+    readTime: '8 min read',
+    summary: 'Markdown instructions get dropped as LLM context windows fill up. We explain how converting architectural boundary invariants into geometric graph constraints stops agent hallucinations at the pre-commit gate.'
+  },
+  {
+    slug: 'blake3-tripwire-protocol',
+    title: 'The BLAKE3 Tripwire: Tamper-Proof Guardrails in CI',
+    date: 'October 12, 2026',
+    author: 'AFWE Core Architecture Team',
+    category: 'Security & CI',
+    readTime: '5 min read',
+    summary: 'When AI agents write pull requests, what prevents them from quietly weakening the linter or removing guardrails? Inside the cryptographic manifest that secures .afwe/ against silent tampering.'
+  }
+];
+---
+
+<MarketingLayout
+  title="Blog — Architecture & Intent Engineering"
+  description="Technical deep-dives into double-entry bookkeeping, AST scene graphs, deterministic tripwires, and autonomous coding governance."
+  activeNav="blog"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
+    <!-- Header -->
+    <header class="space-y-4 border-b border-stone-300 dark:border-obsidian-800 pb-8">
+      <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
+        ENGINEERING ARTICLES & DEEP DIVES
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-serif font-bold text-graphite dark:text-white tracking-tight">
+        AFWE Technical Journal
+      </h1>
+      <p class="text-base sm:text-lg text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+        Practical explorations of codebase state machines, AST scene graphs, and formal verification for human-agent software teams.
+      </p>
+    </header>
+
+    <!-- Articles List -->
+    <div class="space-y-10">
+      {posts.map(post => (
+        <article class="rounded-2xl border border-stone-400/70 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 sm:p-8 space-y-4 hover:border-graphite/50 transition-all shadow-xs group">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-graphite/60 dark:text-stone-400">
+            <span class="px-2.5 py-0.5 rounded-full bg-stone-200/80 dark:bg-obsidian-800 text-graphite dark:text-stone-300 font-semibold text-[10px]">
+              {post.category}
+            </span>
+            <div class="flex items-center gap-3">
+              <span>{post.date}</span>
+              <span>•</span>
+              <span>{post.readTime}</span>
+            </div>
+          </div>
+
+          <h2 class="text-xl sm:text-2xl font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
+            <a href={`/blog/${post.slug}`} class="block">
+              {post.title}
+            </a>
+          </h2>
+
+          <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+            {post.summary}
+          </p>
+
+          <div class="pt-2 flex items-center justify-between font-mono text-xs">
+            <span class="text-graphite/60 dark:text-stone-400 text-[11px]">
+              By {post.author}
+            </span>
+            <a href={`/blog/${post.slug}`} class="font-bold text-graphite dark:text-stone-200 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+              Read article →
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</MarketingLayout>

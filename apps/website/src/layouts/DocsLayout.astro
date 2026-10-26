@@ -1,6 +1,7 @@
 ---
 // DocsLayout.astro - Master Layout with Delta + Cartography aesthetics
 import SearchModal from '../components/SearchModal.astro';
+import AfweWordmark from '../components/AfweWordmark.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -43,83 +44,66 @@ const {
   </script>
 </head>
 
-<body class="min-h-screen bg-parchment-50 dark:bg-obsidian-950 text-parchment-900 dark:text-obsidian-100 font-sans relative selection:bg-emerald-500/30 selection:text-emerald-950 dark:selection:text-emerald-200">
+<body class="min-h-screen bg-paper dark:bg-obsidian-950 text-graphite dark:text-obsidian-100 font-sans relative selection:bg-survey-500/25 selection:text-graphite dark:selection:text-survey-light">
   <!-- Accessible Skip To Content -->
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-emerald-700 focus:text-white focus:rounded-lg focus:shadow-xl font-mono text-xs font-bold">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-graphite focus:text-white focus:rounded-lg focus:shadow-xl font-mono text-xs font-bold">
     Skip to main content
   </a>
-  <!-- Subtle Background Hatch & Noise Grid -->
-  <div class="fixed inset-0 pointer-events-none z-0 opacity-40 dark:opacity-20 bg-grid-dots" aria-hidden="true"></div>
-
-  <!-- Top Multi-color Brand Accent Strip -->
-  <div class="grid h-1.5 w-full grid-cols-8 fixed top-0 inset-x-0 z-50">
-    <span class="col-span-2 bg-emerald-500"></span>
-    <span class="col-span-2 bg-cyan-500"></span>
-    <span class="col-span-2 bg-indigo-500"></span>
-    <span class="col-span-1 bg-amber-500"></span>
-    <span class="col-span-1 bg-neutral-800"></span>
-  </div>
 
   <!-- Master Top Navigation Bar -->
-  <header class="sticky top-1.5 z-40 w-full border-b border-parchment-400 dark:border-obsidian-700 bg-parchment-100/90 dark:bg-obsidian-950/90 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
-      <!-- Left: Logo & Branding -->
+  <header class="sticky top-0 z-40 w-full border-b border-stone-400/50 dark:border-obsidian-700 bg-paper/95 dark:bg-obsidian-950/95 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <!-- Left: Logo & Wordmark -->
       <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-2.5 group">
-          <!-- Clover Cluster Icon -->
-          <svg class="size-6 text-emerald-600 dark:text-emerald-400 group-hover:rotate-12 transition-transform" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="5" r="3" />
-            <circle cx="12" cy="19" r="3" />
-            <circle cx="5" cy="12" r="3" />
-            <circle cx="19" cy="12" r="3" />
-            <circle cx="12" cy="12" r="1.5" />
-          </svg>
-          <span class="font-bold font-mono tracking-tight text-lg text-parchment-900 dark:text-white">AFWE</span>
+        <a href="/" class="flex items-center gap-2.5 group focus-visible:ring-2 focus-visible:ring-survey">
+          <AfweWordmark class="h-5 w-auto" />
         </a>
         <div class="hidden sm:flex items-center gap-2">
-          <span class="rounded bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono px-2 py-0.5 border border-emerald-500/30 font-semibold">
+          <span class="rounded bg-survey-500/15 dark:bg-survey-500/25 text-survey-700 dark:text-survey-light text-[10px] font-mono px-2 py-0.5 border border-survey-500/30 font-semibold">
             ReBorn v0.2.0
-          </span>
-          <span class="text-xs text-parchment-600 dark:text-obsidian-400 hidden md:inline">
-            Your code. Its memory. Its rules.
           </span>
         </div>
       </div>
 
-      <!-- Center: Health Pill & Search Trigger -->
+      <!-- Center: Public Pages Nav -->
+      <nav class="hidden md:flex items-center gap-1 font-mono text-xs">
+        <a href="/" class="px-3 py-1.5 rounded-lg text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white hover:bg-stone-300/30 dark:hover:bg-obsidian-850 transition-colors">
+          Home
+        </a>
+        <a href="/docs" class="px-3 py-1.5 rounded-lg font-bold text-graphite dark:text-white bg-stone-300/60 dark:bg-obsidian-800 transition-colors">
+          Docs
+        </a>
+        <a href="/roadmap" class="px-3 py-1.5 rounded-lg text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white hover:bg-stone-300/30 dark:hover:bg-obsidian-850 transition-colors">
+          Roadmap
+        </a>
+        <a href="/pricing" class="px-3 py-1.5 rounded-lg text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white hover:bg-stone-300/30 dark:hover:bg-obsidian-850 transition-colors">
+          Pricing
+        </a>
+        <a href="/blog" class="px-3 py-1.5 rounded-lg text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white hover:bg-stone-300/30 dark:hover:bg-obsidian-850 transition-colors">
+          Blog
+        </a>
+      </nav>
+
+      <!-- Right: Health Pill, Search, Theme, GitHub -->
       <div class="flex items-center gap-3">
         <!-- Health Pill -->
-        <a href="/docs/concepts/core-concepts#first-screen" class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-400 text-xs font-mono hover:bg-emerald-500/10 transition-colors">
-          <span class="size-2 rounded-full bg-afwe-commit"></span>
+        <a href="/docs/concepts/core-concepts#first-screen" class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-survey-500/30 bg-survey-500/10 text-survey-700 dark:text-survey-light text-xs font-mono hover:bg-survey-500/20 transition-colors">
+          <span class="size-2 rounded-full bg-survey-500"></span>
           <span>Everything balances • 3 pins</span>
         </a>
 
         <!-- Search Button (Cmd+K) -->
-        <button data-open-search class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 hover:border-parchment-500 dark:hover:border-obsidian-600 text-xs font-mono text-parchment-600 dark:text-obsidian-400 transition-all shadow-sm">
+        <button data-open-search class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-stone-400/60 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 hover:border-graphite/40 dark:hover:border-obsidian-600 text-xs font-mono text-graphite/70 dark:text-obsidian-400 transition-all shadow-xs">
           <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <span class="hidden sm:inline">Search docs & concepts...</span>
-          <span class="sm:hidden">Search</span>
-          <kbd class="hidden md:inline-block rounded px-1.5 py-0.5 text-[10px] bg-parchment-200 dark:bg-obsidian-800 text-parchment-700 dark:text-obsidian-300 border border-parchment-300 dark:border-obsidian-700">⌘K</kbd>
+          <span class="hidden sm:inline">Search...</span>
+          <kbd class="hidden md:inline-block rounded px-1.5 py-0.5 text-[10px] bg-paper dark:bg-obsidian-800 text-graphite dark:text-obsidian-300 border border-stone-300 dark:border-obsidian-700">⌘K</kbd>
         </button>
-      </div>
-
-      <!-- Right: Links, Persona Toggle, Theme Toggle -->
-      <div class="flex items-center gap-3">
-        <!-- Persona Switcher -->
-        <div class="hidden sm:flex rounded-lg border border-parchment-400 dark:border-obsidian-700 p-0.5 bg-parchment-200/60 dark:bg-obsidian-900 text-[11px] font-mono">
-          <button id="persona-founder" class="px-2 py-0.5 rounded text-parchment-800 dark:text-obsidian-300 hover:text-black dark:hover:text-white transition-colors">
-            Product
-          </button>
-          <button id="persona-engineer" class="px-2 py-0.5 rounded bg-white dark:bg-obsidian-800 font-bold shadow-xs text-parchment-900 dark:text-white transition-colors">
-            Structure
-          </button>
-        </div>
 
         <!-- Theme Switcher -->
-        <button id="theme-toggle" title="Toggle theme" class="p-1.5 rounded-lg border border-parchment-400 dark:border-obsidian-700 hover:bg-parchment-200 dark:hover:bg-obsidian-850 text-parchment-700 dark:text-obsidian-300 transition-colors">
+        <button id="theme-toggle" title="Toggle theme" class="p-1.5 rounded-lg border border-stone-400/60 dark:border-obsidian-700 hover:bg-stone-300/40 dark:hover:bg-obsidian-850 text-graphite dark:text-obsidian-300 transition-colors">
           <svg class="size-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -137,12 +121,14 @@ const {
         </button>
 
         <!-- GitHub Link -->
-        <a href="https://github.com/StudioEaZY/afwe" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg border border-parchment-400 dark:border-obsidian-700 hover:bg-parchment-200 dark:hover:bg-obsidian-850 text-parchment-700 dark:text-obsidian-300 transition-colors" title="View GitHub Repository">
+        <a href="https://github.com/StudioEaZY/afwe" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg border border-stone-400/60 dark:border-obsidian-700 hover:bg-stone-300/40 dark:hover:bg-obsidian-850 text-graphite dark:text-obsidian-300 transition-colors" title="View GitHub Repository">
           <svg class="size-4" viewBox="0 0 24 24" fill="currentColor">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
           </svg>
         </a>
       </div>
+    </div>
+  </header>
     </div>
   </header>
 
@@ -276,21 +262,17 @@ const {
   <!-- Cartographic Topographical Footer -->
   <footer class="mt-20 border-t border-parchment-400 dark:border-obsidian-700 bg-parchment-200/40 dark:bg-obsidian-900/40 py-10 text-xs font-mono">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-parchment-300 dark:border-obsidian-800 pb-6 mb-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-stone-300 dark:border-obsidian-800 pb-6 mb-6">
         <div class="flex items-center gap-3">
-          <span class="text-base text-emerald-600 dark:text-emerald-400">✦</span>
-          <div>
-            <div class="font-bold text-parchment-900 dark:text-obsidian-100 font-sans">AFWE · Architecture-First Workspace Engine</div>
-            <div class="text-parchment-600 dark:text-obsidian-400 text-[11px]">Not just a map of your code. A record of what it's supposed to be.</div>
-          </div>
+          <AfweWordmark withSubtitle={true} class="h-6 w-auto" />
         </div>
 
         <!-- Badges -->
         <div class="flex flex-wrap items-center gap-2">
-          <span class="px-2 py-0.5 rounded border border-parchment-400 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-800 text-[10px]">Deterministic</span>
-          <span class="px-2 py-0.5 rounded border border-parchment-400 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-800 text-[10px]">Open</span>
-          <span class="px-2 py-0.5 rounded border border-parchment-400 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-800 text-[10px]">Agent-friendly</span>
-          <span class="px-2 py-0.5 rounded border border-parchment-400 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-800 text-[10px]">Built for real codebases</span>
+          <span class="px-2 py-0.5 rounded border border-stone-400 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-800 text-[10px]">Deterministic</span>
+          <span class="px-2 py-0.5 rounded border border-stone-400 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-800 text-[10px]">Open Source (MIT)</span>
+          <span class="px-2 py-0.5 rounded border border-stone-400 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-800 text-[10px]">Agent-friendly</span>
+          <span class="px-2 py-0.5 rounded border border-stone-400 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-800 text-[10px]">Local First</span>
         </div>
       </div>
 

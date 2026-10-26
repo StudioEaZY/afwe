@@ -1,0 +1,48 @@
+{
+  "id": "t0010",
+  "ts": "2026-10-26T08:30:00Z",
+  "origin": "human",
+  "agent": "gpt-4o",
+  "prompt": "Attempt switching status worker to primary database to eliminate staleness",
+  "prompt_hash": "a1b2c3d4e5f60010",
+  "task": "pulse-hack-staleness",
+  "targets": [
+    "realtime-status-worker"
+  ],
+  "status": "abandoned",
+  "touched": {
+    "nodes": [
+      "realtime-status-worker"
+    ],
+    "files": [
+      "src/realtime/worker.ts"
+    ]
+  },
+  "implements": {
+    "realtime-status-worker": [
+      "src/realtime/worker.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-no-primary-reads",
+      "title": "pin-d95a5b compliance check",
+      "trust": "deterministic",
+      "authored_by": "afwe",
+      "passed": false,
+      "blocking": true,
+      "message": "Intentional pin pin-d95a5b forbids switching realtime-status-worker to primary DB"
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.2,
+  "gate": {
+    "decision": "redo",
+    "reasons": [
+      "BLOCKED by pin pin-d95a5b: Status widgets read replica on purpose (eventual consistency accepted)",
+      "TurnJudgment action: block"
+    ]
+  },
+  "summary": "Switch status worker to primary DB (BLOCKED by intentional pin)",
+  "session_id": "sess-redo-10"
+}

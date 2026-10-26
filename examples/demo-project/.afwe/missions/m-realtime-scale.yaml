@@ -1,0 +1,15 @@
+{
+  "id": "m-realtime-scale",
+  "title": "Realtime WebSocket Scale & Heartbeat Hardening",
+  "prompt": "Scale websocket presence cluster to 50k concurrent nodes",
+  "orchestrator": "human:infra",
+  "status": "Paused",
+  "created": "2026-10-24T14:00:00Z",
+  "updated": "2026-10-25T18:00:00Z",
+  "invariants": {
+    "locked_pins": [
+      "pin-d95a5b"
+    ]
+  },
+  "agents": []
+}

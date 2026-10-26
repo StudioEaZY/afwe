@@ -1,15 +1,29 @@
 constraints:
-- id: payments-no-ui
+- id: c-workspace-no-billing
   rule: must_not_depend
-  from: payments
+  from: workspace
   to:
-  - ui
+  - billing
+  rationale: Workspace core productivity must remain decoupled from billing and credit card handling.
   severity: error
-  rationale: Payments runs headless in workers; UI code would drag a renderer into it.
-- id: identity-is-a-leaf
-  rule: may_depend_only
-  from: identity
-  except:
-  - identity
+- id: c-search-no-raw-db
+  rule: must_not_depend
+  from: workspace-search
+  to:
+  - db-client
+  rationale: Search must index memory objects and never query the primary database client directly.
   severity: error
-  rationale: Identity is the shared leaf; everything depends on it, it depends on nothing.
+- id: c-billing-no-auth-internals
+  rule: must_not_depend
+  from: billing-checkout
+  to:
+  - session-token
+  rationale: Checkout must receive authenticated claims from the HTTP context, not generate session tokens.
+  severity: error
+- id: c-realtime-read-only
+  rule: must_not_depend
+  from: realtime
+  to:
+  - billing
+  rationale: Realtime heartbeat workers must never mutate billing ledgers or invoices.
+  severity: error

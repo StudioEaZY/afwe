@@ -1,0 +1,91 @@
+---
+// docs/index.astro - Documentation Overview & Directory
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout
+  title="Documentation Overview"
+  description="AFWE Documentation: Deterministic verification, intent memory, and architectural boundaries for autonomous coding."
+  activeSection="overview"
+>
+  <div class="space-y-12 py-4">
+    <!-- Header -->
+    <header class="border-b border-stone-300 dark:border-obsidian-800 pb-6">
+      <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase mb-2">
+        DOCUMENTATION & GUIDES
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-graphite dark:text-white">
+        AFWE Documentation
+      </h1>
+      <p class="mt-2 text-base text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+        Learn how to configure architectural guardrails, manage intent memory, and verify agent code changes using deterministic double-entry accounting.
+      </p>
+    </header>
+
+    <!-- Section Hub Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Card 1: Quick Start -->
+      <a href="/docs/getting-started/quick-start" class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-3 hover:border-graphite/60 dark:hover:border-stone-400 transition-all shadow-xs group">
+        <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200 group-hover:scale-105 transition-transform">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <h2 class="text-lg font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
+          Quick Start (5 Min) →
+        </h2>
+        <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+          Install the CLI, onboard an existing codebase, and execute your first verified turn loop in five minutes.
+        </p>
+      </a>
+
+      <!-- Card 2: Core Concepts -->
+      <a href="/docs/concepts/core-concepts" class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-3 hover:border-graphite/60 dark:hover:border-stone-400 transition-all shadow-xs group">
+        <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200 group-hover:scale-105 transition-transform">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+        </div>
+        <h2 class="text-lg font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
+          ReBorn Core Concepts →
+        </h2>
+        <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+          Deep-dive into turns, AST scene graphs, geometric constraints, BLAKE3 tripwires, and 4D time dials.
+        </p>
+      </a>
+
+      <!-- Card 3: Validators Catalog -->
+      <a href="/docs/validators" class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-3 hover:border-graphite/60 dark:hover:border-stone-400 transition-all shadow-xs group">
+        <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200 group-hover:scale-105 transition-transform">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <h2 class="text-lg font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
+          Validators & Claims Catalog →
+        </h2>
+        <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+          Catalog of deterministic AST validators: import restrictions, comment blanking, pin coverage, and collateral loss gates.
+        </p>
+      </a>
+
+      <!-- Card 4: CLI & MCP Reference -->
+      <a href="/docs/reference/cli" class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-3 hover:border-graphite/60 dark:hover:border-stone-400 transition-all shadow-xs group">
+        <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200 group-hover:scale-105 transition-transform">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="4 17 10 11 4 5"></polyline>
+            <line x1="12" y1="19" x2="20" y2="19"></line>
+          </svg>
+        </div>
+        <h2 class="text-lg font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
+          CLI & MCP Reference →
+        </h2>
+        <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+          Complete flag reference for <code class="text-[11px] font-mono">afwe</code> CLI binaries and all 57 native Model Context Protocol tools.
+        </p>
+      </a>
+    </div>
+  </div>
+</DocsLayout>

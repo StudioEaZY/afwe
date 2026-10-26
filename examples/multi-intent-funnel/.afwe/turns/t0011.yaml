@@ -1,0 +1,49 @@
+{
+  "id": "t0011",
+  "ts": "2026-10-26T09:45:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Directly import conversion pricingEngine into Slide 2 ROI Benchmark slide",
+  "prompt_hash": "f1a2b3c4d5e60011",
+  "task": "funnel-hack-cross-dep",
+  "targets": [
+    "roi-benchmark"
+  ],
+  "status": "abandoned",
+  "touched": {
+    "nodes": [
+      "roi-benchmark",
+      "pricing-tiers"
+    ],
+    "files": [
+      "src/Slide2.tsx"
+    ]
+  },
+  "implements": {
+    "roi-benchmark": [
+      "src/Slide2.tsx"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-no-conversion-in-acquisition",
+      "title": "acquisition does not import conversion-stage",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": false,
+      "blocking": true,
+      "message": "Constraint c-acquisition-no-conversion violated: Slide2.tsx imports conversion/pricingEngine"
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.15,
+  "gate": {
+    "decision": "redo",
+    "reasons": [
+      "CONSTRAINT_VIOLATION: acquisition-stage must_not_depend on conversion-stage",
+      "TurnJudgment leaf-to-root validator failed at module level: roi-benchmark"
+    ]
+  },
+  "summary": "Import pricing engine into Slide 2 (BLOCKED by boundary constraint)",
+  "session_id": "sess-redo-11"
+}

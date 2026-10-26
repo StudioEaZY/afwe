@@ -1,0 +1,23 @@
+{
+  "id": "chk-forbid-eval",
+  "title": "forbid eval invocation in server runtime",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "http-server"
+    ]
+  },
+  "claim": {
+    "type": "forbid_pattern",
+    "pattern": "\\beval\\s*\\(",
+    "files": [
+      "src/server.ts"
+    ]
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-24T10:00:00Z",
+  "created_from": "t0004",
+  "provenance": "confirmed"
+}

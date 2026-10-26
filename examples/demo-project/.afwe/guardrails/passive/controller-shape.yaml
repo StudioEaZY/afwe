@@ -1,0 +1,10 @@
+{
+  "id": "controller-shape",
+  "mode": "passive",
+  "statement": "Controllers should be class-based with typed request and response methods.",
+  "scope": {
+    "files": [
+      "src/**/*.ts"
+    ]
+  }
+}

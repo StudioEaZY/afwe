@@ -1,0 +1,85 @@
+{
+  "id": "t0006",
+  "ts": "2026-10-24T19:30:00Z",
+  "origin": "human",
+  "agent": "gemini-2-5-pro",
+  "prompt": "Harden sticky cohort assignment with multi-session holdout verification",
+  "prompt_hash": "f1a2b3c4d5e60006",
+  "task": "funnel-sticky-holdout",
+  "targets": [
+    "ab-cohort-router"
+  ],
+  "status": "committed",
+  "restore": {
+    "feature": "slide-3-roi-calculator",
+    "from_turn": "t0001",
+    "lost_turn": "t0004",
+    "conflicts": 0
+  },
+  "touched": {
+    "nodes": [
+      "ab-cohort-router"
+    ],
+    "files": [
+      "src/telemetry/abCohort.ts"
+    ]
+  },
+  "implements": {
+    "growth-funnel": [
+      "src/Slide1.tsx"
+    ],
+    "hero-experience": [
+      "src/Slide1.tsx"
+    ],
+    "roi-benchmark": [
+      "src/acquisition/roiCalculator.ts"
+    ],
+    "seat-configurator": [
+      "src/activation/funnelState.ts"
+    ],
+    "pricing-tiers": [
+      "src/conversion/pricingEngine.ts"
+    ],
+    "stripe-checkout": [
+      "src/conversion/stripeElements.ts"
+    ],
+    "ab-cohort-router": [
+      "src/telemetry/abCohort.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-sig-track-utm",
+      "title": "trackUtmVisit signature verified",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    },
+    {
+      "id": "chk-sig-assign-cohort",
+      "title": "assignFunnelCohort signature verified",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.92,
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "Sticky cohort allocation verified across 10,000 mock visitor IDs"
+    ]
+  },
+  "summary": "Harden sticky cohort assignment with holdout verification",
+  "session_id": "sess-funnel-06",
+  "checkgen": [
+    "chk-sig-track-utm",
+    "chk-sig-assign-cohort"
+  ],
+  "held_out_guides": [
+    "guide-ab-hash-modulo"
+  ]
+}

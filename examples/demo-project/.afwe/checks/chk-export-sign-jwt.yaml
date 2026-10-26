@@ -1,0 +1,20 @@
+{
+  "id": "chk-export-sign-jwt",
+  "title": "signJwtToken export exists in jwtSigner.ts",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "jwt-signer"
+    ]
+  },
+  "claim": {
+    "type": "export_exists",
+    "symbol": "src/auth/jwtSigner.ts::signJwtToken"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-24T11:00:00Z",
+  "created_from": "t0004",
+  "provenance": "graduated"
+}

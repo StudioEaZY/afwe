@@ -1,17 +1,16 @@
-import React from "react";
+import React from 'react';
+import { trackUtmVisit } from './acquisition/utmTracker';
 
-export interface FunnelSlideProps {
-  clientName?: string;
-  onNext?: () => void;
-}
+export const Slide1: React.FC = () => {
+  React.useEffect(() => {
+    trackUtmVisit('hero-header', 'direct');
+  }, []);
 
-export function Slide1({ clientName = "Acme", onNext }: FunnelSlideProps) {
   return (
-    <div className="slide slide-1">
-      <h2>Thank You</h2>
-      <p>Prepared for {clientName} · 2026</p>
-      <p className="subtitle">You helped us get here. This is our honest gratitude.</p>
-      {onNext && <button onClick={onNext}>Next →</button>}
+    <div className="slide slide-hero">
+      <h1>Accelerate Your Software Evolution</h1>
+      <p>Deterministic architecture governance for autonomous engineering agents.</p>
+      <button className="cta-btn">Calculate Your ROI</button>
     </div>
   );
-}
+};

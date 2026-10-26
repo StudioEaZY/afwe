@@ -1,0 +1,26 @@
+{
+  "id": "chk-no-billing-in-workspace",
+  "title": "workspace does not import billing",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "workspace",
+      "billing"
+    ]
+  },
+  "claim": {
+    "type": "forbid_import",
+    "files": [
+      "src/workspace/**"
+    ],
+    "to_nodes": [
+      "billing"
+    ]
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T10:00:00Z",
+  "created_from": "t0002",
+  "provenance": "confirmed"
+}

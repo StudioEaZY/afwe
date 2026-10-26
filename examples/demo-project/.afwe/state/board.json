@@ -91,6 +91,249 @@
       "detail": "Log completion with what changed and why (`afwe task done <task> --message …`).",
       "reference": "default",
       "created": "2026-09-22T16:52:15Z"
+    },
+    {
+      "id": "item-ac2d32",
+      "kind": "proposal",
+      "title": "Proposal (30%): `services/status_worker.py` has no blueprint home; maybe a new node `services`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:a4e74bb8d5",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-721373",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/cli-tools/seedRunner.ts` has no blueprint home; maybe a new node `cli-tools`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:1908630580",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-665f60",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/experiments/aiSuggest.ts` has no blueprint home; maybe a new node `experiments`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:9d612cb247",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-7f1f48",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/legacy-sync/xmlImporter.ts` has no blueprint home; maybe a new node `legacy-sync`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:1fcb9f16b0",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-ff5483",
+      "kind": "proposal",
+      "title": "Proposal (40%): `src/auth/api.ts` (mapped to Pulse SaaS Product.Identity Subsystem.Auth API) no longer exists",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "missing:5d2258fcb4",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-620687",
+      "kind": "proposal",
+      "title": "Proposal (40%): `src/auth/users.ts` (mapped to Pulse SaaS Product.Identity Subsystem.User Store) no longer exists",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "missing:e3d1766863",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-227b64",
+      "kind": "proposal",
+      "title": "Proposal (40%): `src/realtime/presence.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Presence) no longer exists",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "missing:53d1dea7f2",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-a98bd4",
+      "kind": "proposal",
+      "title": "Proposal (40%): `src/realtime/worker.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Status Worker) no longer exists",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "missing:a6c0e482ec",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-bd6a95",
+      "kind": "proposal",
+      "title": "Proposal (40%): `src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure) no longer exists",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "missing:fa2c3a54f3",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-cf927d",
+      "kind": "proposal",
+      "title": "Proposal (40%): `src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure.HTTP Server) no longer exists",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "missing:00a7e1498a",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-627144",
+      "kind": "proposal",
+      "title": "Proposal (30%): blueprint declares Pulse SaaS Product.Identity Subsystem.Auth API → Pulse SaaS Product.Identity Subsystem.Session Token but no import edge supports it (planned, or stale?)",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unsupported:98eb85d196",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-b1ebda",
+      "kind": "proposal",
+      "title": "Proposal (30%): blueprint declares Pulse SaaS Product.Billing Subsystem.Billing Checkout → Pulse SaaS Product.Billing Subsystem.Stripe Gateway but no import edge supports it (planned, or stale?)",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unsupported:82291996b5",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-6906a0",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 55% confidence: `src/canvas/CanvasRenderer.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "unmapped:574f63c766",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-219d62",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 55% confidence: `src/dashboard/Dashboard.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "unmapped:6785fa0e15",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-c227b5",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 55% confidence: `src/data/db.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "unmapped:75fe9104bd",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-5cea80",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 60% confidence: `src/identity/user.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "unmapped:ba76d9dcbd",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-534c8f",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 55% confidence: `src/payments/checkout.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "unmapped:270232cdab",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-73dfff",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 55% confidence: `src/ui/Layout.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "unmapped:2fffab6569",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-517536",
+      "kind": "drift",
+      "title": "Pulse SaaS Product.Identity Subsystem.Auth API.OAuth Callback is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:dd8bd087fb",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-0700e2",
+      "kind": "drift",
+      "title": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer.Token Entropy Guard is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:553c85f16e",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-7aaca4",
+      "kind": "drift",
+      "title": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Normaliser is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:0595dfb86d",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-db3a68",
+      "kind": "drift",
+      "title": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel.Tag Pill Renderer is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:13ce7deac0",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-70b450",
+      "kind": "drift",
+      "title": "Pulse SaaS Product.Workspace Subsystem.Workspace Bulk Export is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:0a716cf282",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-22bcb3",
+      "kind": "drift",
+      "title": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Stripe Webhook Verifier is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:204ebb5b98",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-8c2055",
+      "kind": "drift",
+      "title": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator.Idempotency Key Hasher is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:227001ac1b",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-543bd7",
+      "kind": "drift",
+      "title": "Pulse SaaS Product.Billing Subsystem.Invoice PDF Watermark is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:620c0fd54c",
+      "created": "2026-10-26T11:16:38Z"
+    },
+    {
+      "id": "item-559a99",
+      "kind": "drift",
+      "title": "Pulse SaaS Product.Realtime Subsystem.Legacy Webhook Retry is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:7005f5b6f2",
+      "created": "2026-10-26T11:16:38Z"
     }
   ]
 }

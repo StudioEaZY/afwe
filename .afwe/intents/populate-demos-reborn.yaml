@@ -1,0 +1,18 @@
+id: populate-demos-reborn
+title: Populate both demo projects with 3-day history exercising every ReBorn feature >= 3 times
+statement: Populate demo-project and multi-intent-funnel with 12 turns, 9 pins, 15 checks, calibration questions/guides/models, 3 collateral losses, 5-level hierarchy, unmapped folders, and constraint violations
+status: active
+origin: human
+attaches:
+  nodes:
+  - demo-project
+  - examples
+from_turns:
+- t0025
+history:
+- turn: t0025
+  ts: 2026-10-26T11:11:42Z
+  statement: Populate demo-project and multi-intent-funnel with 12 turns, 9 pins, 15 checks, calibration questions/guides/models, 3 collateral losses, 5-level hierarchy, unmapped folders, and constraint violations
+created: 2026-10-26T11:11:42Z
+updated: 2026-10-26T11:11:42Z
+task: task-t0025

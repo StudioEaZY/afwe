@@ -1,8 +1,393 @@
 {
-  "generated": "2026-10-08T08:23:15Z",
-  "findings": [],
-  "applied": [],
+  "generated": "2026-10-26T11:16:38Z",
+  "findings": [
+    {
+      "id": "undeclared:0ade9933bb",
+      "kind": "undeclared_relation",
+      "severity": "info",
+      "confidence": 0.65,
+      "summary": "code shows Pulse SaaS Product.Identity Subsystem → Pulse SaaS Product.Workspace Subsystem.Workspace Library (1 import edge) but the blueprint does not declare it",
+      "evidence": [
+        "src/payments/checkout.ts → src/ui/Button.tsx"
+      ],
+      "change": {
+        "op": "add_relation",
+        "from": "identity",
+        "to": "workspace-library",
+        "kind": "depends_on"
+      },
+      "nodes": [
+        "identity",
+        "workspace-library"
+      ]
+    },
+    {
+      "id": "empty:dd8bd087fb",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Pulse SaaS Product.Identity Subsystem.Auth API.OAuth Callback is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "oauth-callback"
+      ]
+    },
+    {
+      "id": "empty:553c85f16e",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer.Token Entropy Guard is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "token-entropy-guard"
+      ]
+    },
+    {
+      "id": "empty:0595dfb86d",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Normaliser is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "tag-normaliser"
+      ]
+    },
+    {
+      "id": "empty:13ce7deac0",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel.Tag Pill Renderer is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "tag-pill-renderer"
+      ]
+    },
+    {
+      "id": "empty:0a716cf282",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Pulse SaaS Product.Workspace Subsystem.Workspace Bulk Export is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "workspace-bulk-export"
+      ]
+    },
+    {
+      "id": "empty:204ebb5b98",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Stripe Webhook Verifier is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "stripe-webhook-verifier"
+      ]
+    },
+    {
+      "id": "empty:227001ac1b",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator.Idempotency Key Hasher is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "idempotency-key-hasher"
+      ]
+    },
+    {
+      "id": "empty:620c0fd54c",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Pulse SaaS Product.Billing Subsystem.Invoice PDF Watermark is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "invoice-pdf-watermark"
+      ]
+    },
+    {
+      "id": "empty:7005f5b6f2",
+      "kind": "empty_node",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "Pulse SaaS Product.Realtime Subsystem.Legacy Webhook Retry is active but nothing implements it (mark it `planned` or map files)",
+      "evidence": [],
+      "nodes": [
+        "legacy-webhook-retry"
+      ]
+    }
+  ],
+  "applied": [
+    {
+      "id": "unmapped:574f63c766",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/canvas/CanvasRenderer.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "workspace",
+        "file": "src/canvas/CanvasRenderer.tsx"
+      },
+      "files": [
+        "src/canvas/CanvasRenderer.tsx"
+      ]
+    },
+    {
+      "id": "unmapped:6785fa0e15",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/dashboard/Dashboard.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "workspace-library",
+        "file": "src/dashboard/Dashboard.tsx"
+      },
+      "files": [
+        "src/dashboard/Dashboard.tsx"
+      ]
+    },
+    {
+      "id": "unmapped:75fe9104bd",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/data/db.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Identity Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "identity",
+        "file": "src/data/db.ts"
+      },
+      "files": [
+        "src/data/db.ts"
+      ]
+    },
+    {
+      "id": "unmapped:ba76d9dcbd",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.6,
+      "summary": "`src/identity/user.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "evidence": [
+        "directory `identity` matches node Pulse SaaS Product.Identity Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "identity",
+        "file": "src/identity/user.ts"
+      },
+      "files": [
+        "src/identity/user.ts"
+      ]
+    },
+    {
+      "id": "unmapped:a1f3795d9f",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.78,
+      "summary": "`src/dashboard/Widget.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "evidence": [
+        "all 1 mapped sibling file(s) in `src/dashboard/` belong to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "workspace-library",
+        "file": "src/dashboard/Widget.tsx"
+      },
+      "files": [
+        "src/dashboard/Widget.tsx"
+      ]
+    },
+    {
+      "id": "unmapped:9971888a25",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.78,
+      "summary": "`src/data/replica.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "evidence": [
+        "all 1 mapped sibling file(s) in `src/data/` belong to Pulse SaaS Product.Identity Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "identity",
+        "file": "src/data/replica.ts"
+      },
+      "files": [
+        "src/data/replica.ts"
+      ]
+    },
+    {
+      "id": "unmapped:270232cdab",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/payments/checkout.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Identity Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "identity",
+        "file": "src/payments/checkout.ts"
+      },
+      "files": [
+        "src/payments/checkout.ts"
+      ]
+    },
+    {
+      "id": "unmapped:2fffab6569",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/ui/Layout.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "workspace-library",
+        "file": "src/ui/Layout.tsx"
+      },
+      "files": [
+        "src/ui/Layout.tsx"
+      ]
+    },
+    {
+      "id": "unmapped:0ac61f8dbf",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.78,
+      "summary": "`src/payments/stripe.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "evidence": [
+        "all 1 mapped sibling file(s) in `src/payments/` belong to Pulse SaaS Product.Identity Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "identity",
+        "file": "src/payments/stripe.ts"
+      },
+      "files": [
+        "src/payments/stripe.ts"
+      ]
+    },
+    {
+      "id": "unmapped:99562566f4",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.78,
+      "summary": "`src/ui/Button.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "evidence": [
+        "all 1 mapped sibling file(s) in `src/ui/` belong to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "workspace-library",
+        "file": "src/ui/Button.tsx"
+      },
+      "files": [
+        "src/ui/Button.tsx"
+      ]
+    }
+  ],
   "proposed": [
+    {
+      "id": "unmapped:a4e74bb8d5",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`services/status_worker.py` has no blueprint home; maybe a new node `services`",
+      "evidence": [
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "demo-product",
+        "name": "services",
+        "files": [
+          "services/**"
+        ]
+      },
+      "files": [
+        "services/status_worker.py"
+      ]
+    },
+    {
+      "id": "unmapped:1908630580",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/cli-tools/seedRunner.ts` has no blueprint home; maybe a new node `cli-tools`",
+      "evidence": [
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "demo-product",
+        "name": "cli-tools",
+        "files": [
+          "src/cli-tools/**"
+        ]
+      },
+      "files": [
+        "src/cli-tools/seedRunner.ts"
+      ]
+    },
+    {
+      "id": "unmapped:9d612cb247",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/experiments/aiSuggest.ts` has no blueprint home; maybe a new node `experiments`",
+      "evidence": [
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "demo-product",
+        "name": "experiments",
+        "files": [
+          "src/experiments/**"
+        ]
+      },
+      "files": [
+        "src/experiments/aiSuggest.ts"
+      ]
+    },
+    {
+      "id": "unmapped:1fcb9f16b0",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.3,
+      "summary": "`src/legacy-sync/xmlImporter.ts` has no blueprint home; maybe a new node `legacy-sync`",
+      "evidence": [
+        "no sibling, import or name evidence"
+      ],
+      "change": {
+        "op": "create_node",
+        "parent": "demo-product",
+        "name": "legacy-sync",
+        "files": [
+          "src/legacy-sync/**"
+        ]
+      },
+      "files": [
+        "src/legacy-sync/xmlImporter.ts"
+      ]
+    },
     {
       "id": "unmapped:aff22d1faf",
       "kind": "unmapped_file",
@@ -23,7 +408,276 @@
       "files": [
         "src/notifications/mailer.ts"
       ]
+    },
+    {
+      "id": "missing:5d2258fcb4",
+      "kind": "missing_file",
+      "severity": "warn",
+      "confidence": 0.4,
+      "summary": "`src/auth/api.ts` (mapped to Pulse SaaS Product.Identity Subsystem.Auth API) no longer exists",
+      "evidence": [
+        "no rename candidate found"
+      ],
+      "change": {
+        "op": "unmap_file",
+        "node": "auth-api",
+        "file": "src/auth/api.ts"
+      },
+      "nodes": [
+        "auth-api"
+      ],
+      "files": [
+        "src/auth/api.ts"
+      ]
+    },
+    {
+      "id": "missing:e3d1766863",
+      "kind": "missing_file",
+      "severity": "warn",
+      "confidence": 0.4,
+      "summary": "`src/auth/users.ts` (mapped to Pulse SaaS Product.Identity Subsystem.User Store) no longer exists",
+      "evidence": [
+        "no rename candidate found"
+      ],
+      "change": {
+        "op": "unmap_file",
+        "node": "user-store",
+        "file": "src/auth/users.ts"
+      },
+      "nodes": [
+        "user-store"
+      ],
+      "files": [
+        "src/auth/users.ts"
+      ]
+    },
+    {
+      "id": "missing:53d1dea7f2",
+      "kind": "missing_file",
+      "severity": "warn",
+      "confidence": 0.4,
+      "summary": "`src/realtime/presence.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Presence) no longer exists",
+      "evidence": [
+        "no rename candidate found"
+      ],
+      "change": {
+        "op": "unmap_file",
+        "node": "realtime-presence",
+        "file": "src/realtime/presence.ts"
+      },
+      "nodes": [
+        "realtime-presence"
+      ],
+      "files": [
+        "src/realtime/presence.ts"
+      ]
+    },
+    {
+      "id": "missing:a6c0e482ec",
+      "kind": "missing_file",
+      "severity": "warn",
+      "confidence": 0.4,
+      "summary": "`src/realtime/worker.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Status Worker) no longer exists",
+      "evidence": [
+        "no rename candidate found"
+      ],
+      "change": {
+        "op": "unmap_file",
+        "node": "realtime-status-worker",
+        "file": "src/realtime/worker.ts"
+      },
+      "nodes": [
+        "realtime-status-worker"
+      ],
+      "files": [
+        "src/realtime/worker.ts"
+      ]
+    },
+    {
+      "id": "missing:fa2c3a54f3",
+      "kind": "missing_file",
+      "severity": "warn",
+      "confidence": 0.4,
+      "summary": "`src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure) no longer exists",
+      "evidence": [
+        "no rename candidate found"
+      ],
+      "change": {
+        "op": "unmap_file",
+        "node": "platform",
+        "file": "src/server.ts"
+      },
+      "nodes": [
+        "platform"
+      ],
+      "files": [
+        "src/server.ts"
+      ]
+    },
+    {
+      "id": "missing:00a7e1498a",
+      "kind": "missing_file",
+      "severity": "warn",
+      "confidence": 0.4,
+      "summary": "`src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure.HTTP Server) no longer exists",
+      "evidence": [
+        "no rename candidate found"
+      ],
+      "change": {
+        "op": "unmap_file",
+        "node": "http-server",
+        "file": "src/server.ts"
+      },
+      "nodes": [
+        "http-server"
+      ],
+      "files": [
+        "src/server.ts"
+      ]
+    },
+    {
+      "id": "unsupported:98eb85d196",
+      "kind": "unsupported_relation",
+      "severity": "info",
+      "confidence": 0.3,
+      "summary": "blueprint declares Pulse SaaS Product.Identity Subsystem.Auth API → Pulse SaaS Product.Identity Subsystem.Session Token but no import edge supports it (planned, or stale?)",
+      "evidence": [],
+      "change": {
+        "op": "remove_relation",
+        "from": "auth-api",
+        "to": "session-token"
+      },
+      "nodes": [
+        "auth-api",
+        "session-token"
+      ]
+    },
+    {
+      "id": "unsupported:82291996b5",
+      "kind": "unsupported_relation",
+      "severity": "info",
+      "confidence": 0.3,
+      "summary": "blueprint declares Pulse SaaS Product.Billing Subsystem.Billing Checkout → Pulse SaaS Product.Billing Subsystem.Stripe Gateway but no import edge supports it (planned, or stale?)",
+      "evidence": [],
+      "change": {
+        "op": "remove_relation",
+        "from": "billing-checkout",
+        "to": "stripe-gateway"
+      },
+      "nodes": [
+        "billing-checkout",
+        "stripe-gateway"
+      ]
     }
   ],
-  "uncertain": []
+  "uncertain": [
+    {
+      "id": "unmapped:574f63c766",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/canvas/CanvasRenderer.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "workspace",
+        "file": "src/canvas/CanvasRenderer.tsx"
+      },
+      "files": [
+        "src/canvas/CanvasRenderer.tsx"
+      ]
+    },
+    {
+      "id": "unmapped:6785fa0e15",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/dashboard/Dashboard.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "workspace-library",
+        "file": "src/dashboard/Dashboard.tsx"
+      },
+      "files": [
+        "src/dashboard/Dashboard.tsx"
+      ]
+    },
+    {
+      "id": "unmapped:75fe9104bd",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/data/db.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Identity Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "identity",
+        "file": "src/data/db.ts"
+      },
+      "files": [
+        "src/data/db.ts"
+      ]
+    },
+    {
+      "id": "unmapped:ba76d9dcbd",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.6,
+      "summary": "`src/identity/user.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "evidence": [
+        "directory `identity` matches node Pulse SaaS Product.Identity Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "identity",
+        "file": "src/identity/user.ts"
+      },
+      "files": [
+        "src/identity/user.ts"
+      ]
+    },
+    {
+      "id": "unmapped:270232cdab",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/payments/checkout.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Identity Subsystem"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "identity",
+        "file": "src/payments/checkout.ts"
+      },
+      "files": [
+        "src/payments/checkout.ts"
+      ]
+    },
+    {
+      "id": "unmapped:2fffab6569",
+      "kind": "unmapped_file",
+      "severity": "warn",
+      "confidence": 0.55,
+      "summary": "`src/ui/Layout.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "evidence": [
+        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
+      ],
+      "change": {
+        "op": "map_file",
+        "node": "workspace-library",
+        "file": "src/ui/Layout.tsx"
+      },
+      "files": [
+        "src/ui/Layout.tsx"
+      ]
+    }
+  ]
 }

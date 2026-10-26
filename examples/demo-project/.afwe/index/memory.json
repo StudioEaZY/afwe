@@ -1,124 +1,182 @@
 {
-  "auth-session-expiry": {
-    "kind": "decision",
-    "title": "Session expiry is 30 minutes, server-side",
-    "path": "memory/decisions/auth-session-expiry.md",
-    "nodes": [
-      "sessions"
-    ],
-    "files": [],
-    "symbols": [
-      "src/auth/session.ts::SESSION_TTL_MS"
-    ],
-    "tags": [
-      "auth",
-      "security"
-    ],
-    "status": "accepted"
-  },
-  "dashboard-rendering": {
-    "kind": "exception",
-    "title": "Dashboard rendering ignores Lighthouse budgets",
-    "path": "memory/exceptions/dashboard-rendering.md",
-    "nodes": [
-      "dashboard"
-    ],
-    "files": [],
-    "symbols": [],
-    "tags": [
-      "performance"
-    ],
-    "status": "accepted"
-  },
-  "lighthouse-exception": {
-    "kind": "decision",
-    "title": "Lighthouse exception for Dashboard",
-    "path": "memory/decisions/lighthouse-exception.md",
-    "nodes": [
-      "dashboard",
-      "canvas-renderer"
-    ],
-    "files": [
-      "src/dashboard/**",
-      "src/canvas/CanvasRenderer.tsx"
-    ],
-    "symbols": [
-      "src/canvas/CanvasRenderer.tsx::CanvasRenderer.render"
-    ],
-    "tags": [
-      "performance",
-      "intentional-exception"
-    ],
-    "status": "accepted"
-  },
-  "payments-boundary": {
+  "con-idempotency-key-mandatory": {
     "kind": "constraint",
-    "title": "Payments boundary: no UI dependencies",
-    "path": "memory/constraints/payments-boundary.md",
+    "title": "Mandatory idempotency keys on payment operations",
+    "path": "memory/constraints/con-idempotency-key-mandatory.md",
     "nodes": [
-      "payments"
+      "billing-checkout",
+      "stripe-gateway"
     ],
     "files": [],
     "symbols": [],
-    "tags": [
-      "boundary"
-    ],
+    "tags": [],
     "status": "accepted"
   },
-  "renderer-strategy": {
-    "kind": "decision",
-    "title": "Renderer strategy: one CanvasRenderer, reused",
-    "path": "memory/decisions/renderer-strategy.md",
-    "nodes": [
-      "canvas-renderer",
-      "workspace-preview"
-    ],
-    "files": [],
-    "symbols": [],
-    "tags": [
-      "rendering",
-      "reuse"
-    ],
-    "status": "accepted"
-  },
-  "replica-read-policy": {
+  "con-secret-entropy": {
     "kind": "constraint",
-    "title": "Replica read policy",
-    "path": "memory/constraints/replica-read-policy.md",
+    "title": "32-byte secret entropy requirement",
+    "path": "memory/constraints/con-secret-entropy.md",
     "nodes": [
-      "data"
+      "jwt-signer"
     ],
-    "files": [
-      "src/data/replica.ts"
-    ],
+    "files": [],
     "symbols": [],
-    "tags": [
-      "consistency",
-      "database"
-    ],
+    "tags": [],
     "status": "accepted"
   },
-  "replication-lag": {
-    "kind": "problem",
-    "title": "Replication lag on status reads",
-    "path": "memory/problems/replication-lag.md",
+  "con-workspace-billing-boundary": {
+    "kind": "constraint",
+    "title": "Decoupling workspace from billing",
+    "path": "memory/constraints/con-workspace-billing-boundary.md",
     "nodes": [
-      "data",
+      "workspace",
+      "billing"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-flat-tags": {
+    "kind": "decision",
+    "title": "Flat tags without taxonomy",
+    "path": "memory/decisions/dec-flat-tags.md",
+    "nodes": [
+      "workspace-tagging"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-jwt-stateless": {
+    "kind": "decision",
+    "title": "Stateless JWT access tokens",
+    "path": "memory/decisions/dec-jwt-stateless.md",
+    "nodes": [
+      "jwt-signer",
+      "session-token"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-replica-reads": {
+    "kind": "decision",
+    "title": "Eventual consistency for status widgets",
+    "path": "memory/decisions/dec-replica-reads.md",
+    "nodes": [
       "realtime-status-worker"
     ],
     "files": [],
     "symbols": [],
-    "tags": [
-      "database"
-    ],
-    "status": "open"
+    "tags": [],
+    "status": "accepted"
   },
-  "workspace": {
-    "kind": "terminology",
-    "title": "Workspace",
-    "path": "memory/terminology/workspace.md",
+  "exc-billing-test-bypass": {
+    "kind": "exception",
+    "title": "Exception: Local sandbox bypass for stripe webhook signature",
+    "path": "memory/exceptions/exc-billing-test-bypass.md",
     "nodes": [
-      "workspace"
+      "stripe-gateway"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "exc-realtime-admin-override": {
+    "kind": "exception",
+    "title": "Exception: Manual cluster health check ping directly to primary DB",
+    "path": "memory/exceptions/exc-realtime-admin-override.md",
+    "nodes": [
+      "realtime-status-worker"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "exc-search-direct-query": {
+    "kind": "exception",
+    "title": "Exception: Search index raw SQL read permitted during initial bulk load",
+    "path": "memory/exceptions/exc-search-direct-query.md",
+    "nodes": [
+      "workspace-search"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "prob-proration-rounding-drift": {
+    "kind": "problem",
+    "title": "Sub-cent rounding discrepancies across multiple mid-month seat changes",
+    "path": "memory/problems/prob-proration-rounding-drift.md",
+    "nodes": [
+      "proration-calculator"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "prob-tag-color-collision": {
+    "kind": "problem",
+    "title": "Hash collision on 5-color palette",
+    "path": "memory/problems/prob-tag-color-collision.md",
+    "nodes": [
+      "tag-color-wheel"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "prob-zombie-websockets": {
+    "kind": "problem",
+    "title": "Mobile clients dropping connections without TCP FIN",
+    "path": "memory/problems/prob-zombie-websockets.md",
+    "nodes": [
+      "realtime-presence"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "term-presence-heartbeat": {
+    "kind": "terminolog",
+    "title": "Presence Heartbeat vs Status Ping",
+    "path": "memory/terminology/term-presence-heartbeat.md",
+    "nodes": [
+      "realtime-presence",
+      "realtime-status-worker"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "term-proration": {
+    "kind": "terminolog",
+    "title": "Proration arithmetic",
+    "path": "memory/terminology/term-proration.md",
+    "nodes": [
+      "proration-calculator"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "term-workspace-item": {
+    "kind": "terminolog",
+    "title": "Item vs Document",
+    "path": "memory/terminology/term-workspace-item.md",
+    "nodes": [
+      "workspace-library"
     ],
     "files": [],
     "symbols": [],

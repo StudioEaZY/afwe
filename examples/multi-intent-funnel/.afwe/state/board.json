@@ -1,0 +1,149 @@
+{
+  "tasks": [],
+  "items": [
+    {
+      "id": "item-93f447",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/Slide2.tsx` has no blueprint home; maybe a new node `src`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:a34ef01a13",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-043b1d",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/affiliate-webhook/partnerPostback.ts` has no blueprint home; maybe a new node `affiliate-webhook`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:221096f563",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-748829",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/index.tsx` has no blueprint home; maybe a new node `src`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:a82ab0b8cb",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-3110da",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/legacy-pixel/fbPixel.ts` has no blueprint home; maybe a new node `legacy-pixel`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:486170b645",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-95788d",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/seo-scraper/metaHydrator.ts` has no blueprint home; maybe a new node `seo-scraper`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:429cdace79",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-6f2d10",
+      "kind": "proposal",
+      "title": "Proposal (30%): `src/unmapped-experiments/exitIntentModal.tsx` has no blueprint home; maybe a new node `unmapped-experiments`",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unmapped:12704dab69",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-b59469",
+      "kind": "proposal",
+      "title": "Proposal (30%): blueprint declares Growth Funnel.Acquisition Stage.Hero Experience → Growth Funnel.Acquisition Stage.ROI Benchmark but no import edge supports it (planned, or stale?)",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unsupported:5dbb7713be",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-75fcb7",
+      "kind": "drift",
+      "title": "Growth Funnel.Acquisition Stage.Hero Experience.Hero Variant A is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:5b98b309bb",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-362d52",
+      "kind": "drift",
+      "title": "Growth Funnel.Acquisition Stage.Hero Experience.Hero Variant B.Hero Badge Animator is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:6ca7201dfe",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-9c070e",
+      "kind": "drift",
+      "title": "Growth Funnel.Acquisition Stage.Slide 2 Social Proof is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:3fb478b1d5",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-677461",
+      "kind": "drift",
+      "title": "Growth Funnel.Activation Stage.Seat Configurator.Seat Volume Matrix is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:508a7c5a35",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-90e25a",
+      "kind": "drift",
+      "title": "Growth Funnel.Activation Stage.Seat Configurator.Seat Slider Stepper.Seat Tooltip Badge is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:bebaecdad6",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-10be1d",
+      "kind": "drift",
+      "title": "Growth Funnel.Activation Stage.Slide 3 ROI Calculator is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:c289454370",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-0218a6",
+      "kind": "drift",
+      "title": "Growth Funnel.Conversion Stage.Pricing Tiers.Tier Card Toggle is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:2f4862d151",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-780152",
+      "kind": "drift",
+      "title": "Growth Funnel.Conversion Stage.Pricing Tiers.Enterprise Quote Modal.Currency Symbol Pill is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:c15c43eab3",
+      "created": "2026-10-26T11:20:22Z"
+    },
+    {
+      "id": "item-8aad6c",
+      "kind": "drift",
+      "title": "Growth Funnel.Telemetry Stage.A/B Cohort Sticky Cookie is active but nothing implements it (mark it `planned` or map files)",
+      "status": "open",
+      "detail": "",
+      "reference": "empty:ed38d480b7",
+      "created": "2026-10-26T11:20:22Z"
+    }
+  ]
+}

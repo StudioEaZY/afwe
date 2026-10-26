@@ -1,0 +1,23 @@
+{
+  "id": "chk-forbid-alert-prompt",
+  "title": "forbid window.alert or prompt in interactive funnel slides",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "growth-funnel"
+    ]
+  },
+  "claim": {
+    "type": "forbid_pattern",
+    "pattern": "\\bwindow\\.(alert|prompt|confirm)\\s*\\(",
+    "files": [
+      "src/**/*.tsx"
+    ]
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-24T09:00:00Z",
+  "created_from": "t0004",
+  "provenance": "confirmed"
+}

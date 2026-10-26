@@ -1,177 +1,374 @@
 ---
-// index.astro - Landing Page
-import DocsLayout from '../layouts/DocsLayout.astro';
+// index.astro - Official AFWE Homepage
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import AfweIsometricHero from '../components/AfweIsometricHero.astro';
 import AtlasRadar from '../components/AtlasRadar.astro';
-import TurnReceipt from '../components/TurnReceipt.astro';
-import IsometricLayers from '../components/IsometricLayers.astro';
 ---
 
-<DocsLayout
-  title="Your code. Its memory. Its rules."
-  description="AFWE — Architecture-First Workspace Engine. The folder is the product. Double-entry bookkeeping for autonomous coding."
-  activeSection="overview"
-  wide={true}
+<MarketingLayout
+  title="AFWE — Your agent forgets. Your repo shouldn't."
+  description="AFWE records what your code is supposed to be, then checks every agent change against that intent. The intent layer for your codebase."
+  activeNav="home"
 >
-  <div class="space-y-16 py-6">
-    <!-- Hero Section -->
-    <section class="space-y-6 text-center sm:text-left">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono">
-        <span class="size-2 rounded-full bg-afwe-commit animate-pulse"></span>
-        <span>AFWE ReBorn Phase 0–4 is Live</span>
-      </div>
+  <div class="space-y-24 sm:space-y-32 py-8 sm:py-16">
+    <!-- ========================================================================= -->
+    <!-- SECTION 1: HERO SECTION                                                   -->
+    <!-- ========================================================================= -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <!-- Hero Left Column: Headline, Copy & Quick Install -->
+        <div class="lg:col-span-6 space-y-6 text-left">
+          <!-- Preheading Tagline -->
+          <div class="text-[11px] sm:text-xs font-mono font-bold tracking-[0.2em] text-graphite/70 dark:text-stone-400 uppercase">
+            YOUR CODE. ITS MEMORY. ITS RULES.
+          </div>
 
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-parchment-900 dark:text-white font-sans leading-[1.15]">
-        Your code. <span class="text-emerald-600 dark:text-emerald-400">Its memory.</span> Its rules.
-      </h1>
+          <!-- Hero Headline -->
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-graphite dark:text-white leading-[1.08] tracking-tight">
+            Your agent forgets.<br />
+            <span class="text-graphite/70 dark:text-stone-400">Your repo shouldn’t.</span>
+          </h1>
 
-      <p class="text-base sm:text-lg text-parchment-700 dark:text-obsidian-300 max-w-2xl leading-relaxed">
-        AFWE keeps a living record of what your code is <em>supposed to be</em> — and makes sure autonomous coding agents follow the plan. <strong>Double-entry bookkeeping for codebases.</strong>
-      </p>
+          <!-- Value Proposition Description -->
+          <p class="text-base sm:text-lg text-graphite/80 dark:text-stone-300 leading-relaxed max-w-xl">
+            AFWE records what your code is <em>supposed to be</em>, then checks every agent change against that intent. <strong>Double-entry bookkeeping for autonomous coding.</strong>
+          </p>
 
-      <!-- Quick Action CTAs -->
-      <div class="flex flex-wrap items-center gap-3 pt-2">
-        <a href="/docs/concepts/core-concepts" class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs font-mono shadow-sm hover:shadow transition-all">
-          Explore Core Concepts →
-        </a>
-        <a href="/docs/getting-started/quick-start" class="px-5 py-2.5 rounded-lg border border-parchment-400 dark:border-obsidian-700 hover:bg-parchment-200 dark:hover:bg-obsidian-850 text-parchment-800 dark:text-obsidian-200 text-xs font-mono transition-all">
-          Quick Start (5 Min)
-        </a>
-      </div>
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <a 
+              href="/docs/getting-started/quick-start" 
+              class="px-5 py-3 rounded-lg bg-graphite hover:bg-graphite-900 dark:bg-white dark:hover:bg-stone-100 text-white dark:text-graphite font-mono text-xs font-semibold shadow-sm transition-all"
+            >
+              Install AFWE →
+            </a>
+            <a 
+              href="/docs/concepts/core-concepts" 
+              class="px-5 py-3 rounded-lg border border-stone-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850 hover:border-graphite dark:hover:border-stone-400 text-graphite dark:text-stone-200 font-mono text-xs font-semibold shadow-xs transition-all"
+            >
+              Explore the architecture
+            </a>
+          </div>
 
-      <!-- Quick Install Box -->
-      <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-parchment-50 dark:bg-obsidian-900 p-4 font-mono text-xs max-w-xl text-left">
-        <div class="text-[10px] text-parchment-500 dark:text-obsidian-500 uppercase tracking-wide mb-2 flex items-center justify-between">
-          <span>Quick Install & Onboard</span>
-          <span>Rust 1.75+</span>
+          <!-- Quick Install Snippet Box -->
+          <div class="max-w-md pt-2">
+            <div class="rounded-xl border border-stone-400/70 dark:border-obsidian-700 bg-white/80 dark:bg-obsidian-900 p-3 shadow-xs">
+              <div class="flex items-center justify-between gap-3 text-xs font-mono">
+                <div class="flex items-center gap-2 text-graphite dark:text-stone-200 truncate">
+                  <span class="text-survey-500 font-bold">$</span>
+                  <span id="install-cmd-text">cargo install afwe</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button 
+                    id="copy-install-btn" 
+                    class="p-1.5 rounded hover:bg-stone-200 dark:hover:bg-obsidian-800 text-graphite/70 dark:text-stone-400 transition-colors"
+                    title="Copy command"
+                    aria-label="Copy install command"
+                  >
+                    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] font-mono text-graphite/60 dark:text-stone-400 mt-1.5 px-1">
+              <span>Runs 100% locally on your machine</span>
+              <span class="text-survey-600 dark:text-survey-light font-medium">Rust · Tree-Sitter · BLAKE3</span>
+            </div>
+          </div>
         </div>
-        <div class="space-y-1 text-parchment-800 dark:text-obsidian-200">
-          <div><span class="text-emerald-600 dark:text-emerald-400">$</span> cargo install afwe</div>
-          <div><span class="text-emerald-600 dark:text-emerald-400">$</span> cd my-project && afwe onboard --profile normie</div>
-          <div><span class="text-emerald-600 dark:text-emerald-400">$</span> afwe turn begin "Add guest checkout" --target src/payments/**</div>
+
+        <!-- Hero Right Column: 3D Isometric Levitating Plate SVG -->
+        <div class="lg:col-span-6 flex justify-center">
+          <AfweIsometricHero />
         </div>
       </div>
     </section>
 
-    <!-- First Screen / System Health Overview -->
-    <section class="space-y-4">
-      <div class="flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2">
+    <!-- ========================================================================= -->
+    <!-- SECTION 2: THE ARCHITECTURAL ATLAS                                        -->
+    <!-- ========================================================================= -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-stone-300 dark:border-obsidian-800 pb-6">
+        <div class="space-y-2 max-w-2xl">
+          <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
+            THE ARCHITECTURAL ATLAS
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-serif font-bold text-graphite dark:text-white tracking-tight">
+            See your codebase in context.
+          </h2>
+          <p class="text-sm sm:text-base text-graphite/80 dark:text-stone-300 leading-relaxed">
+            The Atlas gives you a clear, interactive view of your architecture — components, dependencies, constraints and intent — so you can understand what matters, move with confidence and make better decisions.
+          </p>
+        </div>
+        <a 
+          href="/docs/concepts/core-concepts#the-blueprint" 
+          class="font-mono text-xs font-semibold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light flex items-center gap-1.5 transition-colors shrink-0"
+        >
+          Explore the Atlas →
+        </a>
+      </div>
+
+      <!-- Live Interactive Sunburst Workstation -->
+      <div class="pt-2">
+        <AtlasRadar />
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION 3: HOW IT WORKS (THE 3-STEP PROCESS)                              -->
+    <!-- ========================================================================= -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-300 dark:border-obsidian-800 pb-6">
         <div>
-          <h2 class="text-xl font-bold text-parchment-900 dark:text-white font-sans">1. The First Screen (Overview)</h2>
-          <p class="text-xs text-parchment-600 dark:text-obsidian-400 font-mono mt-0.5">Clean, calm, and quiet. The default view shows the system is healthy.</p>
+          <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-graphite/70 dark:text-stone-400 uppercase mb-2">
+            HOW IT WORKS
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-serif font-bold text-graphite dark:text-white tracking-tight">
+            From intent to verification.
+          </h2>
+          <p class="text-sm sm:text-base text-graphite/80 dark:text-stone-300 mt-1 max-w-xl">
+            AFWE works with your AI agents to make sure changes respect your architecture, constraints and recorded decisions.
+          </p>
         </div>
-        <div class="flex items-center gap-2 text-xs font-mono text-emerald-600 dark:text-emerald-400">
-          <span class="size-2 rounded-full bg-emerald-500"></span>
-          <span>Everything balances</span>
-        </div>
-      </div>
-
-      <!-- Metric Tiles Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
-        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-3.5">
-          <div class="text-parchment-600 dark:text-obsidian-400 text-[11px] mb-1">Features</div>
-          <div class="text-2xl font-bold text-parchment-900 dark:text-white">12</div>
-          <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">+2 proposals waiting</div>
-        </div>
-        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-3.5">
-          <div class="text-parchment-600 dark:text-obsidian-400 text-[11px] mb-1">Constraints</div>
-          <div class="text-2xl font-bold text-parchment-900 dark:text-white">28</div>
-          <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">All satisfied (0 violations)</div>
-        </div>
-        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-3.5">
-          <div class="text-parchment-600 dark:text-obsidian-400 text-[11px] mb-1">Pins</div>
-          <div class="text-2xl font-bold text-parchment-900 dark:text-white">3</div>
-          <div class="text-[10px] text-indigo-600 dark:text-indigo-400 mt-1">Locked by you (human)</div>
-        </div>
-        <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-3.5">
-          <div class="text-parchment-600 dark:text-obsidian-400 text-[11px] mb-1">Recent Turns</div>
-          <div class="text-2xl font-bold text-parchment-900 dark:text-white">5</div>
-          <div class="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">Last 24h (all verified)</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Interactive Codebase Atlas Showcase -->
-    <section class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-xl font-bold text-parchment-900 dark:text-white font-sans">2. The Codebase Atlas</h2>
-          <p class="text-xs text-parchment-600 dark:text-obsidian-400 font-mono mt-0.5">Explore structure. See what's known, what's inferred, and what's unmapped.</p>
-        </div>
-        <a href="/docs/concepts/core-concepts#the-blueprint" class="text-xs font-mono text-emerald-600 dark:text-emerald-400 hover:underline">
-          View Blueprint Docs →
+        <a 
+          href="/docs/concepts/core-concepts#turns" 
+          class="font-mono text-xs font-semibold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light flex items-center gap-1.5 transition-colors shrink-0"
+        >
+          The 3-step process →
         </a>
       </div>
 
-      <AtlasRadar />
-    </section>
+      <!-- 3 Steps Chain Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+        <!-- Step 1: Begin -->
+        <div class="rounded-2xl border border-stone-400/70 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between shadow-xs hover:border-graphite/50 transition-all">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="size-7 rounded-full bg-graphite text-white dark:bg-stone-200 dark:text-graphite font-mono text-xs font-bold flex items-center justify-center">
+                1
+              </span>
+              <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-lg font-serif font-bold text-graphite dark:text-white">Begin</h3>
+              <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed mt-2 font-sans">
+                The agent receives scoped context from your codebase — architecture, active pins, invariant rules, and declared claims.
+              </p>
+            </div>
+          </div>
+          <div class="mt-6 pt-3 border-t border-stone-300 dark:border-obsidian-800 font-mono text-[11px] text-survey-600 dark:text-survey-light">
+            afwe turn begin "..."
+          </div>
+        </div>
 
-    <!-- Double-Entry Bookkeeping Comparison Matrix -->
-    <section class="space-y-4">
-      <h2 class="text-xl font-bold text-parchment-900 dark:text-white font-sans">Why AFWE Exists & The Problem Spectrum</h2>
-      <div class="overflow-x-auto rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 font-mono text-xs">
-        <table class="w-full text-left">
-          <thead class="border-b border-parchment-400 dark:border-obsidian-700 bg-parchment-50 dark:bg-obsidian-900 text-parchment-600 dark:text-obsidian-400">
-            <tr>
-              <th class="p-3">Question / Invariant</th>
-              <th class="p-3 text-center">grep / Search</th>
-              <th class="p-3 text-center">GraphRAG / Linters</th>
-              <th class="p-3 text-center text-emerald-600 dark:text-emerald-400 font-bold">AFWE (.afwe/)</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-parchment-300 dark:divide-obsidian-800 text-parchment-800 dark:text-obsidian-200">
-            <tr>
-              <td class="p-3 font-medium">Where is checkout()?</td>
-              <td class="p-3 text-center text-emerald-600">✓</td>
-              <td class="p-3 text-center text-emerald-600">✓</td>
-              <td class="p-3 text-center text-emerald-600 font-bold">✓ (AST Index)</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">What imports Payments?</td>
-              <td class="p-3 text-center text-amber-500">Flat text</td>
-              <td class="p-3 text-center text-emerald-600">✓ Graph AST</td>
-              <td class="p-3 text-center text-emerald-600 font-bold">✓ (Scene Graph)</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">Is Payments ALLOWED to import UI?</td>
-              <td class="p-3 text-center text-red-500">✕</td>
-              <td class="p-3 text-center text-red-500">✕</td>
-              <td class="p-3 text-center text-emerald-600 font-bold">✓ Constraint Gate</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">Is this odd timeout a bug or intentional?</td>
-              <td class="p-3 text-center text-red-500">✕</td>
-              <td class="p-3 text-center text-red-500">✕</td>
-              <td class="p-3 text-center text-emerald-600 font-bold">✓ Pin (intentional)</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">Did an agent silently delete a feature?</td>
-              <td class="p-3 text-center text-red-500">✕</td>
-              <td class="p-3 text-center text-red-500">✕</td>
-              <td class="p-3 text-center text-emerald-600 font-bold">✓ Collateral Loss Check</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">Why was this architectural decision made?</td>
-              <td class="p-3 text-center text-red-500">✕</td>
-              <td class="p-3 text-center text-red-500">✕</td>
-              <td class="p-3 text-center text-emerald-600 font-bold">✓ Memory & Scoped YAML</td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Step 2: Assume -->
+        <div class="rounded-2xl border border-stone-400/70 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between shadow-xs hover:border-graphite/50 transition-all">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="size-7 rounded-full bg-graphite text-white dark:bg-stone-200 dark:text-graphite font-mono text-xs font-bold flex items-center justify-center">
+                2
+              </span>
+              <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-lg font-serif font-bold text-graphite dark:text-white">Assume</h3>
+              <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed mt-2 font-sans">
+                The agent proposes structural changes, declaring intent and exact AST claims <em>before</em> editing any source code.
+              </p>
+            </div>
+          </div>
+          <div class="mt-6 pt-3 border-t border-stone-300 dark:border-obsidian-800 font-mono text-[11px] text-survey-600 dark:text-survey-light">
+            afwe turn assume &lt;turn&gt;
+          </div>
+        </div>
+
+        <!-- Step 3: Commit -->
+        <div class="rounded-2xl border border-stone-400/70 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between shadow-xs hover:border-graphite/50 transition-all">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="size-7 rounded-full bg-graphite text-white dark:bg-stone-200 dark:text-graphite font-mono text-xs font-bold flex items-center justify-center">
+                3
+              </span>
+              <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-lg font-serif font-bold text-graphite dark:text-white">Commit</h3>
+              <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed mt-2 font-sans">
+                AFWE deterministically gates the commit against your constraints and pins, creating an audit receipt trailer.
+              </p>
+            </div>
+          </div>
+          <div class="mt-6 pt-3 border-t border-stone-300 dark:border-obsidian-800 font-mono text-[11px] text-survey-600 dark:text-survey-light">
+            afwe turn commit &lt;turn&gt;
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- The 5 Layers & Turn Receipt Preview -->
-    <section class="space-y-6">
-      <div>
-        <h2 class="text-xl font-bold text-parchment-900 dark:text-white font-sans">3. Unified Architecture & Audit Receipts</h2>
-        <p class="text-xs text-parchment-600 dark:text-obsidian-400 font-mono mt-0.5">Every change is a receipt. Simple, clear, and checkable.</p>
+    <!-- ========================================================================= -->
+    <!-- SECTION 4: WHY AFWE (MORE THAN DEPENDENCY MAPS)                           -->
+    <!-- ========================================================================= -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div class="border-b border-stone-300 dark:border-obsidian-800 pb-6">
+        <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-graphite/70 dark:text-stone-400 uppercase mb-2">
+          WHY AFWE
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-serif font-bold text-graphite dark:text-white tracking-tight">
+          More than dependency maps.
+        </h2>
+        <p class="text-sm sm:text-base text-graphite/80 dark:text-stone-300 mt-1 max-w-2xl leading-relaxed">
+          Traditional tools show you what's connected. AFWE shows you what's allowed, what's intended, and how it all fits together over time.
+        </p>
       </div>
 
-      <IsometricLayers />
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Feature 1 -->
+        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 p-5 space-y-3">
+          <div class="size-9 rounded-lg bg-stone-200/70 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+            <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="22" y1="12" x2="18" y2="12"></line>
+              <line x1="6" y1="12" x2="2" y2="12"></line>
+              <line x1="12" y1="6" x2="12" y2="2"></line>
+              <line x1="12" y1="22" x2="12" y2="18"></line>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm text-graphite dark:text-white">Intent-driven</h3>
+          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed font-sans">
+            Tracks purpose, constraints and decisions, not just dependencies.
+          </p>
+        </div>
 
-      <div class="mt-4">
-        <TurnReceipt />
+        <!-- Feature 2 -->
+        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 p-5 space-y-3">
+          <div class="size-9 rounded-lg bg-stone-200/70 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+            <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm text-graphite dark:text-white">Architecture-aware</h3>
+          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed font-sans">
+            Understands your structure, boundaries and allowed <strong>relationships</strong>.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 p-5 space-y-3">
+          <div class="size-9 rounded-lg bg-stone-200/70 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+            <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm text-graphite dark:text-white">Historical trace</h3>
+          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed font-sans">
+            See how your architecture and intent evolved over time with 4D Dial Scrubbing.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 p-5 space-y-3">
+          <div class="size-9 rounded-lg bg-stone-200/70 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+            <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3 class="font-bold text-sm text-graphite dark:text-white">Agent-ready</h3>
+          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed font-sans">
+            Built for modern workflows, where AI agents need structure, not just context.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION 5: READY TO GET STARTED BANNER                                    -->
+    <!-- ========================================================================= -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-3xl border border-stone-400/80 dark:border-obsidian-700 bg-gradient-to-r from-stone-300/40 via-paper to-stone-200/40 dark:from-obsidian-900 dark:via-obsidian-850 dark:to-obsidian-900 overflow-hidden shadow-lg grid grid-cols-1 lg:grid-cols-12">
+        <!-- Left: Cartographic City Illustration -->
+        <div class="lg:col-span-6 p-8 sm:p-12 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-stone-400/50 dark:border-obsidian-700 relative overflow-hidden">
+          <div class="space-y-4 relative z-10">
+            <span class="text-xs font-mono font-bold tracking-widest text-survey-600 dark:text-survey-light uppercase">
+              LOCAL-FIRST HARNESS
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-serif font-bold text-graphite dark:text-white">
+              The intent layer for your codebase.
+            </h2>
+            <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed">
+              No cloud dependencies. No mandatory subscriptions. Just clean deterministic Rust governance keeping your agents aligned with your architecture.
+            </p>
+          </div>
+
+          <div class="pt-6 relative z-10 flex items-center gap-4 text-xs font-mono text-graphite/70 dark:text-stone-400">
+            <span>✓ MIT Open Source</span>
+            <span>✓ Zero Telemetry</span>
+            <span>✓ 57 MCP Tools</span>
+          </div>
+        </div>
+
+        <!-- Right: Action Callout Card -->
+        <div class="lg:col-span-6 bg-graphite-900 dark:bg-obsidian-950 p-8 sm:p-12 text-white flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="text-[11px] font-mono tracking-widest text-stone-400 uppercase font-semibold">
+              READY TO GET STARTED?
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-serif font-bold text-white">
+              Install AFWE in your project
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-300 leading-relaxed max-w-md">
+              Set up in minutes and give your agents the context they need to work safely and effectively.
+            </p>
+          </div>
+
+          <div class="pt-8">
+            <a 
+              href="/docs/getting-started/quick-start" 
+              class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-graphite font-mono text-xs font-bold hover:bg-stone-200 transition-colors shadow-sm"
+            >
+              View quick start →
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   </div>
-</DocsLayout>
+
+  <script>
+    // Copy install command script
+    const copyBtn = document.getElementById('copy-install-btn');
+    const cmdText = document.getElementById('install-cmd-text');
+    if (copyBtn && cmdText) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(cmdText.textContent || 'cargo install afwe');
+        const originalHtml = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<span class="text-survey-500 font-bold text-[11px]">Copied!</span>';
+        setTimeout(() => {
+          copyBtn.innerHTML = originalHtml;
+        }, 1500);
+      });
+    }
+  </script>
+</MarketingLayout>

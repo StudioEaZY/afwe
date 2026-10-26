@@ -1,0 +1,493 @@
+{
+  "models": {
+    "claude-sonnet-4-5": {
+      "model_id": "claude-sonnet-4-5",
+      "human_accepted": 21,
+      "human_rejected": 1,
+      "trust_factor": 1.08,
+      "updated_at": "2026-10-26T09:00:00Z"
+    },
+    "gpt-4o": {
+      "model_id": "gpt-4o",
+      "human_accepted": 15,
+      "human_rejected": 4,
+      "trust_factor": 0.95,
+      "updated_at": "2026-10-26T09:15:00Z"
+    },
+    "gemini-2-5-pro": {
+      "model_id": "gemini-2-5-pro",
+      "human_accepted": 19,
+      "human_rejected": 2,
+      "trust_factor": 1.04,
+      "updated_at": "2026-10-26T09:30:00Z"
+    }
+  },
+  "guides": [
+    {
+      "id": "guide-ab-hash-modulo",
+      "title": "cohort hash uses modulo 2 division for balanced 50/50 split",
+      "status": "probing",
+      "score": 0.89,
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "Math\\.abs\\(hash\\)\\s*%\\s*2",
+        "files": [
+          "src/telemetry/abCohort.ts"
+        ]
+      },
+      "attaches": {
+        "nodes": [
+          "ab-cohort-router"
+        ]
+      },
+      "probes": [
+        {
+          "turn": "t0006",
+          "session_id": "sess-funnel-1",
+          "symbol": "src/telemetry/abCohort.ts::assignFunnelCohort",
+          "held_out": true
+        },
+        {
+          "turn": "t0007",
+          "session_id": "sess-funnel-2",
+          "symbol": "src/telemetry/abCohort.ts::assignFunnelCohort",
+          "held_out": false
+        }
+      ],
+      "contradictions": 0,
+      "provenance": "inferred",
+      "origin": "llm:claude-sonnet-4-5",
+      "created": "2026-10-24T10:00:00Z",
+      "created_from": "t0004"
+    },
+    {
+      "id": "guide-session-storage-utm",
+      "title": "attribution parameters stored strictly in sessionStorage",
+      "status": "probing",
+      "score": 0.86,
+      "claim": {
+        "type": "forbid_pattern",
+        "pattern": "localStorage\\.setItem\\(['\"]utm_",
+        "files": [
+          "src/acquisition/**"
+        ]
+      },
+      "attaches": {
+        "nodes": [
+          "traffic-attribution"
+        ]
+      },
+      "probes": [
+        {
+          "turn": "t0005",
+          "session_id": "sess-utm-1",
+          "symbol": "src/acquisition/utmTracker.ts::trackUtmVisit",
+          "held_out": false
+        },
+        {
+          "turn": "t0006",
+          "session_id": "sess-utm-2",
+          "symbol": "src/acquisition/utmTracker.ts::trackUtmVisit",
+          "held_out": true
+        }
+      ],
+      "contradictions": 0,
+      "provenance": "inferred",
+      "origin": "llm:gpt-4o",
+      "created": "2026-10-24T12:00:00Z",
+      "created_from": "t0004"
+    },
+    {
+      "id": "guide-tier-pricing-floor",
+      "title": "seat pricing calculation never yields negative values",
+      "status": "probing",
+      "score": 0.87,
+      "claim": {
+        "type": "forbid_pattern",
+        "pattern": "seats\\s*<\\s*0",
+        "files": [
+          "src/conversion/pricingEngine.ts"
+        ]
+      },
+      "attaches": {
+        "nodes": [
+          "pricing-tiers"
+        ]
+      },
+      "probes": [
+        {
+          "turn": "t0006",
+          "session_id": "sess-price-1",
+          "symbol": "src/conversion/pricingEngine.ts::calculateTierPrice",
+          "held_out": true
+        }
+      ],
+      "contradictions": 0,
+      "provenance": "inferred",
+      "origin": "llm:gemini-2-5-pro",
+      "created": "2026-10-25T09:00:00Z",
+      "created_from": "t0005"
+    },
+    {
+      "id": "guide-roi-rate-constant",
+      "title": "developer hourly billing benchmark standard set at $95",
+      "status": "ready_to_graduate",
+      "score": 0.96,
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "hours\\s*\\*\\s*95",
+        "files": [
+          "src/acquisition/roiCalculator.ts"
+        ]
+      },
+      "attaches": {
+        "nodes": [
+          "roi-benchmark"
+        ]
+      },
+      "probes": [
+        {
+          "turn": "t0004",
+          "session_id": "sess-roi-a",
+          "symbol": "src/acquisition/roiCalculator.ts::calculateRoiSavings",
+          "held_out": true
+        },
+        {
+          "turn": "t0005",
+          "session_id": "sess-roi-b",
+          "symbol": "src/acquisition/roiCalculator.ts::calculateRoiSavings",
+          "held_out": false
+        },
+        {
+          "turn": "t0006",
+          "session_id": "sess-roi-c",
+          "symbol": "src/acquisition/roiCalculator.ts::calculateRoiSavings",
+          "held_out": true
+        }
+      ],
+      "contradictions": 0,
+      "provenance": "inferred",
+      "origin": "llm:claude-sonnet-4-5",
+      "created": "2026-10-24T11:00:00Z",
+      "created_from": "t0004"
+    },
+    {
+      "id": "guide-state-seat-increment",
+      "title": "seat selection update sets seats property on state object",
+      "status": "ready_to_graduate",
+      "score": 0.94,
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "globalState\\.seats\\s*=\\s*seats",
+        "files": [
+          "src/activation/funnelState.ts"
+        ]
+      },
+      "attaches": {
+        "nodes": [
+          "seat-configurator"
+        ]
+      },
+      "probes": [
+        {
+          "turn": "t0004",
+          "session_id": "sess-state-1",
+          "symbol": "src/activation/funnelState.ts::updateFunnelSeatCount",
+          "held_out": false
+        },
+        {
+          "turn": "t0005",
+          "session_id": "sess-state-2",
+          "symbol": "src/activation/funnelState.ts::updateFunnelSeatCount",
+          "held_out": true
+        },
+        {
+          "turn": "t0006",
+          "session_id": "sess-state-3",
+          "symbol": "src/activation/funnelState.ts::updateFunnelSeatCount",
+          "held_out": true
+        }
+      ],
+      "contradictions": 0,
+      "provenance": "inferred",
+      "origin": "llm:claude-sonnet-4-5",
+      "created": "2026-10-24T11:30:00Z",
+      "created_from": "t0004"
+    },
+    {
+      "id": "guide-stripe-container-id",
+      "title": "stripe mounting element targets card-element-container",
+      "status": "ready_to_graduate",
+      "score": 0.93,
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "card-element-container",
+        "files": [
+          "src/Slide6.tsx"
+        ]
+      },
+      "attaches": {
+        "nodes": [
+          "stripe-checkout"
+        ]
+      },
+      "probes": [
+        {
+          "turn": "t0005",
+          "session_id": "sess-chk-1",
+          "symbol": "src/Slide6.tsx::Slide6",
+          "held_out": true
+        },
+        {
+          "turn": "t0006",
+          "session_id": "sess-chk-2",
+          "symbol": "src/Slide6.tsx::Slide6",
+          "held_out": false
+        },
+        {
+          "turn": "t0007",
+          "session_id": "sess-chk-3",
+          "symbol": "src/Slide6.tsx::Slide6",
+          "held_out": true
+        }
+      ],
+      "contradictions": 0,
+      "provenance": "inferred",
+      "origin": "llm:gemini-2-5-pro",
+      "created": "2026-10-25T08:00:00Z",
+      "created_from": "t0005"
+    },
+    {
+      "id": "guide-pricing-engine-graduated",
+      "title": "calculateTierPrice export exists in pricingEngine.ts",
+      "status": "graduated",
+      "score": 0.99,
+      "claim": {
+        "type": "export_exists",
+        "symbol": "src/conversion/pricingEngine.ts::calculateTierPrice"
+      },
+      "attaches": {
+        "nodes": [
+          "pricing-tiers"
+        ]
+      },
+      "probes": [
+        {
+          "turn": "t0002",
+          "session_id": "sess-p1",
+          "symbol": "src/conversion/pricingEngine.ts::calculateTierPrice",
+          "held_out": true
+        },
+        {
+          "turn": "t0003",
+          "session_id": "sess-p2",
+          "symbol": "src/conversion/pricingEngine.ts::calculateTierPrice",
+          "held_out": true
+        }
+      ],
+      "contradictions": 0,
+      "provenance": "graduated",
+      "origin": "afwe:graduation",
+      "created": "2026-10-23T10:00:00Z",
+      "created_from": "t0002",
+      "graduated_check_id": "chk-export-calculate-tier-price",
+      "confirmed_by": "human:founder",
+      "confirmed_at": "2026-10-23T10:30:00Z"
+    },
+    {
+      "id": "guide-cohort-router-graduated",
+      "title": "assignFunnelCohort export exists in abCohort.ts",
+      "status": "graduated",
+      "score": 0.98,
+      "claim": {
+        "type": "export_exists",
+        "symbol": "src/telemetry/abCohort.ts::assignFunnelCohort"
+      },
+      "attaches": {
+        "nodes": [
+          "ab-cohort-router"
+        ]
+      },
+      "probes": [
+        {
+          "turn": "t0004",
+          "session_id": "sess-c1",
+          "symbol": "src/telemetry/abCohort.ts::assignFunnelCohort",
+          "held_out": true
+        }
+      ],
+      "contradictions": 0,
+      "provenance": "graduated",
+      "origin": "afwe:graduation",
+      "created": "2026-10-24T10:30:00Z",
+      "created_from": "t0004",
+      "graduated_check_id": "chk-export-assign-cohort",
+      "confirmed_by": "human:growth-lead",
+      "confirmed_at": "2026-10-24T11:00:00Z"
+    },
+    {
+      "id": "guide-roi-calc-graduated",
+      "title": "calculateRoiSavings export exists in roiCalculator.ts",
+      "status": "graduated",
+      "score": 0.97,
+      "claim": {
+        "type": "export_exists",
+        "symbol": "src/acquisition/roiCalculator.ts::calculateRoiSavings"
+      },
+      "attaches": {
+        "nodes": [
+          "roi-benchmark"
+        ]
+      },
+      "probes": [
+        {
+          "turn": "t0005",
+          "session_id": "sess-r1",
+          "symbol": "src/acquisition/roiCalculator.ts::calculateRoiSavings",
+          "held_out": true
+        }
+      ],
+      "contradictions": 0,
+      "provenance": "graduated",
+      "origin": "afwe:graduation",
+      "created": "2026-10-24T14:30:00Z",
+      "created_from": "t0005",
+      "graduated_check_id": "chk-export-calculate-roi",
+      "confirmed_by": "human:marketing",
+      "confirmed_at": "2026-10-24T15:00:00Z"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-annual-discount-rate",
+      "turn": "t0008",
+      "session_id": "sess-annual-plan",
+      "question": "Should the annual pricing plan discount be 15% or 20% compared to monthly billing?",
+      "why_asking": "cross_subsystem: conversion pricing engine calculation directly affects stripe billing subscription invoice item schedule.",
+      "blast_reasons": [
+        "cross_subsystem",
+        "exported_symbol"
+      ],
+      "blast_score": 8,
+      "proposed_claim": {
+        "type": "require_pattern",
+        "pattern": "annualMultiplier\\s*=\\s*0\\.80",
+        "files": [
+          "src/conversion/pricingEngine.ts"
+        ]
+      },
+      "attaches": {
+        "nodes": [
+          "pricing-tiers",
+          "stripe-checkout"
+        ]
+      },
+      "status": "open",
+      "created": "2026-10-25T14:00:00Z"
+    },
+    {
+      "id": "q-seat-stepper-granularity",
+      "turn": "t0007",
+      "session_id": "sess-seat-stepper",
+      "question": "Above 50 seats, should the slider step by 5 seats or 10 seats?",
+      "why_asking": "exported_symbol: seat slider step increment impacts DOM rendering and qualification event tracking.",
+      "blast_reasons": [
+        "exported_symbol"
+      ],
+      "blast_score": 5,
+      "proposed_claim": {
+        "type": "require_pattern",
+        "pattern": "step\\s*=\\s*10",
+        "files": [
+          "src/Slide3.tsx"
+        ]
+      },
+      "attaches": {
+        "nodes": [
+          "seat-configurator"
+        ]
+      },
+      "status": "open",
+      "created": "2026-10-25T11:00:00Z"
+    },
+    {
+      "id": "q-exit-modal-trigger-velocity",
+      "turn": "t0009",
+      "session_id": "sess-exit-modal",
+      "question": "Should mouseout exit intent detect upward Y velocity exceeding 150px/sec or any mouse leave of viewport?",
+      "why_asking": "contradicts_history: prior turn t0006 prioritized low nuisance thresholds.",
+      "blast_reasons": [
+        "contradicts_history"
+      ],
+      "blast_score": 6,
+      "attaches": {
+        "nodes": [
+          "growth-funnel"
+        ]
+      },
+      "status": "open",
+      "created": "2026-10-25T16:00:00Z"
+    },
+    {
+      "id": "q-ab-cohort-persistence",
+      "turn": "t0002",
+      "session_id": "sess-ab-choice",
+      "question": "Should A/B cohort allocation be deterministic based on visitorId hash or stored in cookie?",
+      "why_asking": "Architecture contract decision for split-test attribution.",
+      "blast_reasons": [
+        "cross_subsystem"
+      ],
+      "blast_score": 9,
+      "attaches": {
+        "nodes": [
+          "ab-cohort-router"
+        ]
+      },
+      "status": "answered",
+      "answer": "Use deterministic hash of visitorId with sticky fallback. Zero split contamination.",
+      "created": "2026-10-23T09:45:00Z",
+      "resolved": "2026-10-23T10:00:00Z"
+    },
+    {
+      "id": "q-pci-token-flow",
+      "turn": "t0004",
+      "session_id": "sess-pci-flow",
+      "question": "Does checkout directly transmit card numbers to custom backend API?",
+      "why_asking": "PCI-DSS compliance qualification.",
+      "blast_reasons": [
+        "cross_subsystem",
+        "exported_symbol"
+      ],
+      "blast_score": 10,
+      "attaches": {
+        "nodes": [
+          "stripe-checkout"
+        ]
+      },
+      "status": "answered",
+      "answer": "Strictly forbidden. Card data stays inside Stripe Elements iframe.",
+      "created": "2026-10-24T09:30:00Z",
+      "resolved": "2026-10-24T10:00:00Z"
+    },
+    {
+      "id": "q-roi-hours-baseline",
+      "turn": "t0005",
+      "session_id": "sess-roi-hours",
+      "question": "What is the assumed developer annual wasted hours on architectural regressions?",
+      "why_asking": "Formula baseline calibration.",
+      "blast_reasons": [
+        "exported_symbol"
+      ],
+      "blast_score": 6,
+      "attaches": {
+        "nodes": [
+          "roi-benchmark"
+        ]
+      },
+      "status": "answered",
+      "answer": "180 hours per developer per year across debugging, regressions, and manual reviews.",
+      "created": "2026-10-24T14:00:00Z",
+      "resolved": "2026-10-24T14:15:00Z"
+    }
+  ]
+}

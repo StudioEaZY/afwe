@@ -1,0 +1,48 @@
+{
+  "id": "t0010",
+  "ts": "2026-10-26T08:30:00Z",
+  "origin": "human",
+  "agent": "gpt-4o",
+  "prompt": "Re-randomize A/B cohort on every page reload to test traffic distribution",
+  "prompt_hash": "f1a2b3c4d5e60010",
+  "task": "funnel-hack-cohort",
+  "targets": [
+    "ab-cohort-router"
+  ],
+  "status": "abandoned",
+  "touched": {
+    "nodes": [
+      "ab-cohort-router"
+    ],
+    "files": [
+      "src/telemetry/abCohort.ts"
+    ]
+  },
+  "implements": {
+    "ab-cohort-router": [
+      "src/telemetry/abCohort.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-pin-ab-sticky",
+      "title": "pin-ab-cohort-sticky compliance check",
+      "trust": "deterministic",
+      "authored_by": "afwe",
+      "passed": false,
+      "blocking": true,
+      "message": "Intentional pin pin-ab-cohort-sticky forbids re-randomizing cohorts"
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.2,
+  "gate": {
+    "decision": "redo",
+    "reasons": [
+      "BLOCKED by pin pin-ab-cohort-sticky: Visitors must remain in their initial A/B cohort for 30 days",
+      "TurnJudgment action: block"
+    ]
+  },
+  "summary": "Re-randomize A/B cohort on reload (BLOCKED by intentional pin)",
+  "session_id": "sess-redo-10"
+}

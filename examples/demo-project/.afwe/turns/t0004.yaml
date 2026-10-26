@@ -1,0 +1,89 @@
+{
+  "id": "t0004",
+  "ts": "2026-10-24T10:15:00Z",
+  "origin": "human",
+  "agent": "gpt-4o",
+  "prompt": "Refactor workspace search index and introduce JWT signer component",
+  "prompt_hash": "a1b2c3d4e5f60004",
+  "task": "pulse-search-auth",
+  "targets": [
+    "workspace-search",
+    "jwt-signer"
+  ],
+  "status": "committed",
+  "overrides": [
+    {
+      "pin": "pin-f6a032",
+      "reason": "Async search indexing replaces synchronous insert locking"
+    }
+  ],
+  "touched": {
+    "nodes": [
+      "workspace-search",
+      "jwt-signer"
+    ],
+    "files": [
+      "src/workspace/search/Search.ts",
+      "src/auth/jwtSigner.ts"
+    ]
+  },
+  "implements": {
+    "demo-product": [
+      "src/server.ts"
+    ],
+    "workspace": [
+      "src/workspace/library/Library.ts"
+    ],
+    "workspace-tagging": [
+      "src/workspace/tagging/Tags.ts"
+    ],
+    "workspace-search": [
+      "src/workspace/search/Search.ts"
+    ],
+    "billing": [
+      "src/billing/checkout/CheckoutController.ts"
+    ],
+    "stripe-gateway": [
+      "src/billing/stripe/StripeGateway.ts"
+    ],
+    "jwt-signer": [
+      "src/auth/jwtSigner.ts"
+    ],
+    "invoice-pdf-watermark": [
+      "src/billing/invoices/watermark.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-forbid-db-raw-query",
+      "title": "forbid DatabaseClient.rawQuery",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    },
+    {
+      "id": "chk-export-sign-jwt",
+      "title": "signJwtToken export exists",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.93,
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "OVERRIDDEN pin pin-f6a032: Async indexing",
+      "JWT signer verified"
+    ]
+  },
+  "summary": "Refactor workspace search index and introduce JWT signer component",
+  "session_id": "sess-search-04",
+  "checkgen": [
+    "chk-forbid-db-raw-query",
+    "chk-export-sign-jwt"
+  ]
+}

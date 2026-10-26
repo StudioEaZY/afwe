@@ -1,0 +1,197 @@
+nodes:
+- id: growth-funnel
+  name: Growth Funnel
+  kind: funnel
+  purpose: Multi-intent prospective developer acquisition, activation, and checkout funnel.
+  status: active
+  origin: human
+  children:
+  - id: acquisition-stage
+    name: Acquisition Stage
+    kind: stage
+    purpose: Top-of-funnel traffic attribution, hero landing, and interactive ROI benchmarking.
+    status: active
+    origin: human
+    implements:
+      files:
+      - src/Slide1.tsx
+      - src/acquisition/**
+    children:
+    - id: hero-experience
+      name: Hero Experience
+      kind: module
+      purpose: Main headline, elevator pitch, and value proposition delivery.
+      status: active
+      implements:
+        files:
+        - src/Slide1.tsx
+      children:
+      - id: hero-variant-a
+        name: Hero Variant A
+        kind: variation
+        purpose: Technical developer-first copy emphasis.
+        status: active
+      - id: hero-variant-b
+        name: Hero Variant B
+        kind: variation
+        purpose: Executive ROI and velocity focus.
+        status: active
+        children:
+        - id: hero-badge-animator
+          name: Hero Badge Animator
+          kind: widget
+          purpose: Interactive SVG animated metric ticker.
+          status: active
+    - id: roi-benchmark
+      name: ROI Benchmark
+      kind: module
+      purpose: Dynamic developer salary and hours-saved calculation calculator.
+      status: active
+      implements:
+        files:
+        - src/acquisition/roiCalculator.ts
+    - id: traffic-attribution
+      name: Traffic Attribution
+      kind: module
+      purpose: Ingestion and sanitization of UTM campaign query parameters.
+      status: active
+      implements:
+        files:
+        - src/acquisition/utmTracker.ts
+    - id: slide-2-social-proof
+      name: Slide 2 Social Proof
+      kind: module
+      purpose: Customer logo marquee and developer quote carousel.
+      status: active
+
+  - id: activation-stage
+    name: Activation Stage
+    kind: stage
+    purpose: Interactive seat configuration and compliance qualification.
+    status: active
+    origin: human
+    implements:
+      files:
+      - src/Slide3.tsx
+      - src/Slide4.tsx
+      - src/activation/**
+    children:
+    - id: seat-configurator
+      name: Seat Configurator
+      kind: module
+      purpose: Slider controls for engineering team sizing and license volume.
+      status: active
+      implements:
+        files:
+        - src/Slide3.tsx
+        - src/activation/funnelState.ts
+      children:
+      - id: seat-volume-matrix
+        name: Seat Volume Matrix
+        kind: variation
+        purpose: Discount curve applied based on active seat volume.
+        status: active
+      - id: seat-slider-stepper
+        name: Seat Slider Stepper
+        kind: variation
+        purpose: Step increments with visual tooltip guidance.
+        status: active
+        children:
+        - id: seat-tooltip-badge
+          name: Seat Tooltip Badge
+          kind: widget
+          purpose: Displays per-seat discount percentage pill.
+          status: active
+    - id: security-qualification
+      name: Security Qualification
+      kind: module
+      purpose: SOC2 and air-gapped deterministic engine verification checklist.
+      status: active
+      implements:
+        files:
+        - src/Slide4.tsx
+    - id: slide-3-roi-calculator
+      name: Slide 3 ROI Calculator
+      kind: module
+      purpose: Historical embedded calculator widget prior to slide consolidation.
+      status: active
+
+  - id: conversion-stage
+    name: Conversion Stage
+    kind: stage
+    purpose: Pricing tier matrix, Stripe payment elements, and instant provisioning.
+    status: active
+    origin: human
+    implements:
+      files:
+      - src/Slide5.tsx
+      - src/Slide6.tsx
+      - src/conversion/**
+    children:
+    - id: pricing-tiers
+      name: Pricing Tiers
+      kind: module
+      purpose: Dynamic plan tier cards (Starter, Pro, Enterprise).
+      status: active
+      implements:
+        files:
+        - src/Slide5.tsx
+        - src/conversion/pricingEngine.ts
+      children:
+      - id: tier-card-toggle
+        name: Tier Card Toggle
+        kind: variation
+        purpose: Monthly versus annual billing toggle switch.
+        status: active
+      - id: enterprise-quote-modal
+        name: Enterprise Quote Modal
+        kind: variation
+        purpose: Contact sales form for custom cluster volume.
+        status: active
+        children:
+        - id: currency-symbol-pill
+          name: Currency Symbol Pill
+          kind: widget
+          purpose: Multi-currency currency prefix formatter ($ / € / £).
+          status: active
+    - id: stripe-checkout
+      name: Stripe Checkout
+      kind: module
+      purpose: Secure credit card input and checkout tokenization.
+      status: active
+      implements:
+        files:
+        - src/Slide6.tsx
+        - src/conversion/stripeElements.ts
+
+  - id: telemetry-stage
+    name: Telemetry Stage
+    kind: stage
+    purpose: Behavioral event sink and A/B test cohort distribution.
+    status: active
+    origin: human
+    implements:
+      files:
+      - src/telemetry/**
+    children:
+    - id: behavioral-event-sink
+      name: Behavioral Event Sink
+      kind: module
+      purpose: In-memory and beacon dispatch for user step progressions.
+      status: active
+      implements:
+        files:
+        - src/telemetry/eventSink.ts
+    - id: ab-cohort-router
+      name: A/B Cohort Router
+      kind: module
+      purpose: Consistent hash assignment to Funnel Variant A or B.
+      status: active
+      implements:
+        files:
+        - src/telemetry/abCohort.ts
+    - id: ab-cohort-sticky-cookie
+      name: A/B Cohort Sticky Cookie
+      kind: module
+      purpose: Historical client cookie persistence for 30-day cohort stickiness.
+      status: active

@@ -1,0 +1,277 @@
+{
+  "package.json": {
+    "language": "json",
+    "hash": "cba2408fcf161622",
+    "nodes": [],
+    "symbols": [],
+    "imports": [],
+    "externals": []
+  },
+  "src/Slide1.tsx": {
+    "language": "tsx",
+    "hash": "461235c395fb9d94",
+    "node": "hero-experience",
+    "nodes": [
+      "hero-experience",
+      "acquisition-stage"
+    ],
+    "symbols": [
+      "src/Slide1.tsx::Slide1"
+    ],
+    "imports": [
+      "src/acquisition/utmTracker.ts"
+    ],
+    "externals": [
+      "react"
+    ]
+  },
+  "src/Slide2.tsx": {
+    "language": "tsx",
+    "hash": "ae01b0174ce126b5",
+    "nodes": [],
+    "symbols": [
+      "src/Slide2.tsx::Slide2"
+    ],
+    "imports": [
+      "src/acquisition/roiCalculator.ts",
+      "src/conversion/pricingEngine.ts"
+    ],
+    "externals": [
+      "react"
+    ]
+  },
+  "src/Slide3.tsx": {
+    "language": "tsx",
+    "hash": "425dcfd271d6f1f5",
+    "node": "seat-configurator",
+    "nodes": [
+      "seat-configurator",
+      "activation-stage"
+    ],
+    "symbols": [
+      "src/Slide3.tsx::Slide3"
+    ],
+    "imports": [
+      "src/activation/funnelState.ts"
+    ],
+    "externals": [
+      "react"
+    ]
+  },
+  "src/Slide4.tsx": {
+    "language": "tsx",
+    "hash": "c3168428a4698652",
+    "node": "security-qualification",
+    "nodes": [
+      "security-qualification",
+      "activation-stage"
+    ],
+    "symbols": [
+      "src/Slide4.tsx::Slide4"
+    ],
+    "imports": [
+      "src/telemetry/eventSink.ts"
+    ],
+    "externals": [
+      "react"
+    ]
+  },
+  "src/Slide5.tsx": {
+    "language": "tsx",
+    "hash": "b3161d1e7048d8dc",
+    "node": "pricing-tiers",
+    "nodes": [
+      "pricing-tiers",
+      "conversion-stage"
+    ],
+    "symbols": [
+      "src/Slide5.tsx::Slide5"
+    ],
+    "imports": [
+      "src/conversion/pricingEngine.ts"
+    ],
+    "externals": [
+      "react"
+    ]
+  },
+  "src/Slide6.tsx": {
+    "language": "tsx",
+    "hash": "5739ef06ab011098",
+    "node": "stripe-checkout",
+    "nodes": [
+      "stripe-checkout",
+      "conversion-stage"
+    ],
+    "symbols": [
+      "src/Slide6.tsx::Slide6"
+    ],
+    "imports": [
+      "src/conversion/stripeElements.ts",
+      "src/acquisition/utmTracker.ts"
+    ],
+    "externals": [
+      "react"
+    ]
+  },
+  "src/acquisition/roiCalculator.ts": {
+    "language": "typescript",
+    "hash": "f67f0461f50194d9",
+    "node": "roi-benchmark",
+    "nodes": [
+      "roi-benchmark",
+      "acquisition-stage"
+    ],
+    "symbols": [
+      "src/acquisition/roiCalculator.ts::calculateRoiSavings"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/acquisition/utmTracker.ts": {
+    "language": "typescript",
+    "hash": "ee4407e845481b7c",
+    "node": "traffic-attribution",
+    "nodes": [
+      "traffic-attribution",
+      "acquisition-stage"
+    ],
+    "symbols": [
+      "src/acquisition/utmTracker.ts::trackUtmVisit"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/activation/funnelState.ts": {
+    "language": "typescript",
+    "hash": "449789a1d9375d3a",
+    "node": "seat-configurator",
+    "nodes": [
+      "seat-configurator",
+      "activation-stage"
+    ],
+    "symbols": [
+      "src/activation/funnelState.ts::FunnelState",
+      "src/activation/funnelState.ts::globalState",
+      "src/activation/funnelState.ts::getFunnelState",
+      "src/activation/funnelState.ts::updateFunnelSeatCount"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/affiliate-webhook/partnerPostback.ts": {
+    "language": "typescript",
+    "hash": "54976c3d0f39a4f9",
+    "nodes": [],
+    "symbols": [
+      "src/affiliate-webhook/partnerPostback.ts::sendPartnerPostback"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/conversion/pricingEngine.ts": {
+    "language": "typescript",
+    "hash": "197bcf4fb4025d25",
+    "node": "pricing-tiers",
+    "nodes": [
+      "pricing-tiers",
+      "conversion-stage"
+    ],
+    "symbols": [
+      "src/conversion/pricingEngine.ts::calculateTierPrice"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/conversion/stripeElements.ts": {
+    "language": "typescript",
+    "hash": "6d0c3c1817eb1699",
+    "node": "stripe-checkout",
+    "nodes": [
+      "stripe-checkout",
+      "conversion-stage"
+    ],
+    "symbols": [
+      "src/conversion/stripeElements.ts::mountStripeElements"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/index.tsx": {
+    "language": "tsx",
+    "hash": "2b3c5c2aa022f740",
+    "nodes": [],
+    "symbols": [
+      "src/index.tsx::FunnelApp"
+    ],
+    "imports": [
+      "src/Slide1.tsx",
+      "src/Slide5.tsx",
+      "src/Slide6.tsx"
+    ],
+    "externals": [
+      "react"
+    ]
+  },
+  "src/legacy-pixel/fbPixel.ts": {
+    "language": "typescript",
+    "hash": "4d4a0252bdee9f80",
+    "nodes": [],
+    "symbols": [
+      "src/legacy-pixel/fbPixel.ts::trackLegacyFacebookPixel"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/seo-scraper/metaHydrator.ts": {
+    "language": "typescript",
+    "hash": "5399c022804cb9c2",
+    "nodes": [],
+    "symbols": [
+      "src/seo-scraper/metaHydrator.ts::hydrateMetaTags"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/telemetry/abCohort.ts": {
+    "language": "typescript",
+    "hash": "11486e06666a9c86",
+    "node": "ab-cohort-router",
+    "nodes": [
+      "ab-cohort-router",
+      "telemetry-stage"
+    ],
+    "symbols": [
+      "src/telemetry/abCohort.ts::assignFunnelCohort"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/telemetry/eventSink.ts": {
+    "language": "typescript",
+    "hash": "f6f1b7851dc2f60b",
+    "node": "behavioral-event-sink",
+    "nodes": [
+      "behavioral-event-sink",
+      "telemetry-stage"
+    ],
+    "symbols": [
+      "src/telemetry/eventSink.ts::RawEventSink",
+      "src/telemetry/eventSink.ts::RawEventSink.record",
+      "src/telemetry/eventSink.ts::RawEventSink.getEvents"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/unmapped-experiments/exitIntentModal.tsx": {
+    "language": "tsx",
+    "hash": "e94bb2b093b6d1ca",
+    "nodes": [],
+    "symbols": [
+      "src/unmapped-experiments/exitIntentModal.tsx::ExitIntentModal"
+    ],
+    "imports": [],
+    "externals": [
+      "react"
+    ]
+  }
+}

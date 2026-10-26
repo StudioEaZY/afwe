@@ -18,10 +18,7 @@
   "services/status_worker.py": {
     "language": "python",
     "hash": "9ffbcc6867d7fd08",
-    "node": "realtime-status-worker",
-    "nodes": [
-      "realtime-status-worker"
-    ],
+    "nodes": [],
     "symbols": [
       "services/status_worker.py::StatusWorker",
       "services/status_worker.py::StatusWorker.__init__",
@@ -37,9 +34,9 @@
   "src/auth/auth.ts": {
     "language": "typescript",
     "hash": "0737afd4d53d101d",
-    "node": "sessions",
+    "node": "identity",
     "nodes": [
-      "sessions"
+      "identity"
     ],
     "symbols": [
       "src/auth/auth.ts::store",
@@ -52,12 +49,27 @@
     ],
     "externals": []
   },
+  "src/auth/jwtSigner.ts": {
+    "language": "typescript",
+    "hash": "c815fcec594c8d6f",
+    "node": "jwt-signer",
+    "nodes": [
+      "jwt-signer",
+      "identity"
+    ],
+    "symbols": [
+      "src/auth/jwtSigner.ts::TokenPayload",
+      "src/auth/jwtSigner.ts::signJwtToken"
+    ],
+    "imports": [],
+    "externals": []
+  },
   "src/auth/oauth.ts": {
     "language": "typescript",
     "hash": "97b988614e0f4f94",
-    "node": "oauth",
+    "node": "identity",
     "nodes": [
-      "oauth"
+      "identity"
     ],
     "symbols": [
       "src/auth/oauth.ts::OAuthProfile",
@@ -72,9 +84,10 @@
   "src/auth/session.ts": {
     "language": "typescript",
     "hash": "1a7c4da991b77568",
-    "node": "sessions",
+    "node": "session-token",
     "nodes": [
-      "sessions"
+      "session-token",
+      "identity"
     ],
     "symbols": [
       "src/auth/session.ts::SESSION_TTL_MS",
@@ -92,9 +105,9 @@
   "src/auth/sessionStore.ts": {
     "language": "typescript",
     "hash": "86dc385aa2062882",
-    "node": "sessions",
+    "node": "identity",
     "nodes": [
-      "sessions"
+      "identity"
     ],
     "symbols": [
       "src/auth/sessionStore.ts::SessionStore",
@@ -107,12 +120,45 @@
     ],
     "externals": []
   },
+  "src/billing/checkout/CheckoutController.ts": {
+    "language": "typescript",
+    "hash": "6c913ac856a9e470",
+    "node": "billing-checkout",
+    "nodes": [
+      "billing-checkout",
+      "billing"
+    ],
+    "symbols": [
+      "src/billing/checkout/CheckoutController.ts::CheckoutController",
+      "src/billing/checkout/CheckoutController.ts::CheckoutController.constructor",
+      "src/billing/checkout/CheckoutController.ts::CheckoutController.checkout"
+    ],
+    "imports": [
+      "src/auth/session.ts"
+    ],
+    "externals": []
+  },
+  "src/billing/proration.ts": {
+    "language": "typescript",
+    "hash": "babfb17923da0492",
+    "node": "proration-calculator",
+    "nodes": [
+      "proration-calculator",
+      "billing"
+    ],
+    "symbols": [
+      "src/billing/proration.ts::calculateProration",
+      "src/billing/proration.ts::hashIdempotencyKey"
+    ],
+    "imports": [],
+    "externals": []
+  },
   "src/canvas/CanvasRenderer.tsx": {
     "language": "tsx",
     "hash": "c2a08211e1a1a6e9",
-    "node": "canvas-renderer",
+    "node": "workspace",
     "nodes": [
-      "canvas-renderer"
+      "workspace"
     ],
     "symbols": [
       "src/canvas/CanvasRenderer.tsx::RenderInput",
@@ -123,12 +169,22 @@
     "imports": [],
     "externals": []
   },
+  "src/cli-tools/seedRunner.ts": {
+    "language": "typescript",
+    "hash": "0888dfc2cf2f83ed",
+    "nodes": [],
+    "symbols": [
+      "src/cli-tools/seedRunner.ts::seedWorkspaceDefaults"
+    ],
+    "imports": [],
+    "externals": []
+  },
   "src/dashboard/Dashboard.tsx": {
     "language": "tsx",
     "hash": "7e73896d48109069",
-    "node": "dashboard",
+    "node": "workspace-library",
     "nodes": [
-      "dashboard"
+      "workspace-library"
     ],
     "symbols": [
       "src/dashboard/Dashboard.tsx::Dashboard"
@@ -143,9 +199,9 @@
   "src/dashboard/Widget.tsx": {
     "language": "tsx",
     "hash": "ef7fb304ee48b520",
-    "node": "dashboard",
+    "node": "workspace-library",
     "nodes": [
-      "dashboard"
+      "workspace-library"
     ],
     "symbols": [
       "src/dashboard/Widget.tsx::renderer",
@@ -159,9 +215,9 @@
   "src/data/db.ts": {
     "language": "typescript",
     "hash": "f45ac6af51bcf4df",
-    "node": "data",
+    "node": "identity",
     "nodes": [
-      "data"
+      "identity"
     ],
     "symbols": [
       "src/data/db.ts::Db",
@@ -176,9 +232,9 @@
   "src/data/replica.ts": {
     "language": "typescript",
     "hash": "9929c71f3880bc56",
-    "node": "data",
+    "node": "identity",
     "nodes": [
-      "data"
+      "identity"
     ],
     "symbols": [
       "src/data/replica.ts::replicaDb"
@@ -186,6 +242,16 @@
     "imports": [
       "src/data/db.ts"
     ],
+    "externals": []
+  },
+  "src/experiments/aiSuggest.ts": {
+    "language": "typescript",
+    "hash": "2d13424591139613",
+    "nodes": [],
+    "symbols": [
+      "src/experiments/aiSuggest.ts::suggestWorkspaceTags"
+    ],
+    "imports": [],
     "externals": []
   },
   "src/identity/user.ts": {
@@ -203,12 +269,23 @@
     "imports": [],
     "externals": []
   },
-  "src/notifications/mailer.ts": {
+  "src/legacy-sync/xmlImporter.ts": {
     "language": "typescript",
-    "hash": "b8c401ba091f7050",
+    "hash": "d074eb3b1a3e07b1",
     "nodes": [],
     "symbols": [
-      "src/notifications/mailer.ts::sendMail"
+      "src/legacy-sync/xmlImporter.ts::parseLegacyXmlBatch"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/notifications/mailer.ts": {
+    "language": "typescript",
+    "hash": "d7fcce405ee3508d",
+    "nodes": [],
+    "symbols": [
+      "src/notifications/mailer.ts::EmailPayload",
+      "src/notifications/mailer.ts::sendTransactionalEmail"
     ],
     "imports": [],
     "externals": []
@@ -216,9 +293,9 @@
   "src/payments/checkout.ts": {
     "language": "typescript",
     "hash": "207781679da20270",
-    "node": "payments",
+    "node": "identity",
     "nodes": [
-      "payments"
+      "identity"
     ],
     "symbols": [
       "src/payments/checkout.ts::Cart",
@@ -234,9 +311,9 @@
   "src/payments/stripe.ts": {
     "language": "typescript",
     "hash": "3cc5316aaef514cc",
-    "node": "payments",
+    "node": "identity",
     "nodes": [
-      "payments"
+      "identity"
     ],
     "symbols": [
       "src/payments/stripe.ts::charge"
@@ -247,9 +324,9 @@
   "src/ui/Button.tsx": {
     "language": "tsx",
     "hash": "4e86978e99907acc",
-    "node": "ui",
+    "node": "workspace-library",
     "nodes": [
-      "ui"
+      "workspace-library"
     ],
     "symbols": [
       "src/ui/Button.tsx::Button"
@@ -260,9 +337,9 @@
   "src/ui/Layout.tsx": {
     "language": "tsx",
     "hash": "5102f58f2fdb1d4f",
-    "node": "ui",
+    "node": "workspace-library",
     "nodes": [
-      "ui"
+      "workspace-library"
     ],
     "symbols": [
       "src/ui/Layout.tsx::Layout"
@@ -274,17 +351,19 @@
   },
   "src/workspace/library/Library.ts": {
     "language": "typescript",
-    "hash": "63ec618f0af1a86d",
+    "hash": "4a0a214d02ee6089",
     "node": "workspace-library",
     "nodes": [
-      "workspace-library"
+      "workspace-library",
+      "workspace"
     ],
     "symbols": [
-      "src/workspace/library/Library.ts::Item",
       "src/workspace/library/Library.ts::Library",
+      "src/workspace/library/Library.ts::Library.constructor",
       "src/workspace/library/Library.ts::Library.add",
-      "src/workspace/library/Library.ts::Library.recent",
-      "src/workspace/library/Library.ts::Library.all"
+      "src/workspace/library/Library.ts::Library.get",
+      "src/workspace/library/Library.ts::Library.all",
+      "src/workspace/library/Library.ts::Library.tagItem"
     ],
     "imports": [
       "src/workspace/tagging/Tags.ts"
@@ -294,9 +373,9 @@
   "src/workspace/preview/Preview.ts": {
     "language": "typescript",
     "hash": "c7de6edf7199fe0c",
-    "node": "workspace-preview",
+    "node": "workspace",
     "nodes": [
-      "workspace-preview"
+      "workspace"
     ],
     "symbols": [
       "src/workspace/preview/Preview.ts::renderer",
@@ -310,17 +389,35 @@
   },
   "src/workspace/search/Search.ts": {
     "language": "typescript",
-    "hash": "c3d3ea8bca6fbe03",
+    "hash": "28f17cea9d1d22e9",
     "node": "workspace-search",
     "nodes": [
-      "workspace-search"
+      "workspace-search",
+      "workspace"
     ],
     "symbols": [
-      "src/workspace/search/Search.ts::search"
+      "src/workspace/search/Search.ts::SearchIndex",
+      "src/workspace/search/Search.ts::SearchIndex.search",
+      "src/workspace/search/Search.ts::SearchIndex.directDbLookup"
     ],
-    "imports": [
-      "src/workspace/library/Library.ts"
+    "imports": [],
+    "externals": []
+  },
+  "src/workspace/tagging/ColorWheel.ts": {
+    "language": "typescript",
+    "hash": "956b2e1713c1e4d6",
+    "node": "tag-color-wheel",
+    "nodes": [
+      "tag-color-wheel",
+      "workspace-tagging",
+      "workspace"
     ],
+    "symbols": [
+      "src/workspace/tagging/ColorWheel.ts::TAG_PALETTE",
+      "src/workspace/tagging/ColorWheel.ts::getTagColor",
+      "src/workspace/tagging/ColorWheel.ts::renderTagPill"
+    ],
+    "imports": [],
     "externals": []
   },
   "src/workspace/tagging/Tags.ts": {
@@ -328,7 +425,8 @@
     "hash": "4a67463ab97ca657",
     "node": "workspace-tagging",
     "nodes": [
-      "workspace-tagging"
+      "workspace-tagging",
+      "workspace"
     ],
     "symbols": [
       "src/workspace/tagging/Tags.ts::Tag",

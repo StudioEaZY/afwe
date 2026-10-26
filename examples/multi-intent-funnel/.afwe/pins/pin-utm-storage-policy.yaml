@@ -1,0 +1,15 @@
+{
+  "id": "pin-utm-storage-policy",
+  "statement": "UTM campaign tags must be stored in sessionStorage rather than persistent cookies.",
+  "kind": "decision",
+  "attaches": {
+    "nodes": [
+      "traffic-attribution"
+    ]
+  },
+  "severity": "confirm",
+  "status": "active",
+  "origin": "human:legal",
+  "created": "2026-10-24T11:00:00Z",
+  "reason": "gdpr-e-privacy-compliance"
+}

@@ -1,142 +1,265 @@
 nodes:
 - id: demo-product
-  name: Demo Product
+  name: Pulse SaaS Product
   kind: product
-  purpose: Root of the architecture. Everything the project is lives beneath this node.
+  purpose: Multi-tenant SaaS workspace platform with collaboration, billing, and real-time sync.
   status: active
   origin: human
   children:
-  - id: authentication
-    name: Authentication
+  - id: identity
+    name: Identity Subsystem
     kind: subsystem
-    purpose: Who is the caller? Sessions and OAuth login.
+    purpose: Authentication, session management, and role-based access control.
+    implements:
+      files:
+      - src/auth/**
+      - src/data/db.ts
+      - src/identity/user.ts
+      - src/data/replica.ts
+      - src/payments/checkout.ts
+      - src/payments/stripe.ts
     status: active
     origin: human
     children:
-    - id: sessions
-      name: Sessions
+    - id: auth-api
+      name: Auth API
       kind: module
-      purpose: Server-side sessions with a fixed TTL.
+      purpose: Login, OAuth callbacks, and token refresh endpoints.
+      implements:
+        files:
+        - src/auth/api.ts
+      status: active
+      children:
+      - id: oauth-callback
+        name: OAuth Callback
+        kind: component
+        purpose: Third-party identity provider response validation.
+        status: active
+      - id: jwt-signer
+        name: JWT Signer
+        kind: component
+        purpose: Cryptographic token generation and signature verification.
+        implements:
+          files:
+          - src/auth/jwtSigner.ts
+        status: active
+        children:
+        - id: token-entropy-guard
+          name: Token Entropy Guard
+          kind: widget
+          purpose: Enforces cryptographic salt minimum length and random seed requirements.
+          status: active
+    - id: session-token
+      name: Session Token
+      kind: module
+      purpose: In-memory session tracking and expiry handling.
       implements:
         files:
         - src/auth/session.ts
-        - src/auth/sessionStore.ts
-        - src/auth/auth.ts
       status: active
-      origin: human
-    - id: oauth
-      name: OAuth
+    - id: user-store
+      name: User Store
       kind: module
-      purpose: Exchange provider codes for profiles.
+      purpose: User profile persistence and credentials.
       implements:
         files:
-        - src/auth/oauth.ts
+        - src/auth/users.ts
       status: active
-      origin: human
-  - id: identity
-    name: Identity
-    kind: subsystem
-    purpose: The User model everyone shares. Depends on nothing.
-    implements:
-      files:
-      - src/identity/**
-    status: active
-    origin: human
-  - id: payments
-    name: Payments
-    kind: subsystem
-    purpose: Charging users. Must stay UI-free so it can run in workers.
-    implements:
-      files:
-      - src/payments/**
-    status: active
-    origin: human
-  - id: ui
-    name: UI
-    kind: library
-    purpose: Shared presentational components.
-    implements:
-      files:
-      - src/ui/**
-    status: active
-    origin: human
-  - id: dashboard
-    name: Dashboard
-    kind: subsystem
-    purpose: Interactive overview; rendering responsiveness beats Lighthouse score here.
-    implements:
-      files:
-      - src/dashboard/**
-    status: active
-    origin: human
-    children:
-    - id: canvas-renderer
-      name: Canvas Renderer
-      kind: component
-      purpose: Frame-based renderer shared by dashboard widgets and workspace previews.
-      implements:
-        files:
-        - src/canvas/CanvasRenderer.tsx
-      status: active
-      origin: human
   - id: workspace
-    name: Workspace
+    name: Workspace Subsystem
     kind: subsystem
-    purpose: The user's library of items and everything you can do with it.
+    purpose: Core productivity workspace, library items, search, and categorization.
+    implements:
+      files:
+      - src/workspace/**
+      - src/canvas/CanvasRenderer.tsx
     status: active
     origin: human
     children:
     - id: workspace-library
-      name: Library
+      name: Workspace Library
       kind: module
-      purpose: Owns items.
+      purpose: Document and folder tree persistence.
       implements:
         files:
         - src/workspace/library/**
+        - src/dashboard/Dashboard.tsx
+        - src/dashboard/Widget.tsx
+        - src/ui/Layout.tsx
+        - src/ui/Button.tsx
       status: active
-      origin: human
     - id: workspace-search
-      name: Search
+      name: Workspace Search
       kind: module
-      purpose: Find items by title or tag.
+      purpose: In-memory inverted index for fast keyword matching.
       implements:
         files:
         - src/workspace/search/**
       status: active
-      origin: human
-    - id: workspace-preview
-      name: Preview
-      kind: module
-      purpose: Render an item without opening it.
-      implements:
-        files:
-        - src/workspace/preview/**
-      status: active
-      origin: human
     - id: workspace-tagging
-      name: Tagging
+      name: Workspace Tagging
       kind: module
-      purpose: Normalised tags on items.
+      purpose: Flat tags and colored badges for item categorization.
       implements:
         files:
         - src/workspace/tagging/**
       status: active
-      origin: human
-  - id: data
-    name: Data
+      children:
+      - id: tag-normaliser
+        name: Tag Normaliser
+        kind: component
+        purpose: Case-folding and special character stripping for tag slugs.
+        status: active
+      - id: tag-color-wheel
+        name: Tag Color Wheel
+        kind: component
+        purpose: Deterministic hash-based hex color generator for tag badges.
+        implements:
+          files:
+          - src/workspace/tagging/ColorWheel.ts
+        status: active
+        children:
+        - id: tag-pill-renderer
+          name: Tag Pill Renderer
+          kind: widget
+          purpose: Visual DOM pill badge formatting with contrast calculation.
+          status: active
+    - id: workspace-bulk-export
+      name: Workspace Bulk Export
+      kind: module
+      purpose: Zip archive creation for full workspace export.
+      status: active
+  - id: billing
+    name: Billing Subsystem
     kind: subsystem
-    purpose: Primary and replica database handles.
+    purpose: Subscription management, Stripe integration, invoices, and proration.
     implements:
       files:
-      - src/data/**
+      - src/billing/**
     status: active
     origin: human
-  - id: realtime-status-worker
-    name: Realtime Status Worker
-    kind: service
-    purpose: Polls replica for status widgets; eventual consistency accepted.
+    children:
+    - id: billing-plans
+      name: Billing Plans
+      kind: module
+      purpose: Pricing tiers and feature flag entitlement rules.
+      implements:
+        files:
+        - src/billing/plans/**
+      status: active
+    - id: billing-checkout
+      name: Billing Checkout
+      kind: module
+      purpose: Checkout controller and payment intent workflows.
+      implements:
+        files:
+        - src/billing/checkout/**
+      status: active
+    - id: stripe-gateway
+      name: Stripe Gateway
+      kind: module
+      purpose: Direct Stripe API interaction for customer cards and subscriptions.
+      implements:
+        files:
+        - src/billing/stripe/**
+      status: active
+      children:
+      - id: stripe-webhook-verifier
+        name: Stripe Webhook Verifier
+        kind: component
+        purpose: HMAC SHA256 webhook payload integrity verification.
+        status: active
+      - id: proration-calculator
+        name: Proration Calculator
+        kind: component
+        purpose: Mid-cycle seat upgrade credit and debit arithmetic.
+        implements:
+          files:
+          - src/billing/proration.ts
+        status: active
+        children:
+        - id: idempotency-key-hasher
+          name: Idempotency Key Hasher
+          kind: widget
+          purpose: Unique transaction key hashing to avoid double charges.
+          status: active
+    - id: invoice-store
+      name: Invoice Store
+      kind: module
+      purpose: Historical invoice and PDF generation metadata.
+      implements:
+        files:
+        - src/billing/invoices/**
+      status: active
+    - id: invoice-pdf-watermark
+      name: Invoice PDF Watermark
+      kind: module
+      purpose: Enterprise compliance watermark stamping on generated PDF receipts.
+      status: active
+  - id: realtime
+    name: Realtime Subsystem
+    kind: subsystem
+    purpose: Presence broadcast and background status monitoring workers.
     implements:
       files:
-      - services/**
+      - src/realtime/**
     status: active
     origin: human
+    children:
+    - id: realtime-presence
+      name: Realtime Presence
+      kind: module
+      purpose: WebSocket heartbeats for connected team members.
+      implements:
+        files:
+        - src/realtime/presence.ts
+      status: active
+    - id: realtime-status-worker
+      name: Realtime Status Worker
+      kind: module
+      purpose: Background heartbeat consumer checking cluster health.
+      implements:
+        files:
+        - src/realtime/worker.ts
+      status: active
+    - id: legacy-webhook-retry
+      name: Legacy Webhook Retry
+      kind: module
+      purpose: Exponential backoff dispatcher for third-party webhook sinks.
+      status: active
+  - id: platform
+    name: Platform Infrastructure
+    kind: subsystem
+    purpose: Foundational database client, pub/sub event bus, and HTTP server.
+    implements:
+      files:
+      - src/db/**
+      - src/events/**
+      - src/server.ts
+    status: active
+    origin: human
+    children:
+    - id: db-client
+      name: Database Client
+      kind: module
+      purpose: Connection pool and SQL query runner.
+      implements:
+        files:
+        - src/db/**
+      status: active
+    - id: event-bus
+      name: Event Bus
+      kind: module
+      purpose: Asynchronous pub/sub event dispatcher.
+      implements:
+        files:
+        - src/events/**
+      status: active
+    - id: http-server
+      name: HTTP Server
+      kind: module
+      purpose: Express/Koa HTTP request routing and middleware pipeline.
+      implements:
+        files:
+        - src/server.ts
+      status: active

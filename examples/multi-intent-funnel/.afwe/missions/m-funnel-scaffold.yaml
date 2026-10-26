@@ -1,0 +1,10 @@
+{
+  "id": "m-funnel-scaffold",
+  "title": "Funnel Scaffolding & UTM Tracking",
+  "prompt": "Deliver 4-stage funnel with UTM parameter capture",
+  "orchestrator": "human:marketing",
+  "status": "Completed",
+  "created": "2026-10-23T09:00:00Z",
+  "updated": "2026-10-23T12:00:00Z",
+  "agents": []
+}

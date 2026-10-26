@@ -1,0 +1,46 @@
+{
+  "id": "t0009",
+  "ts": "2026-10-25T17:00:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Introduce transactional email notification worker in unmapped notifications folder",
+  "prompt_hash": "a1b2c3d4e5f60009",
+  "task": "pulse-mailer",
+  "targets": [
+    "demo-product"
+  ],
+  "status": "staged",
+  "touched": {
+    "nodes": [
+      "demo-product"
+    ],
+    "files": [
+      "src/notifications/mailer.ts"
+    ]
+  },
+  "implements": {
+    "demo-product": [
+      "src/notifications/mailer.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-mailer-syntax",
+      "title": "mailer TypeScript compilation",
+      "trust": "deterministic",
+      "authored_by": "afwe",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.81,
+  "gate": {
+    "decision": "stage",
+    "reasons": [
+      "Unmapped file src/notifications/mailer.ts has pending drift proposal unmapped:aff22d1faf"
+    ]
+  },
+  "summary": "Introduce notification mailer worker staged awaiting node creation",
+  "session_id": "sess-mailer-09"
+}

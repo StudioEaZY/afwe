@@ -1,0 +1,27 @@
+{
+  "id": "dynamic-pricing-matrix",
+  "title": "Dynamic per-seat tier pricing matrix",
+  "statement": "Pricing scales with active team seats based on tier rate card with zero client-side manipulation.",
+  "status": "implemented",
+  "origin": "human:founder",
+  "attaches": {
+    "nodes": [
+      "pricing-tiers"
+    ]
+  },
+  "history": [
+    {
+      "turn": "t0002",
+      "ts": "2026-10-23T11:00:00Z",
+      "statement": "Initial dynamic pricing engine"
+    },
+    {
+      "turn": "t0004",
+      "ts": "2026-10-24T10:15:00Z",
+      "statement": "Added volume discount tiers"
+    }
+  ],
+  "pins": [
+    "pin-pricing-transparency"
+  ]
+}

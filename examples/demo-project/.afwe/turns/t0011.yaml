@@ -1,0 +1,49 @@
+{
+  "id": "t0011",
+  "ts": "2026-10-26T09:45:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Directly import StripeGateway into Workspace Library for instant charge on download",
+  "prompt_hash": "a1b2c3d4e5f60011",
+  "task": "pulse-hack-cross-dep",
+  "targets": [
+    "workspace-library"
+  ],
+  "status": "abandoned",
+  "touched": {
+    "nodes": [
+      "workspace-library",
+      "stripe-gateway"
+    ],
+    "files": [
+      "src/workspace/library/Library.ts"
+    ]
+  },
+  "implements": {
+    "workspace-library": [
+      "src/workspace/library/Library.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-no-billing-in-workspace",
+      "title": "workspace does not import billing",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": false,
+      "blocking": true,
+      "message": "Constraint c-workspace-no-billing violated: workspace-library imports billing/stripe/StripeGateway"
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.15,
+  "gate": {
+    "decision": "redo",
+    "reasons": [
+      "CONSTRAINT_VIOLATION: workspace must_not_depend on billing",
+      "TurnJudgment leaf-to-root validator failed at module level: workspace-library"
+    ]
+  },
+  "summary": "Import StripeGateway into Library (BLOCKED by boundary constraint)",
+  "session_id": "sess-redo-11"
+}

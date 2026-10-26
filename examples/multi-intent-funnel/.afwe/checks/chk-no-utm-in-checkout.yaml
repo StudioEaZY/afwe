@@ -1,0 +1,27 @@
+{
+  "id": "chk-no-utm-in-checkout",
+  "title": "stripe checkout does not import utmTracker",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "stripe-checkout",
+      "traffic-attribution"
+    ]
+  },
+  "claim": {
+    "type": "forbid_import",
+    "files": [
+      "src/conversion/stripeElements.ts",
+      "src/Slide6.tsx"
+    ],
+    "to_nodes": [
+      "traffic-attribution"
+    ]
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T12:00:00Z",
+  "created_from": "t0003",
+  "provenance": "confirmed"
+}

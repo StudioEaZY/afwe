@@ -1,0 +1,23 @@
+{
+  "id": "chk-superseded-embedded-roi-calc",
+  "title": "slide 3 embedded calculator mounts web worker thread",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "slide-3-roi-calculator"
+    ]
+  },
+  "claim": {
+    "type": "require_file",
+    "files": [
+      "src/activation/calculatorWorker.ts"
+    ]
+  },
+  "status": "superseded",
+  "superseded_by": "t0004",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T09:00:00Z",
+  "created_from": "t0001",
+  "provenance": "confirmed"
+}

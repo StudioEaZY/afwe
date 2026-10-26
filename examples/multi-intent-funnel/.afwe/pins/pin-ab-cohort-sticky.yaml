@@ -1,0 +1,16 @@
+{
+  "id": "pin-ab-cohort-sticky",
+  "statement": "Visitors must remain in their initial A/B cohort for 30 days without re-randomization.",
+  "kind": "intentional",
+  "attaches": {
+    "nodes": [
+      "ab-cohort-router"
+    ]
+  },
+  "severity": "block",
+  "status": "active",
+  "origin": "human:growth-lead",
+  "created": "2026-10-23T08:00:00Z",
+  "reason": "prevent-split-test-contamination",
+  "intentional": true
+}

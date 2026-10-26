@@ -1,0 +1,10 @@
+{
+  "id": "cta-button-class",
+  "mode": "passive",
+  "statement": "Conversion call-to-action buttons should use the .cta-btn CSS class.",
+  "scope": {
+    "files": [
+      "src/**/*.tsx"
+    ]
+  }
+}

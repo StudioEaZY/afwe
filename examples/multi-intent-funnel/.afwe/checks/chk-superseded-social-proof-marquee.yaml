@@ -1,0 +1,23 @@
+{
+  "id": "chk-superseded-social-proof-marquee",
+  "title": "social proof marquee renders 8 partner SVG assets",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "slide-2-social-proof"
+    ]
+  },
+  "claim": {
+    "type": "require_file",
+    "files": [
+      "src/acquisition/logos.svg"
+    ]
+  },
+  "status": "superseded",
+  "superseded_by": "t0003",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T08:30:00Z",
+  "created_from": "t0001",
+  "provenance": "confirmed"
+}

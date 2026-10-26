@@ -1,0 +1,15 @@
+{
+  "id": "pin-exit-intent-cooldown",
+  "statement": "Exit intent popup must not trigger more than once per user session with minimum 10s delay.",
+  "kind": "decision",
+  "attaches": {
+    "nodes": [
+      "growth-funnel"
+    ]
+  },
+  "severity": "confirm",
+  "status": "proposed",
+  "origin": "human:cro-consultant",
+  "created": "2026-10-25T14:00:00Z",
+  "reason": "prevent-annoying-modal-fatigue"
+}

@@ -1,0 +1,88 @@
+{
+  "id": "t0005",
+  "ts": "2026-10-24T15:00:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Upgrade hero experience and SOC2 qualification checklist",
+  "prompt_hash": "f1a2b3c4d5e60005",
+  "task": "funnel-hero-soc2",
+  "targets": [
+    "hero-experience",
+    "security-qualification"
+  ],
+  "status": "committed",
+  "restore": {
+    "feature": "slide-2-social-proof",
+    "from_turn": "t0001",
+    "lost_turn": "t0003",
+    "conflicts": 0
+  },
+  "touched": {
+    "nodes": [
+      "hero-experience",
+      "security-qualification"
+    ],
+    "files": [
+      "src/Slide1.tsx",
+      "src/Slide4.tsx"
+    ]
+  },
+  "implements": {
+    "growth-funnel": [
+      "src/Slide1.tsx"
+    ],
+    "hero-experience": [
+      "src/Slide1.tsx"
+    ],
+    "roi-benchmark": [
+      "src/acquisition/roiCalculator.ts"
+    ],
+    "seat-configurator": [
+      "src/activation/funnelState.ts"
+    ],
+    "security-qualification": [
+      "src/Slide4.tsx"
+    ],
+    "pricing-tiers": [
+      "src/conversion/pricingEngine.ts"
+    ],
+    "stripe-checkout": [
+      "src/conversion/stripeElements.ts"
+    ],
+    "ab-cohort-router": [
+      "src/telemetry/abCohort.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-export-calculate-roi",
+      "title": "calculateRoiSavings export exists",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    },
+    {
+      "id": "chk-sig-calculate-tier",
+      "title": "calculateTierPrice signature verified",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.93,
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "Hero copy updated and SOC2 checklist verified"
+    ]
+  },
+  "summary": "Upgrade hero experience and SOC2 qualification checklist",
+  "session_id": "sess-funnel-05",
+  "checkgen": [
+    "chk-export-calculate-roi",
+    "chk-sig-calculate-tier"
+  ]
+}

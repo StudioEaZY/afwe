@@ -1,0 +1,16 @@
+{
+  "id": "pin-stripe-idempotency",
+  "statement": "All Stripe credit card mutation endpoints must require an Idempotency-Key header.",
+  "kind": "constraint",
+  "attaches": {
+    "nodes": [
+      "stripe-gateway",
+      "billing-checkout"
+    ]
+  },
+  "severity": "block",
+  "status": "active",
+  "origin": "human:finops",
+  "created": "2026-10-23T09:30:00Z",
+  "reason": "prevent-double-charge"
+}

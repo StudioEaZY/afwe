@@ -1,0 +1,15 @@
+{
+  "id": "m-ab-testing-framework",
+  "title": "A/B Cohort Router & Split Attribution",
+  "prompt": "Scale split test hash router to 100k visitors",
+  "orchestrator": "human:founder",
+  "status": "Paused",
+  "created": "2026-10-24T14:00:00Z",
+  "updated": "2026-10-25T18:00:00Z",
+  "invariants": {
+    "locked_pins": [
+      "pin-ab-cohort-sticky"
+    ]
+  },
+  "agents": []
+}

@@ -1,5 +1,11 @@
-// A brand new area with no architectural home: AFWE cannot guess where this belongs
-// with confidence, so it proposes a node instead of silently inventing one.
-export async function sendMail(to: string, subject: string, body: string) {
-  return { queued: true, to, subject, size: body.length };
+// UNCHARTED: notifications/mailer.ts
+export interface EmailPayload {
+  to: string;
+  subject: string;
+  body: string;
+}
+
+export async function sendTransactionalEmail(payload: EmailPayload): Promise<{ sent: boolean }> {
+  console.log("Dispatching email to", payload.to);
+  return { sent: true };
 }

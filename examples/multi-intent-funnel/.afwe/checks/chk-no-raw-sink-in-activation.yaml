@@ -1,0 +1,28 @@
+{
+  "id": "chk-no-raw-sink-in-activation",
+  "title": "activation does not import eventSink raw class",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "activation-stage",
+      "telemetry-stage"
+    ]
+  },
+  "claim": {
+    "type": "forbid_import",
+    "files": [
+      "src/activation/**",
+      "src/Slide3.tsx",
+      "src/Slide4.tsx"
+    ],
+    "to_nodes": [
+      "telemetry-stage"
+    ]
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T11:00:00Z",
+  "created_from": "t0002",
+  "provenance": "confirmed"
+}

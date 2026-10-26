@@ -1,0 +1,15 @@
+{
+  "id": "pin-stripe-pci-isolation",
+  "statement": "Credit card digits must only be collected inside Stripe-hosted iframes; plain input fields forbidden.",
+  "kind": "constraint",
+  "attaches": {
+    "nodes": [
+      "stripe-checkout"
+    ]
+  },
+  "severity": "block",
+  "status": "active",
+  "origin": "human:secops",
+  "created": "2026-10-23T09:00:00Z",
+  "reason": "pci-dss-compliance"
+}

@@ -1,0 +1,121 @@
+{
+  "id": "t0002",
+  "ts": "2026-10-23T11:00:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Implement flat workspace tagging and wire into library search",
+  "prompt_hash": "a1b2c3d4e5f60002",
+  "task": "pulse-tagging",
+  "targets": [
+    "workspace-tagging",
+    "workspace-library",
+    "workspace-search"
+  ],
+  "scope": {
+    "nodes": [
+      "workspace-tagging",
+      "workspace-library",
+      "workspace-search"
+    ],
+    "files": [
+      "src/workspace/**"
+    ]
+  },
+  "intents": [
+    {
+      "id": "add-tagging",
+      "action": "update",
+      "targets": [
+        "workspace-tagging"
+      ],
+      "title": "Add flat tagging to library"
+    }
+  ],
+  "status": "committed",
+  "touched": {
+    "nodes": [
+      "workspace-tagging",
+      "workspace-library",
+      "workspace-search"
+    ],
+    "files": [
+      "src/workspace/tagging/Tags.ts",
+      "src/workspace/library/Library.ts",
+      "src/workspace/search/Search.ts"
+    ]
+  },
+  "implements": {
+    "demo-product": [
+      "src/server.ts"
+    ],
+    "identity": [
+      "src/auth/session.ts"
+    ],
+    "workspace": [
+      "src/workspace/library/Library.ts"
+    ],
+    "workspace-tagging": [
+      "src/workspace/tagging/Tags.ts"
+    ],
+    "workspace-library": [
+      "src/workspace/library/Library.ts"
+    ],
+    "workspace-search": [
+      "src/workspace/search/Search.ts"
+    ],
+    "billing": [
+      "src/billing/checkout/CheckoutController.ts"
+    ],
+    "realtime": [
+      "src/realtime/worker.ts"
+    ],
+    "legacy-webhook-retry": [
+      "src/realtime/legacyWebhook.ts"
+    ],
+    "workspace-bulk-export": [
+      "src/workspace/export.ts"
+    ],
+    "invoice-pdf-watermark": [
+      "src/billing/invoices/watermark.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-no-billing-in-workspace",
+      "title": "workspace does not import billing",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    },
+    {
+      "id": "chk-export-normalise-tag",
+      "title": "normaliseTag export exists in Tags.ts",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.98,
+  "confidence_parts": {
+    "clarity": 1,
+    "mapping": 0.96,
+    "pins": 1,
+    "verification": 0.98
+  },
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "Tags implemented cleanly and normaliser exported"
+    ]
+  },
+  "summary": "Add flat workspace tagging and wire into library search",
+  "session_id": "sess-tag-02",
+  "checkgen": [
+    "chk-no-billing-in-workspace",
+    "chk-no-raw-db-in-search",
+    "chk-export-normalise-tag"
+  ]
+}

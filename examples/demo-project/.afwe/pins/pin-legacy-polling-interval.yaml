@@ -1,0 +1,16 @@
+{
+  "id": "pin-legacy-polling-interval",
+  "statement": "Realtime presence polls every 5000ms over HTTP long-polling.",
+  "kind": "preference",
+  "attaches": {
+    "nodes": [
+      "realtime-presence"
+    ]
+  },
+  "severity": "warn",
+  "status": "retired",
+  "origin": "human:legacy",
+  "created": "2026-10-23T07:00:00Z",
+  "retired": "2026-10-24T09:00:00Z",
+  "reason": "upgraded-to-websockets"
+}

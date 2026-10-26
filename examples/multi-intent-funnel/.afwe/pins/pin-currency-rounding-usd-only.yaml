@@ -1,0 +1,17 @@
+{
+  "id": "pin-currency-rounding-usd-only",
+  "statement": "Funnel checkout only supports US Dollar pricing.",
+  "kind": "decision",
+  "attaches": {
+    "nodes": [
+      "pricing-tiers",
+      "stripe-checkout"
+    ]
+  },
+  "severity": "block",
+  "status": "retired",
+  "origin": "human:founder",
+  "created": "2026-10-23T06:00:00Z",
+  "retired": "2026-10-25T15:00:00Z",
+  "reason": "expanded-to-eur-gbp-jpy"
+}

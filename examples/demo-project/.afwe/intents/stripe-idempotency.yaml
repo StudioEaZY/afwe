@@ -1,0 +1,23 @@
+{
+  "id": "stripe-idempotency",
+  "title": "Enforce payment idempotency on all checkouts",
+  "statement": "Every payment request carries an Idempotency-Key header hashed before transmission.",
+  "status": "active",
+  "origin": "human:finops",
+  "attaches": {
+    "nodes": [
+      "stripe-gateway",
+      "billing-checkout"
+    ]
+  },
+  "history": [
+    {
+      "turn": "t0003",
+      "ts": "2026-10-23T16:30:00Z",
+      "statement": "Require idempotency keys on charge mutations"
+    }
+  ],
+  "pins": [
+    "pin-stripe-idempotency"
+  ]
+}

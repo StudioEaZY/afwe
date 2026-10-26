@@ -1,0 +1,48 @@
+{
+  "id": "t0012",
+  "ts": "2026-10-26T10:30:00Z",
+  "origin": "human",
+  "agent": "gemini-2-5-pro",
+  "prompt": "Execute raw SQL query in CheckoutController to inspect customer balances",
+  "prompt_hash": "a1b2c3d4e5f60012",
+  "task": "pulse-hack-raw-sql",
+  "targets": [
+    "billing-checkout"
+  ],
+  "status": "abandoned",
+  "touched": {
+    "nodes": [
+      "billing-checkout"
+    ],
+    "files": [
+      "src/billing/checkout/CheckoutController.ts"
+    ]
+  },
+  "implements": {
+    "billing-checkout": [
+      "src/billing/checkout/CheckoutController.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-no-raw-sql",
+      "title": "active guardrail: no-raw-sql",
+      "trust": "deterministic",
+      "authored_by": "afwe",
+      "passed": false,
+      "blocking": true,
+      "message": "Active guardrail no-raw-sql: raw SQL outside db client forbidden"
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.1,
+  "gate": {
+    "decision": "redo",
+    "reasons": [
+      "ACTIVE_GUARDRAIL_VIOLATION: no-raw-sql forbids rawQuery invocation",
+      "Agent reask required: route through database repository layer"
+    ]
+  },
+  "summary": "Execute raw SQL query in CheckoutController (BLOCKED by active tripwire)",
+  "session_id": "sess-redo-12"
+}

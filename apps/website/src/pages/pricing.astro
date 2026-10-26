@@ -1,0 +1,231 @@
+---
+// pricing.astro - Transparent Open Source Pricing & Community Support Model
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+---
+
+<MarketingLayout
+  title="Pricing — 100% Free & Open Source (MIT)"
+  description="AFWE is free and open source under the MIT License. Sponsor independent maintenance with our Community Sustainer model to keep it free for everyone."
+  activeNav="pricing"
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
+    <!-- Header -->
+    <header class="text-center space-y-4 max-w-2xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-survey-500/30 bg-survey-500/10 text-survey-700 dark:text-survey-light text-xs font-mono font-semibold">
+        <span>MIT LICENSE · 100% OPEN SOURCE</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-serif font-bold text-graphite dark:text-white tracking-tight">
+        Free for everyone.<br />
+        <span class="text-graphite/70 dark:text-stone-400">Sustained by the community.</span>
+      </h1>
+      <p class="text-base sm:text-lg text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+        AFWE will never lock your code or architecture behind a paywall. You can use it completely free forever, or subscribe as a <strong>Community Sustainer</strong> to keep it independent and free for everyone.
+      </p>
+    </header>
+
+    <!-- Pricing Comparison Cards -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+      <!-- Tier 1: Free Forever (MIT) -->
+      <div class="rounded-3xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-8 flex flex-col justify-between shadow-xs hover:border-graphite/50 transition-all">
+        <div class="space-y-6">
+          <div>
+            <div class="text-xs font-mono font-bold tracking-wider text-graphite/70 dark:text-stone-400 uppercase">
+              INDIVIDUAL & TEAMS
+            </div>
+            <h2 class="text-2xl font-serif font-bold text-graphite dark:text-white mt-1">Open Source</h2>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="text-4xl font-serif font-bold text-graphite dark:text-white">$0</span>
+              <span class="text-xs font-mono text-graphite/60 dark:text-stone-400">/ forever</span>
+            </div>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 mt-2 font-sans leading-relaxed">
+              Full access to the complete AFWE engine, CLI, MCP tools, and local Studio.
+            </p>
+          </div>
+
+          <ul class="space-y-3 font-mono text-xs text-graphite/90 dark:text-stone-200 border-t border-stone-200 dark:border-obsidian-800 pt-6">
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>100% MIT Licensed Rust engine</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>Unlimited turns, pins & constraints</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>Full local Studio UI (Radial & Topology)</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>57 MCP tools for Claude Code & Cursor</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>Zero telemetry · 100% local execution</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="pt-8">
+          <a 
+            href="/docs/getting-started/quick-start" 
+            class="block w-full text-center px-4 py-2.5 rounded-xl border border-stone-400 dark:border-obsidian-700 bg-white dark:bg-obsidian-850 hover:border-graphite text-graphite dark:text-stone-200 font-mono text-xs font-bold transition-all shadow-xs"
+          >
+            Get started free →
+          </a>
+        </div>
+      </div>
+
+      <!-- Tier 2: Community Sustainer (Highlighted) -->
+      <div class="rounded-3xl border-2 border-survey-500/80 dark:border-survey-500/60 bg-white/90 dark:bg-obsidian-900 p-8 flex flex-col justify-between shadow-xl relative scale-105 z-10">
+        <!-- Badge -->
+        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-survey-500 text-white font-mono text-[10px] font-bold tracking-wider uppercase shadow-xs">
+          KEEP IT FREE FOR ALL
+        </div>
+
+        <div class="space-y-6">
+          <div>
+            <div class="text-xs font-mono font-bold tracking-wider text-survey-600 dark:text-survey-light uppercase">
+              SPONSOR & ADVOCATE
+            </div>
+            <h2 class="text-2xl font-serif font-bold text-graphite dark:text-white mt-1">Community Sustainer</h2>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="text-4xl font-serif font-bold text-graphite dark:text-white">$19</span>
+              <span class="text-xs font-mono text-graphite/60 dark:text-stone-400">/ month</span>
+            </div>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 mt-2 font-sans leading-relaxed">
+              Pay a recurring subscription to directly fund independent maintenance and keep AFWE free and open for thousands of developers.
+            </p>
+          </div>
+
+          <ul class="space-y-3 font-mono text-xs text-graphite/90 dark:text-stone-200 border-t border-stone-200 dark:border-obsidian-800 pt-6">
+            <li class="flex items-center gap-2 font-semibold">
+              <span class="text-survey-500 font-bold">★</span>
+              <span>Sustains 50+ developers' free access</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-500 font-bold">✓</span>
+              <span>Funds Tree-sitter parsers & bug fixes</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-500 font-bold">✓</span>
+              <span>Public Sustainer badge on GitHub & site</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-500 font-bold">✓</span>
+              <span>Priority issue triage & roadmap voting</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-500 font-bold">✓</span>
+              <span>Private Discord channel with core contributors</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="pt-8">
+          <a 
+            href="https://github.com/sponsors/StudioEaZY" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="block w-full text-center px-4 py-3 rounded-xl bg-graphite hover:bg-graphite-900 dark:bg-white dark:hover:bg-stone-100 text-white dark:text-graphite font-mono text-xs font-bold transition-all shadow-md"
+          >
+            Become a Sustainer ($19/mo) →
+          </a>
+        </div>
+      </div>
+
+      <!-- Tier 3: Commercial / Enterprise -->
+      <div class="rounded-3xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-8 flex flex-col justify-between shadow-xs hover:border-graphite/50 transition-all">
+        <div class="space-y-6">
+          <div>
+            <div class="text-xs font-mono font-bold tracking-wider text-graphite/70 dark:text-stone-400 uppercase">
+              ENTERPRISE & FLEETS
+            </div>
+            <h2 class="text-2xl font-serif font-bold text-graphite dark:text-white mt-1">Commercial Support</h2>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="text-4xl font-serif font-bold text-graphite dark:text-white">$99</span>
+              <span class="text-xs font-mono text-graphite/60 dark:text-stone-400">/ seat / mo</span>
+            </div>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 mt-2 font-sans leading-relaxed">
+              Dedicated architectural advisory, custom validator rule engineering, and enterprise SLA.
+            </p>
+          </div>
+
+          <ul class="space-y-3 font-mono text-xs text-graphite/90 dark:text-stone-200 border-t border-stone-200 dark:border-obsidian-800 pt-6">
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>Custom checkgen validator engineering</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>1-on-1 architecture review & migration</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>Guaranteed 4-hour SLA on bug reports</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>Cross-repository boundary packs</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-survey-600 dark:text-survey-light font-bold">✓</span>
+              <span>Commercial invoice & procurement support</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="pt-8">
+          <a 
+            href="mailto:support@afwe.dev?subject=AFWE%20Commercial%20Support%20Inquiry" 
+            class="block w-full text-center px-4 py-2.5 rounded-xl border border-stone-400 dark:border-obsidian-700 bg-white dark:bg-obsidian-850 hover:border-graphite text-graphite dark:text-stone-200 font-mono text-xs font-bold transition-all shadow-xs"
+          >
+            Contact team support →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frequently Asked Questions -->
+    <section class="border-t border-stone-300 dark:border-obsidian-800 pt-12 space-y-8">
+      <div class="text-center space-y-2">
+        <h2 class="text-2xl sm:text-3xl font-serif font-bold text-graphite dark:text-white">
+          Frequently Answered Questions
+        </h2>
+        <p class="text-xs sm:text-sm text-graphite/70 dark:text-stone-400 font-mono">
+          Straight answers about licensing, privacy, and community funding.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans text-xs sm:text-sm">
+        <div class="p-6 rounded-2xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 space-y-2">
+          <h3 class="font-bold text-graphite dark:text-white text-base">Is AFWE really 100% free?</h3>
+          <p class="text-graphite/80 dark:text-stone-300 leading-relaxed text-xs">
+            Yes. Every line of AFWE Core, the CLI, the 57 MCP tools, and the local Studio is licensed under the permissive MIT license. There are no artificial limits, no locked enterprise features in the CLI, and no feature gating.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 space-y-2">
+          <h3 class="font-bold text-graphite dark:text-white text-base">Does AFWE send my code to the cloud?</h3>
+          <p class="text-graphite/80 dark:text-stone-300 leading-relaxed text-xs">
+            Never. AFWE runs completely locally on your hardware. It has zero cloud backend and zero telemetry. All AST parsing, BLAKE3 checksums, and turn ledgers live entirely in your repo under the <code class="font-mono text-[11px]">.afwe/</code> directory.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 space-y-2">
+          <h3 class="font-bold text-graphite dark:text-white text-base">How does the Sustainer model work?</h3>
+          <p class="text-graphite/80 dark:text-stone-300 leading-relaxed text-xs">
+            Open-source infrastructure needs maintenance, grammar testing across languages, and performance tuning. Instead of creating a closed-source SaaS, we offer a voluntary subscription for companies and developers who want to sponsor our work so the tool stays freely accessible to everyone.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 space-y-2">
+          <h3 class="font-bold text-graphite dark:text-white text-base">Which agent harnesses work with AFWE?</h3>
+          <p class="text-graphite/80 dark:text-stone-300 leading-relaxed text-xs">
+            Any tool that supports terminal commands or the Model Context Protocol (MCP). We actively test Claude Code, Cursor, Windsurf, Aider, and custom LLM scripts.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</MarketingLayout>

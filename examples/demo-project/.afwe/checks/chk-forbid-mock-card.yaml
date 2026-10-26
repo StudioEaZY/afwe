@@ -1,0 +1,20 @@
+{
+  "id": "chk-forbid-mock-card",
+  "title": "forbid test credit cards in production gateway",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "stripe-gateway"
+    ]
+  },
+  "claim": {
+    "type": "forbid_symbol",
+    "symbol": "src/billing/stripe/StripeGateway.ts::useTestCardNumbers"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-24T14:00:00Z",
+  "created_from": "t0005",
+  "provenance": "confirmed"
+}

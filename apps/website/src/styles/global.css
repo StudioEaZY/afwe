@@ -4,47 +4,49 @@
 
 @layer base {
   :root {
-    --bg-canvas: #faf7f0;
-    --bg-surface: #ffffff;
-    --bg-subtle: #f4efe4;
-    --border-subtle: #ded4c2;
-    --border-strong: #c5b8a0;
-    --text-primary: #14120e;
-    --text-secondary: #3c362c;
-    --text-muted: #575043;
+    --bg-canvas: #F5F3ED;
+    --bg-surface: #FFFFFF;
+    --bg-subtle: #EBE7DD;
+    --border-subtle: #DDD9D0;
+    --border-strong: #C7C4BB;
+    --text-primary: #292D2B;
+    --text-secondary: #3D4340;
+    --text-muted: #5C5850;
     
-    --brand-emerald: #15803d;
-    --brand-indigo: #4338ca;
-    --brand-amber: #b45309;
-    --brand-crimson: #b91c1c;
-    --brand-cyan: #0e7490;
+    --brand-survey: #758477;
+    --brand-emerald: #15803D;
+    --brand-indigo: #4338CA;
+    --brand-amber: #B45309;
+    --brand-crimson: #B91C1C;
+    --brand-cyan: #0E7490;
   }
 
   .dark {
-    --bg-canvas: #0a0c0f;
-    --bg-surface: #12151c;
-    --bg-subtle: #181c26;
-    --border-subtle: #262c3a;
-    --border-strong: #343c4f;
-    --text-primary: #f5f7fa;
-    --text-secondary: #ccd4e0;
-    --text-muted: #a3adbe;
+    --bg-canvas: #0E1110;
+    --bg-surface: #141816;
+    --bg-subtle: #1B211E;
+    --border-subtle: #242C28;
+    --border-strong: #333D38;
+    --text-primary: #F5F8F6;
+    --text-secondary: #BDCCC4;
+    --text-muted: #8E9E95;
     
-    --brand-emerald: #22c55e;
-    --brand-indigo: #818cf8;
-    --brand-amber: #fbbf24;
-    --brand-crimson: #f87171;
-    --brand-cyan: #22d3ee;
+    --brand-survey: #8D9B8F;
+    --brand-emerald: #22C55E;
+    --brand-indigo: #818CF8;
+    --brand-amber: #FBBF24;
+    --brand-crimson: #F87171;
+    --brand-cyan: #22D3EE;
   }
 
   /* Universal high-contrast keyboard focus visibility */
   *:focus-visible {
-    outline: 2.5px solid #16a34a !important;
+    outline: 2.5px solid #758477 !important;
     outline-offset: 2px !important;
   }
 
   .dark *:focus-visible {
-    outline: 2.5px solid #4ade80 !important;
+    outline: 2.5px solid #8D9B8F !important;
     outline-offset: 2px !important;
   }
 
@@ -63,8 +65,8 @@
   }
 }
 
-/* Subtle architectural dot grid */
-.bg-grid-dots {
+/* Localized architectural dot grid - ONLY used inside designated diagram containers */
+.canvas-grid {
   background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0);
   background-size: 24px 24px;
 }
@@ -83,8 +85,8 @@
 .unmapped-hatch {
   background: repeating-linear-gradient(
     -45deg,
-    rgba(100, 116, 139, 0.22),
-    rgba(100, 116, 139, 0.22) 4px,
+    rgba(117, 132, 119, 0.2),
+    rgba(117, 132, 119, 0.2) 4px,
     transparent 4px,
     transparent 8px
   );
@@ -99,20 +101,20 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(120, 110, 95, 0.35);
+  background: rgba(117, 132, 119, 0.35);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(120, 110, 95, 0.6);
+  background: rgba(117, 132, 119, 0.6);
 }
 
 /* Turn receipts */
 .receipt-card {
-  box-shadow: 0 4px 20px -2px rgba(20, 18, 14, 0.08), 0 2px 6px -1px rgba(20, 18, 14, 0.04);
+  box-shadow: 0 4px 20px -2px rgba(41, 45, 43, 0.08), 0 2px 6px -1px rgba(41, 45, 43, 0.04);
 }
 
 .dark .receipt-card {
-  box-shadow: 0 6px 28px -2px rgba(0, 0, 0, 0.55), 0 2px 8px -1px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 28px -2px rgba(0, 0, 0, 0.6), 0 2px 8px -1px rgba(0, 0, 0, 0.35);
 }
 
 /* Accessible Stamped status badge */

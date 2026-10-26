@@ -1,0 +1,23 @@
+{
+  "id": "chk-superseded-cookie-stickiness",
+  "title": "A/B cohort stickiness verified through document.cookie writes",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "ab-cohort-sticky-cookie"
+    ]
+  },
+  "claim": {
+    "type": "require_file",
+    "files": [
+      "src/telemetry/cookieStorage.ts"
+    ]
+  },
+  "status": "superseded",
+  "superseded_by": "chk-export-assign-cohort",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T08:00:00Z",
+  "created_from": "t0001",
+  "provenance": "confirmed"
+}

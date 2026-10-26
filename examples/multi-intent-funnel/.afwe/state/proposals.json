@@ -1,0 +1,184 @@
+{
+  "proposals": [
+    {
+      "id": "unmapped:a34ef01a13",
+      "created": "2026-10-26T11:20:22Z",
+      "finding": {
+        "id": "unmapped:a34ef01a13",
+        "kind": "unmapped_file",
+        "severity": "warn",
+        "confidence": 0.3,
+        "summary": "`src/Slide2.tsx` has no blueprint home; maybe a new node `src`",
+        "evidence": [
+          "siblings are split across 5 nodes",
+          "no sibling, import or name evidence"
+        ],
+        "change": {
+          "op": "create_node",
+          "parent": "hero-experience",
+          "name": "src",
+          "files": [
+            "src/**"
+          ]
+        },
+        "files": [
+          "src/Slide2.tsx"
+        ]
+      },
+      "status": "pending"
+    },
+    {
+      "id": "unmapped:221096f563",
+      "created": "2026-10-26T11:20:22Z",
+      "finding": {
+        "id": "unmapped:221096f563",
+        "kind": "unmapped_file",
+        "severity": "warn",
+        "confidence": 0.3,
+        "summary": "`src/affiliate-webhook/partnerPostback.ts` has no blueprint home; maybe a new node `affiliate-webhook`",
+        "evidence": [
+          "no sibling, import or name evidence"
+        ],
+        "change": {
+          "op": "create_node",
+          "parent": "hero-experience",
+          "name": "affiliate-webhook",
+          "files": [
+            "src/affiliate-webhook/**"
+          ]
+        },
+        "files": [
+          "src/affiliate-webhook/partnerPostback.ts"
+        ]
+      },
+      "status": "pending"
+    },
+    {
+      "id": "unmapped:a82ab0b8cb",
+      "created": "2026-10-26T11:20:22Z",
+      "finding": {
+        "id": "unmapped:a82ab0b8cb",
+        "kind": "unmapped_file",
+        "severity": "warn",
+        "confidence": 0.3,
+        "summary": "`src/index.tsx` has no blueprint home; maybe a new node `src`",
+        "evidence": [
+          "siblings are split across 5 nodes",
+          "no sibling, import or name evidence"
+        ],
+        "change": {
+          "op": "create_node",
+          "parent": "hero-experience",
+          "name": "src",
+          "files": [
+            "src/**"
+          ]
+        },
+        "files": [
+          "src/index.tsx"
+        ]
+      },
+      "status": "pending"
+    },
+    {
+      "id": "unmapped:486170b645",
+      "created": "2026-10-26T11:20:22Z",
+      "finding": {
+        "id": "unmapped:486170b645",
+        "kind": "unmapped_file",
+        "severity": "warn",
+        "confidence": 0.3,
+        "summary": "`src/legacy-pixel/fbPixel.ts` has no blueprint home; maybe a new node `legacy-pixel`",
+        "evidence": [
+          "no sibling, import or name evidence"
+        ],
+        "change": {
+          "op": "create_node",
+          "parent": "hero-experience",
+          "name": "legacy-pixel",
+          "files": [
+            "src/legacy-pixel/**"
+          ]
+        },
+        "files": [
+          "src/legacy-pixel/fbPixel.ts"
+        ]
+      },
+      "status": "pending"
+    },
+    {
+      "id": "unmapped:429cdace79",
+      "created": "2026-10-26T11:20:22Z",
+      "finding": {
+        "id": "unmapped:429cdace79",
+        "kind": "unmapped_file",
+        "severity": "warn",
+        "confidence": 0.3,
+        "summary": "`src/seo-scraper/metaHydrator.ts` has no blueprint home; maybe a new node `seo-scraper`",
+        "evidence": [
+          "no sibling, import or name evidence"
+        ],
+        "change": {
+          "op": "create_node",
+          "parent": "hero-experience",
+          "name": "seo-scraper",
+          "files": [
+            "src/seo-scraper/**"
+          ]
+        },
+        "files": [
+          "src/seo-scraper/metaHydrator.ts"
+        ]
+      },
+      "status": "pending"
+    },
+    {
+      "id": "unmapped:12704dab69",
+      "created": "2026-10-26T11:20:22Z",
+      "finding": {
+        "id": "unmapped:12704dab69",
+        "kind": "unmapped_file",
+        "severity": "warn",
+        "confidence": 0.3,
+        "summary": "`src/unmapped-experiments/exitIntentModal.tsx` has no blueprint home; maybe a new node `unmapped-experiments`",
+        "evidence": [
+          "no sibling, import or name evidence"
+        ],
+        "change": {
+          "op": "create_node",
+          "parent": "hero-experience",
+          "name": "unmapped-experiments",
+          "files": [
+            "src/unmapped-experiments/**"
+          ]
+        },
+        "files": [
+          "src/unmapped-experiments/exitIntentModal.tsx"
+        ]
+      },
+      "status": "pending"
+    },
+    {
+      "id": "unsupported:5dbb7713be",
+      "created": "2026-10-26T11:20:22Z",
+      "finding": {
+        "id": "unsupported:5dbb7713be",
+        "kind": "unsupported_relation",
+        "severity": "info",
+        "confidence": 0.3,
+        "summary": "blueprint declares Growth Funnel.Acquisition Stage.Hero Experience → Growth Funnel.Acquisition Stage.ROI Benchmark but no import edge supports it (planned, or stale?)",
+        "evidence": [],
+        "change": {
+          "op": "remove_relation",
+          "from": "hero-experience",
+          "to": "roi-benchmark"
+        },
+        "nodes": [
+          "hero-experience",
+          "roi-benchmark"
+        ]
+      },
+      "status": "pending"
+    }
+  ]
+}

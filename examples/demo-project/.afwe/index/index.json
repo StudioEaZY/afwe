@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-08T08:23:15Z",
+  "generated": "2026-10-26T11:16:38Z",
   "files": {
     "README.md": {
       "language": "markdown",
@@ -20,10 +20,7 @@
     "services/status_worker.py": {
       "language": "python",
       "hash": "9ffbcc6867d7fd08",
-      "node": "realtime-status-worker",
-      "nodes": [
-        "realtime-status-worker"
-      ],
+      "nodes": [],
       "symbols": [
         "services/status_worker.py::StatusWorker",
         "services/status_worker.py::StatusWorker.__init__",
@@ -39,9 +36,9 @@
     "src/auth/auth.ts": {
       "language": "typescript",
       "hash": "0737afd4d53d101d",
-      "node": "sessions",
+      "node": "identity",
       "nodes": [
-        "sessions"
+        "identity"
       ],
       "symbols": [
         "src/auth/auth.ts::store",
@@ -54,12 +51,27 @@
       ],
       "externals": []
     },
+    "src/auth/jwtSigner.ts": {
+      "language": "typescript",
+      "hash": "c815fcec594c8d6f",
+      "node": "jwt-signer",
+      "nodes": [
+        "jwt-signer",
+        "identity"
+      ],
+      "symbols": [
+        "src/auth/jwtSigner.ts::TokenPayload",
+        "src/auth/jwtSigner.ts::signJwtToken"
+      ],
+      "imports": [],
+      "externals": []
+    },
     "src/auth/oauth.ts": {
       "language": "typescript",
       "hash": "97b988614e0f4f94",
-      "node": "oauth",
+      "node": "identity",
       "nodes": [
-        "oauth"
+        "identity"
       ],
       "symbols": [
         "src/auth/oauth.ts::OAuthProfile",
@@ -74,9 +86,10 @@
     "src/auth/session.ts": {
       "language": "typescript",
       "hash": "1a7c4da991b77568",
-      "node": "sessions",
+      "node": "session-token",
       "nodes": [
-        "sessions"
+        "session-token",
+        "identity"
       ],
       "symbols": [
         "src/auth/session.ts::SESSION_TTL_MS",
@@ -94,9 +107,9 @@
     "src/auth/sessionStore.ts": {
       "language": "typescript",
       "hash": "86dc385aa2062882",
-      "node": "sessions",
+      "node": "identity",
       "nodes": [
-        "sessions"
+        "identity"
       ],
       "symbols": [
         "src/auth/sessionStore.ts::SessionStore",
@@ -109,12 +122,45 @@
       ],
       "externals": []
     },
+    "src/billing/checkout/CheckoutController.ts": {
+      "language": "typescript",
+      "hash": "6c913ac856a9e470",
+      "node": "billing-checkout",
+      "nodes": [
+        "billing-checkout",
+        "billing"
+      ],
+      "symbols": [
+        "src/billing/checkout/CheckoutController.ts::CheckoutController",
+        "src/billing/checkout/CheckoutController.ts::CheckoutController.constructor",
+        "src/billing/checkout/CheckoutController.ts::CheckoutController.checkout"
+      ],
+      "imports": [
+        "src/auth/session.ts"
+      ],
+      "externals": []
+    },
+    "src/billing/proration.ts": {
+      "language": "typescript",
+      "hash": "babfb17923da0492",
+      "node": "proration-calculator",
+      "nodes": [
+        "proration-calculator",
+        "billing"
+      ],
+      "symbols": [
+        "src/billing/proration.ts::calculateProration",
+        "src/billing/proration.ts::hashIdempotencyKey"
+      ],
+      "imports": [],
+      "externals": []
+    },
     "src/canvas/CanvasRenderer.tsx": {
       "language": "tsx",
       "hash": "c2a08211e1a1a6e9",
-      "node": "canvas-renderer",
+      "node": "workspace",
       "nodes": [
-        "canvas-renderer"
+        "workspace"
       ],
       "symbols": [
         "src/canvas/CanvasRenderer.tsx::RenderInput",
@@ -125,12 +171,22 @@
       "imports": [],
       "externals": []
     },
+    "src/cli-tools/seedRunner.ts": {
+      "language": "typescript",
+      "hash": "0888dfc2cf2f83ed",
+      "nodes": [],
+      "symbols": [
+        "src/cli-tools/seedRunner.ts::seedWorkspaceDefaults"
+      ],
+      "imports": [],
+      "externals": []
+    },
     "src/dashboard/Dashboard.tsx": {
       "language": "tsx",
       "hash": "7e73896d48109069",
-      "node": "dashboard",
+      "node": "workspace-library",
       "nodes": [
-        "dashboard"
+        "workspace-library"
       ],
       "symbols": [
         "src/dashboard/Dashboard.tsx::Dashboard"
@@ -145,9 +201,9 @@
     "src/dashboard/Widget.tsx": {
       "language": "tsx",
       "hash": "ef7fb304ee48b520",
-      "node": "dashboard",
+      "node": "workspace-library",
       "nodes": [
-        "dashboard"
+        "workspace-library"
       ],
       "symbols": [
         "src/dashboard/Widget.tsx::renderer",
@@ -161,9 +217,9 @@
     "src/data/db.ts": {
       "language": "typescript",
       "hash": "f45ac6af51bcf4df",
-      "node": "data",
+      "node": "identity",
       "nodes": [
-        "data"
+        "identity"
       ],
       "symbols": [
         "src/data/db.ts::Db",
@@ -178,9 +234,9 @@
     "src/data/replica.ts": {
       "language": "typescript",
       "hash": "9929c71f3880bc56",
-      "node": "data",
+      "node": "identity",
       "nodes": [
-        "data"
+        "identity"
       ],
       "symbols": [
         "src/data/replica.ts::replicaDb"
@@ -188,6 +244,16 @@
       "imports": [
         "src/data/db.ts"
       ],
+      "externals": []
+    },
+    "src/experiments/aiSuggest.ts": {
+      "language": "typescript",
+      "hash": "2d13424591139613",
+      "nodes": [],
+      "symbols": [
+        "src/experiments/aiSuggest.ts::suggestWorkspaceTags"
+      ],
+      "imports": [],
       "externals": []
     },
     "src/identity/user.ts": {
@@ -205,12 +271,23 @@
       "imports": [],
       "externals": []
     },
-    "src/notifications/mailer.ts": {
+    "src/legacy-sync/xmlImporter.ts": {
       "language": "typescript",
-      "hash": "b8c401ba091f7050",
+      "hash": "d074eb3b1a3e07b1",
       "nodes": [],
       "symbols": [
-        "src/notifications/mailer.ts::sendMail"
+        "src/legacy-sync/xmlImporter.ts::parseLegacyXmlBatch"
+      ],
+      "imports": [],
+      "externals": []
+    },
+    "src/notifications/mailer.ts": {
+      "language": "typescript",
+      "hash": "d7fcce405ee3508d",
+      "nodes": [],
+      "symbols": [
+        "src/notifications/mailer.ts::EmailPayload",
+        "src/notifications/mailer.ts::sendTransactionalEmail"
       ],
       "imports": [],
       "externals": []
@@ -218,9 +295,9 @@
     "src/payments/checkout.ts": {
       "language": "typescript",
       "hash": "207781679da20270",
-      "node": "payments",
+      "node": "identity",
       "nodes": [
-        "payments"
+        "identity"
       ],
       "symbols": [
         "src/payments/checkout.ts::Cart",
@@ -236,9 +313,9 @@
     "src/payments/stripe.ts": {
       "language": "typescript",
       "hash": "3cc5316aaef514cc",
-      "node": "payments",
+      "node": "identity",
       "nodes": [
-        "payments"
+        "identity"
       ],
       "symbols": [
         "src/payments/stripe.ts::charge"
@@ -249,9 +326,9 @@
     "src/ui/Button.tsx": {
       "language": "tsx",
       "hash": "4e86978e99907acc",
-      "node": "ui",
+      "node": "workspace-library",
       "nodes": [
-        "ui"
+        "workspace-library"
       ],
       "symbols": [
         "src/ui/Button.tsx::Button"
@@ -262,9 +339,9 @@
     "src/ui/Layout.tsx": {
       "language": "tsx",
       "hash": "5102f58f2fdb1d4f",
-      "node": "ui",
+      "node": "workspace-library",
       "nodes": [
-        "ui"
+        "workspace-library"
       ],
       "symbols": [
         "src/ui/Layout.tsx::Layout"
@@ -276,17 +353,19 @@
     },
     "src/workspace/library/Library.ts": {
       "language": "typescript",
-      "hash": "63ec618f0af1a86d",
+      "hash": "4a0a214d02ee6089",
       "node": "workspace-library",
       "nodes": [
-        "workspace-library"
+        "workspace-library",
+        "workspace"
       ],
       "symbols": [
-        "src/workspace/library/Library.ts::Item",
         "src/workspace/library/Library.ts::Library",
+        "src/workspace/library/Library.ts::Library.constructor",
         "src/workspace/library/Library.ts::Library.add",
-        "src/workspace/library/Library.ts::Library.recent",
-        "src/workspace/library/Library.ts::Library.all"
+        "src/workspace/library/Library.ts::Library.get",
+        "src/workspace/library/Library.ts::Library.all",
+        "src/workspace/library/Library.ts::Library.tagItem"
       ],
       "imports": [
         "src/workspace/tagging/Tags.ts"
@@ -296,9 +375,9 @@
     "src/workspace/preview/Preview.ts": {
       "language": "typescript",
       "hash": "c7de6edf7199fe0c",
-      "node": "workspace-preview",
+      "node": "workspace",
       "nodes": [
-        "workspace-preview"
+        "workspace"
       ],
       "symbols": [
         "src/workspace/preview/Preview.ts::renderer",
@@ -312,17 +391,35 @@
     },
     "src/workspace/search/Search.ts": {
       "language": "typescript",
-      "hash": "c3d3ea8bca6fbe03",
+      "hash": "28f17cea9d1d22e9",
       "node": "workspace-search",
       "nodes": [
-        "workspace-search"
+        "workspace-search",
+        "workspace"
       ],
       "symbols": [
-        "src/workspace/search/Search.ts::search"
+        "src/workspace/search/Search.ts::SearchIndex",
+        "src/workspace/search/Search.ts::SearchIndex.search",
+        "src/workspace/search/Search.ts::SearchIndex.directDbLookup"
       ],
-      "imports": [
-        "src/workspace/library/Library.ts"
+      "imports": [],
+      "externals": []
+    },
+    "src/workspace/tagging/ColorWheel.ts": {
+      "language": "typescript",
+      "hash": "956b2e1713c1e4d6",
+      "node": "tag-color-wheel",
+      "nodes": [
+        "tag-color-wheel",
+        "workspace-tagging",
+        "workspace"
       ],
+      "symbols": [
+        "src/workspace/tagging/ColorWheel.ts::TAG_PALETTE",
+        "src/workspace/tagging/ColorWheel.ts::getTagColor",
+        "src/workspace/tagging/ColorWheel.ts::renderTagPill"
+      ],
+      "imports": [],
       "externals": []
     },
     "src/workspace/tagging/Tags.ts": {
@@ -330,7 +427,8 @@
       "hash": "4a67463ab97ca657",
       "node": "workspace-tagging",
       "nodes": [
-        "workspace-tagging"
+        "workspace-tagging",
+        "workspace"
       ],
       "symbols": [
         "src/workspace/tagging/Tags.ts::Tag",
@@ -410,6 +508,30 @@
       "fingerprint": "7c42a48913d21906",
       "start_line": 7,
       "end_line": 7
+    },
+    "src/auth/jwtSigner.ts::TokenPayload": {
+      "id": "src/auth/jwtSigner.ts::TokenPayload",
+      "file": "src/auth/jwtSigner.ts",
+      "name": "TokenPayload",
+      "qualified": "TokenPayload",
+      "kind": "interface",
+      "structural": "interface:TokenPayload",
+      "fingerprint": "ac56bde0c494a72d",
+      "start_line": 2,
+      "end_line": 6,
+      "exported": true
+    },
+    "src/auth/jwtSigner.ts::signJwtToken": {
+      "id": "src/auth/jwtSigner.ts::signJwtToken",
+      "file": "src/auth/jwtSigner.ts",
+      "name": "signJwtToken",
+      "qualified": "signJwtToken",
+      "kind": "function",
+      "structural": "function:signJwtToken",
+      "fingerprint": "b3b6182d60a09849",
+      "start_line": 8,
+      "end_line": 15,
+      "exported": true
     },
     "src/auth/oauth.ts::OAuthProfile": {
       "id": "src/auth/oauth.ts::OAuthProfile",
@@ -543,6 +665,66 @@
       "end_line": 9,
       "exported": true
     },
+    "src/billing/checkout/CheckoutController.ts::CheckoutController": {
+      "id": "src/billing/checkout/CheckoutController.ts::CheckoutController",
+      "file": "src/billing/checkout/CheckoutController.ts",
+      "name": "CheckoutController",
+      "qualified": "CheckoutController",
+      "kind": "class",
+      "structural": "class:CheckoutController",
+      "fingerprint": "1f1f4f1be5d7aa4a",
+      "start_line": 6,
+      "end_line": 18,
+      "exported": true
+    },
+    "src/billing/checkout/CheckoutController.ts::CheckoutController.checkout": {
+      "id": "src/billing/checkout/CheckoutController.ts::CheckoutController.checkout",
+      "file": "src/billing/checkout/CheckoutController.ts",
+      "name": "checkout",
+      "qualified": "CheckoutController.checkout",
+      "kind": "method",
+      "structural": "class:CheckoutController/method:checkout",
+      "fingerprint": "5bdb84f48bc662c6",
+      "start_line": 13,
+      "end_line": 17,
+      "exported": true
+    },
+    "src/billing/checkout/CheckoutController.ts::CheckoutController.constructor": {
+      "id": "src/billing/checkout/CheckoutController.ts::CheckoutController.constructor",
+      "file": "src/billing/checkout/CheckoutController.ts",
+      "name": "constructor",
+      "qualified": "CheckoutController.constructor",
+      "kind": "method",
+      "structural": "class:CheckoutController/method:constructor",
+      "fingerprint": "b142b86cce74f9cd",
+      "start_line": 7,
+      "end_line": 11,
+      "exported": true
+    },
+    "src/billing/proration.ts::calculateProration": {
+      "id": "src/billing/proration.ts::calculateProration",
+      "file": "src/billing/proration.ts",
+      "name": "calculateProration",
+      "qualified": "calculateProration",
+      "kind": "function",
+      "structural": "function:calculateProration",
+      "fingerprint": "14ba385113010c46",
+      "start_line": 2,
+      "end_line": 5,
+      "exported": true
+    },
+    "src/billing/proration.ts::hashIdempotencyKey": {
+      "id": "src/billing/proration.ts::hashIdempotencyKey",
+      "file": "src/billing/proration.ts",
+      "name": "hashIdempotencyKey",
+      "qualified": "hashIdempotencyKey",
+      "kind": "function",
+      "structural": "function:hashIdempotencyKey",
+      "fingerprint": "7300456c8b42034e",
+      "start_line": 7,
+      "end_line": 9,
+      "exported": true
+    },
     "src/canvas/CanvasRenderer.tsx::CanvasRenderer": {
       "id": "src/canvas/CanvasRenderer.tsx::CanvasRenderer",
       "file": "src/canvas/CanvasRenderer.tsx",
@@ -589,6 +771,18 @@
       "fingerprint": "c4b61dc403c1220d",
       "start_line": 1,
       "end_line": 1,
+      "exported": true
+    },
+    "src/cli-tools/seedRunner.ts::seedWorkspaceDefaults": {
+      "id": "src/cli-tools/seedRunner.ts::seedWorkspaceDefaults",
+      "file": "src/cli-tools/seedRunner.ts",
+      "name": "seedWorkspaceDefaults",
+      "qualified": "seedWorkspaceDefaults",
+      "kind": "function",
+      "structural": "function:seedWorkspaceDefaults",
+      "fingerprint": "970d125aa95fa01a",
+      "start_line": 2,
+      "end_line": 4,
       "exported": true
     },
     "src/dashboard/Dashboard.tsx::Dashboard": {
@@ -698,6 +892,18 @@
       "end_line": 3,
       "exported": true
     },
+    "src/experiments/aiSuggest.ts::suggestWorkspaceTags": {
+      "id": "src/experiments/aiSuggest.ts::suggestWorkspaceTags",
+      "file": "src/experiments/aiSuggest.ts",
+      "name": "suggestWorkspaceTags",
+      "qualified": "suggestWorkspaceTags",
+      "kind": "function",
+      "structural": "function:suggestWorkspaceTags",
+      "fingerprint": "1260c110ee069ce7",
+      "start_line": 2,
+      "end_line": 5,
+      "exported": true
+    },
     "src/identity/user.ts::User": {
       "id": "src/identity/user.ts::User",
       "file": "src/identity/user.ts",
@@ -734,16 +940,40 @@
       "end_line": 7,
       "exported": true
     },
-    "src/notifications/mailer.ts::sendMail": {
-      "id": "src/notifications/mailer.ts::sendMail",
-      "file": "src/notifications/mailer.ts",
-      "name": "sendMail",
-      "qualified": "sendMail",
+    "src/legacy-sync/xmlImporter.ts::parseLegacyXmlBatch": {
+      "id": "src/legacy-sync/xmlImporter.ts::parseLegacyXmlBatch",
+      "file": "src/legacy-sync/xmlImporter.ts",
+      "name": "parseLegacyXmlBatch",
+      "qualified": "parseLegacyXmlBatch",
       "kind": "function",
-      "structural": "function:sendMail",
-      "fingerprint": "10aae74c4dade147",
-      "start_line": 3,
+      "structural": "function:parseLegacyXmlBatch",
+      "fingerprint": "877308fd9f0d2af9",
+      "start_line": 2,
       "end_line": 5,
+      "exported": true
+    },
+    "src/notifications/mailer.ts::EmailPayload": {
+      "id": "src/notifications/mailer.ts::EmailPayload",
+      "file": "src/notifications/mailer.ts",
+      "name": "EmailPayload",
+      "qualified": "EmailPayload",
+      "kind": "interface",
+      "structural": "interface:EmailPayload",
+      "fingerprint": "6b777ccfe1361bbe",
+      "start_line": 2,
+      "end_line": 6,
+      "exported": true
+    },
+    "src/notifications/mailer.ts::sendTransactionalEmail": {
+      "id": "src/notifications/mailer.ts::sendTransactionalEmail",
+      "file": "src/notifications/mailer.ts",
+      "name": "sendTransactionalEmail",
+      "qualified": "sendTransactionalEmail",
+      "kind": "function",
+      "structural": "function:sendTransactionalEmail",
+      "fingerprint": "99791dc687f91598",
+      "start_line": 8,
+      "end_line": 11,
       "exported": true
     },
     "src/payments/checkout.ts::Cart": {
@@ -806,18 +1036,6 @@
       "end_line": 5,
       "exported": true
     },
-    "src/workspace/library/Library.ts::Item": {
-      "id": "src/workspace/library/Library.ts::Item",
-      "file": "src/workspace/library/Library.ts",
-      "name": "Item",
-      "qualified": "Item",
-      "kind": "interface",
-      "structural": "interface:Item",
-      "fingerprint": "9005f64e2e1ab703",
-      "start_line": 3,
-      "end_line": 3,
-      "exported": true
-    },
     "src/workspace/library/Library.ts::Library": {
       "id": "src/workspace/library/Library.ts::Library",
       "file": "src/workspace/library/Library.ts",
@@ -825,9 +1043,9 @@
       "qualified": "Library",
       "kind": "class",
       "structural": "class:Library",
-      "fingerprint": "3ef2aece5bfae8d9",
-      "start_line": 5,
-      "end_line": 10,
+      "fingerprint": "58027f3098373401",
+      "start_line": 6,
+      "end_line": 30,
       "exported": true
     },
     "src/workspace/library/Library.ts::Library.add": {
@@ -837,9 +1055,9 @@
       "qualified": "Library.add",
       "kind": "method",
       "structural": "class:Library/method:add",
-      "fingerprint": "3cbee106c893520c",
-      "start_line": 7,
-      "end_line": 7,
+      "fingerprint": "05cadfb7f41b83c2",
+      "start_line": 11,
+      "end_line": 13,
       "exported": true
     },
     "src/workspace/library/Library.ts::Library.all": {
@@ -849,21 +1067,45 @@
       "qualified": "Library.all",
       "kind": "method",
       "structural": "class:Library/method:all",
-      "fingerprint": "88f0a8aa449ca6ec",
+      "fingerprint": "5a94f9e168affcd9",
+      "start_line": 19,
+      "end_line": 21,
+      "exported": true
+    },
+    "src/workspace/library/Library.ts::Library.constructor": {
+      "id": "src/workspace/library/Library.ts::Library.constructor",
+      "file": "src/workspace/library/Library.ts",
+      "name": "constructor",
+      "qualified": "Library.constructor",
+      "kind": "method",
+      "structural": "class:Library/method:constructor",
+      "fingerprint": "7376d84499aead9a",
       "start_line": 9,
       "end_line": 9,
       "exported": true
     },
-    "src/workspace/library/Library.ts::Library.recent": {
-      "id": "src/workspace/library/Library.ts::Library.recent",
+    "src/workspace/library/Library.ts::Library.get": {
+      "id": "src/workspace/library/Library.ts::Library.get",
       "file": "src/workspace/library/Library.ts",
-      "name": "recent",
-      "qualified": "Library.recent",
+      "name": "get",
+      "qualified": "Library.get",
       "kind": "method",
-      "structural": "class:Library/method:recent",
-      "fingerprint": "62886530344bbc8c",
-      "start_line": 8,
-      "end_line": 8,
+      "structural": "class:Library/method:get",
+      "fingerprint": "50aa377909575fea",
+      "start_line": 15,
+      "end_line": 17,
+      "exported": true
+    },
+    "src/workspace/library/Library.ts::Library.tagItem": {
+      "id": "src/workspace/library/Library.ts::Library.tagItem",
+      "file": "src/workspace/library/Library.ts",
+      "name": "tagItem",
+      "qualified": "Library.tagItem",
+      "kind": "method",
+      "structural": "class:Library/method:tagItem",
+      "fingerprint": "d4ab53f3b136ed82",
+      "start_line": 23,
+      "end_line": 29,
       "exported": true
     },
     "src/workspace/preview/Preview.ts::preview": {
@@ -889,16 +1131,76 @@
       "start_line": 4,
       "end_line": 4
     },
-    "src/workspace/search/Search.ts::search": {
-      "id": "src/workspace/search/Search.ts::search",
+    "src/workspace/search/Search.ts::SearchIndex": {
+      "id": "src/workspace/search/Search.ts::SearchIndex",
+      "file": "src/workspace/search/Search.ts",
+      "name": "SearchIndex",
+      "qualified": "SearchIndex",
+      "kind": "class",
+      "structural": "class:SearchIndex",
+      "fingerprint": "65cd9d444e1d368e",
+      "start_line": 5,
+      "end_line": 21,
+      "exported": true
+    },
+    "src/workspace/search/Search.ts::SearchIndex.directDbLookup": {
+      "id": "src/workspace/search/Search.ts::SearchIndex.directDbLookup",
+      "file": "src/workspace/search/Search.ts",
+      "name": "directDbLookup",
+      "qualified": "SearchIndex.directDbLookup",
+      "kind": "method",
+      "structural": "class:SearchIndex/method:directDbLookup",
+      "fingerprint": "99483218651f79ff",
+      "start_line": 18,
+      "end_line": 20,
+      "exported": true
+    },
+    "src/workspace/search/Search.ts::SearchIndex.search": {
+      "id": "src/workspace/search/Search.ts::SearchIndex.search",
       "file": "src/workspace/search/Search.ts",
       "name": "search",
-      "qualified": "search",
+      "qualified": "SearchIndex.search",
+      "kind": "method",
+      "structural": "class:SearchIndex/method:search",
+      "fingerprint": "1534c06492cc8303",
+      "start_line": 8,
+      "end_line": 16,
+      "exported": true
+    },
+    "src/workspace/tagging/ColorWheel.ts::TAG_PALETTE": {
+      "id": "src/workspace/tagging/ColorWheel.ts::TAG_PALETTE",
+      "file": "src/workspace/tagging/ColorWheel.ts",
+      "name": "TAG_PALETTE",
+      "qualified": "TAG_PALETTE",
+      "kind": "const",
+      "structural": "const:TAG_PALETTE",
+      "fingerprint": "d778c4c77ca70962",
+      "start_line": 2,
+      "end_line": 2,
+      "exported": true
+    },
+    "src/workspace/tagging/ColorWheel.ts::getTagColor": {
+      "id": "src/workspace/tagging/ColorWheel.ts::getTagColor",
+      "file": "src/workspace/tagging/ColorWheel.ts",
+      "name": "getTagColor",
+      "qualified": "getTagColor",
       "kind": "function",
-      "structural": "function:search",
-      "fingerprint": "8aca39357d8526b6",
-      "start_line": 3,
-      "end_line": 6,
+      "structural": "function:getTagColor",
+      "fingerprint": "61d0bf4fceb8ed44",
+      "start_line": 4,
+      "end_line": 9,
+      "exported": true
+    },
+    "src/workspace/tagging/ColorWheel.ts::renderTagPill": {
+      "id": "src/workspace/tagging/ColorWheel.ts::renderTagPill",
+      "file": "src/workspace/tagging/ColorWheel.ts",
+      "name": "renderTagPill",
+      "qualified": "renderTagPill",
+      "kind": "function",
+      "structural": "function:renderTagPill",
+      "fingerprint": "0d1d6aa3f0f7066a",
+      "start_line": 11,
+      "end_line": 13,
       "exported": true
     },
     "src/workspace/tagging/Tags.ts::Tag": {
@@ -927,126 +1229,184 @@
     }
   },
   "memory": {
-    "auth-session-expiry": {
-      "kind": "decision",
-      "title": "Session expiry is 30 minutes, server-side",
-      "path": "memory/decisions/auth-session-expiry.md",
-      "nodes": [
-        "sessions"
-      ],
-      "files": [],
-      "symbols": [
-        "src/auth/session.ts::SESSION_TTL_MS"
-      ],
-      "tags": [
-        "auth",
-        "security"
-      ],
-      "status": "accepted"
-    },
-    "dashboard-rendering": {
-      "kind": "exception",
-      "title": "Dashboard rendering ignores Lighthouse budgets",
-      "path": "memory/exceptions/dashboard-rendering.md",
-      "nodes": [
-        "dashboard"
-      ],
-      "files": [],
-      "symbols": [],
-      "tags": [
-        "performance"
-      ],
-      "status": "accepted"
-    },
-    "lighthouse-exception": {
-      "kind": "decision",
-      "title": "Lighthouse exception for Dashboard",
-      "path": "memory/decisions/lighthouse-exception.md",
-      "nodes": [
-        "dashboard",
-        "canvas-renderer"
-      ],
-      "files": [
-        "src/dashboard/**",
-        "src/canvas/CanvasRenderer.tsx"
-      ],
-      "symbols": [
-        "src/canvas/CanvasRenderer.tsx::CanvasRenderer.render"
-      ],
-      "tags": [
-        "performance",
-        "intentional-exception"
-      ],
-      "status": "accepted"
-    },
-    "payments-boundary": {
+    "con-idempotency-key-mandatory": {
       "kind": "constraint",
-      "title": "Payments boundary: no UI dependencies",
-      "path": "memory/constraints/payments-boundary.md",
+      "title": "Mandatory idempotency keys on payment operations",
+      "path": "memory/constraints/con-idempotency-key-mandatory.md",
       "nodes": [
-        "payments"
+        "billing-checkout",
+        "stripe-gateway"
       ],
       "files": [],
       "symbols": [],
-      "tags": [
-        "boundary"
-      ],
+      "tags": [],
       "status": "accepted"
     },
-    "renderer-strategy": {
-      "kind": "decision",
-      "title": "Renderer strategy: one CanvasRenderer, reused",
-      "path": "memory/decisions/renderer-strategy.md",
-      "nodes": [
-        "canvas-renderer",
-        "workspace-preview"
-      ],
-      "files": [],
-      "symbols": [],
-      "tags": [
-        "rendering",
-        "reuse"
-      ],
-      "status": "accepted"
-    },
-    "replica-read-policy": {
+    "con-secret-entropy": {
       "kind": "constraint",
-      "title": "Replica read policy",
-      "path": "memory/constraints/replica-read-policy.md",
+      "title": "32-byte secret entropy requirement",
+      "path": "memory/constraints/con-secret-entropy.md",
       "nodes": [
-        "data"
+        "jwt-signer"
       ],
-      "files": [
-        "src/data/replica.ts"
-      ],
+      "files": [],
       "symbols": [],
-      "tags": [
-        "consistency",
-        "database"
-      ],
+      "tags": [],
       "status": "accepted"
     },
-    "replication-lag": {
-      "kind": "problem",
-      "title": "Replication lag on status reads",
-      "path": "memory/problems/replication-lag.md",
+    "con-workspace-billing-boundary": {
+      "kind": "constraint",
+      "title": "Decoupling workspace from billing",
+      "path": "memory/constraints/con-workspace-billing-boundary.md",
       "nodes": [
-        "data",
+        "workspace",
+        "billing"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "dec-flat-tags": {
+      "kind": "decision",
+      "title": "Flat tags without taxonomy",
+      "path": "memory/decisions/dec-flat-tags.md",
+      "nodes": [
+        "workspace-tagging"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "dec-jwt-stateless": {
+      "kind": "decision",
+      "title": "Stateless JWT access tokens",
+      "path": "memory/decisions/dec-jwt-stateless.md",
+      "nodes": [
+        "jwt-signer",
+        "session-token"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "dec-replica-reads": {
+      "kind": "decision",
+      "title": "Eventual consistency for status widgets",
+      "path": "memory/decisions/dec-replica-reads.md",
+      "nodes": [
         "realtime-status-worker"
       ],
       "files": [],
       "symbols": [],
-      "tags": [
-        "database"
-      ],
-      "status": "open"
+      "tags": [],
+      "status": "accepted"
     },
-    "workspace": {
-      "kind": "terminology",
-      "title": "Workspace",
-      "path": "memory/terminology/workspace.md",
+    "exc-billing-test-bypass": {
+      "kind": "exception",
+      "title": "Exception: Local sandbox bypass for stripe webhook signature",
+      "path": "memory/exceptions/exc-billing-test-bypass.md",
       "nodes": [
-        "workspace"
+        "stripe-gateway"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "exc-realtime-admin-override": {
+      "kind": "exception",
+      "title": "Exception: Manual cluster health check ping directly to primary DB",
+      "path": "memory/exceptions/exc-realtime-admin-override.md",
+      "nodes": [
+        "realtime-status-worker"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "exc-search-direct-query": {
+      "kind": "exception",
+      "title": "Exception: Search index raw SQL read permitted during initial bulk load",
+      "path": "memory/exceptions/exc-search-direct-query.md",
+      "nodes": [
+        "workspace-search"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "prob-proration-rounding-drift": {
+      "kind": "problem",
+      "title": "Sub-cent rounding discrepancies across multiple mid-month seat changes",
+      "path": "memory/problems/prob-proration-rounding-drift.md",
+      "nodes": [
+        "proration-calculator"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "prob-tag-color-collision": {
+      "kind": "problem",
+      "title": "Hash collision on 5-color palette",
+      "path": "memory/problems/prob-tag-color-collision.md",
+      "nodes": [
+        "tag-color-wheel"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "prob-zombie-websockets": {
+      "kind": "problem",
+      "title": "Mobile clients dropping connections without TCP FIN",
+      "path": "memory/problems/prob-zombie-websockets.md",
+      "nodes": [
+        "realtime-presence"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "term-presence-heartbeat": {
+      "kind": "terminolog",
+      "title": "Presence Heartbeat vs Status Ping",
+      "path": "memory/terminology/term-presence-heartbeat.md",
+      "nodes": [
+        "realtime-presence",
+        "realtime-status-worker"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "term-proration": {
+      "kind": "terminolog",
+      "title": "Proration arithmetic",
+      "path": "memory/terminology/term-proration.md",
+      "nodes": [
+        "proration-calculator"
+      ],
+      "files": [],
+      "symbols": [],
+      "tags": [],
+      "status": "accepted"
+    },
+    "term-workspace-item": {
+      "kind": "terminolog",
+      "title": "Item vs Document",
+      "path": "memory/terminology/term-workspace-item.md",
+      "nodes": [
+        "workspace-library"
       ],
       "files": [],
       "symbols": [],
@@ -1055,242 +1415,414 @@
     }
   },
   "nodes": {
-    "authentication": {
-      "path": "Demo Product.Authentication",
-      "name": "Authentication",
-      "kind": "subsystem",
-      "depth": 1,
-      "parent": "demo-product",
+    "auth-api": {
+      "path": "Pulse SaaS Product.Identity Subsystem.Auth API",
+      "name": "Auth API",
+      "kind": "module",
+      "depth": 2,
+      "parent": "identity",
       "files": [],
       "symbols": [],
       "memory": [],
-      "guardrails": [
-        "replica-reads"
-      ]
+      "guardrails": []
     },
-    "canvas-renderer": {
-      "path": "Demo Product.Dashboard.Canvas Renderer",
-      "name": "Canvas Renderer",
-      "kind": "component",
+    "billing": {
+      "path": "Pulse SaaS Product.Billing Subsystem",
+      "name": "Billing Subsystem",
+      "kind": "subsystem",
+      "depth": 1,
+      "parent": "demo-product",
+      "files": [
+        "src/billing/checkout/CheckoutController.ts",
+        "src/billing/proration.ts"
+      ],
+      "symbols": [],
+      "memory": [
+        "con-workspace-billing-boundary"
+      ],
+      "guardrails": []
+    },
+    "billing-checkout": {
+      "path": "Pulse SaaS Product.Billing Subsystem.Billing Checkout",
+      "name": "Billing Checkout",
+      "kind": "module",
       "depth": 2,
-      "parent": "dashboard",
+      "parent": "billing",
       "files": [
-        "src/canvas/CanvasRenderer.tsx"
+        "src/billing/checkout/CheckoutController.ts"
       ],
       "symbols": [],
       "memory": [
-        "lighthouse-exception",
-        "renderer-strategy"
+        "con-idempotency-key-mandatory"
       ],
-      "guardrails": [
-        "interactive-rendering-priority",
-        "replica-reads"
-      ]
+      "guardrails": []
     },
-    "dashboard": {
-      "path": "Demo Product.Dashboard",
-      "name": "Dashboard",
-      "kind": "subsystem",
-      "depth": 1,
-      "parent": "demo-product",
-      "files": [
-        "src/dashboard/Dashboard.tsx",
-        "src/dashboard/Widget.tsx"
-      ],
+    "billing-plans": {
+      "path": "Pulse SaaS Product.Billing Subsystem.Billing Plans",
+      "name": "Billing Plans",
+      "kind": "module",
+      "depth": 2,
+      "parent": "billing",
+      "files": [],
       "symbols": [],
-      "memory": [
-        "lighthouse-exception",
-        "dashboard-rendering"
-      ],
-      "guardrails": [
-        "interactive-rendering-priority",
-        "one-renderer",
-        "replica-reads"
-      ]
+      "memory": [],
+      "guardrails": []
     },
-    "data": {
-      "path": "Demo Product.Data",
-      "name": "Data",
-      "kind": "subsystem",
-      "depth": 1,
-      "parent": "demo-product",
-      "files": [
-        "src/data/db.ts",
-        "src/data/replica.ts"
-      ],
+    "db-client": {
+      "path": "Pulse SaaS Product.Platform Infrastructure.Database Client",
+      "name": "Database Client",
+      "kind": "module",
+      "depth": 2,
+      "parent": "platform",
+      "files": [],
       "symbols": [],
-      "memory": [
-        "replica-read-policy",
-        "replication-lag"
-      ],
-      "guardrails": [
-        "replica-reads"
-      ]
+      "memory": [],
+      "guardrails": []
     },
     "demo-product": {
-      "path": "Demo Product",
-      "name": "Demo Product",
+      "path": "Pulse SaaS Product",
+      "name": "Pulse SaaS Product",
       "kind": "product",
       "depth": 0,
       "files": [],
       "symbols": [],
       "memory": [],
-      "guardrails": [
-        "replica-reads"
-      ]
+      "guardrails": []
     },
-    "identity": {
-      "path": "Demo Product.Identity",
-      "name": "Identity",
-      "kind": "subsystem",
-      "depth": 1,
-      "parent": "demo-product",
-      "files": [
-        "src/identity/user.ts"
-      ],
-      "symbols": [],
-      "memory": [],
-      "guardrails": [
-        "replica-reads"
-      ]
-    },
-    "oauth": {
-      "path": "Demo Product.Authentication.OAuth",
-      "name": "OAuth",
+    "event-bus": {
+      "path": "Pulse SaaS Product.Platform Infrastructure.Event Bus",
+      "name": "Event Bus",
       "kind": "module",
       "depth": 2,
-      "parent": "authentication",
-      "files": [
-        "src/auth/oauth.ts"
-      ],
+      "parent": "platform",
+      "files": [],
       "symbols": [],
       "memory": [],
-      "guardrails": [
-        "replica-reads"
-      ]
+      "guardrails": []
     },
-    "payments": {
-      "path": "Demo Product.Payments",
-      "name": "Payments",
+    "http-server": {
+      "path": "Pulse SaaS Product.Platform Infrastructure.HTTP Server",
+      "name": "HTTP Server",
+      "kind": "module",
+      "depth": 2,
+      "parent": "platform",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "idempotency-key-hasher": {
+      "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator.Idempotency Key Hasher",
+      "name": "Idempotency Key Hasher",
+      "kind": "widget",
+      "depth": 4,
+      "parent": "proration-calculator",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "identity": {
+      "path": "Pulse SaaS Product.Identity Subsystem",
+      "name": "Identity Subsystem",
       "kind": "subsystem",
       "depth": 1,
       "parent": "demo-product",
       "files": [
+        "src/auth/auth.ts",
+        "src/auth/jwtSigner.ts",
+        "src/auth/oauth.ts",
+        "src/auth/session.ts",
+        "src/auth/sessionStore.ts",
+        "src/data/db.ts",
+        "src/data/replica.ts",
+        "src/identity/user.ts",
         "src/payments/checkout.ts",
         "src/payments/stripe.ts"
       ],
       "symbols": [],
-      "memory": [
-        "payments-boundary"
-      ],
-      "guardrails": [
-        "replica-reads",
-        "payments-boundary"
-      ]
+      "memory": [],
+      "guardrails": []
     },
-    "realtime-status-worker": {
-      "path": "Demo Product.Realtime Status Worker",
-      "name": "Realtime Status Worker",
-      "kind": "service",
-      "depth": 1,
-      "parent": "demo-product",
-      "files": [
-        "services/status_worker.py"
-      ],
-      "symbols": [],
-      "memory": [
-        "replication-lag"
-      ],
-      "guardrails": [
-        "replica-reads"
-      ]
-    },
-    "sessions": {
-      "path": "Demo Product.Authentication.Sessions",
-      "name": "Sessions",
+    "invoice-pdf-watermark": {
+      "path": "Pulse SaaS Product.Billing Subsystem.Invoice PDF Watermark",
+      "name": "Invoice PDF Watermark",
       "kind": "module",
       "depth": 2,
-      "parent": "authentication",
+      "parent": "billing",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "invoice-store": {
+      "path": "Pulse SaaS Product.Billing Subsystem.Invoice Store",
+      "name": "Invoice Store",
+      "kind": "module",
+      "depth": 2,
+      "parent": "billing",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "jwt-signer": {
+      "path": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer",
+      "name": "JWT Signer",
+      "kind": "component",
+      "depth": 3,
+      "parent": "auth-api",
       "files": [
-        "src/auth/auth.ts",
-        "src/auth/session.ts",
-        "src/auth/sessionStore.ts"
+        "src/auth/jwtSigner.ts"
       ],
       "symbols": [],
       "memory": [
-        "auth-session-expiry"
+        "dec-jwt-stateless",
+        "con-secret-entropy"
       ],
-      "guardrails": [
-        "replica-reads"
-      ]
+      "guardrails": []
     },
-    "ui": {
-      "path": "Demo Product.UI",
-      "name": "UI",
-      "kind": "library",
-      "depth": 1,
-      "parent": "demo-product",
-      "files": [
-        "src/ui/Button.tsx",
-        "src/ui/Layout.tsx"
-      ],
+    "legacy-webhook-retry": {
+      "path": "Pulse SaaS Product.Realtime Subsystem.Legacy Webhook Retry",
+      "name": "Legacy Webhook Retry",
+      "kind": "module",
+      "depth": 2,
+      "parent": "realtime",
+      "files": [],
       "symbols": [],
       "memory": [],
-      "guardrails": [
-        "replica-reads"
-      ]
+      "guardrails": []
     },
-    "workspace": {
-      "path": "Demo Product.Workspace",
-      "name": "Workspace",
+    "oauth-callback": {
+      "path": "Pulse SaaS Product.Identity Subsystem.Auth API.OAuth Callback",
+      "name": "OAuth Callback",
+      "kind": "component",
+      "depth": 3,
+      "parent": "auth-api",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "platform": {
+      "path": "Pulse SaaS Product.Platform Infrastructure",
+      "name": "Platform Infrastructure",
       "kind": "subsystem",
       "depth": 1,
       "parent": "demo-product",
       "files": [],
       "symbols": [],
-      "memory": [
-        "workspace"
+      "memory": [],
+      "guardrails": []
+    },
+    "proration-calculator": {
+      "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator",
+      "name": "Proration Calculator",
+      "kind": "component",
+      "depth": 3,
+      "parent": "stripe-gateway",
+      "files": [
+        "src/billing/proration.ts"
       ],
-      "guardrails": [
-        "replica-reads"
-      ]
+      "symbols": [],
+      "memory": [
+        "term-proration",
+        "prob-proration-rounding-drift"
+      ],
+      "guardrails": []
+    },
+    "realtime": {
+      "path": "Pulse SaaS Product.Realtime Subsystem",
+      "name": "Realtime Subsystem",
+      "kind": "subsystem",
+      "depth": 1,
+      "parent": "demo-product",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "realtime-presence": {
+      "path": "Pulse SaaS Product.Realtime Subsystem.Realtime Presence",
+      "name": "Realtime Presence",
+      "kind": "module",
+      "depth": 2,
+      "parent": "realtime",
+      "files": [],
+      "symbols": [],
+      "memory": [
+        "term-presence-heartbeat",
+        "prob-zombie-websockets"
+      ],
+      "guardrails": []
+    },
+    "realtime-status-worker": {
+      "path": "Pulse SaaS Product.Realtime Subsystem.Realtime Status Worker",
+      "name": "Realtime Status Worker",
+      "kind": "module",
+      "depth": 2,
+      "parent": "realtime",
+      "files": [],
+      "symbols": [],
+      "memory": [
+        "dec-replica-reads",
+        "exc-realtime-admin-override",
+        "term-presence-heartbeat"
+      ],
+      "guardrails": []
+    },
+    "session-token": {
+      "path": "Pulse SaaS Product.Identity Subsystem.Session Token",
+      "name": "Session Token",
+      "kind": "module",
+      "depth": 2,
+      "parent": "identity",
+      "files": [
+        "src/auth/session.ts"
+      ],
+      "symbols": [],
+      "memory": [
+        "dec-jwt-stateless"
+      ],
+      "guardrails": []
+    },
+    "stripe-gateway": {
+      "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway",
+      "name": "Stripe Gateway",
+      "kind": "module",
+      "depth": 2,
+      "parent": "billing",
+      "files": [],
+      "symbols": [],
+      "memory": [
+        "con-idempotency-key-mandatory",
+        "exc-billing-test-bypass"
+      ],
+      "guardrails": []
+    },
+    "stripe-webhook-verifier": {
+      "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Stripe Webhook Verifier",
+      "name": "Stripe Webhook Verifier",
+      "kind": "component",
+      "depth": 3,
+      "parent": "stripe-gateway",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "tag-color-wheel": {
+      "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel",
+      "name": "Tag Color Wheel",
+      "kind": "component",
+      "depth": 3,
+      "parent": "workspace-tagging",
+      "files": [
+        "src/workspace/tagging/ColorWheel.ts"
+      ],
+      "symbols": [],
+      "memory": [
+        "prob-tag-color-collision"
+      ],
+      "guardrails": []
+    },
+    "tag-normaliser": {
+      "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Normaliser",
+      "name": "Tag Normaliser",
+      "kind": "component",
+      "depth": 3,
+      "parent": "workspace-tagging",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "tag-pill-renderer": {
+      "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel.Tag Pill Renderer",
+      "name": "Tag Pill Renderer",
+      "kind": "widget",
+      "depth": 4,
+      "parent": "tag-color-wheel",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "token-entropy-guard": {
+      "path": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer.Token Entropy Guard",
+      "name": "Token Entropy Guard",
+      "kind": "widget",
+      "depth": 4,
+      "parent": "jwt-signer",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "user-store": {
+      "path": "Pulse SaaS Product.Identity Subsystem.User Store",
+      "name": "User Store",
+      "kind": "module",
+      "depth": 2,
+      "parent": "identity",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
+    },
+    "workspace": {
+      "path": "Pulse SaaS Product.Workspace Subsystem",
+      "name": "Workspace Subsystem",
+      "kind": "subsystem",
+      "depth": 1,
+      "parent": "demo-product",
+      "files": [
+        "src/canvas/CanvasRenderer.tsx",
+        "src/workspace/library/Library.ts",
+        "src/workspace/preview/Preview.ts",
+        "src/workspace/search/Search.ts",
+        "src/workspace/tagging/ColorWheel.ts",
+        "src/workspace/tagging/Tags.ts"
+      ],
+      "symbols": [],
+      "memory": [
+        "con-workspace-billing-boundary"
+      ],
+      "guardrails": []
+    },
+    "workspace-bulk-export": {
+      "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Bulk Export",
+      "name": "Workspace Bulk Export",
+      "kind": "module",
+      "depth": 2,
+      "parent": "workspace",
+      "files": [],
+      "symbols": [],
+      "memory": [],
+      "guardrails": []
     },
     "workspace-library": {
-      "path": "Demo Product.Workspace.Library",
-      "name": "Library",
+      "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "name": "Workspace Library",
       "kind": "module",
       "depth": 2,
       "parent": "workspace",
       "files": [
+        "src/dashboard/Dashboard.tsx",
+        "src/dashboard/Widget.tsx",
+        "src/ui/Button.tsx",
+        "src/ui/Layout.tsx",
         "src/workspace/library/Library.ts"
       ],
       "symbols": [],
-      "memory": [],
-      "guardrails": [
-        "replica-reads"
-      ]
-    },
-    "workspace-preview": {
-      "path": "Demo Product.Workspace.Preview",
-      "name": "Preview",
-      "kind": "module",
-      "depth": 2,
-      "parent": "workspace",
-      "files": [
-        "src/workspace/preview/Preview.ts"
-      ],
-      "symbols": [],
       "memory": [
-        "renderer-strategy"
+        "term-workspace-item"
       ],
-      "guardrails": [
-        "one-renderer",
-        "replica-reads"
-      ]
+      "guardrails": []
     },
     "workspace-search": {
-      "path": "Demo Product.Workspace.Search",
-      "name": "Search",
+      "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Search",
+      "name": "Workspace Search",
       "kind": "module",
       "depth": 2,
       "parent": "workspace",
@@ -1298,53 +1830,37 @@
         "src/workspace/search/Search.ts"
       ],
       "symbols": [],
-      "memory": [],
-      "guardrails": [
-        "replica-reads"
-      ]
+      "memory": [
+        "exc-search-direct-query"
+      ],
+      "guardrails": []
     },
     "workspace-tagging": {
-      "path": "Demo Product.Workspace.Tagging",
-      "name": "Tagging",
+      "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging",
+      "name": "Workspace Tagging",
       "kind": "module",
       "depth": 2,
       "parent": "workspace",
       "files": [
+        "src/workspace/tagging/ColorWheel.ts",
         "src/workspace/tagging/Tags.ts"
       ],
       "symbols": [],
-      "memory": [],
-      "guardrails": [
-        "replica-reads"
-      ]
+      "memory": [
+        "dec-flat-tags"
+      ],
+      "guardrails": []
     }
   },
   "node_edges": {
-    "dashboard": {
-      "ui": 1,
+    "billing-checkout": {
+      "session-token": 1
+    },
+    "identity": {
       "workspace-library": 1
-    },
-    "oauth": {
-      "identity": 1
-    },
-    "payments": {
-      "identity": 1,
-      "ui": 1
-    },
-    "sessions": {
-      "data": 1,
-      "identity": 1,
-      "oauth": 1
     },
     "workspace-library": {
       "workspace-tagging": 1
-    },
-    "workspace-preview": {
-      "canvas-renderer": 1,
-      "workspace-library": 1
-    },
-    "workspace-search": {
-      "workspace-library": 1
     }
   }
 }

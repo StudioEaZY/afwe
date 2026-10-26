@@ -1,0 +1,19 @@
+{
+  "id": "forbid-raw-card-inputs",
+  "mode": "active",
+  "statement": "Raw credit card input elements forbidden in client codebase.",
+  "scope": {
+    "files": [
+      "src/**/*.tsx"
+    ]
+  },
+  "checks": [
+    {
+      "type": "forbid_pattern",
+      "pattern": "type=[\"']password[\"'][^>]*name=[\"']cvv",
+      "files": [
+        "src/**/*.tsx"
+      ]
+    }
+  ]
+}

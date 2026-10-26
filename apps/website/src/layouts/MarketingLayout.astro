@@ -1,0 +1,219 @@
+---
+// MarketingLayout.astro - Master Public Layout for Home, Roadmap, Pricing, and Blog
+import SearchModal from '../components/SearchModal.astro';
+import AfweWordmark from '../components/AfweWordmark.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  activeNav?: 'home' | 'docs' | 'roadmap' | 'pricing' | 'blog';
+}
+
+const {
+  title,
+  description = "AFWE — The Intent Layer For Your Codebase. Double-entry bookkeeping for autonomous coding.",
+  activeNav = 'home'
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title} — AFWE</title>
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&display=swap" rel="stylesheet">
+  <script is:inline>
+    (function () {
+      try {
+        const stored = localStorage.getItem('theme');
+        const dark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+
+<body class="min-h-screen bg-paper dark:bg-obsidian-950 text-graphite dark:text-obsidian-100 font-sans selection:bg-survey-500/25 selection:text-graphite dark:selection:text-survey-light">
+  <!-- Accessible Skip To Content -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-graphite focus:text-white focus:rounded-lg focus:shadow-xl font-mono text-xs font-bold">
+    Skip to main content
+  </a>
+
+  <!-- Top Announcement Banner -->
+  <div id="announcement-banner" class="bg-graphite-900 text-stone-300 dark:bg-obsidian-900 dark:text-stone-300 text-xs font-mono py-2 px-4 transition-all border-b border-stone-500/20">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex-1 flex items-center justify-center gap-2 text-center truncate">
+        <span class="inline-block size-2 rounded-full bg-survey-light animate-pulse"></span>
+        <span>AFWE ReBorn · Phase 0–4 is live —</span>
+        <a href="/roadmap" class="text-white hover:text-survey-light underline font-semibold transition-colors">
+          Explore what's new →
+        </a>
+      </div>
+      <button id="close-banner-btn" class="text-stone-400 hover:text-white transition-colors p-1" aria-label="Dismiss banner">
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Master Horizontal Navigation Bar -->
+  <header class="sticky top-0 z-40 w-full border-b border-stone-400/50 dark:border-obsidian-700 bg-paper/90 dark:bg-obsidian-950/90 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
+      <!-- Left: Logo & Wordmark -->
+      <a href="/" class="flex items-center gap-3 group focus-visible:ring-2 focus-visible:ring-survey">
+        <AfweWordmark class="h-5 sm:h-6 w-auto" />
+      </a>
+
+      <!-- Center: Navigation Links -->
+      <nav class="hidden md:flex items-center gap-1 font-mono text-xs">
+        <a 
+          href="/" 
+          class={`px-3 py-1.5 rounded-lg transition-colors ${activeNav === 'home' ? 'font-bold text-graphite dark:text-white bg-stone-300/60 dark:bg-obsidian-800' : 'text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white hover:bg-stone-300/30 dark:hover:bg-obsidian-850'}`}
+        >
+          Home
+        </a>
+        <a 
+          href="/docs" 
+          class={`px-3 py-1.5 rounded-lg transition-colors ${activeNav === 'docs' ? 'font-bold text-graphite dark:text-white bg-stone-300/60 dark:bg-obsidian-800' : 'text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white hover:bg-stone-300/30 dark:hover:bg-obsidian-850'}`}
+        >
+          Docs
+        </a>
+        <a 
+          href="/roadmap" 
+          class={`px-3 py-1.5 rounded-lg transition-colors ${activeNav === 'roadmap' ? 'font-bold text-graphite dark:text-white bg-stone-300/60 dark:bg-obsidian-800' : 'text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white hover:bg-stone-300/30 dark:hover:bg-obsidian-850'}`}
+        >
+          Roadmap
+        </a>
+        <a 
+          href="/pricing" 
+          class={`px-3 py-1.5 rounded-lg transition-colors ${activeNav === 'pricing' ? 'font-bold text-graphite dark:text-white bg-stone-300/60 dark:bg-obsidian-800' : 'text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white hover:bg-stone-300/30 dark:hover:bg-obsidian-850'}`}
+        >
+          Pricing
+        </a>
+        <a 
+          href="/blog" 
+          class={`px-3 py-1.5 rounded-lg transition-colors ${activeNav === 'blog' ? 'font-bold text-graphite dark:text-white bg-stone-300/60 dark:bg-obsidian-800' : 'text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white hover:bg-stone-300/30 dark:hover:bg-obsidian-850'}`}
+        >
+          Blog
+        </a>
+      </nav>
+
+      <!-- Right: Search, Theme Toggle, CTA -->
+      <div class="flex items-center gap-3">
+        <!-- Search Button (Cmd+K) -->
+        <button 
+          data-open-search 
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-stone-400/60 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-850 hover:border-graphite/40 dark:hover:border-obsidian-600 text-xs font-mono text-graphite/70 dark:text-obsidian-400 transition-all shadow-xs"
+          title="Search documentation (⌘K)"
+        >
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span class="hidden lg:inline">Search...</span>
+          <kbd class="hidden sm:inline-block rounded px-1.5 py-0.5 text-[10px] bg-paper dark:bg-obsidian-800 text-graphite dark:text-obsidian-300 border border-stone-300 dark:border-obsidian-700 font-mono">⌘K</kbd>
+        </button>
+
+        <!-- Theme Switcher -->
+        <button 
+          id="theme-toggle" 
+          title="Toggle theme" 
+          class="p-2 rounded-lg border border-stone-400/60 dark:border-obsidian-700 hover:bg-stone-300/40 dark:hover:bg-obsidian-850 text-graphite dark:text-obsidian-300 transition-colors"
+          aria-label="Toggle light/dark theme"
+        >
+          <svg class="size-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="size-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Get Started Primary CTA -->
+        <a 
+          href="/docs/getting-started/quick-start" 
+          class="px-4 py-2 rounded-lg bg-graphite hover:bg-graphite-900 dark:bg-white dark:hover:bg-stone-100 text-white dark:text-graphite font-mono text-xs font-semibold shadow-sm transition-all"
+        >
+          Get started →
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Viewport -->
+  <main id="main-content">
+    <slot />
+  </main>
+
+  <!-- Master Marketing Footer -->
+  <footer class="mt-28 border-t border-stone-400/50 dark:border-obsidian-700 bg-paper dark:bg-obsidian-900/60 py-12 text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-stone-300 dark:border-obsidian-800">
+        <!-- Logo & Intent Tagline -->
+        <div class="flex items-center gap-4">
+          <AfweWordmark withSubtitle={true} class="h-6 w-auto" />
+        </div>
+
+        <!-- Links -->
+        <div class="flex flex-wrap items-center gap-6 font-mono text-xs">
+          <a href="/" class="text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white transition-colors">Home</a>
+          <a href="/docs" class="text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white transition-colors">Docs</a>
+          <a href="/roadmap" class="text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white transition-colors">Roadmap</a>
+          <a href="/pricing" class="text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white transition-colors">Pricing</a>
+          <a href="/blog" class="text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white transition-colors">Blog</a>
+          <a href="https://github.com/StudioEaZY/afwe" target="_blank" rel="noopener noreferrer" class="text-graphite/80 dark:text-obsidian-300 hover:text-graphite dark:hover:text-white transition-colors flex items-center gap-1.5">
+            <svg class="size-4" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path></svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-graphite/60 dark:text-obsidian-400 text-[11px]">
+        <div>Double-entry bookkeeping for codebases. Rust · Tree-Sitter · AST Scene Graph · BLAKE3.</div>
+        <div>Open source under the MIT License. No telemetry. Your code stays local.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Search Modal -->
+  <SearchModal />
+
+  <script>
+    // Theme toggle handling
+    const toggle = document.getElementById('theme-toggle');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        try {
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        } catch (e) {}
+      });
+    }
+
+    // Announcement banner dismissal
+    const closeBannerBtn = document.getElementById('close-banner-btn');
+    const banner = document.getElementById('announcement-banner');
+    if (closeBannerBtn && banner) {
+      closeBannerBtn.addEventListener('click', () => {
+        banner.style.display = 'none';
+      });
+    }
+  </script>
+</body>
+</html>

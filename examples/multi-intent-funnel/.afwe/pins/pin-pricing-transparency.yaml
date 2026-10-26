@@ -1,0 +1,15 @@
+{
+  "id": "pin-pricing-transparency",
+  "statement": "Pricing tier prices must be computed dynamically with zero hardcoded secret discounts in client DOM.",
+  "kind": "constraint",
+  "attaches": {
+    "nodes": [
+      "pricing-tiers"
+    ]
+  },
+  "severity": "block",
+  "status": "active",
+  "origin": "human:founder",
+  "created": "2026-10-23T08:30:00Z",
+  "reason": "brand-trust-invariant"
+}

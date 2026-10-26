@@ -1,0 +1,19 @@
+{
+  "id": "forbid-test-cards",
+  "mode": "active",
+  "statement": "Test card numbers must not appear in production billing code.",
+  "scope": {
+    "files": [
+      "src/billing/**"
+    ]
+  },
+  "checks": [
+    {
+      "type": "forbid_pattern",
+      "pattern": "4242424242424242",
+      "files": [
+        "src/billing/**"
+      ]
+    }
+  ]
+}

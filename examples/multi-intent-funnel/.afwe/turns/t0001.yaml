@@ -1,0 +1,85 @@
+{
+  "id": "t0001",
+  "ts": "2026-10-23T08:00:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Scaffold interactive multi-intent growth and conversion funnel",
+  "prompt_hash": "f1a2b3c4d5e60001",
+  "task": "funnel-init",
+  "scope": {
+    "nodes": [
+      "growth-funnel"
+    ],
+    "files": [
+      "src/**"
+    ]
+  },
+  "status": "committed",
+  "touched": {
+    "nodes": [
+      "growth-funnel",
+      "acquisition-stage",
+      "activation-stage",
+      "conversion-stage",
+      "telemetry-stage"
+    ],
+    "files": [
+      "src/Slide1.tsx",
+      "src/Slide3.tsx",
+      "src/Slide5.tsx",
+      "src/Slide6.tsx"
+    ]
+  },
+  "implements": {
+    "growth-funnel": [
+      "src/Slide1.tsx"
+    ],
+    "acquisition-stage": [
+      "src/Slide1.tsx"
+    ],
+    "activation-stage": [
+      "src/Slide3.tsx"
+    ],
+    "conversion-stage": [
+      "src/Slide5.tsx",
+      "src/Slide6.tsx"
+    ],
+    "telemetry-stage": [
+      "src/telemetry/eventSink.ts"
+    ],
+    "slide-2-social-proof": [
+      "src/acquisition/logos.svg"
+    ],
+    "slide-3-roi-calculator": [
+      "src/activation/calculatorWorker.ts"
+    ],
+    "ab-cohort-sticky-cookie": [
+      "src/telemetry/cookieStorage.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "ts-check",
+      "title": "typescript check",
+      "trust": "deterministic",
+      "authored_by": "human",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 1,
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "Initial 4-stage funnel architecture scaffolded"
+    ]
+  },
+  "summary": "Scaffold interactive multi-intent growth and conversion funnel",
+  "session_id": "sess-funnel-01",
+  "checkgen": [
+    "chk-superseded-cookie-stickiness",
+    "chk-superseded-social-proof-marquee",
+    "chk-superseded-embedded-roi-calc"
+  ]
+}

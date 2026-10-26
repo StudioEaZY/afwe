@@ -1,0 +1,46 @@
+{
+  "id": "t0009",
+  "ts": "2026-10-25T17:00:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Integrate affiliate partner webhook postback dispatcher in uncharted folder",
+  "prompt_hash": "f1a2b3c4d5e60009",
+  "task": "funnel-affiliate",
+  "targets": [
+    "telemetry-stage"
+  ],
+  "status": "staged",
+  "touched": {
+    "nodes": [
+      "telemetry-stage"
+    ],
+    "files": [
+      "src/affiliate-webhook/partnerPostback.ts"
+    ]
+  },
+  "implements": {
+    "telemetry-stage": [
+      "src/affiliate-webhook/partnerPostback.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-affiliate-ts",
+      "title": "affiliate webhook TypeScript compilation",
+      "trust": "deterministic",
+      "authored_by": "afwe",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.8,
+  "gate": {
+    "decision": "stage",
+    "reasons": [
+      "Unmapped file src/affiliate-webhook/partnerPostback.ts has pending drift proposal"
+    ]
+  },
+  "summary": "Integrate affiliate partner webhook postback dispatcher staged",
+  "session_id": "sess-affil-09"
+}

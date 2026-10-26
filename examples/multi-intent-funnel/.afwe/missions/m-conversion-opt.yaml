@@ -1,0 +1,34 @@
+{
+  "id": "m-conversion-opt",
+  "title": "Conversion Funnel Slide 6 Stripe Elements Upgrade",
+  "prompt": "Harden credit card tokenization and multi-currency formatting",
+  "orchestrator": "human:growth-lead",
+  "status": "Active",
+  "created": "2026-10-25T10:00:00Z",
+  "updated": "2026-10-26T09:00:00Z",
+  "invariants": {
+    "locked_pins": [
+      "pin-stripe-pci-isolation"
+    ],
+    "must_not_depend": [
+      "acquisition-stage->conversion-stage"
+    ]
+  },
+  "budget": {
+    "max_escalations": 2,
+    "max_partial_losses": 0
+  },
+  "agents": [
+    {
+      "agent_id": "subagent-stripe-checkout",
+      "role": "Stripe Tokenization Specialist",
+      "branch": "mission/m-conversion-opt/stripe",
+      "worktree_path": ".afwe/worktrees/m-conversion-opt-stripe",
+      "assigned_nodes": [
+        "stripe-checkout",
+        "enterprise-quote-modal"
+      ],
+      "status": "active"
+    }
+  ]
+}

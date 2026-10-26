@@ -1,0 +1,76 @@
+{
+  "id": "t0003",
+  "ts": "2026-10-23T16:30:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Add Stripe checkout idempotency and proration calculator",
+  "prompt_hash": "a1b2c3d4e5f60003",
+  "task": "pulse-checkout",
+  "targets": [
+    "billing-checkout",
+    "stripe-gateway"
+  ],
+  "status": "committed",
+  "touched": {
+    "nodes": [
+      "billing-checkout",
+      "stripe-gateway"
+    ],
+    "files": [
+      "src/billing/checkout/CheckoutController.ts",
+      "src/billing/proration.ts"
+    ]
+  },
+  "implements": {
+    "demo-product": [
+      "src/server.ts"
+    ],
+    "workspace": [
+      "src/workspace/library/Library.ts"
+    ],
+    "workspace-tagging": [
+      "src/workspace/tagging/Tags.ts"
+    ],
+    "billing": [
+      "src/billing/checkout/CheckoutController.ts"
+    ],
+    "billing-checkout": [
+      "src/billing/checkout/CheckoutController.ts"
+    ],
+    "stripe-gateway": [
+      "src/billing/stripe/StripeGateway.ts"
+    ],
+    "proration-calculator": [
+      "src/billing/proration.ts"
+    ],
+    "workspace-bulk-export": [
+      "src/workspace/export.ts"
+    ],
+    "invoice-pdf-watermark": [
+      "src/billing/invoices/watermark.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-no-auth-in-checkout",
+      "title": "checkout does not import session-token",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.95,
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "Stripe integration verified with idempotency keys"
+    ]
+  },
+  "summary": "Add Stripe checkout idempotency and proration calculator",
+  "session_id": "sess-bill-03",
+  "checkgen": [
+    "chk-no-auth-in-checkout"
+  ]
+}

@@ -1,0 +1,25 @@
+version: 1
+project:
+  name: Multi-Intent Funnel
+  description: Growth & Conversion Funnel Engine for AFWE
+  root: .
+analyzer:
+  include: []
+  ignore:
+  - .afwe/**
+  - node_modules/**
+  - dist/**
+  - build/**
+  max_file_size_kb: 512
+  languages: []
+policy:
+  auto_reconcile: 0.85
+  propose_review: 0.5
+  ignore_below: 0.3
+pin_policy:
+  slider: 3
+vcs:
+  provider: git
+  auto_commit: true
+provenance:
+  retain_prompts: true

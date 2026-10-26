@@ -1,0 +1,21 @@
+{
+  "id": "chk-sig-render-tag-pill",
+  "title": "renderTagPill signature contract",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "tag-pill-renderer"
+    ]
+  },
+  "claim": {
+    "type": "symbol_signature",
+    "symbol": "src/workspace/tagging/ColorWheel.ts::renderTagPill",
+    "pattern": "\\(name:\\s*string\\)"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-25T11:00:00Z",
+  "created_from": "t0006",
+  "provenance": "confirmed"
+}

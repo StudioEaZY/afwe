@@ -1,0 +1,16 @@
+{
+  "id": "pin-auto-advance-slides",
+  "statement": "Slide automatically advances after 8 seconds of user inactivity.",
+  "kind": "preference",
+  "attaches": {
+    "nodes": [
+      "growth-funnel"
+    ]
+  },
+  "severity": "block",
+  "status": "retired",
+  "origin": "human:design-agency",
+  "created": "2026-10-23T06:30:00Z",
+  "retired": "2026-10-25T09:00:00Z",
+  "reason": "caused-high-bounce-rate"
+}

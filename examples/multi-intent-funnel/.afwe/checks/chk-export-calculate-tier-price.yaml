@@ -1,0 +1,20 @@
+{
+  "id": "chk-export-calculate-tier-price",
+  "title": "calculateTierPrice export exists in pricingEngine.ts",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "pricing-tiers"
+    ]
+  },
+  "claim": {
+    "type": "export_exists",
+    "symbol": "src/conversion/pricingEngine.ts::calculateTierPrice"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T10:30:00Z",
+  "created_from": "t0002",
+  "provenance": "graduated"
+}

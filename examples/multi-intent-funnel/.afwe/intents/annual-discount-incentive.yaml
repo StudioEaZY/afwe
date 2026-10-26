@@ -1,0 +1,19 @@
+{
+  "id": "annual-discount-incentive",
+  "title": "Annual billing discount incentive toggle",
+  "statement": "Offer 20% savings on annual upfront billing to increase customer lifetime value.",
+  "status": "draft",
+  "origin": "human:cro-consultant",
+  "attaches": {
+    "nodes": [
+      "pricing-tiers"
+    ]
+  },
+  "history": [
+    {
+      "turn": "t0008",
+      "ts": "2026-10-25T14:30:00Z",
+      "statement": "Draft annual pricing toggle"
+    }
+  ]
+}

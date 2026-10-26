@@ -1,0 +1,52 @@
+{
+  "id": "t0008",
+  "ts": "2026-10-25T14:30:00Z",
+  "origin": "human",
+  "agent": "gpt-4o",
+  "prompt": "Add multi-currency zero-decimal currency checkout support",
+  "prompt_hash": "a1b2c3d4e5f60008",
+  "task": "pulse-multi-curr",
+  "targets": [
+    "billing-checkout"
+  ],
+  "status": "staged",
+  "restore": {
+    "feature": "invoice-pdf-watermark",
+    "from_turn": "t0001",
+    "lost_turn": "t0005",
+    "conflicts": 0
+  },
+  "touched": {
+    "nodes": [
+      "billing-checkout"
+    ],
+    "files": [
+      "src/billing/checkout/CheckoutController.ts"
+    ]
+  },
+  "implements": {
+    "billing-checkout": [
+      "src/billing/checkout/CheckoutController.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-currency-format",
+      "title": "currency ISO 4217 code format",
+      "trust": "deterministic",
+      "authored_by": "agent",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.75,
+  "gate": {
+    "decision": "stage",
+    "reasons": [
+      "AmbiguityQuestion q-currency-rounding open with blast score 8"
+    ]
+  },
+  "summary": "Add multi-currency checkout support pending ambiguity answer",
+  "session_id": "sess-curr-08"
+}

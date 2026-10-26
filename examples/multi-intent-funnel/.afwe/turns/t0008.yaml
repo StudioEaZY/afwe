@@ -1,0 +1,52 @@
+{
+  "id": "t0008",
+  "ts": "2026-10-25T14:30:00Z",
+  "origin": "human",
+  "agent": "gpt-4o",
+  "prompt": "Introduce annual subscription tier toggle with 20% discount",
+  "prompt_hash": "f1a2b3c4d5e60008",
+  "task": "funnel-annual-tier",
+  "targets": [
+    "pricing-tiers"
+  ],
+  "status": "staged",
+  "restore": {
+    "feature": "ab-cohort-sticky-cookie",
+    "from_turn": "t0001",
+    "lost_turn": "t0005",
+    "conflicts": 0
+  },
+  "touched": {
+    "nodes": [
+      "pricing-tiers"
+    ],
+    "files": [
+      "src/conversion/pricingEngine.ts"
+    ]
+  },
+  "implements": {
+    "pricing-tiers": [
+      "src/conversion/pricingEngine.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-tier-annual-calc",
+      "title": "annual pricing discount formula check",
+      "trust": "deterministic",
+      "authored_by": "agent",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.76,
+  "gate": {
+    "decision": "stage",
+    "reasons": [
+      "AmbiguityQuestion q-annual-discount-rate open with blast score 8"
+    ]
+  },
+  "summary": "Introduce annual subscription tier toggle pending ambiguity answer",
+  "session_id": "sess-annual-08"
+}

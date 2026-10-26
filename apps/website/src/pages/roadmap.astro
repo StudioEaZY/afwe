@@ -1,0 +1,194 @@
+---
+// roadmap.astro - Official AFWE ReBorn Phased Roadmap
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+---
+
+<MarketingLayout
+  title="Roadmap — AFWE ReBorn Trajectory"
+  description="The architectural trajectory of AFWE: from deterministic AST tripwires to multi-agent working tree leases and autonomous drift healing."
+  activeNav="roadmap"
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
+    <!-- Header -->
+    <header class="space-y-4 border-b border-stone-300 dark:border-obsidian-800 pb-8">
+      <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
+        ARCHITECTURAL TRAJECTORY
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-serif font-bold text-graphite dark:text-white tracking-tight">
+        AFWE ReBorn Roadmap
+      </h1>
+      <p class="text-base sm:text-lg text-graphite/80 dark:text-stone-300 max-w-2xl leading-relaxed">
+        We build AFWE in grounded, testable phases. Every milestone represents a working deterministic capability in Rust, verified against real codebases.
+      </p>
+    </header>
+
+    <!-- Phased Roadmap Stack -->
+    <div class="space-y-12">
+      <!-- Phase 0: Shipped -->
+      <section class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 sm:p-8 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="size-3 rounded-full bg-afwe-commit"></span>
+            <h2 class="text-xl sm:text-2xl font-serif font-bold text-graphite dark:text-white">Phase 0: Kernel & Tripwires</h2>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+            Shipped & Verified
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+          The foundation of double-entry bookkeeping: deterministic AST scene graphing and tamper-proof architectural tripwires.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Tree-Sitter Multi-Language Scene Graph</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              Native AST parsing for Rust, TypeScript, JavaScript, Python, and Go. Symbols resolve to persistent identities without relying on brittle line numbers.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">BLAKE3 Manifest & Pre-Commit Hook</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              Cryptographic manifest prevents agents from tampering with guardrail files. Chained git hook runs verification before commits hit the repo.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Phase 1: Shipped / Live -->
+      <section class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 sm:p-8 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="size-3 rounded-full bg-afwe-commit"></span>
+            <h2 class="text-xl sm:text-2xl font-serif font-bold text-graphite dark:text-white">Phase 1: Semantic Intent & Probing Guides</h2>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+            Shipped & Live
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+          Eliminating raw LLM confidence floats with an additive deterministic calibration rubric and anti-echo-chamber hold-out probes.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Additive Calibration Rubric</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              Calculates confidence from verifiable evidence (floor 0.50, +0.25 AST claims, +0.10 sibling consistency) and immediately caps at 0.40 on contradiction.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Hold-Out Probing Guides</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              Rules with confidence between 0.85 and 0.90 advise the agent. To become blocking checks, they must pass a hold-out test where the rule was deliberately withheld.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Phase 2: Shipped / Live -->
+      <section class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 sm:p-8 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="size-3 rounded-full bg-afwe-commit"></span>
+            <h2 class="text-xl sm:text-2xl font-serif font-bold text-graphite dark:text-white">Phase 2: 4D Time Dial & Ghost Recovery</h2>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+            Shipped & Live
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+          Treating time as an interactive dial rather than a flat commit log, enabling automated detection and 3-way merge recovery of dropped features.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Ghost Node Detection</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              Surfaces features or components that an agent inadvertently removed during large refactors, highlighting collateral loss before merge.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">One-Command Feature Restoration</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              <code class="text-survey-600 dark:text-survey-light">afwe timeline restore &lt;feature&gt;</code> executes a true 3-way AST merge and stages the fix cleanly in a new turn.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Phase 3: Active / In Progress -->
+      <section class="rounded-2xl border-2 border-survey-500/60 dark:border-survey-500/40 bg-white/80 dark:bg-obsidian-900 p-6 sm:p-8 space-y-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="size-3 rounded-full bg-survey-500 animate-pulse"></span>
+            <h2 class="text-xl sm:text-2xl font-serif font-bold text-graphite dark:text-white">Phase 3: Multi-Agent Leases & Studio Canvas</h2>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-survey-500/15 text-survey-700 dark:text-survey-light border border-survey-500/30">
+            Active / In Progress
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+          Enabling multiple concurrent agents to work in isolated tree leases without stepping on each other's boundaries, backed by the interactive Studio.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Concurrent Tree Leases</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              <code class="text-survey-600 dark:text-survey-light">afwe lease acquire</code> partitions the AST scene graph so Claude Code and Cursor can work simultaneously.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Adaptive Studio Canvas</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              Dual-mode visual cockpit: Radial Sunburst for macro subsystem zoning + Topology Map for micro-dependencies and active constraint violations.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">57 MCP Server Tools</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              First-class Model Context Protocol integration exposing turn lifecycle, pin queries, and constraint verification directly to agents.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Phase 4: Planned / Next -->
+      <section class="rounded-2xl border border-stone-300 dark:border-obsidian-800 bg-white/40 dark:bg-obsidian-900/60 p-6 sm:p-8 space-y-6 opacity-90">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="size-3 rounded-full bg-stone-400 dark:bg-stone-600"></span>
+            <h2 class="text-xl sm:text-2xl font-serif font-bold text-graphite dark:text-white">Phase 4: Autonomous Drift Healing & Global Memory</h2>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-stone-300/40 text-graphite/70 dark:text-stone-400 border border-stone-400/40">
+            Planned / Next
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+          Proactive reconciliation of manual human commits and cross-repository architectural pattern learning.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Autonomous Drift Reconciliation</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              Detects manual edits made outside turn protocols and synthesizes backward-compatible turn receipts to maintain invariant continuity.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
+            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Reusable Boundary Packs</div>
+            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
+              Export and import verified constraint packages (Clean Architecture, Hexagonal, Microservice Boundaries) across enterprise workspace fleets.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</MarketingLayout>

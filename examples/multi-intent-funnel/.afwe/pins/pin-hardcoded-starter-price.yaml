@@ -1,0 +1,16 @@
+{
+  "id": "pin-hardcoded-starter-price",
+  "statement": "Starter plan fixed at $29/mo with max 3 seats.",
+  "kind": "decision",
+  "attaches": {
+    "nodes": [
+      "pricing-tiers"
+    ]
+  },
+  "severity": "confirm",
+  "status": "retired",
+  "origin": "human:pm",
+  "created": "2026-10-23T07:30:00Z",
+  "retired": "2026-10-24T12:00:00Z",
+  "reason": "repositioned-to-usage-pricing"
+}

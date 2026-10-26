@@ -1,0 +1,20 @@
+{
+  "id": "chk-export-normalise-tag",
+  "title": "normaliseTag export exists in Tags.ts",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "workspace-tagging"
+    ]
+  },
+  "claim": {
+    "type": "export_exists",
+    "symbol": "src/workspace/tagging/Tags.ts::normaliseTag"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T10:30:00Z",
+  "created_from": "t0002",
+  "provenance": "graduated"
+}

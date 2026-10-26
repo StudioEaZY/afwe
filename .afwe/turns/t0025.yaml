@@ -1,0 +1,432 @@
+id: t0025
+ts: 2026-10-26T11:11:00Z
+origin: human
+prompt: Populate both demo projects with 3-day history exercising every ReBorn feature >= 3 times
+prompt_hash: cf2b4a1904eb4310
+task: task-t0025
+targets:
+- examples/demo-project
+- examples/multi-intent-funnel
+scope:
+  nodes:
+  - demo-project
+  - examples
+intents:
+- id: populate-demos-reborn
+  action: update
+  targets:
+  - demo-project
+  - examples
+  title: Populate both demo projects with 3-day history exercising every ReBorn feature >= 3 times
+  statement: Populate demo-project and multi-intent-funnel with 12 turns, 9 pins, 15 checks, calibration questions/guides/models, 3 collateral losses, 5-level hierarchy, unmapped folders, and constraint violations
+assumptions:
+- id: a1
+  text: afwe-core does not import afwe-cli
+  claim:
+    type: forbid_import
+    files:
+    - crates/afwe-core/**
+    to_nodes:
+    - afwe-cli
+  status: confirmed
+  computed_score: 0.85
+status: ready
+touched:
+  nodes:
+  - demo-project
+  - examples
+  - scripts
+  files:
+  - .afwe/intents-t0025.json
+  - .afwe/intents/populate-demos-reborn.yaml
+  - examples/demo-project/src/auth/jwtSigner.ts
+  - examples/demo-project/src/billing/checkout/CheckoutController.ts
+  - examples/demo-project/src/billing/proration.ts
+  - examples/demo-project/src/cli-tools/seedRunner.ts
+  - examples/demo-project/src/experiments/aiSuggest.ts
+  - examples/demo-project/src/legacy-sync/xmlImporter.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/ColorWheel.ts
+  - examples/multi-intent-funnel/src/Slide1.tsx
+  - examples/multi-intent-funnel/src/Slide2.tsx
+  - examples/multi-intent-funnel/src/Slide3.tsx
+  - examples/multi-intent-funnel/src/Slide4.tsx
+  - examples/multi-intent-funnel/src/Slide5.tsx
+  - examples/multi-intent-funnel/src/Slide6.tsx
+  - examples/multi-intent-funnel/src/acquisition/roiCalculator.ts
+  - examples/multi-intent-funnel/src/acquisition/utmTracker.ts
+  - examples/multi-intent-funnel/src/activation/funnelState.ts
+  - examples/multi-intent-funnel/src/affiliate-webhook/partnerPostback.ts
+  - examples/multi-intent-funnel/src/conversion/pricingEngine.ts
+  - examples/multi-intent-funnel/src/conversion/stripeElements.ts
+  - examples/multi-intent-funnel/src/legacy-pixel/fbPixel.ts
+  - examples/multi-intent-funnel/src/seo-scraper/metaHydrator.ts
+  - examples/multi-intent-funnel/src/telemetry/abCohort.ts
+  - examples/multi-intent-funnel/src/telemetry/eventSink.ts
+  - examples/multi-intent-funnel/src/unmapped-experiments/exitIntentModal.tsx
+  - scripts/populate_demo_project.js
+  - scripts/populate_funnel_project.js
+  symbols:
+  - examples/demo-project/src/auth/jwtSigner.ts::TokenPayload
+  - examples/demo-project/src/auth/jwtSigner.ts::signJwtToken
+  - examples/demo-project/src/billing/checkout/CheckoutController.ts::CheckoutController
+  - examples/demo-project/src/billing/checkout/CheckoutController.ts::CheckoutController.checkout
+  - examples/demo-project/src/billing/checkout/CheckoutController.ts::CheckoutController.constructor
+  - examples/demo-project/src/billing/proration.ts::calculateProration
+  - examples/demo-project/src/billing/proration.ts::hashIdempotencyKey
+  - examples/demo-project/src/cli-tools/seedRunner.ts::seedWorkspaceDefaults
+  - examples/demo-project/src/experiments/aiSuggest.ts::suggestWorkspaceTags
+  - examples/demo-project/src/legacy-sync/xmlImporter.ts::parseLegacyXmlBatch
+  - examples/demo-project/src/notifications/mailer.ts::EmailPayload
+  - examples/demo-project/src/notifications/mailer.ts::sendTransactionalEmail
+  - examples/demo-project/src/workspace/library/Library.ts::Library
+  - examples/demo-project/src/workspace/library/Library.ts::Library.add
+  - examples/demo-project/src/workspace/library/Library.ts::Library.all
+  - examples/demo-project/src/workspace/library/Library.ts::Library.constructor
+  - examples/demo-project/src/workspace/library/Library.ts::Library.get
+  - examples/demo-project/src/workspace/library/Library.ts::Library.tagItem
+  - examples/demo-project/src/workspace/search/Search.ts::SearchIndex
+  - examples/demo-project/src/workspace/search/Search.ts::SearchIndex.directDbLookup
+  - examples/demo-project/src/workspace/search/Search.ts::SearchIndex.search
+  - examples/demo-project/src/workspace/tagging/ColorWheel.ts::TAG_PALETTE
+  - examples/demo-project/src/workspace/tagging/ColorWheel.ts::getTagColor
+  - examples/demo-project/src/workspace/tagging/ColorWheel.ts::renderTagPill
+  - examples/multi-intent-funnel/src/Slide1.tsx::Slide1
+  - examples/multi-intent-funnel/src/Slide2.tsx::Slide2
+  - examples/multi-intent-funnel/src/Slide3.tsx::Slide3
+  - examples/multi-intent-funnel/src/Slide4.tsx::Slide4
+  - examples/multi-intent-funnel/src/Slide5.tsx::Slide5
+  - examples/multi-intent-funnel/src/Slide6.tsx::Slide6
+  - examples/multi-intent-funnel/src/acquisition/roiCalculator.ts::calculateRoiSavings
+  - examples/multi-intent-funnel/src/acquisition/utmTracker.ts::trackUtmVisit
+  - examples/multi-intent-funnel/src/activation/funnelState.ts::FunnelState
+  - examples/multi-intent-funnel/src/activation/funnelState.ts::getFunnelState
+  - examples/multi-intent-funnel/src/activation/funnelState.ts::globalState
+  - examples/multi-intent-funnel/src/activation/funnelState.ts::updateFunnelSeatCount
+  - examples/multi-intent-funnel/src/affiliate-webhook/partnerPostback.ts::sendPartnerPostback
+  - examples/multi-intent-funnel/src/conversion/pricingEngine.ts::calculateTierPrice
+  - examples/multi-intent-funnel/src/conversion/stripeElements.ts::mountStripeElements
+  - examples/multi-intent-funnel/src/legacy-pixel/fbPixel.ts::trackLegacyFacebookPixel
+  - examples/multi-intent-funnel/src/seo-scraper/metaHydrator.ts::hydrateMetaTags
+  - examples/multi-intent-funnel/src/telemetry/abCohort.ts::assignFunnelCohort
+  - examples/multi-intent-funnel/src/telemetry/eventSink.ts::RawEventSink
+  - examples/multi-intent-funnel/src/telemetry/eventSink.ts::RawEventSink.getEvents
+  - examples/multi-intent-funnel/src/telemetry/eventSink.ts::RawEventSink.record
+  - examples/multi-intent-funnel/src/unmapped-experiments/exitIntentModal.tsx::ExitIntentModal
+  - scripts/populate_demo_project.js::content
+  - scripts/populate_demo_project.js::demoAfwe
+  - scripts/populate_demo_project.js::demoChecks
+  - scripts/populate_demo_project.js::demoGuardrailsActive
+  - scripts/populate_demo_project.js::demoGuardrailsPassive
+  - scripts/populate_demo_project.js::demoIntents
+  - scripts/populate_demo_project.js::demoMemories
+  - scripts/populate_demo_project.js::demoMissions
+  - scripts/populate_demo_project.js::demoPins
+  - scripts/populate_demo_project.js::demoRoot
+  - scripts/populate_demo_project.js::demoTurns
+  - scripts/populate_demo_project.js::ensureDir
+  - scripts/populate_demo_project.js::fs
+  - scripts/populate_demo_project.js::path
+  - scripts/populate_demo_project.js::write
+  - scripts/populate_funnel_project.js::content
+  - scripts/populate_funnel_project.js::ensureDir
+  - scripts/populate_funnel_project.js::fs
+  - scripts/populate_funnel_project.js::funnelAfwe
+  - scripts/populate_funnel_project.js::funnelChecks
+  - scripts/populate_funnel_project.js::funnelGuardrailsActive
+  - scripts/populate_funnel_project.js::funnelGuardrailsPassive
+  - scripts/populate_funnel_project.js::funnelIntents
+  - scripts/populate_funnel_project.js::funnelMemories
+  - scripts/populate_funnel_project.js::funnelMissions
+  - scripts/populate_funnel_project.js::funnelPins
+  - scripts/populate_funnel_project.js::funnelRoot
+  - scripts/populate_funnel_project.js::funnelTurns
+  - scripts/populate_funnel_project.js::path
+  - scripts/populate_funnel_project.js::write
+  - examples/demo-project/src/notifications/mailer.ts::sendMail
+  - examples/demo-project/src/workspace/library/Library.ts::Item
+  - examples/demo-project/src/workspace/library/Library.ts::Library.recent
+  - examples/demo-project/src/workspace/search/Search.ts::search
+  - examples/multi-intent-funnel/src/Slide1.tsx::FunnelSlideProps
+implements:
+  afwe-2:
+  - packages/afwe/README.md
+  - packages/afwe/bin/afwe.js
+  - packages/afwe/package.json
+  afwe-cli:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/docs.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  afwe-core:
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/baseline.rs
+  - crates/afwe-core/src/calibration.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/escalation.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/header.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/judgment.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/materialize.rs
+  - crates/afwe-core/src/mission.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/registry.rs
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/scene.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/timeline_4d.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  crates:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/docs.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/baseline.rs
+  - crates/afwe-core/src/calibration.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/escalation.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/header.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/judgment.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/materialize.rs
+  - crates/afwe-core/src/mission.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/registry.rs
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/scene.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/timeline_4d.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  demo-project:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/jwtSigner.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/billing/checkout/CheckoutController.ts
+  - examples/demo-project/src/billing/proration.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/cli-tools/seedRunner.ts
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/experiments/aiSuggest.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/legacy-sync/xmlImporter.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/ColorWheel.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  examples:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/jwtSigner.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/billing/checkout/CheckoutController.ts
+  - examples/demo-project/src/billing/proration.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/cli-tools/seedRunner.ts
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/experiments/aiSuggest.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/legacy-sync/xmlImporter.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/ColorWheel.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  - examples/multi-intent-funnel/package.json
+  - examples/multi-intent-funnel/src/Slide1.tsx
+  - examples/multi-intent-funnel/src/Slide2.tsx
+  - examples/multi-intent-funnel/src/Slide3.tsx
+  - examples/multi-intent-funnel/src/Slide4.tsx
+  - examples/multi-intent-funnel/src/Slide5.tsx
+  - examples/multi-intent-funnel/src/Slide6.tsx
+  - examples/multi-intent-funnel/src/acquisition/roiCalculator.ts
+  - examples/multi-intent-funnel/src/acquisition/utmTracker.ts
+  - examples/multi-intent-funnel/src/activation/funnelState.ts
+  - examples/multi-intent-funnel/src/affiliate-webhook/partnerPostback.ts
+  - examples/multi-intent-funnel/src/conversion/pricingEngine.ts
+  - examples/multi-intent-funnel/src/conversion/stripeElements.ts
+  - examples/multi-intent-funnel/src/index.tsx
+  - examples/multi-intent-funnel/src/legacy-pixel/fbPixel.ts
+  - examples/multi-intent-funnel/src/seo-scraper/metaHydrator.ts
+  - examples/multi-intent-funnel/src/telemetry/abCohort.ts
+  - examples/multi-intent-funnel/src/telemetry/eventSink.ts
+  - examples/multi-intent-funnel/src/unmapped-experiments/exitIntentModal.tsx
+  scripts:
+  - scripts/build.sh
+  - scripts/demo.sh
+  - scripts/dev.sh
+  - scripts/install.ps1
+  - scripts/install.sh
+  - scripts/populate_demo_project.js
+  - scripts/populate_funnel_project.js
+  studio:
+  - apps/studio/index.html
+  - apps/studio/package-lock.json
+  - apps/studio/package.json
+  - apps/studio/src-tauri/Cargo.toml
+  - apps/studio/src-tauri/README.md
+  - apps/studio/src-tauri/build.rs
+  - apps/studio/src-tauri/capabilities/default.json
+  - apps/studio/src-tauri/src/lib.rs
+  - apps/studio/src-tauri/src/main.rs
+  - apps/studio/src-tauri/tauri.conf.json
+  - apps/studio/src/App.tsx
+  - apps/studio/src/api.ts
+  - apps/studio/src/components/BottomBar.tsx
+  - apps/studio/src/components/ChecksPage.tsx
+  - apps/studio/src/components/ComponentInspector.tsx
+  - apps/studio/src/components/ContextPanel.tsx
+  - apps/studio/src/components/DecisionsPage.tsx
+  - apps/studio/src/components/DriftDrawer.tsx
+  - apps/studio/src/components/ErrorBoundary.tsx
+  - apps/studio/src/components/GraphView.tsx
+  - apps/studio/src/components/MemoryView.tsx
+  - apps/studio/src/components/Modal.tsx
+  - apps/studio/src/components/NodeInspector.tsx
+  - apps/studio/src/components/OnboardingModal.tsx
+  - apps/studio/src/components/OverviewPage.tsx
+  - apps/studio/src/components/PinsView.tsx
+  - apps/studio/src/components/RadialMap.tsx
+  - apps/studio/src/components/SceneOutliner.tsx
+  - apps/studio/src/components/SearchPalette.tsx
+  - apps/studio/src/components/SettingsPage.tsx
+  - apps/studio/src/components/Sidebar.tsx
+  - apps/studio/src/components/TimelinePage.tsx
+  - apps/studio/src/components/TimelineScrubber4D.tsx
+  - apps/studio/src/components/TimelineView.tsx
+  - apps/studio/src/components/TopBar.tsx
+  - apps/studio/src/components/TopologyMap.tsx
+  - apps/studio/src/components/TreePanel.tsx
+  - apps/studio/src/lib/hierarchy.ts
+  - apps/studio/src/lib/prefs.ts
+  - apps/studio/src/main.tsx
+  - apps/studio/src/store.ts
+  - apps/studio/src/styles.css
+  - apps/studio/tsconfig.json
+  - apps/studio/vite.config.ts
+  - apps/studio/web-dist/assets/core-DhEqZVGG.js
+  - apps/studio/web-dist/assets/index-B74v8yq5.js
+  - apps/studio/web-dist/assets/index-CKf__Ncg.css
+  - apps/studio/web-dist/index.html
+checks:
+- id: afwe-verify
+  title: constraints and active guardrails
+  trust: deterministic
+  authored_by: afwe
+  passed: true
+  blocking: true
+- id: project-tests
+  title: cargo test
+  trust: deterministic
+  authored_by: human
+  passed: true
+  blocking: true
+- id: claim:a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+strength: deterministic
+confidence: 1.0
+confidence_parts:
+  clarity: 1.0
+  mapping: 1.0
+  pins: 1.0
+  verification: 1.0
+gate:
+  decision: ready
+footer_shown: false
+summary: Populate demo-project and multi-intent-funnel with 3-day history exercising every ReBorn feature >= 3 times
+turn_token: 35ea6f58222b89bb
+session_id: sess-cbf30d
+checkgen:
+- t0025-a1
+held_out_guides:
+- guide-t0022-a1

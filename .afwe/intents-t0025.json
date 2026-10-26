@@ -1,0 +1,22 @@
+{
+  "intents": [
+    {
+      "id": "populate-demos-reborn",
+      "action": "update",
+      "targets": ["demo-project", "examples"],
+      "title": "Populate both demo projects with 3-day history exercising every ReBorn feature >= 3 times",
+      "statement": "Populate demo-project and multi-intent-funnel with 12 turns, 9 pins, 15 checks, calibration questions/guides/models, 3 collateral losses, 5-level hierarchy, unmapped folders, and constraint violations"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ]
+}

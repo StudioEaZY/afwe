@@ -1,0 +1,89 @@
+{
+  "id": "t0005",
+  "ts": "2026-10-24T15:00:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Upgrade invoice store schema and add tag color wheel",
+  "prompt_hash": "a1b2c3d4e5f60005",
+  "task": "pulse-invoices-tags",
+  "targets": [
+    "invoice-store",
+    "tag-color-wheel"
+  ],
+  "status": "committed",
+  "restore": {
+    "feature": "legacy-webhook-retry",
+    "from_turn": "t0001",
+    "lost_turn": "t0003",
+    "conflicts": 0
+  },
+  "touched": {
+    "nodes": [
+      "invoice-store",
+      "tag-color-wheel"
+    ],
+    "files": [
+      "src/billing/invoices/InvoiceStore.ts",
+      "src/workspace/tagging/ColorWheel.ts"
+    ]
+  },
+  "implements": {
+    "demo-product": [
+      "src/server.ts"
+    ],
+    "workspace": [
+      "src/workspace/library/Library.ts"
+    ],
+    "workspace-tagging": [
+      "src/workspace/tagging/Tags.ts"
+    ],
+    "workspace-search": [
+      "src/workspace/search/Search.ts"
+    ],
+    "tag-color-wheel": [
+      "src/workspace/tagging/ColorWheel.ts"
+    ],
+    "billing": [
+      "src/billing/checkout/CheckoutController.ts"
+    ],
+    "invoice-store": [
+      "src/billing/invoices/InvoiceStore.ts"
+    ],
+    "jwt-signer": [
+      "src/auth/jwtSigner.ts"
+    ]
+  },
+  "checks": [
+    {
+      "id": "chk-export-proration",
+      "title": "calculateProration export exists",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    },
+    {
+      "id": "chk-sig-tag-color",
+      "title": "getTagColor signature verified",
+      "trust": "deterministic",
+      "authored_by": "checkgen",
+      "passed": true,
+      "blocking": true
+    }
+  ],
+  "strength": "deterministic",
+  "confidence": 0.94,
+  "gate": {
+    "decision": "commit",
+    "reasons": [
+      "Invoice store upgraded",
+      "Color wheel verified"
+    ]
+  },
+  "summary": "Upgrade invoice store schema and add tag color wheel",
+  "session_id": "sess-inv-05",
+  "checkgen": [
+    "chk-sig-tag-color",
+    "chk-export-proration"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "chk-superseded-watermark-png",
+  "title": "invoice watermark stamps PNG bitmap",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "invoice-pdf-watermark"
+    ]
+  },
+  "claim": {
+    "type": "require_file",
+    "files": [
+      "src/billing/invoices/watermark.png"
+    ]
+  },
+  "status": "superseded",
+  "superseded_by": "t0005",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T09:00:00Z",
+  "created_from": "t0001",
+  "provenance": "confirmed"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "chk-forbid-card-input-element",
+  "title": "forbid raw credit card input elements outside stripe container",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "stripe-checkout"
+    ]
+  },
+  "claim": {
+    "type": "forbid_pattern",
+    "pattern": "<input[^>]*name=[\"'](cardnumber|cc-num|cvv)[\"']",
+    "files": [
+      "src/**/*.tsx"
+    ]
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-24T14:00:00Z",
+  "created_from": "t0005",
+  "provenance": "confirmed"
+}

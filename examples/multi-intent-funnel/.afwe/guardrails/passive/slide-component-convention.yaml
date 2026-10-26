@@ -1,0 +1,10 @@
+{
+  "id": "slide-component-convention",
+  "mode": "passive",
+  "statement": "Slide components should be named SlideN and export a React Functional Component.",
+  "scope": {
+    "files": [
+      "src/Slide*.tsx"
+    ]
+  }
+}

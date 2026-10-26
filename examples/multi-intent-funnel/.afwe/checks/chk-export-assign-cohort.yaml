@@ -1,0 +1,20 @@
+{
+  "id": "chk-export-assign-cohort",
+  "title": "assignFunnelCohort export exists in abCohort.ts",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "ab-cohort-router"
+    ]
+  },
+  "claim": {
+    "type": "export_exists",
+    "symbol": "src/telemetry/abCohort.ts::assignFunnelCohort"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-24T11:00:00Z",
+  "created_from": "t0004",
+  "provenance": "graduated"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "chk-forbid-db-raw-query",
+  "title": "forbid DatabaseClient.rawQuery symbol",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "db-client"
+    ]
+  },
+  "claim": {
+    "type": "forbid_symbol",
+    "symbol": "src/db/client.ts::DatabaseClient.rawQuery"
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-24T09:00:00Z",
+  "created_from": "t0004",
+  "provenance": "confirmed"
+}

@@ -1,21 +1,16 @@
-import React from "react";
-import { FunnelSlideProps } from "./Slide1";
+import React from 'react';
+import { calculateTierPrice } from './conversion/pricingEngine';
 
-export function Slide5({ onNext }: FunnelSlideProps) {
+export const Slide5: React.FC = () => {
+  const [tier, setTier] = React.useState<'starter' | 'pro' | 'enterprise'>('pro');
+
   return (
-    <div className="slide slide-5">
-      <h2>The Offer</h2>
-      <div className="pricing-card">
-        <h3>50% Off — Your Private Rate</h3>
-        <p>Your 50% VIP rate — kept for you.</p>
-        <ul>
-          <li>Up to 6 months pause</li>
-          <li>12-hour turnaround guarantee</li>
-          <li>Unlimited design requests</li>
-          <li>Protected via platform checkout</li>
-        </ul>
-      </div>
-      {onNext && <button onClick={onNext}>Continue to Invitation →</button>}
+    <div className="slide slide-pricing">
+      <h2>Select Your Architecture Governance Tier</h2>
+      <button onClick={() => setTier('starter')}>Starter ($49)</button>
+      <button onClick={() => setTier('pro')}>Pro ($199)</button>
+      <button onClick={() => setTier('enterprise')}>Enterprise (Custom)</button>
+      <p>Selected tier monthly cost: ${calculateTierPrice(tier, 10)}</p>
     </div>
   );
-}
+};

@@ -1,0 +1,23 @@
+{
+  "id": "chk-forbid-document-cookie-utm",
+  "title": "forbid direct document.cookie assignment in utm tracker",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "traffic-attribution"
+    ]
+  },
+  "claim": {
+    "type": "forbid_pattern",
+    "pattern": "document\\.cookie\\s*=",
+    "files": [
+      "src/acquisition/utmTracker.ts"
+    ]
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-24T10:00:00Z",
+  "created_from": "t0004",
+  "provenance": "confirmed"
+}

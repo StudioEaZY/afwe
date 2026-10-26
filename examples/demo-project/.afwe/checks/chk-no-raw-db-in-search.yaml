@@ -1,0 +1,26 @@
+{
+  "id": "chk-no-raw-db-in-search",
+  "title": "search does not import db-client",
+  "trust": "deterministic",
+  "authored_by": "checkgen",
+  "attaches": {
+    "nodes": [
+      "workspace-search",
+      "db-client"
+    ]
+  },
+  "claim": {
+    "type": "forbid_import",
+    "files": [
+      "src/workspace/search/**"
+    ],
+    "to_nodes": [
+      "db-client"
+    ]
+  },
+  "status": "active",
+  "origin": "afwe:checkgen",
+  "created": "2026-10-23T11:00:00Z",
+  "created_from": "t0002",
+  "provenance": "confirmed"
+}

@@ -1,0 +1,54 @@
+{
+  "id": "t0007",
+  "ts": "2026-10-25T11:00:00Z",
+  "origin": "human",
+  "agent": "claude-sonnet-4-5",
+  "prompt": "Propose exit intent modal experiment in unmapped-experiments folder",
+  "prompt_hash": "f1a2b3c4d5e60007",
+  "task": "funnel-exit-intent",
+  "targets": [
+    "growth-funnel"
+  ],
+  "status": "staged",
+  "touched": {
+    "nodes": [
+      "growth-funnel"
+    ],
+    "files": [
+      "src/unmapped-experiments/exitIntentModal.tsx"
+    ]
+  },
+  "implements": {
+    "growth-funnel": [
+      "src/Slide1.tsx",
+      "src/unmapped-experiments/exitIntentModal.tsx"
+    ]
+  },
+  "pin_proposals": [
+    "pin-exit-intent-cooldown"
+  ],
+  "checks": [
+    {
+      "id": "chk-modal-delay",
+      "title": "modal delay exceeds 10s",
+      "trust": "generated",
+      "authored_by": "agent",
+      "passed": true,
+      "blocking": false
+    }
+  ],
+  "strength": "generated",
+  "confidence": 0.77,
+  "gate": {
+    "decision": "stage",
+    "reasons": [
+      "Proposed pin pin-exit-intent-cooldown awaiting confirmation",
+      "Unmapped files in src/unmapped-experiments/"
+    ]
+  },
+  "summary": "Propose exit intent modal experiment in unmapped-experiments folder",
+  "session_id": "sess-exit-07",
+  "agent_zone_rationales": [
+    "Leaf rationale: Exit intent triggers on mouseout Y < 50"
+  ]
+}

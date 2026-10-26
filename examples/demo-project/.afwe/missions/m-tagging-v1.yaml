@@ -1,0 +1,10 @@
+{
+  "id": "m-tagging-v1",
+  "title": "Flat Tagging Implementation",
+  "prompt": "Deliver flat tags with color wheel support",
+  "orchestrator": "human:pm",
+  "status": "Completed",
+  "created": "2026-10-23T09:00:00Z",
+  "updated": "2026-10-23T12:00:00Z",
+  "agents": []
+}
