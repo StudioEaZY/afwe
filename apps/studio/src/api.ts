@@ -107,7 +107,22 @@ export interface Graph {
   board_open: number;
   files: { path: string; language: string; node: string | null; symbols: number; imports: string[] }[];
   unmapped: string[];
-  policy: { auto_reconcile_min: number; soft_reconcile_min: number };
+  policy: {
+    auto_reconcile_min: number;
+    soft_reconcile_min: number;
+    explore_mode?: boolean;
+    pins?: { slider: number };
+    graduation?: { require_human: boolean; min_probe_sessions: number; require_hold_out: boolean };
+  };
+  pins?: any[];
+  checks?: any[];
+  calibration?: {
+    guides: any[];
+    questions: any[];
+    models: Record<string, any>;
+  };
+  losses?: any[];
+  turns?: any[];
 }
 
 export const api = {
@@ -168,6 +183,41 @@ export const api = {
   proposals: () => call("proposals.list"),
   proposal: (id: string, action: "accept" | "revert" | "review") => call("proposal.resolve", { id, action }),
   log: (tail = 50) => call("log.get", { tail }),
+
+  // ── Governance: Pins, Checks, Calibration, Materialize, Explore Mode ──
+  pin: {
+    list: () => call("pin.list"),
+    propose: (p: Json) => call("pin.propose", p),
+    accept: (id: string) => call("pin.accept", { id }),
+    retire: (id: string) => call("pin.retire", { id }),
+    budget: (slider: number) => call("pin.budget", { slider }),
+  },
+  check: {
+    list: (all = false) => call("check.list", { all }),
+    remove: (id: string) => call("check.remove", { id }),
+  },
+  calibration: {
+    guides: (all = false) => call("guide.list", { all }),
+    confirmGuide: (id: string) => call("guide.confirm", { id }),
+    rejectGuide: (id: string) => call("guide.reject", { id }),
+    questions: (all = false) => call("question.list", { all }),
+    answerQuestion: (id: string, answer: string, pin = false) => call("question.answer", { id, answer, pin }),
+  },
+  materialize: (opts: Json = {}) => call("materialize", opts),
+  explore: {
+    unlock: () => call("unlock"),
+    lock: () => call("lock"),
+  },
+
+  // ── Timeline & Time-Travel ──
+  timeline: {
+    list: (limit = 50) => call("timeline.list", { limit }),
+    get: (turn: string) => call("timeline.get", { turn }),
+    diff: (turn: string, file?: string) => call("timeline.diff", { turn, file }),
+    search: (q: string) => call("timeline.search", { q }),
+    losses: () => call("timeline.losses"),
+    restore: (feature: string, apply = false) => call("timeline.restore", { feature, apply }),
+  },
 
   // ── v4: Scene Graph & 4D Timeline ──
   scene: {

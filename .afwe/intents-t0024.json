@@ -1,0 +1,22 @@
+{
+  "intents": [
+    {
+      "id": "studio-dots-ui-overhaul",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Studio UI overhaul with adaptive Radial and Topology views",
+      "statement": "Studio UI overhaul with adaptive Radial and Topology views, contextual progressive Inspector, and 5-page layout"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ]
+}

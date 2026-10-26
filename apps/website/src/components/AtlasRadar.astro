@@ -1,204 +1,1106 @@
 ---
-// AtlasRadar.astro - Interactive Codebase Atlas Sunburst / Polar Radar
+// AtlasRadar.astro - Architectural Codebase Atlas Sunburst & Navigation System
+// Fully accessible, interactive, WCAG AAA/AA compliant cartographic interface
 ---
 
-<div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850/80 p-5 backdrop-blur-sm shadow-sm transition-all">
-  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-400 dark:border-obsidian-700 pb-4 mb-4">
-    <div class="flex items-center gap-2.5">
-      <div class="size-2.5 rounded-full bg-afwe-commit animate-pulse"></div>
-      <span class="text-xs font-mono font-medium tracking-wide text-parchment-700 dark:text-obsidian-400 uppercase">Interactive Codebase Atlas</span>
-      <span class="rounded bg-parchment-200 dark:bg-obsidian-800 px-2 py-0.5 text-[11px] font-mono text-parchment-800 dark:text-obsidian-200">Radial Mode</span>
-    </div>
-    <div class="flex items-center gap-4 text-xs font-mono">
-      <div class="flex items-center gap-1.5 text-parchment-700 dark:text-obsidian-300">
-        <span class="size-2 rounded-full bg-afwe-commit"></span>
-        <span>Mapped (82%)</span>
-      </div>
-      <div class="flex items-center gap-1.5 text-parchment-700 dark:text-obsidian-300">
-        <span class="size-2 rounded-full bg-afwe-inferred"></span>
-        <span>Inferred (12%)</span>
-      </div>
-      <div class="flex items-center gap-1.5 text-parchment-700 dark:text-obsidian-300">
-        <span class="size-2 rounded-full bg-afwe-unmapped"></span>
-        <span>Unmapped (6%)</span>
+<div class="w-full rounded-2xl border-2 border-parchment-400 dark:border-obsidian-700 bg-gradient-to-b from-[#fbf8f1] to-[#f4eee0] dark:from-[#13161c] dark:to-[#0c0e13] text-parchment-900 dark:text-obsidian-100 shadow-xl overflow-hidden font-sans select-none transition-all">
+  <!-- Desktop App Window Chrome Header -->
+  <header class="h-14 px-5 border-b border-parchment-300 dark:border-obsidian-700/80 bg-white/70 dark:bg-obsidian-900/80 backdrop-blur flex items-center justify-between gap-4">
+    <!-- Brand / Title -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <span class="font-serif font-bold text-xl tracking-tight text-parchment-900 dark:text-white">AFWE</span>
+        <span class="hidden sm:inline text-xs text-parchment-600 dark:text-obsidian-400 font-sans pl-2 border-l border-parchment-300 dark:border-obsidian-700">
+          Your code. Its memory. Its rules.
+        </span>
       </div>
     </div>
-  </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-    <!-- SVG Sunburst Polar Radar -->
-    <div class="lg:col-span-7 flex justify-center py-2 relative">
-      <svg viewBox="0 0 440 440" class="w-full max-w-[380px] h-auto select-none transition-all drop-shadow-sm">
-        <defs>
-          <pattern id="unmapped-stripes" width="6" height="6" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-            <line x1="0" y1="0" x2="0" y2="6" stroke="#94a3b8" stroke-width="2" stroke-opacity="0.35" />
-          </pattern>
-        </defs>
-
-        <!-- Outer Ring (Components) -->
-        <circle cx="220" cy="220" r="195" fill="none" stroke="currentColor" class="text-parchment-400 dark:text-obsidian-700" stroke-dasharray="4 4" stroke-width="1" />
-        
-        <!-- Sector 1: Backend (Mapped - Green) -->
-        <path id="sector-backend" d="M 220 50 A 170 170 0 0 1 370 145 L 316 172 A 110 110 0 0 0 220 110 Z"
-          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
-          data-node="Backend" data-files="128" data-status="Mapped" data-deps="Database, Shared, Core" data-mustnot="UI, Mobile" data-pins="2"
-        />
-
-        <!-- Sector 2: Services (Mapped - Green) -->
-        <path id="sector-services" d="M 370 145 A 170 170 0 0 1 370 295 L 316 268 A 110 110 0 0 0 316 172 Z"
-          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
-          data-node="Services" data-files="96" data-status="Mapped" data-deps="Data, Shared" data-mustnot="Presentation" data-pins="1"
-        />
-
-        <!-- Sector 3: Data (Inferred - Orange dashed) -->
-        <path id="sector-data" d="M 370 295 A 170 170 0 0 1 270 380 L 252 324 A 110 110 0 0 0 316 268 Z"
-          class="cursor-pointer transition-all duration-200 fill-amber-500/25 hover:fill-amber-500/45 stroke-amber-500 dark:stroke-amber-400 stroke-1 stroke-dasharray-[3,3]"
-          data-node="Data" data-files="64" data-status="Inferred" data-deps="Infrastructure" data-mustnot="None" data-pins="0"
-        />
-
-        <!-- Sector 4: Infrastructure (Unmapped - Hatched) -->
-        <path id="sector-infra" d="M 270 380 A 170 170 0 0 1 170 380 L 188 324 A 110 110 0 0 0 252 324 Z"
-          fill="url(#unmapped-stripes)" class="cursor-pointer transition-all duration-200 stroke-slate-400 dark:stroke-slate-500 stroke-1"
-          data-node="Infrastructure" data-files="41" data-status="Unmapped Territory" data-deps="Unknown" data-mustnot="Unknown" data-pins="0"
-        />
-
-        <!-- Sector 5: Shared (Mapped - Green) -->
-        <path id="sector-shared" d="M 170 380 A 170 170 0 0 1 70 295 L 124 268 A 110 110 0 0 0 188 324 Z"
-          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
-          data-node="Shared" data-files="73" data-status="Mapped" data-deps="None (Independent)" data-mustnot="UI, Backend" data-pins="1"
-        />
-
-        <!-- Sector 6: Core (Mapped - Green) -->
-        <path id="sector-core" d="M 70 295 A 170 170 0 0 1 70 145 L 124 172 A 110 110 0 0 0 124 268 Z"
-          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
-          data-node="Core Engine" data-files="118" data-status="Mapped" data-deps="Shared" data-mustnot="All Outer Layers" data-pins="3"
-        />
-
-        <!-- Sector 7: UI / Web (Mapped - Green) -->
-        <path id="sector-web" d="M 70 145 A 170 170 0 0 1 220 50 L 220 110 A 110 110 0 0 0 124 172 Z"
-          class="cursor-pointer transition-all duration-200 fill-emerald-500/20 hover:fill-emerald-500/40 stroke-emerald-600 dark:stroke-emerald-400 stroke-1"
-          data-node="Web Presentation" data-files="42" data-status="Mapped" data-deps="Backend, Core" data-mustnot="Database Direct" data-pins="0"
-        />
-
-        <!-- Inner Core Node: Acme App (Root) -->
-        <circle cx="220" cy="220" r="54" class="fill-white dark:fill-obsidian-900 stroke-parchment-500 dark:stroke-obsidian-600 stroke-1 cursor-pointer hover:stroke-afwe-commit" />
-        <text x="220" y="215" text-anchor="middle" class="text-[12px] font-semibold fill-parchment-900 dark:fill-obsidian-100">Acme App</text>
-        <text x="220" y="230" text-anchor="middle" class="text-[9px] font-mono fill-parchment-700 dark:fill-obsidian-400">(root blueprint)</text>
-
-        <!-- Subsystem Labels -->
-        <text x="280" y="105" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Backend</text>
-        <text x="330" y="225" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Services</text>
-        <text x="285" y="315" class="text-[10px] font-medium fill-amber-800 dark:fill-amber-300 pointer-events-none">Data ?</text>
-        <text x="220" y="360" text-anchor="middle" class="text-[9px] font-medium fill-slate-700 dark:fill-slate-400 pointer-events-none">Infra ▨</text>
-        <text x="140" y="315" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Shared</text>
-        <text x="90" y="225" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Core</text>
-        <text x="140" y="105" class="text-[10px] font-medium fill-emerald-800 dark:fill-emerald-300 pointer-events-none">Web UI</text>
-
-        <!-- Padlock / Pin Markers -->
-        <g transform="translate(290, 80) scale(0.65)">
-          <rect x="0" y="4" width="12" height="10" rx="2" fill="#6366f1"/>
-          <path d="M 2 4 V 2 A 4 4 0 0 1 10 2 V 4" fill="none" stroke="#6366f1" stroke-width="2"/>
-        </g>
-        <g transform="translate(100, 205) scale(0.65)">
-          <rect x="0" y="4" width="12" height="10" rx="2" fill="#6366f1"/>
-          <path d="M 2 4 V 2 A 4 4 0 0 1 10 2 V 4" fill="none" stroke="#6366f1" stroke-width="2"/>
-        </g>
-      </svg>
+    <!-- Health Overview Pill -->
+    <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-600/30 bg-emerald-500/10 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs font-mono font-medium">
+      <span class="size-2 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse"></span>
+      <span>Everything balances. 3 pins · 2 proposals waiting</span>
     </div>
 
-    <!-- Inspector Panel for Selected Node -->
-    <div class="lg:col-span-5 bg-parchment-100 dark:bg-obsidian-900 border border-parchment-400 dark:border-obsidian-700 rounded-lg p-4 font-sans text-xs">
-      <div class="flex items-center justify-between border-b border-parchment-300 dark:border-obsidian-800 pb-2.5 mb-3">
-        <div class="flex items-center gap-2">
-          <span class="size-2 rounded-full bg-afwe-commit"></span>
-          <span id="atlas-node-title" class="font-semibold text-sm text-parchment-900 dark:text-obsidian-100">Backend</span>
-        </div>
-        <span id="atlas-node-badge" class="rounded px-2 py-0.5 font-mono text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">Mapped</span>
+    <!-- Quick Search Pill Mockup -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-parchment-400 dark:border-obsidian-700 bg-parchment-50 dark:bg-obsidian-850 text-xs text-parchment-600 dark:text-obsidian-400 font-mono shadow-xs">
+        <svg class="size-3.5 text-parchment-500 dark:text-obsidian-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span class="hidden sm:inline">Search code, features, decisions…</span>
+        <span class="sm:hidden">Search…</span>
+        <kbd class="px-1.5 py-0.5 rounded bg-parchment-200 dark:bg-obsidian-750 text-[10px] text-parchment-800 dark:text-obsidian-300 border border-parchment-300 dark:border-obsidian-650">⌘K</kbd>
       </div>
+    </div>
+  </header>
 
-      <div class="space-y-3">
-        <div>
-          <div class="text-[11px] font-mono text-parchment-700 dark:text-obsidian-400 uppercase mb-1">Structure & Files</div>
-          <p id="atlas-node-files" class="text-parchment-900 dark:text-obsidian-200 font-mono text-xs">128 source files (backend/api/, services/, models/)</p>
+  <!-- Main Body Grid: Sidebar + Canvas + Inspector -->
+  <div class="flex flex-col lg:flex-row min-h-[760px] divide-y lg:divide-y-0 lg:divide-x divide-parchment-300 dark:divide-obsidian-700/80">
+    <!-- Left Navigation Sidebar -->
+    <aside class="w-full lg:w-48 shrink-0 bg-[#f5f1e6] dark:bg-obsidian-900/60 p-4 flex flex-col justify-between">
+      <div class="space-y-4">
+        <!-- Workspace Selector -->
+        <div class="pb-3 border-b border-parchment-300 dark:border-obsidian-700/80">
+          <div class="text-[10px] font-mono uppercase tracking-wider text-parchment-600 dark:text-obsidian-400 font-bold mb-1">Workspace</div>
+          <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-parchment-100 dark:bg-obsidian-850 border border-parchment-300 dark:border-obsidian-700 text-xs font-semibold text-parchment-900 dark:text-obsidian-100">
+            <span class="truncate">Acme Project</span>
+            <svg class="size-3 text-parchment-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </div>
         </div>
 
-        <div>
-          <div class="text-[11px] font-mono text-parchment-700 dark:text-obsidian-400 uppercase mb-1">Relationships</div>
-          <div class="space-y-1">
-            <div class="flex items-center gap-1.5 text-parchment-800 dark:text-obsidian-200">
-              <span class="text-emerald-600 dark:text-emerald-400 font-bold">→</span>
-              <span>Depends on: <strong id="atlas-node-deps" class="font-medium">Database, Shared, Core</strong></span>
+        <!-- Navigation Links -->
+        <nav class="space-y-1 font-sans text-xs">
+          <a href="#atlas" class="flex flex-col px-3 py-2 rounded-xl bg-parchment-200/90 dark:bg-obsidian-800 text-parchment-900 dark:text-white font-bold border border-parchment-400/60 dark:border-obsidian-650 shadow-xs">
+            <span class="text-[13px] flex items-center gap-2">
+              <span class="text-emerald-700 dark:text-emerald-400">❖</span> Atlas
+            </span>
+            <span class="text-[11px] font-normal text-parchment-600 dark:text-obsidian-400 font-sans">The big picture</span>
+          </a>
+
+          <a href="#timeline" class="flex flex-col px-3 py-2 rounded-xl text-parchment-700 dark:text-obsidian-300 hover:bg-parchment-200/50 dark:hover:bg-obsidian-800/50 transition-colors">
+            <span class="text-[13px] font-semibold text-parchment-800 dark:text-obsidian-200 flex items-center gap-2">
+              <span>⏱</span> Timeline
+            </span>
+            <span class="text-[11px] text-parchment-600 dark:text-obsidian-400">See the journey</span>
+          </a>
+
+          <a href="#turns" class="flex flex-col px-3 py-2 rounded-xl text-parchment-700 dark:text-obsidian-300 hover:bg-parchment-200/50 dark:hover:bg-obsidian-800/50 transition-colors">
+            <span class="text-[13px] font-semibold text-parchment-800 dark:text-obsidian-200 flex items-center gap-2">
+              <span>🧾</span> Turns
+            </span>
+            <span class="text-[11px] text-parchment-600 dark:text-obsidian-400">Recent activity</span>
+          </a>
+
+          <a href="#blueprint" class="flex flex-col px-3 py-2 rounded-xl text-parchment-700 dark:text-obsidian-300 hover:bg-parchment-200/50 dark:hover:bg-obsidian-800/50 transition-colors">
+            <span class="text-[13px] font-semibold text-parchment-800 dark:text-obsidian-200 flex items-center gap-2">
+              <span>📐</span> Blueprint
+            </span>
+            <span class="text-[11px] text-parchment-600 dark:text-obsidian-400">Architecture & rules</span>
+          </a>
+
+          <a href="#explorer" class="flex flex-col px-3 py-2 rounded-xl text-parchment-700 dark:text-obsidian-300 hover:bg-parchment-200/50 dark:hover:bg-obsidian-800/50 transition-colors">
+            <span class="text-[13px] font-semibold text-parchment-800 dark:text-obsidian-200 flex items-center gap-2">
+              <span>🔍</span> Explorer
+            </span>
+            <span class="text-[11px] text-parchment-600 dark:text-obsidian-400">Search & navigate</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Bottom Mountain Landscape Contour & Progress -->
+      <div class="mt-8 pt-3 border-t border-parchment-300 dark:border-obsidian-700/80">
+        <!-- Mountain etching SVG -->
+        <div class="w-full opacity-80 dark:opacity-40">
+          <svg viewBox="0 0 184 90" class="w-full h-auto" preserveAspectRatio="none">
+            <path d="M0 90V40C30 25 55 35 90 30C125 25 150 18 184 32V90Z" fill="#e9e1ce" class="dark:fill-[#2d3340]" />
+            <path d="M0 90V60C35 48 70 56 110 50C140 44 165 48 184 52V90Z" fill="#ded4be" class="dark:fill-[#222733]" />
+          </svg>
+        </div>
+
+        <div class="mt-2 text-xs font-mono space-y-1">
+          <div class="flex items-center gap-1.5 text-parchment-900 dark:text-obsidian-200 font-bold">
+            <span class="size-2 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+            <span>82% mapped</span>
+          </div>
+          <div class="text-[11px] text-parchment-600 dark:text-obsidian-400">
+            3 pins · 2 proposals
+          </div>
+          <div class="text-[10px] text-parchment-500 dark:text-obsidian-500 pt-1">
+            AFWE v0.2.0 · Intention-first
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Main Canvas: Header + Radial Graph + Recent Turns -->
+    <main class="flex-1 min-w-0 p-5 flex flex-col justify-between overflow-x-auto">
+      <div>
+        <!-- Canvas Top Bar: Breadcrumb, Heading & Filters -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-parchment-300 dark:border-obsidian-700/80">
+          <div>
+            <div class="text-xs font-mono text-parchment-600 dark:text-obsidian-400 mb-1 flex items-center gap-2">
+              <span>‹ Atlas</span>
+              <span>/</span>
+              <span class="rounded px-1.5 py-0.5 bg-parchment-200 dark:bg-obsidian-800 text-parchment-700 dark:text-obsidian-300 text-[10px]">Legacy Project</span>
+              <span class="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 text-[10px] font-semibold">
+                <span class="size-1.5 rounded-full bg-emerald-600"></span> Partially mapped
+              </span>
             </div>
-            <div class="flex items-center gap-1.5 text-afwe-redo font-medium">
-              <span>✕</span>
-              <span>Must not depend on: <strong id="atlas-node-mustnot" class="font-bold underline">UI, Mobile</strong></span>
+            <h1 class="text-2xl sm:text-3xl font-serif font-bold text-parchment-900 dark:text-white">
+              Codebase Atlas
+            </h1>
+            <p class="text-xs text-parchment-600 dark:text-obsidian-400 mt-0.5">
+              Split by folders first, then by which files import each other. Size represents file volume.
+            </p>
+          </div>
+
+          <!-- Filter Pills & View Mode -->
+          <div class="flex items-center gap-2 font-mono text-xs">
+            <div class="flex rounded-full border border-parchment-400 dark:border-obsidian-700 p-0.5 bg-parchment-200/60 dark:bg-obsidian-850">
+              <button class="px-2.5 py-0.5 rounded-full bg-parchment-900 dark:bg-white text-white dark:text-obsidian-950 font-bold shadow-xs">All</button>
+              <button class="px-2.5 py-0.5 rounded-full text-parchment-700 dark:text-obsidian-300 hover:text-black dark:hover:text-white">Mapped</button>
+              <button class="px-2.5 py-0.5 rounded-full text-parchment-700 dark:text-obsidian-300 hover:text-black dark:hover:text-white">Inferred</button>
+              <button class="px-2.5 py-0.5 rounded-full text-parchment-700 dark:text-obsidian-300 hover:text-black dark:hover:text-white">Unmapped</button>
             </div>
           </div>
         </div>
 
-        <div>
-          <div class="text-[11px] font-mono text-parchment-700 dark:text-obsidian-400 uppercase mb-1">Architectural Constraints & Pins</div>
-          <div class="rounded bg-white dark:bg-obsidian-850 p-2 border border-parchment-300 dark:border-obsidian-700 space-y-1">
-            <div class="flex items-center justify-between">
-              <span class="text-parchment-800 dark:text-obsidian-200 font-medium">Headless Worker Isolation</span>
-              <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold uppercase">Enforced</span>
+        <!-- The Central Radial Sunburst SVG Viewport -->
+        <div class="relative flex items-center justify-center my-4 py-2">
+          <!-- Zoom & Pan Controls (Left) -->
+          <div class="absolute left-2 top-4 flex flex-col gap-1 z-20">
+            <div class="flex flex-col rounded-lg border border-parchment-400 dark:border-obsidian-700 bg-white/80 dark:bg-obsidian-850/80 backdrop-blur shadow-sm text-xs font-mono">
+              <button class="p-2 hover:bg-parchment-200 dark:hover:bg-obsidian-750 text-parchment-800 dark:text-obsidian-200 rounded-t-lg transition-colors" title="Zoom in" aria-label="Zoom in">+</button>
+              <button class="p-2 border-t border-parchment-300 dark:border-obsidian-700 hover:bg-parchment-200 dark:hover:bg-obsidian-750 text-parchment-800 dark:text-obsidian-200 transition-colors" title="Zoom out" aria-label="Zoom out">−</button>
+              <button class="p-2 border-t border-parchment-300 dark:border-obsidian-700 hover:bg-parchment-200 dark:hover:bg-obsidian-750 text-parchment-800 dark:text-obsidian-200 rounded-b-lg transition-colors" title="Recenter" aria-label="Recenter">⌖</button>
             </div>
-            <div class="flex items-center gap-1.5 text-[11px] text-parchment-700 dark:text-obsidian-400">
-              <span class="text-afwe-pinned font-bold">🔒</span>
-              <span id="atlas-node-pins">2 active human pins locked</span>
+          </div>
+
+          <!-- Compass Rose / North Indicator (Bottom Right) -->
+          <div class="absolute right-4 bottom-2 hidden sm:flex flex-col items-center gap-0.5 pointer-events-none opacity-60">
+            <span class="text-[9px] font-mono font-bold text-parchment-700 dark:text-obsidian-400">N</span>
+            <div class="size-4 border border-parchment-500 dark:border-obsidian-500 rounded-full flex items-center justify-center">
+              <div class="w-0.5 h-3 bg-parchment-700 dark:text-obsidian-300"></div>
+            </div>
+          </div>
+
+          <!-- Main SVG Canvas -->
+          <svg viewBox="0 0 740 540" class="w-full max-w-[740px] h-auto select-none overflow-visible">
+            <defs>
+              <!-- Sunburst shadow filter -->
+              <filter id="atlas-sh" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#5a4a2a" flood-opacity="0.12" />
+              </filter>
+
+              <!-- Inferred Amber Pattern -->
+              <pattern id="hatch-amber" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="8" stroke="#d97706" stroke-width="2" stroke-opacity="0.4" />
+              </pattern>
+
+              <!-- Proposals Red Pattern -->
+              <pattern id="hatch-red" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="8" stroke="#dc2626" stroke-width="2" stroke-opacity="0.4" />
+              </pattern>
+
+              <!-- Unmapped Territory Pattern -->
+              <pattern id="hatch-slate" width="8" height="8" patternTransform="rotate(-45)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="8" stroke="#94a3b8" stroke-width="2" stroke-opacity="0.45" />
+              </pattern>
+
+              <!-- Arrow Marker -->
+              <marker id="callout-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <circle cx="5" cy="5" r="3" fill="#6b675d" />
+              </marker>
+            </defs>
+
+            <!-- Radial Background Glow & Concentric Guide Rings -->
+            <g class="guide-rings opacity-40 dark:opacity-20 pointer-events-none">
+              <circle cx="370" cy="270" r="236" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" />
+              <circle cx="370" cy="270" r="175" fill="none" stroke="currentColor" stroke-width="1" />
+              <circle cx="370" cy="270" r="118" fill="none" stroke="currentColor" stroke-width="1" />
+              <circle cx="370" cy="270" r="54" fill="none" stroke="currentColor" stroke-width="1" />
+            </g>
+
+            <!-- GROUP: Sunburst Geometry with drop shadow -->
+            <g filter="url(#atlas-sh)">
+              <!-- RING 1 -->
+
+    <g class="cursor-pointer group atlas-sector-btn" data-node="Web" tabindex="0" role="button" aria-label="Web Module, 42 files">
+      <path d="M 327.48 163.15 A 115 115 0 0 1 412.52 163.15 L 389.97 219.83 A 54 54 0 0 0 350.03 219.83 Z" 
+        fill="#cbe0d3" 
+        stroke="#7d9e8b" 
+        stroke-width="1.2"
+        class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-700 " 
+      />
+      <text x="370.00" y="182" text-anchor="middle" font-size="11" font-weight="600" fill="#1d1c1a" class="pointer-events-none select-none">Web</text>
+      <text x="370.00" y="195" text-anchor="middle" font-size="9" fill="#575043" class="pointer-events-none select-none font-mono">42 files</text>
+    </g>
+    <g class="cursor-pointer group atlas-sector-btn" data-node="Backend" tabindex="0" role="button" aria-label="Backend Module, 128 files">
+      <path d="M 415.49 164.38 A 115 115 0 0 1 475.62 224.51 L 419.60 248.64 A 54 54 0 0 0 391.36 220.40 Z" 
+        fill="#bdd9c8" 
+        stroke="#15803d" 
+        stroke-width="2.5"
+        class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-700 ring-active" 
+      />
+      <text x="429.40" y="206.6" text-anchor="middle" font-size="11" font-weight="600" fill="#1d1c1a" class="pointer-events-none select-none">Backend</text>
+      <text x="429.40" y="219.6" text-anchor="middle" font-size="9" fill="#575043" class="pointer-events-none select-none font-mono">128 files</text>
+    </g>
+    <g class="cursor-pointer group atlas-sector-btn" data-node="Services" tabindex="0" role="button" aria-label="Services Module, 96 files">
+      <path d="M 476.85 227.48 A 115 115 0 0 1 476.85 312.52 L 420.17 289.97 A 54 54 0 0 0 420.17 250.03 Z" 
+        fill="#ebe6db" 
+        stroke="#bcb3a2" 
+        stroke-width="1.2"
+        class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-700 " 
+      />
+      <text x="454.00" y="266" text-anchor="middle" font-size="11" font-weight="600" fill="#1d1c1a" class="pointer-events-none select-none">Services</text>
+      <text x="454.00" y="279" text-anchor="middle" font-size="9" fill="#575043" class="pointer-events-none select-none font-mono">96 files</text>
+    </g>
+    <g class="cursor-pointer group atlas-sector-btn" data-node="Data" tabindex="0" role="button" aria-label="Data Module, 64 files">
+      <path d="M 475.62 315.49 A 115 115 0 0 1 415.49 375.62 L 391.36 319.60 A 54 54 0 0 0 419.60 291.36 Z" 
+        fill="#cbe0d3" 
+        stroke="#7d9e8b" 
+        stroke-width="1.2"
+        class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-700 " 
+      />
+      <text x="429.40" y="325.4" text-anchor="middle" font-size="11" font-weight="600" fill="#1d1c1a" class="pointer-events-none select-none">Data</text>
+      <text x="429.40" y="338.4" text-anchor="middle" font-size="9" fill="#575043" class="pointer-events-none select-none font-mono">64 files</text>
+    </g>
+    <g class="cursor-pointer group atlas-sector-btn" data-node="Infrastructure" tabindex="0" role="button" aria-label="Infrastructure Module, 41 files">
+      <path d="M 412.52 376.85 A 115 115 0 0 1 327.48 376.85 L 350.03 320.17 A 54 54 0 0 0 389.97 320.17 Z" 
+        fill="#ebe6db" 
+        stroke="#bcb3a2" 
+        stroke-width="1.2"
+        class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-700 " 
+      />
+      <text x="370.00" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#1d1c1a" class="pointer-events-none select-none">Infrastructure</text>
+      <text x="370.00" y="363" text-anchor="middle" font-size="9" fill="#575043" class="pointer-events-none select-none font-mono">41 files</text>
+    </g>
+    <g class="cursor-pointer group atlas-sector-btn" data-node="Shared" tabindex="0" role="button" aria-label="Shared Module, 73 files">
+      <path d="M 324.51 375.62 A 115 115 0 0 1 264.38 315.49 L 320.40 291.36 A 54 54 0 0 0 348.64 319.60 Z" 
+        fill="#ebe6db" 
+        stroke="#bcb3a2" 
+        stroke-width="1.2"
+        class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-700 " 
+      />
+      <text x="310.60" y="325.4" text-anchor="middle" font-size="11" font-weight="600" fill="#1d1c1a" class="pointer-events-none select-none">Shared</text>
+      <text x="310.60" y="338.4" text-anchor="middle" font-size="9" fill="#575043" class="pointer-events-none select-none font-mono">73 files</text>
+    </g>
+    <g class="cursor-pointer group atlas-sector-btn" data-node="Core" tabindex="0" role="button" aria-label="Core Module, 118 files">
+      <path d="M 263.15 312.52 A 115 115 0 0 1 263.15 227.48 L 319.83 250.03 A 54 54 0 0 0 319.83 289.97 Z" 
+        fill="#ebe6db" 
+        stroke="#bcb3a2" 
+        stroke-width="1.2"
+        class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-700 " 
+      />
+      <text x="286.00" y="266" text-anchor="middle" font-size="11" font-weight="600" fill="#1d1c1a" class="pointer-events-none select-none">Core</text>
+      <text x="286.00" y="279" text-anchor="middle" font-size="9" fill="#575043" class="pointer-events-none select-none font-mono">118 files</text>
+    </g>
+    <g class="cursor-pointer group atlas-sector-btn" data-node="Mobile" tabindex="0" role="button" aria-label="Mobile Module, 37 files">
+      <path d="M 264.38 224.51 A 115 115 0 0 1 324.51 164.38 L 348.64 220.40 A 54 54 0 0 0 320.40 248.64 Z" 
+        fill="#ebe6db" 
+        stroke="#bcb3a2" 
+        stroke-width="1.2"
+        class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-700 " 
+      />
+      <text x="310.60" y="206.6" text-anchor="middle" font-size="11" font-weight="600" fill="#1d1c1a" class="pointer-events-none select-none">Mobile</text>
+      <text x="310.60" y="219.6" text-anchor="middle" font-size="9" fill="#575043" class="pointer-events-none select-none font-mono">37 files</text>
+    </g>
+
+<!-- RING 2 -->
+
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Web" data-sub="views" tabindex="0" role="button" aria-label="Web/views">
+        <path d="M 306.40 110.19 A 172 172 0 0 1 334.09 101.79 L 344.95 152.64 A 120 120 0 0 0 325.63 158.50 Z" 
+          fill="#cbe0d3" 
+          stroke="#7d9e8b" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="327.62" y="133.29" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">views/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Web" data-sub="components" tabindex="0" role="button" aria-label="Web/components">
+        <path d="M 338.80 100.85 A 172 172 0 0 1 367.60 98.02 L 368.32 150.01 A 120 120 0 0 0 348.23 151.99 Z" 
+          fill="#cbe0d3" 
+          stroke="#7d9e8b" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="355.69" y="127.7" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">components/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Web" data-sub="routes" tabindex="0" role="button" aria-label="Web/routes">
+        <path d="M 372.40 98.02 A 172 172 0 0 1 401.20 100.85 L 391.77 151.99 A 120 120 0 0 0 371.68 150.01 Z" 
+          fill="#cbe0d3" 
+          stroke="#7d9e8b" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="384.31" y="127.7" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">routes/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Web" data-sub="styles" tabindex="0" role="button" aria-label="Web/styles">
+        <path d="M 405.91 101.79 A 172 172 0 0 1 433.60 110.19 L 414.37 158.50 A 120 120 0 0 0 395.05 152.64 Z" 
+          fill="#cbe0d3" 
+          stroke="#7d9e8b" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="412.38" y="133.29" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">styles/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Backend" data-sub="api" tabindex="0" role="button" aria-label="Backend/api">
+        <path d="M 438.03 112.03 A 172 172 0 0 1 463.55 125.67 L 435.27 169.30 A 120 120 0 0 0 417.47 159.79 Z" 
+          fill="#cde2d6" 
+          stroke="#6c967d" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="438.82" y="144.24" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">api/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Backend" data-sub="services" tabindex="0" role="button" aria-label="Backend/services">
+        <path d="M 467.55 128.34 A 172 172 0 0 1 489.91 146.69 L 453.66 183.97 A 120 120 0 0 0 438.06 171.16 Z" 
+          fill="#cde2d6" 
+          stroke="#6c967d" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="462.62" y="160.14" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">services/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Backend" data-sub="models" tabindex="0" role="button" aria-label="Backend/models">
+        <path d="M 493.31 150.09 A 172 172 0 0 1 511.66 172.45 L 468.84 201.94 A 120 120 0 0 0 456.03 186.34 Z" 
+          fill="#cde2d6" 
+          stroke="#6c967d" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="482.86" y="180.38" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">models/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Backend" data-sub="utils" tabindex="0" role="button" aria-label="Backend/utils">
+        <path d="M 514.33 176.45 A 172 172 0 0 1 527.97 201.97 L 480.21 222.53 A 120 120 0 0 0 470.70 204.73 Z" 
+          fill="#cde2d6" 
+          stroke="#6c967d" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="498.76" y="204.18" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">utils/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Services" data-sub="auth" tabindex="0" role="button" aria-label="Services/auth">
+        <path d="M 529.81 206.40 A 172 172 0 0 1 540.20 245.17 L 488.74 252.68 A 120 120 0 0 0 481.50 225.63 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="511.03" y="235.21" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">auth/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Services" data-sub="billing" tabindex="0" role="button" aria-label="Services/billing">
+        <path d="M 540.83 249.93 A 172 172 0 0 1 540.83 290.07 L 489.18 284.00 A 120 120 0 0 0 489.18 256.00 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="516.00" y="273" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">billing/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Services" data-sub="mailer" tabindex="0" role="button" aria-label="Services/mailer">
+        <path d="M 540.20 294.83 A 172 172 0 0 1 529.81 333.60 L 481.50 314.37 A 120 120 0 0 0 488.74 287.32 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="511.03" y="310.79" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">mailer/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Data" data-sub="schema" tabindex="0" role="button" aria-label="Data/schema">
+        <path d="M 527.97 338.03 A 172 172 0 0 1 507.91 372.79 L 466.21 341.72 A 120 120 0 0 0 480.21 317.47 Z" 
+          fill="#cbe0d3" 
+          stroke="#7d9e8b" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="496.44" y="346" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">schema/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Data" data-sub="migrations" tabindex="0" role="button" aria-label="Data/migrations">
+        <path d="M 504.98 376.60 A 172 172 0 0 1 476.60 404.98 L 444.37 364.17 A 120 120 0 0 0 464.17 344.37 Z" 
+          fill="#cbe0d3" 
+          stroke="#7d9e8b" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="473.24" y="376.24" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">migrations/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Data" data-sub="repositories" tabindex="0" role="button" aria-label="Data/repositories">
+        <path d="M 472.79 407.91 A 172 172 0 0 1 438.03 427.97 L 417.47 380.21 A 120 120 0 0 0 441.72 366.21 Z" 
+          fill="#cbe0d3" 
+          stroke="#7d9e8b" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="443.00" y="399.44" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">repositories/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Infrastructure" data-sub="docker" tabindex="0" role="button" aria-label="Infrastructure/docker">
+        <path d="M 433.60 429.81 A 172 172 0 0 1 394.83 440.20 L 387.32 388.74 A 120 120 0 0 0 414.37 381.50 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="407.79" y="414.03" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">docker/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Infrastructure" data-sub="terraform" tabindex="0" role="button" aria-label="Infrastructure/terraform">
+        <path d="M 390.07 440.83 A 172 172 0 0 1 349.93 440.83 L 356.00 389.18 A 120 120 0 0 0 384.00 389.18 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="370.00" y="419" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">terraform/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Infrastructure" data-sub="ci" tabindex="0" role="button" aria-label="Infrastructure/ci">
+        <path d="M 345.17 440.20 A 172 172 0 0 1 306.40 429.81 L 325.63 381.50 A 120 120 0 0 0 352.68 388.74 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="332.21" y="414.03" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">ci/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Shared" data-sub="types" tabindex="0" role="button" aria-label="Shared/types">
+        <path d="M 301.97 427.97 A 172 172 0 0 1 267.21 407.91 L 298.28 366.21 A 120 120 0 0 0 322.53 380.21 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="297.00" y="399.44" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">types/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Shared" data-sub="constants" tabindex="0" role="button" aria-label="Shared/constants">
+        <path d="M 263.40 404.98 A 172 172 0 0 1 235.02 376.60 L 275.83 344.37 A 120 120 0 0 0 295.63 364.17 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="266.76" y="376.24" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">constants/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Shared" data-sub="helpers" tabindex="0" role="button" aria-label="Shared/helpers">
+        <path d="M 232.09 372.79 A 172 172 0 0 1 212.03 338.03 L 259.79 317.47 A 120 120 0 0 0 273.79 341.72 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="243.56" y="346" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">helpers/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Core" data-sub="kernel" tabindex="0" role="button" aria-label="Core/kernel">
+        <path d="M 210.19 333.60 A 172 172 0 0 1 201.79 305.91 L 252.64 295.05 A 120 120 0 0 0 258.50 314.37 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="230.29" y="315.38" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">kernel/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Core" data-sub="events" tabindex="0" role="button" aria-label="Core/events">
+        <path d="M 200.85 301.20 A 172 172 0 0 1 198.02 272.40 L 250.01 271.68 A 120 120 0 0 0 251.99 291.77 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="224.70" y="287.31" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">events/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Core" data-sub="bus" tabindex="0" role="button" aria-label="Core/bus">
+        <path d="M 198.02 267.60 A 172 172 0 0 1 200.85 238.80 L 251.99 248.23 A 120 120 0 0 0 250.01 268.32 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="224.70" y="258.69" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">bus/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Core" data-sub="rules" tabindex="0" role="button" aria-label="Core/rules">
+        <path d="M 201.79 234.09 A 172 172 0 0 1 210.19 206.40 L 258.50 225.63 A 120 120 0 0 0 252.64 244.95 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="230.29" y="230.62" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">rules/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Mobile" data-sub="ios" tabindex="0" role="button" aria-label="Mobile/ios">
+        <path d="M 212.03 201.97 A 172 172 0 0 1 232.09 167.21 L 273.79 198.28 A 120 120 0 0 0 259.79 222.53 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="243.56" y="200" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">ios/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Mobile" data-sub="android" tabindex="0" role="button" aria-label="Mobile/android">
+        <path d="M 235.02 163.40 A 172 172 0 0 1 263.40 135.02 L 295.63 175.83 A 120 120 0 0 0 275.83 195.63 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="266.76" y="169.76" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">android/</text>
+      </g>
+      <g class="cursor-pointer group atlas-sector-btn" data-node="Mobile" data-sub="shared-ui" tabindex="0" role="button" aria-label="Mobile/shared-ui">
+        <path d="M 267.21 132.09 A 172 172 0 0 1 301.97 112.03 L 322.53 159.79 A 120 120 0 0 0 298.28 173.79 Z" 
+          fill="#ebe6db" 
+          stroke="#bcb3a2" 
+          stroke-width="1"
+          class="transition-all duration-200 group-hover:brightness-95 group-hover:stroke-emerald-600" 
+        />
+        <text x="297.00" y="146.56" text-anchor="middle" font-size="8.5" fill="#3c362c" font-family="'JetBrains Mono', monospace" class="pointer-events-none select-none">shared-ui/</text>
+      </g>
+
+<!-- RING 3 -->
+
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 373.10 48.02 A 222 222 0 0 1 395.90 49.52 L 390.77 93.22 A 178 178 0 0 0 372.49 92.02 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 402.05 50.33 A 222 222 0 0 1 424.46 54.78 L 413.66 97.44 A 178 178 0 0 0 395.70 93.86 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 430.45 56.39 A 222 222 0 0 1 452.08 63.73 L 435.81 104.61 A 178 178 0 0 0 418.47 98.73 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 457.81 66.10 A 222 222 0 0 1 478.30 76.21 L 456.84 114.62 A 178 178 0 0 0 440.41 106.52 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 483.67 79.31 A 222 222 0 0 1 502.67 92.01 L 476.38 127.28 A 178 178 0 0 0 461.14 117.11 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 507.59 95.78 A 222 222 0 0 1 524.77 110.85 L 494.10 142.39 A 178 178 0 0 0 480.32 130.31 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 529.15 115.23 A 222 222 0 0 1 544.22 132.41 L 509.69 159.68 A 178 178 0 0 0 497.61 145.90 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Inferred" tabindex="0" role="button" aria-label="Inferred slice">
+      <path d="M 547.99 137.33 A 222 222 0 0 1 560.69 156.33 L 522.89 178.86 A 178 178 0 0 0 512.72 163.62 Z" fill="url(#hatch-amber)" stroke="#d97706" stroke-width="1" stroke-dasharray="2 2" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Inferred" tabindex="0" role="button" aria-label="Inferred slice">
+      <path d="M 563.79 161.70 A 222 222 0 0 1 573.90 182.19 L 533.48 199.59 A 178 178 0 0 0 525.38 183.16 Z" fill="url(#hatch-amber)" stroke="#d97706" stroke-width="1" stroke-dasharray="2 2" class="transition-all duration-200 group-hover:brightness-90" />
+      <text x="549.37" y="185.54" text-anchor="middle" font-size="11" font-weight="bold" fill="#b45309">?</text>
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Inferred" tabindex="0" role="button" aria-label="Inferred slice">
+      <path d="M 576.27 187.92 A 222 222 0 0 1 583.61 209.55 L 541.27 221.53 A 178 178 0 0 0 535.39 204.19 Z" fill="url(#hatch-amber)" stroke="#d97706" stroke-width="1" stroke-dasharray="2 2" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 585.22 215.54 A 222 222 0 0 1 589.67 237.95 L 546.14 244.30 A 178 178 0 0 0 542.56 226.34 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 590.48 244.10 A 222 222 0 0 1 591.98 266.90 L 547.98 267.51 A 178 178 0 0 0 546.78 249.23 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 591.98 273.10 A 222 222 0 0 1 590.48 295.90 L 546.78 290.77 A 178 178 0 0 0 547.98 272.49 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 589.67 302.05 A 222 222 0 0 1 585.22 324.46 L 542.56 313.66 A 178 178 0 0 0 546.14 295.70 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 583.61 330.45 A 222 222 0 0 1 576.27 352.08 L 535.39 335.81 A 178 178 0 0 0 541.27 318.47 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 573.90 357.81 A 222 222 0 0 1 563.79 378.30 L 525.38 356.84 A 178 178 0 0 0 533.48 340.41 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 560.69 383.67 A 222 222 0 0 1 547.99 402.67 L 512.72 376.38 A 178 178 0 0 0 522.89 361.14 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Proposal" tabindex="0" role="button" aria-label="Proposal slice">
+      <path d="M 544.22 407.59 A 222 222 0 0 1 529.15 424.77 L 497.61 394.10 A 178 178 0 0 0 509.69 380.32 Z" fill="url(#hatch-red)" stroke="#dc2626" stroke-width="1" stroke-dasharray="2 2" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Proposal" tabindex="0" role="button" aria-label="Proposal slice">
+      <path d="M 524.77 429.15 A 222 222 0 0 1 507.59 444.22 L 480.32 409.69 A 178 178 0 0 0 494.10 397.61 Z" fill="url(#hatch-red)" stroke="#dc2626" stroke-width="1" stroke-dasharray="2 2" class="transition-all duration-200 group-hover:brightness-90" />
+      <text x="501.87" y="424.37" text-anchor="middle" font-size="10" fill="#dc2626">⚠️</text>
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Proposal" tabindex="0" role="button" aria-label="Proposal slice">
+      <path d="M 502.67 447.99 A 222 222 0 0 1 483.67 460.69 L 461.14 422.89 A 178 178 0 0 0 476.38 412.72 Z" fill="url(#hatch-red)" stroke="#dc2626" stroke-width="1" stroke-dasharray="2 2" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 478.30 463.79 A 222 222 0 0 1 457.81 473.90 L 440.41 433.48 A 178 178 0 0 0 456.84 425.38 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 452.08 476.27 A 222 222 0 0 1 430.45 483.61 L 418.47 441.27 A 178 178 0 0 0 435.81 435.39 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 424.46 485.22 A 222 222 0 0 1 402.05 489.67 L 395.70 446.14 A 178 178 0 0 0 413.66 442.56 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 395.90 490.48 A 222 222 0 0 1 373.10 491.98 L 372.49 447.98 A 178 178 0 0 0 390.77 446.78 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 366.90 491.98 A 222 222 0 0 1 344.10 490.48 L 349.23 446.78 A 178 178 0 0 0 367.51 447.98 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 337.95 489.67 A 222 222 0 0 1 315.54 485.22 L 326.34 442.56 A 178 178 0 0 0 344.30 446.14 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 309.55 483.61 A 222 222 0 0 1 287.92 476.27 L 304.19 435.39 A 178 178 0 0 0 321.53 441.27 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 282.19 473.90 A 222 222 0 0 1 261.70 463.79 L 283.16 425.38 A 178 178 0 0 0 299.59 433.48 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 256.33 460.69 A 222 222 0 0 1 237.33 447.99 L 263.62 412.72 A 178 178 0 0 0 278.86 422.89 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Pinned" tabindex="0" role="button" aria-label="Pinned slice">
+      <path d="M 232.41 444.22 A 222 222 0 0 1 215.23 429.15 L 245.90 397.61 A 178 178 0 0 0 259.68 409.69 Z" fill="#e4e2fa" stroke="#4f46e5" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      <text x="238.13" y="424.37" text-anchor="middle" font-size="10" fill="#4338ca">🔒</text>
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Pinned" tabindex="0" role="button" aria-label="Pinned slice">
+      <path d="M 210.85 424.77 A 222 222 0 0 1 195.78 407.59 L 230.31 380.32 A 178 178 0 0 0 242.39 394.10 Z" fill="#e4e2fa" stroke="#4f46e5" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      <text x="219.63" y="405.87" text-anchor="middle" font-size="10" fill="#4338ca">🔒</text>
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 192.01 402.67 A 222 222 0 0 1 179.31 383.67 L 217.11 361.14 A 178 178 0 0 0 227.28 376.38 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 176.21 378.30 A 222 222 0 0 1 166.10 357.81 L 206.52 340.41 A 178 178 0 0 0 214.62 356.84 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 163.73 352.08 A 222 222 0 0 1 156.39 330.45 L 198.73 318.47 A 178 178 0 0 0 204.61 335.81 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 154.78 324.46 A 222 222 0 0 1 150.33 302.05 L 193.86 295.70 A 178 178 0 0 0 197.44 313.66 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 149.52 295.90 A 222 222 0 0 1 148.02 273.10 L 192.02 272.49 A 178 178 0 0 0 193.22 290.77 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 148.02 266.90 A 222 222 0 0 1 149.52 244.10 L 193.22 249.23 A 178 178 0 0 0 192.02 267.51 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 150.33 237.95 A 222 222 0 0 1 154.78 215.54 L 197.44 226.34 A 178 178 0 0 0 193.86 244.30 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 156.39 209.55 A 222 222 0 0 1 163.73 187.92 L 204.61 204.19 A 178 178 0 0 0 198.73 221.53 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Unmapped" tabindex="0" role="button" aria-label="Unmapped slice">
+      <path d="M 166.10 182.19 A 222 222 0 0 1 176.21 161.70 L 214.62 183.16 A 178 178 0 0 0 206.52 199.59 Z" fill="url(#hatch-slate)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Unmapped" tabindex="0" role="button" aria-label="Unmapped slice">
+      <path d="M 179.31 156.33 A 222 222 0 0 1 192.01 137.33 L 227.28 163.62 A 178 178 0 0 0 217.11 178.86 Z" fill="url(#hatch-slate)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Unmapped" tabindex="0" role="button" aria-label="Unmapped slice">
+      <path d="M 195.78 132.41 A 222 222 0 0 1 210.85 115.23 L 242.39 145.90 A 178 178 0 0 0 230.31 159.68 Z" fill="url(#hatch-slate)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Unmapped" tabindex="0" role="button" aria-label="Unmapped slice">
+      <path d="M 215.23 110.85 A 222 222 0 0 1 232.41 95.78 L 259.68 130.31 A 178 178 0 0 0 245.90 142.39 Z" fill="url(#hatch-slate)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 237.33 92.01 A 222 222 0 0 1 256.33 79.31 L 278.86 117.11 A 178 178 0 0 0 263.62 127.28 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 261.70 76.21 A 222 222 0 0 1 282.19 66.10 L 299.59 106.52 A 178 178 0 0 0 283.16 114.62 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 287.92 63.73 A 222 222 0 0 1 309.55 56.39 L 321.53 98.73 A 178 178 0 0 0 304.19 104.61 Z" fill="#e8e2d4" stroke="#b5ab98" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 315.54 54.78 A 222 222 0 0 1 337.95 50.33 L 344.30 93.86 A 178 178 0 0 0 326.34 97.44 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+    <g class="cursor-pointer group" data-leaf-type="Mapped" tabindex="0" role="button" aria-label="Mapped slice">
+      <path d="M 344.10 49.52 A 222 222 0 0 1 366.90 48.02 L 367.51 92.02 A 178 178 0 0 0 349.23 93.22 Z" fill="#dbe5de" stroke="#8ba895" stroke-width="1" stroke-dasharray="none" class="transition-all duration-200 group-hover:brightness-90" />
+      
+    </g>
+
+              <!-- Root Center Hub (Acme App) -->
+              <g class="cursor-pointer group" tabindex="0" role="button" aria-label="Root Workspace Acme App">
+                <circle cx="370" cy="270" r="50" fill="#fbf9f4" stroke="#c5b8a0" stroke-width="2" class="dark:fill-obsidian-850 dark:stroke-obsidian-650 group-hover:stroke-emerald-600 transition-colors" />
+                <!-- Center Cube Icon -->
+                <text x="370" y="258" text-anchor="middle" font-size="14" class="pointer-events-none">📦</text>
+                <text x="370" y="274" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d1c1a" class="dark:fill-white pointer-events-none">Acme App</text>
+                <text x="370" y="287" text-anchor="middle" font-size="8.5" fill="#6b675d" font-family="'JetBrains Mono', monospace" class="dark:fill-obsidian-400 pointer-events-none">(root)</text>
+              </g>
+            </g>
+
+            <!-- Caliper Callout Leader Lines & Text Overlays -->
+            <g class="calliper-annotations pointer-events-none select-none text-xs font-sans">
+              <!-- Callout 1: Top-Left Unmapped Territory -->
+              <path d="M 230 145 L 170 110 L 120 110" fill="none" stroke="#8a8373" stroke-width="1.2" marker-start="url(#callout-arrow)" />
+              <g transform="translate(45, 82)">
+                <rect x="0" y="0" width="135" height="42" rx="6" fill="#fbf9f4" stroke="#c5b8a0" stroke-dasharray="3 3" stroke-width="1" class="dark:fill-obsidian-850 dark:stroke-obsidian-650" />
+                <rect x="8" y="12" width="16" height="16" fill="url(#hatch-slate)" stroke="#94a3b8" stroke-width="1" />
+                <text x="30" y="22" font-size="10.5" font-weight="700" fill="#231f18" class="dark:fill-obsidian-100">Unmapped territory</text>
+                <text x="30" y="34" font-size="9" fill="#575043" class="dark:fill-obsidian-400 font-mono">~ 6% (216 files)</text>
+              </g>
+
+              <!-- Callout 2: Top-Right Inferred Structure -->
+              <path d="M 505 140 L 570 100 L 620 100" fill="none" stroke="#d97706" stroke-width="1.2" marker-start="url(#callout-arrow)" />
+              <g transform="translate(560, 75)">
+                <rect x="0" y="0" width="140" height="42" rx="6" fill="#fffbeb" stroke="#fcd34d" stroke-dasharray="3 3" stroke-width="1.2" class="dark:fill-[#2d1f0d] dark:stroke-[#78350f]" />
+                <rect x="8" y="12" width="16" height="16" fill="url(#hatch-amber)" stroke="#d97706" stroke-width="1" />
+                <text x="30" y="22" font-size="10.5" font-weight="700" fill="#92400e" class="dark:fill-amber-300">Inferred structure</text>
+                <text x="30" y="34" font-size="9" fill="#b45309" class="dark:fill-amber-400 font-mono">~ 12% (417 files)</text>
+              </g>
+
+              <!-- Callout 3: Bottom-Left Pinned Items -->
+              <path d="M 235 395 L 180 435 L 130 435" fill="none" stroke="#4f46e5" stroke-width="1.2" marker-start="url(#callout-arrow)" />
+              <g transform="translate(60, 415)">
+                <rect x="0" y="0" width="125" height="38" rx="6" fill="#fbf9f4" stroke="#c7d2fe" stroke-width="1" class="dark:fill-obsidian-850 dark:stroke-indigo-900" />
+                <text x="12" y="24" font-size="12">🔒</text>
+                <text x="30" y="20" font-size="10.5" font-weight="700" fill="#3730a3" class="dark:fill-indigo-300">Pinned by you</text>
+                <text x="30" y="31" font-size="9" fill="#4338ca" class="dark:fill-indigo-400 font-mono">5 critical items</text>
+              </g>
+
+              <!-- Callout 4: Bottom-Right Proposals -->
+              <path d="M 500 405 L 560 445 L 610 445" fill="none" stroke="#dc2626" stroke-width="1.2" marker-start="url(#callout-arrow)" />
+              <g transform="translate(560, 425)">
+                <rect x="0" y="0" width="125" height="38" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1" class="dark:fill-[#2d1212] dark:stroke-[#991b1b]" />
+                <text x="10" y="24" font-size="12">⚠️</text>
+                <text x="30" y="20" font-size="10.5" font-weight="700" fill="#991b1b" class="dark:fill-red-300">Proposals</text>
+                <text x="30" y="31" font-size="9" fill="#b91c1c" class="dark:fill-red-400 font-mono">2 items awaiting</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Bottom Panel: Recent Turns Activity Chain -->
+      <div class="mt-4 pt-3 border-t border-parchment-300 dark:border-obsidian-700/80">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">🛡️</span>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-parchment-800 dark:text-obsidian-200">Recent Turns</span>
+            <span class="text-xs text-parchment-600 dark:text-obsidian-400 hidden sm:inline">— The latest verified changes to your codebase</span>
+          </div>
+          <a href="/docs/concepts/core-concepts#turns" class="text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">View all turns ›</a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+          <!-- Turn 482 (COMMIT) -->
+          <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850 p-2.5 shadow-xs hover:border-emerald-600 transition-colors">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-parchment-600 dark:text-obsidian-400 font-bold">#482</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white dark:bg-emerald-500 dark:text-obsidian-950">COMMIT</span>
+            </div>
+            <div class="font-sans font-bold text-parchment-900 dark:text-white text-xs truncate">Checkout flow improvement</div>
+            <div class="flex items-center justify-between text-[10px] text-parchment-600 dark:text-obsidian-400 mt-2 pt-1.5 border-t border-parchment-200 dark:border-obsidian-750">
+              <span>Jan 26 · 14:32</span>
+              <span class="font-semibold text-parchment-700 dark:text-obsidian-300">3 files</span>
+            </div>
+          </div>
+
+          <!-- Turn 481 (STAGE) -->
+          <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850 p-2.5 shadow-xs hover:border-amber-600 transition-colors">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-parchment-600 dark:text-obsidian-400 font-bold">#481</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-600 text-white dark:bg-amber-500 dark:text-obsidian-950">STAGE</span>
+            </div>
+            <div class="font-sans font-bold text-parchment-900 dark:text-white text-xs truncate">Add analytics events</div>
+            <div class="flex items-center justify-between text-[10px] text-parchment-600 dark:text-obsidian-400 mt-2 pt-1.5 border-t border-parchment-200 dark:border-obsidian-750">
+              <span>Jan 26 · 10:15</span>
+              <span class="font-semibold text-parchment-700 dark:text-obsidian-300">2 files</span>
+            </div>
+          </div>
+
+          <!-- Turn 480 (REDO) -->
+          <div class="rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850 p-2.5 shadow-xs hover:border-red-600 transition-colors">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-parchment-600 dark:text-obsidian-400 font-bold">#480</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-600 text-white dark:bg-red-500 dark:text-obsidian-950">REDO</span>
+            </div>
+            <div class="font-sans font-bold text-parchment-900 dark:text-white text-xs truncate">Fix mobile layout</div>
+            <div class="flex items-center justify-between text-[10px] text-parchment-600 dark:text-obsidian-400 mt-2 pt-1.5 border-t border-parchment-200 dark:border-obsidian-750">
+              <span>Jan 25 · 22:07</span>
+              <span class="font-semibold text-parchment-700 dark:text-obsidian-300">5 files</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Inspector Panel: Deep Architectural Metadata -->
+    <aside class="w-full lg:w-80 shrink-0 bg-[#f8f5ed] dark:bg-obsidian-900/90 p-5 font-sans text-xs flex flex-col justify-between">
+      <div class="space-y-4">
+        <!-- Inspector Header -->
+        <div class="border-b border-parchment-300 dark:border-obsidian-700/80 pb-3">
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-2">
+              <span id="insp-icon" class="text-base">🗄️</span>
+              <h2 id="insp-title" class="font-serif font-bold text-lg text-parchment-900 dark:text-white">Backend</h2>
+            </div>
+            <span id="insp-badge" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-600 text-white dark:bg-emerald-500 dark:text-obsidian-950 shadow-xs">Mapped</span>
+          </div>
+          <p id="insp-desc" class="text-xs text-parchment-600 dark:text-obsidian-400 leading-relaxed">
+            Core server logic, APIs, and business rules.
+          </p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-parchment-300 dark:border-obsidian-700/80 font-mono text-[11px] gap-3">
+          <button class="pb-1.5 font-bold border-b-2 border-emerald-600 text-parchment-900 dark:text-white">Overview</button>
+          <button class="pb-1.5 text-parchment-600 dark:text-obsidian-400 hover:text-black dark:hover:text-white">Dependencies</button>
+          <button class="pb-1.5 text-parchment-600 dark:text-obsidian-400 hover:text-black dark:hover:text-white">Files</button>
+          <button class="pb-1.5 text-parchment-600 dark:text-obsidian-400 hover:text-black dark:hover:text-white">History</button>
+        </div>
+
+        <!-- Structure Section -->
+        <div>
+          <div class="text-[10px] font-mono uppercase tracking-wider font-bold text-parchment-600 dark:text-obsidian-400 mb-1.5">Structure</div>
+          <div id="insp-structure" class="space-y-1 font-mono text-[11px] bg-parchment-100 dark:bg-obsidian-850 p-2.5 rounded-lg border border-parchment-300 dark:border-obsidian-750">
+            <div class="flex items-center justify-between font-bold text-parchment-900 dark:text-obsidian-100">
+              <span>📁 backend/</span>
+              <span class="text-parchment-600 dark:text-obsidian-400">128 files</span>
+            </div>
+            <div class="flex items-center justify-between pl-3 text-parchment-700 dark:text-obsidian-300">
+              <span>↳ api/</span>
+              <span>42</span>
+            </div>
+            <div class="flex items-center justify-between pl-3 text-parchment-700 dark:text-obsidian-300">
+              <span>↳ services/</span>
+              <span>36</span>
+            </div>
+            <div class="flex items-center justify-between pl-3 text-parchment-700 dark:text-obsidian-300">
+              <span>↳ models/</span>
+              <span>28</span>
+            </div>
+            <div class="flex items-center justify-between pl-3 text-parchment-700 dark:text-obsidian-300">
+              <span>↳ utils/</span>
+              <span>22</span>
             </div>
           </div>
         </div>
 
+        <!-- Relationships Section -->
         <div>
-          <div class="text-[11px] font-mono text-parchment-700 dark:text-obsidian-400 uppercase mb-1">Memory & Rationale</div>
-          <p class="text-parchment-700 dark:text-obsidian-300 text-[11px] italic">
-            "API layer must remain independent of presentation layer to enable headless worker execution."
+          <div class="text-[10px] font-mono uppercase tracking-wider font-bold text-parchment-600 dark:text-obsidian-400 mb-1.5">Relationships</div>
+          <div class="space-y-1.5 text-xs">
+            <div class="flex items-start gap-1.5 text-emerald-800 dark:text-emerald-300 font-mono text-[11px]">
+              <span class="font-bold">→ Depends on:</span>
+              <span class="font-sans font-semibold">Database, Shared, Core</span>
+            </div>
+            <div class="p-2 rounded-lg border border-red-300 dark:border-red-900 bg-red-50 dark:bg-red-950/40 text-red-900 dark:text-red-200 text-[11px] font-mono">
+              <span class="font-bold">⚠️ Must not depend on:</span> UI, Mobile
+            </div>
+          </div>
+        </div>
+
+        <!-- Constraints Section -->
+        <div>
+          <div class="text-[10px] font-mono uppercase tracking-wider font-bold text-parchment-600 dark:text-obsidian-400 mb-1.5">Constraints</div>
+          <div class="p-2 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 flex items-start justify-between gap-2">
+            <div class="flex items-start gap-1.5 text-[11px] text-emerald-900 dark:text-emerald-200">
+              <span>🛡️</span>
+              <span>API layer must remain independent of presentation layer.</span>
+            </div>
+            <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-600 text-white">Enforced</span>
+          </div>
+        </div>
+
+        <!-- Pins & Decisions -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-[11px] text-parchment-700 dark:text-obsidian-300 font-mono">
+            <span class="flex items-center gap-1.5"><span>🔒</span> Pins: Auth service, Payment adapter</span>
+            <span class="font-bold">2 pins</span>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-parchment-700 dark:text-obsidian-300 font-mono">
+            <span class="flex items-center gap-1.5"><span>📄</span> Decisions: PostgreSQL choice, Modular</span>
+            <span class="font-bold">2 records</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exploration Prompt Hint Box -->
+      <div class="mt-4 pt-3 border-t border-parchment-300 dark:border-obsidian-700/80">
+        <div class="p-2.5 rounded-xl border border-parchment-300 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-850/60 flex items-center gap-3">
+          <span class="text-lg">🧭</span>
+          <p class="text-[11px] text-parchment-700 dark:text-obsidian-300 leading-tight">
+            <strong>The more you explore, the clearer the picture becomes.</strong> Click any section on the map to inspect its constraints and history.
           </p>
         </div>
       </div>
-    </div>
+    </aside>
   </div>
 </div>
 
 <script>
-  function setupAtlasRadar() {
-    const sectors = document.querySelectorAll('[data-node]');
-    const title = document.getElementById('atlas-node-title');
-    const badge = document.getElementById('atlas-node-badge');
-    const files = document.getElementById('atlas-node-files');
-    const deps = document.getElementById('atlas-node-deps');
-    const mustnot = document.getElementById('atlas-node-mustnot');
-    const pins = document.getElementById('atlas-node-pins');
+  // Dynamic Node Selection Script
+  const nodeData = {
+    'Web': {
+      icon: '🌐',
+      badge: 'Mapped',
+      desc: 'Frontend web presentation and client routes.',
+      structure: [
+        { name: 'web/', count: '42 files', bold: true },
+        { name: '↳ views/', count: '18' },
+        { name: '↳ components/', count: '14' },
+        { name: '↳ routes/', count: '10' }
+      ],
+      depends: 'Backend, Core',
+      mustnot: 'Direct Database access',
+      constraint: 'Presentation layer must not invoke SQL or bypass Backend APIs.'
+    },
+    'Backend': {
+      icon: '🗄️',
+      badge: 'Mapped',
+      desc: 'Core server logic, APIs, and business rules.',
+      structure: [
+        { name: 'backend/', count: '128 files', bold: true },
+        { name: '↳ api/', count: '42' },
+        { name: '↳ services/', count: '36' },
+        { name: '↳ models/', count: '28' },
+        { name: '↳ utils/', count: '22' }
+      ],
+      depends: 'Database, Shared, Core',
+      mustnot: 'UI, Mobile',
+      constraint: 'API layer must remain independent of presentation layer.'
+    },
+    'Services': {
+      icon: '⚙️',
+      badge: 'Mapped',
+      desc: 'Background microservices, auth, billing and integrations.',
+      structure: [
+        { name: 'services/', count: '96 files', bold: true },
+        { name: '↳ auth/', count: '34' },
+        { name: '↳ billing/', count: '40' },
+        { name: '↳ mailer/', count: '22' }
+      ],
+      depends: 'Data, Shared',
+      mustnot: 'UI Presentation',
+      constraint: 'Async workers must process jobs via idempotent queues.'
+    },
+    'Data': {
+      icon: '💾',
+      badge: 'Mapped',
+      desc: 'Database persistence, migrations, and repository models.',
+      structure: [
+        { name: 'data/', count: '64 files', bold: true },
+        { name: '↳ schema/', count: '20' },
+        { name: '↳ repositories/', count: '26' },
+        { name: '↳ migrations/', count: '18' }
+      ],
+      depends: 'Infrastructure',
+      mustnot: 'HTTP requests, External APIs',
+      constraint: 'All write transactions must pass through schema validations.'
+    },
+    'Infrastructure': {
+      icon: '☁️',
+      badge: 'Mapped',
+      desc: 'Cloud deployment, containers, CI/CD, and Terraform pipelines.',
+      structure: [
+        { name: 'infra/', count: '41 files', bold: true },
+        { name: '↳ docker/', count: '12' },
+        { name: '↳ terraform/', count: '18' },
+        { name: '↳ ci/', count: '11' }
+      ],
+      depends: 'None (Root Foundation)',
+      mustnot: 'Application business logic',
+      constraint: 'Secrets and credentials must only be injected via KMS tripwires.'
+    },
+    'Shared': {
+      icon: '🔗',
+      badge: 'Mapped',
+      desc: 'Universal types, pure utilities, and cross-cutting constants.',
+      structure: [
+        { name: 'shared/', count: '73 files', bold: true },
+        { name: '↳ types/', count: '30' },
+        { name: '↳ constants/', count: '22' },
+        { name: '↳ helpers/', count: '21' }
+      ],
+      depends: 'None (Leaf Utility)',
+      mustnot: 'Backend, Web, Services',
+      constraint: 'Shared must remain strictly pure and side-effect free.'
+    },
+    'Core': {
+      icon: '🧱',
+      badge: 'Mapped',
+      desc: 'Domain kernel, event bus, state transitions and invariant rules.',
+      structure: [
+        { name: 'core/', count: '118 files', bold: true },
+        { name: '↳ kernel/', count: '44' },
+        { name: '↳ events/', count: '38' },
+        { name: '↳ bus/', count: '36' }
+      ],
+      depends: 'Shared',
+      mustnot: 'Outer presentation layers',
+      constraint: 'Double-entry bookkeeping must record all state transitions.'
+    },
+    'Mobile': {
+      icon: '📱',
+      badge: 'Mapped',
+      desc: 'Native iOS and Android client applications.',
+      structure: [
+        { name: 'mobile/', count: '37 files', bold: true },
+        { name: '↳ ios/', count: '19' },
+        { name: '↳ android/', count: '18' }
+      ],
+      depends: 'Backend API, Shared Types',
+      mustnot: 'Direct DB access',
+      constraint: 'Mobile clients communicate strictly over authenticated GraphQL/REST.'
+    }
+  };
 
-    sectors.forEach(s => {
-      s.addEventListener('click', () => {
-        const node = s.getAttribute('data-node');
-        const count = s.getAttribute('data-files');
-        const status = s.getAttribute('data-status');
-        const d = s.getAttribute('data-deps');
-        const m = s.getAttribute('data-mustnot');
-        const p = s.getAttribute('data-pins');
+  function setupAtlasInteractions() {
+    const sectors = document.querySelectorAll('.atlas-sector-btn');
+    const inspTitle = document.getElementById('insp-title');
+    const inspDesc = document.getElementById('insp-desc');
+    const inspIcon = document.getElementById('insp-icon');
+    const inspStructure = document.getElementById('insp-structure');
 
-        if (title) title.textContent = node;
-        if (badge) {
-          badge.textContent = status;
-          if (status === 'Mapped') {
-            badge.className = 'rounded px-2 py-0.5 font-mono text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20';
-          } else if (status === 'Inferred') {
-            badge.className = 'rounded px-2 py-0.5 font-mono text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20';
-          } else {
-            badge.className = 'rounded px-2 py-0.5 font-mono text-[10px] font-semibold bg-slate-500/10 text-slate-700 dark:text-slate-400 border border-slate-500/20';
+    if (!inspTitle || !inspDesc || !inspStructure) return;
+
+    sectors.forEach(btn => {
+      const selectNode = () => {
+        const nodeName = btn.getAttribute('data-node');
+        if (!nodeName || !nodeData[nodeName]) return;
+        const info = nodeData[nodeName];
+
+        inspTitle.textContent = nodeName;
+        inspDesc.textContent = info.desc;
+        if (inspIcon) inspIcon.textContent = info.icon;
+
+        // Render structure
+        inspStructure.innerHTML = info.structure.map(s => {
+          if (s.bold) {
+            return `<div class="flex items-center justify-between font-bold text-parchment-900 dark:text-obsidian-100">
+              <span>📁 ${s.name}</span>
+              <span class="text-parchment-600 dark:text-obsidian-400">${s.count}</span>
+            </div>`;
           }
+          return `<div class="flex items-center justify-between pl-3 text-parchment-700 dark:text-obsidian-300">
+            <span>${s.name}</span>
+            <span>${s.count}</span>
+          </div>`;
+        }).join('');
+      };
+
+      btn.addEventListener('click', selectNode);
+      btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectNode();
         }
-        if (files) files.textContent = `${count} source files in this node`;
-        if (deps) deps.textContent = d;
-        if (mustnot) mustnot.textContent = m;
-        if (pins) pins.textContent = `${p} active human pin(s) locked`;
       });
     });
   }
 
-  document.addEventListener('DOMContentLoaded', setupAtlasRadar);
-  document.addEventListener('astro:after-swap', setupAtlasRadar);
+  document.addEventListener('DOMContentLoaded', setupAtlasInteractions);
 </script>

@@ -1,23 +1,16 @@
-import { useEffect, useState } from "react";
-import { ReactFlowProvider } from "@xyflow/react";
+// apps/studio/src/App.tsx
+import { useEffect } from "react";
 import { useStore } from "./store";
+import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
-import { TreePanel } from "./components/TreePanel";
-import { SceneOutliner } from "./components/SceneOutliner";
-import { GraphView } from "./components/GraphView";
-import { ContextPanel } from "./components/ContextPanel";
-import { ComponentInspector } from "./components/ComponentInspector";
-import { TimelineScrubber4D } from "./components/TimelineScrubber4D";
-import { BottomBar } from "./components/BottomBar";
+import { OverviewPage } from "./components/OverviewPage";
+import { TimelinePage } from "./components/TimelinePage";
+import { ChecksPage } from "./components/ChecksPage";
+import { DecisionsPage } from "./components/DecisionsPage";
+import { SettingsPage } from "./components/SettingsPage";
 import { DriftDrawer } from "./components/DriftDrawer";
-import { WorkflowView } from "./components/WorkflowView";
-import { BoardView } from "./components/BoardView";
-import { MemoryView } from "./components/MemoryView";
 import { SearchPalette } from "./components/SearchPalette";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { TimelineView } from "./components/TimelineView";
-import { PinsView } from "./components/PinsView";
-import { OnboardingModal } from "./components/OnboardingModal";
 import { call } from "./api";
 
 export default function App() {
@@ -32,13 +25,9 @@ export default function App() {
     setDrawer,
     toast,
     busy,
-    onboardOpen,
     setOnboardOpen,
     setConfigured,
   } = useStore();
-
-  const [leftDock, setLeftDock] = useState<"outliner" | "tree">("outliner");
-  const [rightDock, setRightDock] = useState<"inspector" | "context">("inspector");
 
   useEffect(() => {
     refresh();
@@ -49,6 +38,7 @@ export default function App() {
         if (!d.configured && !sessionStorage.getItem("afwe.onboard.later")) setOnboardOpen(true);
       })
       .catch(() => {});
+
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -62,78 +52,130 @@ export default function App() {
 
   if (error && !graph) {
     return (
-      <div className="empty">
-        <h1>AFWE Studio</h1>
-        <p className="err">{error}</p>
-        <p>
+      <div className="empty" style={{ padding: "40px", textAlign: "center", background: "#FAF8F3", height: "100vh" }}>
+        <h1 style={{ fontFamily: "Newsreader, serif", fontSize: "32px", color: "#1D1C1A" }}>AFWE Studio</h1>
+        <p style={{ color: "#B23A2B", fontSize: "14px", marginTop: "12px" }}>{error}</p>
+        <p style={{ color: "#6B675D", fontSize: "13px" }}>
           Run <code>afwe init</code> in your project, then <code>afwe studio</code> (web) or open the folder from the desktop app.
         </p>
-        <button onClick={refresh}>Retry</button>
+        <button
+          onClick={refresh}
+          style={{
+            marginTop: "16px",
+            background: "#2E7A57",
+            color: "#FFFFFF",
+            border: "none",
+            padding: "8px 18px",
+            borderRadius: "6px",
+            fontSize: "13px",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Retry
+        </button>
       </div>
     );
   }
-  if (!graph) return <div className="empty">{loading ? "Loading…" : "No project loaded"}</div>;
+
+  if (!graph) {
+    return (
+      <div className="empty" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#FAF8F3", color: "#6B675D", fontSize: "14px" }}>
+        {loading ? "Loading project data…" : "No project loaded"}
+      </div>
+    );
+  }
 
   return (
-    <div className="app">
-      <TopBar />
-      {view === "blueprint" && (
-        <div className="blueprint-viewport">
-          <div className="main three scene-main">
-            <ErrorBoundary name="Scene Outliner">
-              {leftDock === "outliner" ? (
-                <SceneOutliner onSwitchMode={() => setLeftDock("tree")} />
-              ) : (
-                <TreePanel onSwitchMode={() => setLeftDock("outliner")} />
-              )}
+    <div className="app-container" style={{ display: "flex", height: "100vh", width: "100vw", overflow: "hidden", background: "#FAF8F3", color: "#1D1C1A", fontFamily: "'IBM Plex Sans', sans-serif" }}>
+      {/* 1. Left Vertical Navigation Sidebar */}
+      <Sidebar />
+
+      {/* 2. Main Right Content Area */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%", minWidth: 0, overflow: "hidden" }}>
+        <TopBar />
+
+        <main style={{ flex: 1, height: "calc(100% - 52px)", overflow: "hidden", position: "relative" }}>
+          {view === "overview" && (
+            <ErrorBoundary name="Codebase Overview">
+              <OverviewPage />
             </ErrorBoundary>
-            <ReactFlowProvider>
-              <ErrorBoundary name="Architecture graph">
-                <GraphView />
-              </ErrorBoundary>
-            </ReactFlowProvider>
-            <ErrorBoundary name="Component Inspector">
-              {rightDock === "inspector" ? (
-                <ComponentInspector onSwitchMode={() => setRightDock("context")} />
-              ) : (
-                <ContextPanel onSwitchMode={() => setRightDock("inspector")} />
-              )}
+          )}
+
+          {view === "timeline" && (
+            <ErrorBoundary name="Timeline">
+              <TimelinePage />
             </ErrorBoundary>
-          </div>
-          <ErrorBoundary name="4D Timeline Scrubber">
-            <TimelineScrubber4D />
-          </ErrorBoundary>
-          <BottomBar />
-        </div>
-      )}
-      {view === "workflows" && (
-        <ReactFlowProvider>
-          <ErrorBoundary name="Workflows">
-            <WorkflowView />
-          </ErrorBoundary>
-        </ReactFlowProvider>
-      )}
-      {view === "board" && (
-        <ErrorBoundary name="Board">
-          <BoardView />
-        </ErrorBoundary>
-      )}
-      {view === "timeline" && <TimelineView />}
-      {view === "pins" && <PinsView />}
-      {onboardOpen && <OnboardingModal />}
-      {view === "memory" && (
-        <ErrorBoundary name="Memory">
-          <MemoryView />
-        </ErrorBoundary>
-      )}
+          )}
+
+          {view === "checks" && (
+            <ErrorBoundary name="Checks & Pins">
+              <ChecksPage />
+            </ErrorBoundary>
+          )}
+
+          {view === "decisions" && (
+            <ErrorBoundary name="Decisions & Queue">
+              <DecisionsPage />
+            </ErrorBoundary>
+          )}
+
+          {view === "settings" && (
+            <ErrorBoundary name="Settings">
+              <SettingsPage />
+            </ErrorBoundary>
+          )}
+        </main>
+      </div>
+
+      {/* Drawers & Overlays */}
       {drawer === "drift" && (
         <ErrorBoundary name="Drift drawer">
           <DriftDrawer />
         </ErrorBoundary>
       )}
+
       {drawer === "search" && <SearchPalette />}
-      {toast && <div className="toast">{toast}</div>}
-      {busy && <div className="busy">{busy}…</div>}
+
+      {toast && (
+        <div
+          className="toast"
+          style={{
+            position: "fixed",
+            bottom: "24px",
+            right: "24px",
+            background: "#1D1C1A",
+            color: "#FFFFFF",
+            padding: "10px 18px",
+            borderRadius: "6px",
+            fontSize: "12.5px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            zIndex: 9999,
+          }}
+        >
+          {toast}
+        </div>
+      )}
+
+      {busy && (
+        <div
+          className="busy"
+          style={{
+            position: "fixed",
+            top: "16px",
+            right: "24px",
+            background: "#2E7A57",
+            color: "#FFFFFF",
+            padding: "6px 14px",
+            borderRadius: "6px",
+            fontSize: "12px",
+            fontWeight: 600,
+            zIndex: 9999,
+          }}
+        >
+          {busy}…
+        </div>
+      )}
     </div>
   );
 }

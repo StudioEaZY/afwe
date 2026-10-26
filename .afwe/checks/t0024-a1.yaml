@@ -1,0 +1,22 @@
+id: t0024-a1
+title: afwe-core does not import afwe-cli
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-core
+  - crates
+  - studio
+  files:
+  - crates/afwe-core/**
+claim:
+  type: forbid_import
+  files:
+  - crates/afwe-core/**
+  to_nodes:
+  - afwe-cli
+status: active
+origin: afwe:checkgen
+created: 2026-10-26T06:53:15Z
+created_from: t0024
+provenance: confirmed

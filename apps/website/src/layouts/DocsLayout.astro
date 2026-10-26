@@ -8,13 +8,15 @@ interface Props {
   description?: string;
   activeSection?: string;
   headings?: { depth: number; slug: string; text: string }[];
+  wide?: boolean;
 }
 
 const {
   title,
   description = "AFWE — Architecture-First Workspace Engine. Your code. Its memory. Its rules.",
   activeSection = "concepts",
-  headings = []
+  headings = [],
+  wide = false
 } = Astro.props;
 ---
 
@@ -28,7 +30,7 @@ const {
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&display=swap" rel="stylesheet">
   <script is:inline>
     // Theme initialization
     (function () {
@@ -41,7 +43,11 @@ const {
   </script>
 </head>
 
-<body class="min-h-screen bg-parchment-100 dark:bg-obsidian-950 text-parchment-900 dark:text-obsidian-100 font-sans relative selection:bg-emerald-500/30 selection:text-emerald-900 dark:selection:text-emerald-200">
+<body class="min-h-screen bg-parchment-50 dark:bg-obsidian-950 text-parchment-900 dark:text-obsidian-100 font-sans relative selection:bg-emerald-500/30 selection:text-emerald-950 dark:selection:text-emerald-200">
+  <!-- Accessible Skip To Content -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-emerald-700 focus:text-white focus:rounded-lg focus:shadow-xl font-mono text-xs font-bold">
+    Skip to main content
+  </a>
   <!-- Subtle Background Hatch & Noise Grid -->
   <div class="fixed inset-0 pointer-events-none z-0 opacity-40 dark:opacity-20 bg-grid-dots" aria-hidden="true"></div>
 
@@ -245,7 +251,7 @@ const {
       </aside>
 
       <!-- Main Article Content -->
-      <main class="flex-1 min-w-0 max-w-3xl">
+      <main id="main-content" class={`flex-1 min-w-0 ${wide ? 'max-w-6xl' : 'max-w-3xl'}`}>
         <slot />
       </main>
 

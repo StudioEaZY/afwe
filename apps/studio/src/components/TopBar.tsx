@@ -1,46 +1,86 @@
-import { useState } from "react";
-import { useStore, View } from "../store";
+// apps/studio/src/components/TopBar.tsx
+import React, { useState } from "react";
+import { useStore } from "../store";
 import { api, isTauri, openProjectDialog } from "../api";
 
-const tabs: { id: View; label: string }[] = [
-  { id: "blueprint", label: "Blueprint" },
-  { id: "workflows", label: "Workflows" },
-  { id: "board", label: "Board / Tasks" },
-  { id: "memory", label: "Memory" },
-  { id: "timeline", label: "Timeline" },
-  { id: "pins", label: "Pins" },
-];
+export const TopBar: React.FC = () => {
+  const {
+    graph,
+    activeTurn,
+    scrubToTurn,
+    setDrawer,
+    notify,
+    refresh,
+    run,
+  } = useStore();
 
-export function TopBar() {
-  const { graph, view, setView, setDrawer, run, notify, refresh, configured, setOnboardOpen, activeTurn, scrubToTurn, dotQuery, setDotQuery } = useStore();
   const [syncing, setSyncing] = useState(false);
+
   if (!graph) return null;
-  const sync = graph.sync.status;
-  const syncLabel = sync === "in_sync" ? "in sync" : sync === "stale" ? "out of sync" : "never synced";
+
+  const pinsCount = (graph.pins || []).filter((p: any) => p.status === "active").length;
+  const proposalsCount = graph.proposals?.length || 0;
+  const violationsCount = (graph.code_edges || []).filter((e: any) => e.violation).length;
 
   const doSync = async () => {
     setSyncing(true);
     const r: any = await run("Syncing", () => api.sync());
     setSyncing(false);
-    if (r) notify(`Synced ${r.files} files — applied ${r.applied.length}, proposed ${r.proposed.length}${r.uncertain.length ? `, ${r.uncertain.length} uncertain` : ""}`);
+    if (r) {
+      notify(`Synced ${r.files} files — applied ${r.applied.length}, proposed ${r.proposed.length}`);
+    }
   };
 
   return (
-    <header className="topbar">
-      <div className="brand">
-        <span className="logo" title="Architecture-First Workspace Engine">⛨ AFWE</span>
-        <span className="project" title={graph.project.description || ""}>
-          {graph.project.name}
-        </span>
+    <header
+      className="studio-topbar"
+      style={{
+        height: "52px",
+        background: "#FFFFFF",
+        borderBottom: "1px solid #E5E0D5",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 24px",
+        flexShrink: 0,
+        userSelect: "none",
+      }}
+    >
+      {/* Left: Project title & 4D time badge */}
+      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{ fontSize: "13px", color: "#6B675D" }}>Projects</span>
+          <span style={{ color: "#8E8878" }}>›</span>
+          <span style={{ fontWeight: 600, fontSize: "14px", color: "#1D1C1A" }}>{graph.project.name}</span>
+        </div>
+
         {activeTurn && (
-          <span className="time-badge pulse" title={`Viewing historical 4D state at ${activeTurn}`}>
-            4D: {activeTurn}
-            <button className="time-close" onClick={() => scrubToTurn(null)} title="Return to HEAD">×</button>
+          <span
+            style={{
+              background: "#FAF3DB",
+              border: "1px solid #EEDEA8",
+              color: "#87661A",
+              fontSize: "11px",
+              fontWeight: 600,
+              padding: "2px 8px",
+              borderRadius: "12px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            4D Time-Travel: #{activeTurn}
+            <button
+              onClick={() => scrubToTurn(null)}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#87661A", fontSize: "14px", lineHeight: "1" }}
+            >
+              ×
+            </button>
           </span>
         )}
+
         {isTauri() && (
           <button
-            className="ghost small"
             onClick={async () => {
               const p = await openProjectDialog();
               if (p) {
@@ -48,44 +88,68 @@ export function TopBar() {
                 await refresh();
               }
             }}
+            style={{
+              background: "#FAF8F3",
+              border: "1px solid #DCD9D0",
+              padding: "3px 8px",
+              borderRadius: "4px",
+              fontSize: "11px",
+              color: "#4A463E",
+              cursor: "pointer",
+            }}
           >
-            open…
+            Open folder…
           </button>
         )}
       </div>
-      <nav className="tabs">
-        {tabs.map((t) => (
-          <button key={t.id} className={view === t.id ? "tab active" : "tab"} onClick={() => setView(t.id)}>
-            {t.id === "blueprint" ? "Scene 4D" : t.label}
-            {t.id === "board" && graph.board_open > 0 && <span className="badge">{graph.board_open}</span>}
-          </button>
-        ))}
-      </nav>
-      <div className="right">
-        <div className="top-omni">
-          <input
-            type="text"
-            className="omni-input"
-            placeholder="Dot search: afwe.crates.*"
-            value={dotQuery}
-            onChange={(e) => setDotQuery(e.target.value)}
-          />
-        </div>
-        {configured === false && (
-          <button className="ghost" onClick={() => setOnboardOpen(true)} title="Configure git, CI and the agent contract">
-            set up
-          </button>
-        )}
-        <button className={`sync ${sync}`} onClick={doSync} disabled={syncing} title={graph.sync.last_sync ? `last sync ${graph.sync.last_sync}` : "run afwe sync"}>
-          ● {syncing ? "syncing…" : syncLabel}
+
+      {/* Center: System Status Pill */}
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", color: "#4A463E" }}>
+        <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: violationsCount > 0 ? "#B23A2B" : "#2E7A57", display: "inline-block" }} />
+        <span>
+          {violationsCount > 0
+            ? `${violationsCount} rule violation(s) need attention`
+            : `Everything balances. ${pinsCount} pin(s) · ${proposalsCount} proposal(s) waiting`}
+        </span>
+      </div>
+
+      {/* Right: Quick Search, Sync & Actions */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <button
+          onClick={() => setDrawer("search")}
+          style={{
+            background: "#FAF8F3",
+            border: "1px solid #DCD9D0",
+            padding: "5px 12px",
+            borderRadius: "6px",
+            fontSize: "12px",
+            color: "#6B675D",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          <span>Search code, features, decisions…</span>
+          <kbd style={{ background: "#ECE7D9", padding: "1px 5px", borderRadius: "4px", fontSize: "10px" }}>⌘K</kbd>
         </button>
-        <button className="ghost" onClick={() => setDrawer("drift")} title="Drift & proposals">
-          drift{graph.proposals.length > 0 && <span className="badge warn">{graph.proposals.length}</span>}
-        </button>
-        <button className="ghost" onClick={() => setDrawer("search")} title="Search (⌘K)">
-          search ⌘K
+
+        <button
+          onClick={doSync}
+          disabled={syncing}
+          style={{
+            background: "#FAF8F3",
+            border: "1px solid #DCD9D0",
+            padding: "5px 10px",
+            borderRadius: "6px",
+            fontSize: "12px",
+            color: "#4A463E",
+            cursor: "pointer",
+          }}
+        >
+          {syncing ? "Syncing…" : "Sync"}
         </button>
       </div>
     </header>
   );
-}
+};

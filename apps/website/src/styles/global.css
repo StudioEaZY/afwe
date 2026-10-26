@@ -4,48 +4,63 @@
 
 @layer base {
   :root {
-    --bg-canvas: #fbfaf7;
+    --bg-canvas: #faf7f0;
     --bg-surface: #ffffff;
-    --bg-subtle: #f4efe6;
-    --border-subtle: #e5ded1;
-    --border-strong: #d6cebf;
-    --text-primary: #1f242e;
-    --text-muted: #6e7687;
-    --brand-emerald: #10b981;
-    --brand-indigo: #6366f1;
-    --brand-amber: #f59e0b;
-    --brand-crimson: #ef4444;
-    --brand-cyan: #06b6d4;
+    --bg-subtle: #f4efe4;
+    --border-subtle: #ded4c2;
+    --border-strong: #c5b8a0;
+    --text-primary: #14120e;
+    --text-secondary: #3c362c;
+    --text-muted: #575043;
+    
+    --brand-emerald: #15803d;
+    --brand-indigo: #4338ca;
+    --brand-amber: #b45309;
+    --brand-crimson: #b91c1c;
+    --brand-cyan: #0e7490;
   }
 
   .dark {
-    --bg-canvas: #0c0e12;
-    --bg-surface: #13161c;
-    --bg-subtle: #181c24;
-    --border-subtle: #262c38;
-    --border-strong: #323a4a;
-    --text-primary: #f1f3f7;
-    --text-muted: #8a94a6;
+    --bg-canvas: #0a0c0f;
+    --bg-surface: #12151c;
+    --bg-subtle: #181c26;
+    --border-subtle: #262c3a;
+    --border-strong: #343c4f;
+    --text-primary: #f5f7fa;
+    --text-secondary: #ccd4e0;
+    --text-muted: #a3adbe;
+    
+    --brand-emerald: #22c55e;
+    --brand-indigo: #818cf8;
+    --brand-amber: #fbbf24;
+    --brand-crimson: #f87171;
+    --brand-cyan: #22d3ee;
+  }
+
+  /* Universal high-contrast keyboard focus visibility */
+  *:focus-visible {
+    outline: 2.5px solid #16a34a !important;
+    outline-offset: 2px !important;
+  }
+
+  .dark *:focus-visible {
+    outline: 2.5px solid #4ade80 !important;
+    outline-offset: 2px !important;
   }
 
   body {
     background-color: var(--bg-canvas);
     color: var(--text-primary);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'IBM Plex Sans', Inter, system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
-}
 
-/* Delta-inspired 45-degree diagonal line hatch overlay */
-.bg-hatch-pattern {
-  background-image: repeating-linear-gradient(
-    45deg,
-    currentColor 0,
-    currentColor 1px,
-    transparent 0,
-    transparent 6px
-  );
+  h1, h2, h3, .font-serif-display {
+    font-family: 'Newsreader', Georgia, serif;
+    letter-spacing: -0.015em;
+  }
 }
 
 /* Subtle architectural dot grid */
@@ -54,47 +69,57 @@
   background-size: 24px 24px;
 }
 
-/* Unmapped territory hatched indicator */
+/* Diagonal line hatch overlay for unmapped / inferred */
+.bg-hatch-pattern {
+  background-image: repeating-linear-gradient(
+    45deg,
+    currentColor 0,
+    currentColor 1.5px,
+    transparent 0,
+    transparent 7px
+  );
+}
+
 .unmapped-hatch {
   background: repeating-linear-gradient(
     -45deg,
-    rgba(148, 163, 184, 0.15),
-    rgba(148, 163, 184, 0.15) 4px,
+    rgba(100, 116, 139, 0.22),
+    rgba(100, 116, 139, 0.22) 4px,
     transparent 4px,
     transparent 8px
   );
 }
 
-/* Custom minimal scrollbar */
+/* Accessible Minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(150, 150, 150, 0.25);
-  border-radius: 3px;
+  background: rgba(120, 110, 95, 0.35);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(150, 150, 150, 0.4);
+  background: rgba(120, 110, 95, 0.6);
 }
 
-/* Receipts styling */
+/* Turn receipts */
 .receipt-card {
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 20px -2px rgba(20, 18, 14, 0.08), 0 2px 6px -1px rgba(20, 18, 14, 0.04);
 }
 
 .dark .receipt-card {
-  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.4), 0 2px 8px -1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 28px -2px rgba(0, 0, 0, 0.55), 0 2px 8px -1px rgba(0, 0, 0, 0.3);
 }
 
-/* Stamped status badge effect */
+/* Accessible Stamped status badge */
 .stamp-badge {
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-weight: 800;
+  font-weight: 700;
   border-width: 1.5px;
   border-style: solid;
 }

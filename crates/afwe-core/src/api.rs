@@ -781,6 +781,11 @@ fn graph(engine: &Engine, p: &Value) -> Result<Value> {
     let board = engine.store.board()?;
     let lenses: Vec<Value> = snap.sources.lenses.iter().map(|l| json!({"id": l.id, "name": l.name, "description": l.description, "view": resolve_lens(l, &snap.table, &snap.sources.workflows)})).collect();
     let unmapped: Vec<&String> = snap.code.files.iter().filter(|f| snap.mapping.primary(&f.path).is_none() && !matches!(f.language.as_str(), "other" | "json" | "yaml" | "toml" | "markdown" | "shell")).map(|f| &f.path).collect();
+    let pins = engine.store.pins().unwrap_or_default();
+    let checks = engine.store.checks().unwrap_or_default();
+    let calibration = engine.store.calibration().unwrap_or_default();
+    let losses = timeline::losses(engine).unwrap_or(json!([]));
+    let turns = engine.store.turns().unwrap_or_default();
     Ok(json!({
         "project": snap.manifest.project,
         "sync": {"status": sync_status, "last_sync": st.last_sync},
@@ -795,6 +800,11 @@ fn graph(engine: &Engine, p: &Value) -> Result<Value> {
         "files": snap.index.files.iter().map(|(k, v)| json!({"path": k, "language": v.language, "node": v.node, "symbols": v.symbols.len(), "imports": v.imports})).collect::<Vec<_>>(),
         "unmapped": unmapped,
         "policy": snap.manifest.policy,
+        "pins": pins,
+        "checks": checks,
+        "calibration": calibration,
+        "losses": losses,
+        "turns": turns,
     }))
 }
 
