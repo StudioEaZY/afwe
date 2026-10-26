@@ -10,11 +10,12 @@ export const Sidebar: React.FC = () => {
   const questionsCount = (graph?.calibration?.questions || []).filter((q: any) => q.status === "open").length;
 
   const navItems: { key: View; label: string; sub: string; icon: string; badge?: number; badgeColor?: string }[] = [
-    { key: "overview", label: "Overview", sub: "The big picture", icon: "⌘" },
-    { key: "timeline", label: "Timeline & Turns", sub: "Turn ledger & 4D stream", icon: "⏱" },
-    { key: "checks", label: "Checks", sub: "Rules & tripwires", icon: "✓", badge: violationsCount > 0 ? violationsCount : undefined, badgeColor: "#B23A2B" },
-    { key: "decisions", label: "Decisions", sub: "Human queue", icon: "⚖", badge: questionsCount > 0 ? questionsCount : undefined, badgeColor: "#C98A3C" },
-    { key: "settings", label: "Settings", sub: "Engine & policy", icon: "⚙" },
+    { key: "overview", label: "Overview", sub: "Radial & Topology maps", icon: "⌘" },
+    { key: "timeline", label: "Timeline & Turns", sub: "Scrubber & visual diffs", icon: "⏱" },
+    { key: "blueprint", label: "Blueprint", sub: "Nodes, globs & rules", icon: "▥" },
+    { key: "checks", label: "Checks", sub: "Tripwires & pins", icon: "✓", badge: violationsCount > 0 ? violationsCount : undefined, badgeColor: "#C94A38" },
+    { key: "decisions", label: "Decisions", sub: "Human queue & memory", icon: "⚖", badge: questionsCount > 0 ? questionsCount : undefined, badgeColor: "#C98A3C" },
+    { key: "settings", label: "Settings", sub: "Engine, colors & policy", icon: "⚙" },
   ];
 
   return (

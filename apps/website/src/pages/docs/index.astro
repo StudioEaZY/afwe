@@ -1,91 +1,215 @@
 ---
-// docs/index.astro - Documentation Overview & Directory
+// docs/index.astro - Official AFWE Overview & Philosophy Documentation Page
+// Matches reference layout from media_1793013437455_aa2aa93a.jpg
 import DocsLayout from '../../layouts/DocsLayout.astro';
+import AfweIsometricHero from '../../components/AfweIsometricHero.astro';
+
+const headings = [
+  { depth: 2, slug: "big-picture", text: "The big picture" },
+  { depth: 2, slug: "why-it-exists", text: "Why it exists" },
+  { depth: 2, slug: "different-approach", text: "A different approach" },
+  { depth: 2, slug: "screen-overview", text: "1. The First Screen (Overview)" },
+  { depth: 2, slug: "codebase-blueprint", text: "2. The Codebase Blueprint" },
+  { depth: 2, slug: "who-its-for", text: "Who it's for" },
+  { depth: 2, slug: "key-benefits", text: "Key benefits" },
+  { depth: 2, slug: "next-steps", text: "Next steps" },
+];
 ---
 
 <DocsLayout
-  title="Documentation Overview"
-  description="AFWE Documentation: Deterministic verification, intent memory, and architectural boundaries for autonomous coding."
+  title="Overview & Philosophy"
+  description="AFWE: The intent layer for your codebase. Double-entry bookkeeping for autonomous coding."
   activeSection="overview"
+  headings={headings}
 >
-  <div class="space-y-12 py-4">
-    <!-- Header -->
-    <header class="border-b border-stone-300 dark:border-obsidian-800 pb-6">
-      <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase mb-2">
-        DOCUMENTATION & GUIDES
+  <div class="space-y-16 py-4">
+    <!-- Breadcrumb & Top Section -->
+    <header class="space-y-4">
+      <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
+        INTRODUCTION
       </div>
-      <h1 class="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-graphite dark:text-white">
-        AFWE Documentation
+      
+      <!-- Main Title -->
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-graphite dark:text-white leading-[1.12]">
+        Your code. Its memory. Its rules.
       </h1>
-      <p class="mt-2 text-base text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-        Learn how to configure architectural guardrails, manage intent memory, and verify agent code changes using deterministic double-entry accounting.
+
+      <p class="text-base sm:text-lg text-graphite/80 dark:text-stone-300 leading-relaxed font-sans max-w-2xl">
+        AFWE keeps track of what your codebase is supposed to be, what it actually is, and the rules that keep it together: so AI agents can work with real context, not guesswork.
       </p>
     </header>
 
-    <!-- Section Hub Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Card 1: Quick Start -->
-      <a href="/docs/getting-started/quick-start" class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-3 hover:border-graphite/60 dark:hover:border-stone-400 transition-all shadow-xs group">
-        <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200 group-hover:scale-105 transition-transform">
-          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
+    <!-- Hero Pictorial Mark Section (Clean non-overlapping layout) -->
+    <section class="rounded-2xl border border-stone-300 dark:border-obsidian-800 bg-white/40 dark:bg-obsidian-900/50 p-6 sm:p-8">
+      <AfweIsometricHero />
+    </section>
+
+    <!-- Quick Install / Onboard Terminal Card -->
+    <section class="rounded-xl border border-stone-400/80 dark:border-obsidian-700 bg-graphite-900 text-stone-200 dark:bg-obsidian-900 p-5 font-mono text-xs shadow-sm space-y-3">
+      <div class="flex items-center justify-between text-[11px] text-stone-400 pb-2 border-b border-stone-700 dark:border-obsidian-750">
+        <span>GET STARTED IN 1 MINUTE</span>
+        <span class="text-survey-light">Rust CLI</span>
+      </div>
+      <div class="space-y-1.5 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="text-survey-500 font-bold">$</span>
+          <span class="text-white">cargo install afwe</span>
         </div>
-        <h2 class="text-lg font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
+        <div class="flex items-center gap-2">
+          <span class="text-survey-500 font-bold">$</span>
+          <span class="text-white">afwe onboard --profile engineer</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. The Big Picture -->
+    <section id="big-picture" class="space-y-4 scroll-mt-24">
+      <h2 class="text-2xl font-bold text-graphite dark:text-white tracking-tight">
+        The big picture
+      </h2>
+      <div class="prose prose-sm dark:prose-invert max-w-none text-graphite/85 dark:text-stone-300 leading-relaxed space-y-3">
+        <p>
+          AI coding agents rarely lose track of your code. They lose track of <strong>why it is the way it is</strong>.
+        </p>
+        <p>
+          Ask two agents for a narrow-body engine of 27,000 to 35,000 lbf and you get two good, different designs. One is a two-spool engine that is cheap to maintain. The other is a three-spool engine that burns less fuel and costs more to service. Neither is wrong. Fifteen prompts later, a third agent sees code that works, cannot tell which trade-off you chose on purpose, and refactors it.
+        </p>
+        <p>
+          That is the source of silent collateral damage: in turn 1 an agent builds a billing integration; in turn 15 an agent refactors a UI component and breaks the billing contract. A feature disappears and nobody declared it.
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. Why It Exists -->
+    <section id="why-it-exists" class="space-y-4 scroll-mt-24">
+      <h2 class="text-2xl font-bold text-graphite dark:text-white tracking-tight">
+        Why it exists
+      </h2>
+      <div class="prose prose-sm dark:prose-invert max-w-none text-graphite/85 dark:text-stone-300 leading-relaxed space-y-3">
+        <p>
+          Line drift and context windows make this worse, but the fundamental problem is that your intent was never recorded next to the code. Vendor-side memory does not solve this: it lives inside a proprietary cloud product, not in your git history, so the next agent or teammate never receives it.
+        </p>
+        <p>
+          AFWE introduces double-entry bookkeeping for autonomous coding: your repository records not only the source files, but also their living architecture, constraints, locked human decisions (pins), and audit receipts.
+        </p>
+      </div>
+    </section>
+
+    <!-- 3. A Different Approach -->
+    <section id="different-approach" class="space-y-4 scroll-mt-24">
+      <h2 class="text-2xl font-bold text-graphite dark:text-white tracking-tight">
+        A different approach
+      </h2>
+      <div class="prose prose-sm dark:prose-invert max-w-none text-graphite/85 dark:text-stone-300 leading-relaxed space-y-3">
+        <p>
+          AFWE is built on four core principles:
+        </p>
+        <ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm">
+          <li><strong>The folder is the product</strong>: All architectural knowledge lives in human-readable YAML and Markdown inside <code>.afwe/</code> in your repository.</li>
+          <li><strong>Deterministic verification</strong>: AFWE never makes internal model calls. Decisions are 100% reproducible using Rust Tree-Sitter AST parsers, BLAKE3 content hashing, and reproducible pre-commit checks.</li>
+          <li><strong>Pre-code claims</strong>: Agents must declare their intents and structural claims before modifying source files. If a claim violates a locked Pin, AFWE triggers REDO before any code is generated.</li>
+          <li><strong>Continuous architectural feedback</strong>: Knowledge graphs, intent memory, and pre-commit tripwires form a single loop that gates every change.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4. 1. The First Screen (Overview) -->
+    <section id="screen-overview" class="space-y-4 scroll-mt-24">
+      <h2 class="text-2xl font-bold text-graphite dark:text-white tracking-tight">
+        1. The First Screen (Overview)
+      </h2>
+      <div class="prose prose-sm dark:prose-invert max-w-none text-graphite/85 dark:text-stone-300 leading-relaxed space-y-3">
+        <p>
+          Running <code>afwe status</code> or opening the AFWE Studio gives you an immediate health dashboard: total mapped nodes, active pins, unresolved proposals, and architectural drift. If an agent creates a file without attaching it to an architectural node, AFWE surfaces it immediately.
+        </p>
+      </div>
+    </section>
+
+    <!-- 5. 2. The Codebase Blueprint -->
+    <section id="codebase-blueprint" class="space-y-4 scroll-mt-24">
+      <h2 class="text-2xl font-bold text-graphite dark:text-white tracking-tight">
+        2. The Codebase Blueprint
+      </h2>
+      <div class="prose prose-sm dark:prose-invert max-w-none text-graphite/85 dark:text-stone-300 leading-relaxed space-y-3">
+        <p>
+          The Blueprint translates complex directory trees into an interactive architectural sunburst. You can drill down into components, view active boundary constraints, inspect recent turn receipts, and verify allowed dependency relationships.
+        </p>
+      </div>
+    </section>
+
+    <!-- 6. Who It's For -->
+    <section id="who-its-for" class="space-y-4 scroll-mt-24">
+      <h2 class="text-2xl font-bold text-graphite dark:text-white tracking-tight">
+        Who it's for
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/60 dark:bg-obsidian-850 p-4 space-y-2">
+          <h3 class="font-bold text-sm text-graphite dark:text-white">Engineers using AI agents</h3>
+          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed">
+            Developers using Claude Code, Cursor, Codex, or OpenCode who need agents to respect invariants without manual babysitting.
+          </p>
+        </div>
+        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/60 dark:bg-obsidian-850 p-4 space-y-2">
+          <h3 class="font-bold text-sm text-graphite dark:text-white">Founders and tech leads</h3>
+          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed">
+            Teams moving rapidly with autonomous coding where architectural coherence must be preserved across weeks and months.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Key Benefits -->
+    <section id="key-benefits" class="space-y-4 scroll-mt-24">
+      <h2 class="text-2xl font-bold text-graphite dark:text-white tracking-tight">
+        Key benefits
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/60 dark:bg-obsidian-850 p-4 space-y-2">
+          <div class="font-mono text-xs font-bold text-survey-600 dark:text-survey-light">ZERO DRIFT</div>
+          <h3 class="font-bold text-sm text-graphite dark:text-white">Deterministic Gates</h3>
+          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed">
+            Changes that violate constraints or block pins are rejected before hitting git.
+          </p>
+        </div>
+        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/60 dark:bg-obsidian-850 p-4 space-y-2">
+          <div class="font-mono text-xs font-bold text-survey-600 dark:text-survey-light">RECOVERY</div>
+          <h3 class="font-bold text-sm text-graphite dark:text-white">3-Way Restoration</h3>
+          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed">
+            Recover deleted features from earlier turns using automated 3-way merge.
+          </p>
+        </div>
+        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/60 dark:bg-obsidian-850 p-4 space-y-2">
+          <div class="font-mono text-xs font-bold text-survey-600 dark:text-survey-light">OPEN CORE</div>
+          <h3 class="font-bold text-sm text-graphite dark:text-white">100% Free MIT</h3>
+          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed">
+            No feature paywalls, no mandatory cloud accounts, and zero tracking.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Next Steps -->
+    <section id="next-steps" class="space-y-4 scroll-mt-24 border-t border-stone-300 dark:border-obsidian-800 pt-8">
+      <h2 class="text-2xl font-bold text-graphite dark:text-white tracking-tight">
+        Next steps
+      </h2>
+      <p class="text-sm text-graphite/80 dark:text-stone-300 leading-relaxed">
+        Ready to onboard your codebase? Follow our 5-minute Quick Start or explore the ReBorn core concepts.
+      </p>
+      <div class="flex flex-wrap items-center gap-3 pt-2">
+        <a 
+          href="/docs/getting-started/quick-start" 
+          class="px-5 py-2.5 rounded-lg bg-graphite hover:bg-graphite-900 dark:bg-white dark:hover:bg-stone-100 text-white dark:text-graphite font-mono text-xs font-semibold shadow-sm transition-all"
+        >
           Quick Start (5 Min) →
-        </h2>
-        <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-          Install the CLI, onboard an existing codebase, and execute your first verified turn loop in five minutes.
-        </p>
-      </a>
-
-      <!-- Card 2: Core Concepts -->
-      <a href="/docs/concepts/core-concepts" class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-3 hover:border-graphite/60 dark:hover:border-stone-400 transition-all shadow-xs group">
-        <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200 group-hover:scale-105 transition-transform">
-          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="2" y1="12" x2="22" y2="12"></line>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-          </svg>
-        </div>
-        <h2 class="text-lg font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
-          ReBorn Core Concepts →
-        </h2>
-        <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-          Deep-dive into turns, AST scene graphs, geometric constraints, BLAKE3 tripwires, and 4D time dials.
-        </p>
-      </a>
-
-      <!-- Card 3: Validators Catalog -->
-      <a href="/docs/validators" class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-3 hover:border-graphite/60 dark:hover:border-stone-400 transition-all shadow-xs group">
-        <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200 group-hover:scale-105 transition-transform">
-          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
-        </div>
-        <h2 class="text-lg font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
-          Validators & Claims Catalog →
-        </h2>
-        <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-          Catalog of deterministic AST validators: import restrictions, comment blanking, pin coverage, and collateral loss gates.
-        </p>
-      </a>
-
-      <!-- Card 4: CLI & MCP Reference -->
-      <a href="/docs/reference/cli" class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-3 hover:border-graphite/60 dark:hover:border-stone-400 transition-all shadow-xs group">
-        <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200 group-hover:scale-105 transition-transform">
-          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="4 17 10 11 4 5"></polyline>
-            <line x1="12" y1="19" x2="20" y2="19"></line>
-          </svg>
-        </div>
-        <h2 class="text-lg font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
-          CLI & MCP Reference →
-        </h2>
-        <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-          Complete flag reference for <code class="text-[11px] font-mono">afwe</code> CLI binaries and all 57 native Model Context Protocol tools.
-        </p>
-      </a>
-    </div>
+        </a>
+        <a 
+          href="/docs/concepts/core-concepts" 
+          class="px-5 py-2.5 rounded-lg border border-stone-400 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-850 hover:border-graphite dark:hover:border-stone-400 text-graphite dark:text-stone-200 font-mono text-xs font-semibold shadow-xs transition-all"
+        >
+          Core Concepts ReBorn →
+        </a>
+      </div>
+    </section>
   </div>
 </DocsLayout>

@@ -9,9 +9,14 @@ export const TopBar: React.FC = () => {
     activeTurn,
     scrubToTurn,
     setDrawer,
+    drawer,
     notify,
     refresh,
     run,
+    undoStack,
+    redoStack,
+    undo,
+    redo,
   } = useStore();
 
   const [syncing, setSyncing] = useState(false);
@@ -103,14 +108,79 @@ export const TopBar: React.FC = () => {
         )}
       </div>
 
-      {/* Center: System Status Pill */}
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", color: "#4A463E" }}>
-        <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: violationsCount > 0 ? "#B23A2B" : "#2E7A57", display: "inline-block" }} />
-        <span>
-          {violationsCount > 0
-            ? `${violationsCount} rule violation(s) need attention`
-            : `Everything balances. ${pinsCount} pin(s) · ${proposalsCount} proposal(s) waiting`}
-        </span>
+      {/* Center: System Status Pill & Session Undo/Redo Controls */}
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#4A463E" }}>
+          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: violationsCount > 0 ? "#C94A38" : "#2E7A57", display: "inline-block" }} />
+          <span>
+            {violationsCount > 0
+              ? `${violationsCount} rule violation(s) need attention`
+              : `Everything balances. ${pinsCount} pin(s) · ${proposalsCount} proposal(s) waiting`}
+          </span>
+        </div>
+
+        {/* Reversible Actions Session Pill */}
+        {undoStack.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              background: "#FAF8F4",
+              border: "1px solid #ECE7D9",
+              borderRadius: "6px",
+              padding: "2px 6px",
+            }}
+          >
+            <button
+              onClick={() => undo()}
+              title="Undo (Ctrl+Z)"
+              style={{
+                background: "none",
+                border: "none",
+                fontSize: "12px",
+                cursor: "pointer",
+                color: "#1D1C1A",
+                padding: "2px 4px",
+                borderRadius: "3px",
+              }}
+            >
+              ↶ Undo
+            </button>
+            {redoStack.length > 0 && (
+              <button
+                onClick={() => redo()}
+                title="Redo (Ctrl+Y)"
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  color: "#1D1C1A",
+                  padding: "2px 4px",
+                  borderRadius: "3px",
+                }}
+              >
+                ↷ Redo
+              </button>
+            )}
+            <button
+              onClick={() => setDrawer(drawer === "history" ? null : "history")}
+              style={{
+                background: "#ECE7D9",
+                border: "none",
+                fontSize: "10px",
+                fontWeight: 700,
+                color: "#4A463E",
+                padding: "1px 5px",
+                borderRadius: "10px",
+                cursor: "pointer",
+              }}
+            >
+              {undoStack.length}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Right: Quick Search, Sync & Actions */}

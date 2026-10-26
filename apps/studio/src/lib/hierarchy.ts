@@ -666,21 +666,113 @@ export function describeArc(
  * Helper to build an organic rounded concave/L-shaped dashed hull path.
  */
 export function generateOrganicHull(x: number, y: number, w: number, h: number, seed = 0): string {
-  const r = 18;
-  // Create slightly organic offsets at the corners
-  const o1 = (seed % 5) - 2;
-  const o2 = ((seed * 3) % 5) - 2;
+  return generateOrganicClusterHull(x, y, w, h, 4, seed, "box");
+}
 
-  return [
-    `M ${x + r} ${y}`,
-    `H ${x + w - r + o1}`,
-    `Q ${x + w + o1} ${y} ${x + w + o1} ${y + r}`,
-    `V ${y + h - r + o2}`,
-    `Q ${x + w + o1} ${y + h + o2} ${x + w - r + o1} ${y + h + o2}`,
-    `H ${x + r}`,
-    `Q ${x} ${y + h + o2} ${x} ${y + h - r + o2}`,
-    `V ${y + r}`,
-    `Q ${x} ${y} ${x + r} ${y}`,
-    `Z`,
-  ].join(" ");
+/**
+ * Compute an organic Catmull-Rom or cubic Bezier hull enclosing a cluster of cards.
+ * Creates stepped L-shapes, wide pills, or sweeping amoeba contours matching
+ * hand-drawn cartographic topologies.
+ */
+export function generateOrganicClusterHull(
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  cardCount = 4,
+  seed = 0,
+  shapeType: "box" | "l-shape" | "capsule" | "amoeba" = "box"
+): string {
+  const pad = 12;
+  const s = seed;
+  const jitter = (idx: number, amp = 6) => Math.sin(s * 3.7 + idx * 2.3) * amp;
+
+  if (shapeType === "amoeba") {
+    // Large sweeping organic boundary (used for domain envelope when drilled in)
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const rx = w / 2 + pad;
+    const ry = h / 2 + pad;
+    const points: [number, number][] = [];
+    const steps = 12;
+    for (let i = 0; i < steps; i++) {
+      const angle = (i / steps) * Math.PI * 2;
+      const rMod = 1 + Math.sin(angle * 3 + s) * 0.08 + Math.cos(angle * 2) * 0.04;
+      const px = cx + Math.cos(angle) * rx * rMod;
+      const py = cy + Math.sin(angle) * ry * rMod;
+      points.push([px, py]);
+    }
+    return smoothSplineClosed(points);
+  }
+
+  if (shapeType === "l-shape" || (cardCount >= 5 && shapeType !== "capsule")) {
+    // L-shaped / stepped stepped organic hull:
+    // Top row wider (e.g. 3-4 cards), bottom row narrower (e.g. 2 cards)
+    const midX = x + w * 0.62 + jitter(1, 8);
+    const midY = y + h * 0.54 + jitter(2, 6);
+
+    const pts: [number, number][] = [
+      [x + 18, y + jitter(0, 4)],
+      [x + w - 18, y + jitter(1, 4)],
+      [x + w + jitter(2, 5), y + 20],
+      [x + w + jitter(3, 4), midY],
+      [midX + 24, midY + jitter(4, 4)],
+      [midX + 16, y + h - 18],
+      [midX - 10, y + h + jitter(5, 4)],
+      [x + 18, y + h + jitter(6, 4)],
+      [x - jitter(7, 5), y + h - 18],
+      [x - jitter(8, 4), y + 18],
+    ];
+    return smoothSplineClosed(pts);
+  }
+
+  if (shapeType === "capsule" || cardCount <= 3) {
+    // Wide capsule or organic pill
+    const pts: [number, number][] = [
+      [x + 22, y + jitter(0, 3)],
+      [x + w - 22, y + jitter(1, 3)],
+      [x + w + jitter(2, 4), y + h * 0.5],
+      [x + w - 22, y + h + jitter(3, 3)],
+      [x + 22, y + h + jitter(4, 3)],
+      [x - jitter(5, 4), y + h * 0.5],
+    ];
+    return smoothSplineClosed(pts);
+  }
+
+  // Boxy organic blob
+  const pts: [number, number][] = [
+    [x + 20, y + jitter(0, 3)],
+    [x + w - 20, y + jitter(1, 3)],
+    [x + w + jitter(2, 4), y + 22],
+    [x + w + jitter(3, 4), y + h - 22],
+    [x + w - 20, y + h + jitter(4, 3)],
+    [x + 20, y + h + jitter(5, 3)],
+    [x - jitter(6, 4), y + h - 22],
+    [x - jitter(7, 4), y + 22],
+  ];
+  return smoothSplineClosed(pts);
+}
+
+function smoothSplineClosed(points: [number, number][]): string {
+  if (points.length < 3) return "";
+  const n = points.length;
+  let d = `M ${points[0][0]} ${points[0][1]}`;
+
+  for (let i = 0; i < n; i++) {
+    const p0 = points[(i - 1 + n) % n];
+    const p1 = points[i];
+    const p2 = points[(i + 1) % n];
+    const p3 = points[(i + 2) % n];
+
+    // Catmull-Rom to Cubic Bezier conversion
+    const cp1x = p1[0] + (p2[0] - p0[0]) / 6;
+    const cp1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const cp2x = p2[0] - (p3[0] - p1[0]) / 6;
+    const cp2y = p2[1] - (p3[1] - p1[1]) / 6;
+
+    d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+
+  d += " Z";
+  return d;
 }

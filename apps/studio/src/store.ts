@@ -1,20 +1,66 @@
 import { create } from "zustand";
 import { api, Graph, GraphNode } from "./api";
-import { getStudioPrefs, setStartView as persistStartView, addBookmark as persistBookmark, removeBookmark as persistRemoveBookmark, StudioPrefs, StudioBookmark } from "./lib/prefs";
+import {
+  getStudioPrefs,
+  setStartView as persistStartView,
+  addBookmark as persistBookmark,
+  removeBookmark as persistRemoveBookmark,
+  setPalettes as persistPalettes,
+  setGraceSeconds as persistGraceSeconds,
+  StudioPrefs,
+  StudioBookmark,
+} from "./lib/prefs";
 import { SelectedEntity } from "./lib/hierarchy";
 
 export type View =
   | "overview"
   | "timeline"
+  | "blueprint"
   | "checks"
   | "decisions"
   | "settings"
-  | "blueprint"
   | "workflows"
   | "memory"
   | "pins";
 
 export type FilterMode = "all" | "mapped" | "uncharted" | "proposals" | "issues";
+
+export interface UndoAction {
+  id: string;
+  label: string;
+  timestamp: number;
+  undo: () => Promise<void>;
+  redo: () => Promise<void>;
+}
+
+export interface QuarantineAction {
+  id: string;
+  label: string;
+  description: string;
+  secondsLeft: number;
+  totalSeconds: number;
+  isCascading: boolean;
+  execute: () => Promise<void>;
+  cancel: () => void;
+}
+
+export interface CodePreviewTarget {
+  filePath: string;
+  line?: number;
+  symbol?: string;
+  pattern?: string;
+  title?: string;
+}
+
+export interface ConsequenceModalData {
+  title: string;
+  statement: string;
+  impact: string[];
+  isCascading: boolean;
+  confirmLabel?: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
 
 interface State {
   graph: Graph | null;
@@ -26,7 +72,7 @@ interface State {
   expanded: Set<string>;
   showImpl: boolean;
   lens: string | null; // legacy lens id or null
-  drawer: null | "drift" | "search";
+  drawer: null | "drift" | "search" | "history";
   toast: string | null;
   busy: string | null;
   onboardOpen: boolean;
@@ -47,6 +93,14 @@ interface State {
   timelineFrames: import("./api").TimelineFrame[];
   dotQuery: string;
   selectedDotPath: string | null;
+
+  // ── Two-Tier Undo & Quarantine Grace System ──
+  undoStack: UndoAction[];
+  redoStack: UndoAction[];
+  pendingQuarantine: QuarantineAction | null;
+  quarantineIntervalId: any | null;
+  consequenceModal: ConsequenceModalData | null;
+  codePreviewTarget: CodePreviewTarget | null;
 
   refresh: () => Promise<void>;
   refreshScene: () => Promise<void>;
@@ -77,6 +131,32 @@ interface State {
   pinStartView: (nodeId: string | null, lens: "radial" | "topology") => void;
   addBookmark: (b: StudioBookmark) => void;
   removeBookmark: (id: string) => void;
+  setRadialPalette: (p: string) => void;
+  setTopologyPalette: (p: string) => void;
+  setGraceSeconds: (s: number) => void;
+
+  // ── Deep Links ──
+  jumpToNodeOnMap: (nodeId: string) => void;
+  jumpToTurn: (turnId: string) => void;
+  openCodePreview: (target: CodePreviewTarget) => void;
+  closeCodePreview: () => void;
+
+  // ── Two-Tier Quarantine & Undo/Redo Actions ──
+  openConsequenceModal: (opts: ConsequenceModalData) => void;
+  closeConsequenceModal: () => void;
+  scheduleQuarantineAction: (opts: {
+    id: string;
+    label: string;
+    description: string;
+    isCascading: boolean;
+    execute: () => Promise<void>;
+    undo?: () => Promise<void>;
+  }) => void;
+  cancelQuarantineAction: () => void;
+  executeQuarantineActionNow: () => Promise<void>;
+  pushUndo: (action: UndoAction) => void;
+  undo: () => Promise<void>;
+  redo: () => Promise<void>;
 }
 
 const initialPrefs = getStudioPrefs();
@@ -110,6 +190,14 @@ export const useStore = create<State>((set, get) => ({
   selectedEntity: null,
   filterMode: "all",
   prefs: initialPrefs,
+
+  // Two-Tier Undo & Quarantine Grace System
+  undoStack: [],
+  redoStack: [],
+  pendingQuarantine: null,
+  quarantineIntervalId: null,
+  consequenceModal: null,
+  codePreviewTarget: null,
 
   refreshScene: async () => {
     try {
@@ -173,7 +261,7 @@ export const useStore = create<State>((set, get) => ({
 
   setView: (view) => {
     let mapped: View = view;
-    if (view === "blueprint" || view === "workflows") mapped = "overview";
+    if (view === "workflows") mapped = "overview";
     else if (view === "memory") mapped = "decisions";
     else if (view === "pins") mapped = "checks";
     set({ view: mapped });
@@ -244,7 +332,6 @@ export const useStore = create<State>((set, get) => ({
   drillUp: () => {
     const depth = get().currentDepth;
     if (depth <= 0) return;
-    // Step up: find parent of currentScopeId in graph or reset to root
     const graph = get().graph;
     const cur = get().currentScopeId;
     let parentId: string | null = null;
@@ -283,6 +370,184 @@ export const useStore = create<State>((set, get) => ({
   removeBookmark: (id) => {
     const updated = persistRemoveBookmark(id);
     set({ prefs: updated });
+  },
+
+  setRadialPalette: (radialPalette: string) => {
+    const cur = get().prefs;
+    const updated = persistPalettes(radialPalette, cur.topologyPalette);
+    set({ prefs: updated });
+    get().notify(`Radial palette set to ${radialPalette}`);
+  },
+
+  setTopologyPalette: (topologyPalette: string) => {
+    const cur = get().prefs;
+    const updated = persistPalettes(cur.radialPalette, topologyPalette);
+    set({ prefs: updated });
+    get().notify(`Topology palette set to ${topologyPalette}`);
+  },
+
+  setGraceSeconds: (graceSeconds: number) => {
+    const updated = persistGraceSeconds(graceSeconds);
+    set({ prefs: updated });
+    get().notify(`Quarantine grace timer set to ${graceSeconds}s`);
+  },
+
+  // ── Deep Links ──
+  jumpToNodeOnMap: (nodeId: string) => {
+    const graph = get().graph;
+    let parentId: string | null = null;
+    let nodeLabel = nodeId;
+    if (graph) {
+      const match = graph.nodes.find((n) => n.id === nodeId);
+      if (match) {
+        parentId = match.parent || null;
+        nodeLabel = match.name || match.id;
+      }
+    }
+    set({
+      view: "overview",
+      currentScopeId: parentId,
+      currentDepth: parentId ? 1 : 0,
+      selected: nodeId,
+      selectedEntity: {
+        id: nodeId,
+        kind: "feature",
+        label: nodeLabel,
+        path: nodeId,
+        status: "mapped",
+        fileCount: 1,
+        mappedCount: 1,
+      },
+    });
+    get().notify(`Jumped to ${nodeLabel} on map`);
+  },
+
+  jumpToTurn: (turnId: string) => {
+    set({ view: "timeline", activeTurn: turnId });
+    get().scrubToTurn(turnId);
+    get().notify(`Inspecting Turn #${turnId}`);
+  },
+
+  openCodePreview: (target: CodePreviewTarget) => {
+    set({ codePreviewTarget: target });
+  },
+
+  closeCodePreview: () => {
+    set({ codePreviewTarget: null });
+  },
+
+  // ── Two-Tier Quarantine & Undo/Redo Actions ──
+  openConsequenceModal: (opts) => set({ consequenceModal: opts }),
+  closeConsequenceModal: () => set({ consequenceModal: null }),
+
+  scheduleQuarantineAction: (opts) => {
+    // Clear any existing quarantine timer
+    const prev = get().pendingQuarantine;
+    if (prev) {
+      if (get().quarantineIntervalId) clearInterval(get().quarantineIntervalId);
+    }
+
+    const totalSeconds = get().prefs.graceSeconds || 10;
+    let secondsRemaining = totalSeconds;
+
+    const action: QuarantineAction = {
+      id: opts.id,
+      label: opts.label,
+      description: opts.description,
+      secondsLeft: secondsRemaining,
+      totalSeconds,
+      isCascading: opts.isCascading,
+      execute: async () => {
+        if (get().quarantineIntervalId) clearInterval(get().quarantineIntervalId);
+        set({ pendingQuarantine: null, quarantineIntervalId: null });
+        await opts.execute();
+        if (opts.undo) {
+          get().pushUndo({
+            id: opts.id,
+            label: opts.label,
+            timestamp: Date.now(),
+            undo: opts.undo,
+            redo: opts.execute,
+          });
+        }
+      },
+      cancel: () => {
+        if (get().quarantineIntervalId) clearInterval(get().quarantineIntervalId);
+        set({ pendingQuarantine: null, quarantineIntervalId: null });
+        get().notify(`Cancelled: ${opts.label}`);
+      },
+    };
+
+    const interval = setInterval(() => {
+      secondsRemaining -= 1;
+      if (secondsRemaining <= 0) {
+        clearInterval(interval);
+        action.execute();
+      } else {
+        const cur = get().pendingQuarantine;
+        if (cur && cur.id === opts.id) {
+          set({
+            pendingQuarantine: {
+              ...cur,
+              secondsLeft: secondsRemaining,
+            },
+          });
+        }
+      }
+    }, 1000);
+
+    set({ pendingQuarantine: action, quarantineIntervalId: interval });
+  },
+
+  cancelQuarantineAction: () => {
+    const cur = get().pendingQuarantine;
+    if (cur) cur.cancel();
+  },
+
+  executeQuarantineActionNow: async () => {
+    const cur = get().pendingQuarantine;
+    if (cur) await cur.execute();
+  },
+
+  pushUndo: (action: UndoAction) => {
+    const stack = [action, ...get().undoStack].slice(0, 30);
+    set({ undoStack: stack, redoStack: [] });
+  },
+
+  undo: async () => {
+    const stack = [...get().undoStack];
+    if (stack.length === 0) {
+      get().notify("Nothing to undo.");
+      return;
+    }
+    const item = stack.shift()!;
+    try {
+      await item.undo();
+      const redo = [item, ...get().redoStack];
+      set({ undoStack: stack, redoStack: redo });
+      get().notify(`Undone: ${item.label}`);
+      await get().refresh();
+    } catch (e: any) {
+      get().notify(`Undo failed: ${e.message || e}`);
+    }
+  },
+
+  redo: async () => {
+    const stack = [...get().redoStack];
+    if (stack.length === 0) {
+      get().notify("Nothing to redo.");
+      return;
+    }
+    const item = stack.shift()!;
+    try {
+      await item.redo();
+      const undo = [item, ...get().undoStack];
+      set({ undoStack: undo, redoStack: stack });
+      get().notify(`Redone: ${item.label}`);
+      await get().refresh();
+    } catch (e: any) {
+      get().notify(`Redo failed: ${e.message || e}`);
+    }
   },
 }));
 

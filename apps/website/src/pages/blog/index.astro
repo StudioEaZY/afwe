@@ -4,6 +4,15 @@ import MarketingLayout from '../../layouts/MarketingLayout.astro';
 
 const posts = [
   {
+    slug: 'the-sponsored-seat-pool',
+    title: "The Sponsored Seat Pool: Why AFWE Ties Free Access to Community Capacity",
+    date: 'October 26, 2026',
+    author: 'AFWE Core Architecture Team',
+    category: 'Economics & Open Source',
+    readTime: '7 min read',
+    summary: 'Instead of feature gatekeeping or restrictive dual licenses, AFWE introduces the Community Seat Pool: sustainers sponsor verified seats so every developer gets full access to the complete toolchain, local customization, and 57 MCP tools.'
+  },
+  {
     slug: 'why-graphrag-isnt-enough',
     title: "Why GraphRAG Isn't Enough: Double-Entry Bookkeeping for Codebases",
     date: 'October 24, 2026',
@@ -34,7 +43,7 @@ const posts = [
 ---
 
 <MarketingLayout
-  title="Blog — Architecture & Intent Engineering"
+  title="Blog · Architecture & Intent Engineering"
   description="Technical deep-dives into double-entry bookkeeping, AST scene graphs, deterministic tripwires, and autonomous coding governance."
   activeNav="blog"
 >
@@ -44,7 +53,7 @@ const posts = [
       <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
         ENGINEERING ARTICLES & DEEP DIVES
       </div>
-      <h1 class="text-4xl sm:text-5xl font-serif font-bold text-graphite dark:text-white tracking-tight">
+      <h1 class="text-4xl sm:text-5xl font-bold text-graphite dark:text-white tracking-tight">
         AFWE Technical Journal
       </h1>
       <p class="text-base sm:text-lg text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
@@ -60,28 +69,32 @@ const posts = [
             <span class="px-2.5 py-0.5 rounded-full bg-stone-200/80 dark:bg-obsidian-800 text-graphite dark:text-stone-300 font-semibold text-[10px]">
               {post.category}
             </span>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
               <span>{post.date}</span>
               <span>•</span>
               <span>{post.readTime}</span>
             </div>
           </div>
 
-          <h2 class="text-xl sm:text-2xl font-serif font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
-            <a href={`/blog/${post.slug}`} class="block">
-              {post.title}
-            </a>
-          </h2>
+          <div class="space-y-2">
+            <h2 class="text-xl sm:text-2xl font-bold text-graphite dark:text-white group-hover:text-survey-600 dark:group-hover:text-survey-light transition-colors">
+              <a href={`/blog/${post.slug}`}>
+                {post.title}
+              </a>
+            </h2>
+            <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+              {post.summary}
+            </p>
+          </div>
 
-          <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-            {post.summary}
-          </p>
-
-          <div class="pt-2 flex items-center justify-between font-mono text-xs">
-            <span class="text-graphite/60 dark:text-stone-400 text-[11px]">
+          <div class="pt-2 flex items-center justify-between">
+            <span class="text-xs font-mono text-graphite/50 dark:text-stone-400">
               By {post.author}
             </span>
-            <a href={`/blog/${post.slug}`} class="font-bold text-graphite dark:text-stone-200 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+            <a 
+              href={`/blog/${post.slug}`} 
+              class="font-mono text-xs font-bold text-graphite dark:text-stone-200 group-hover:text-survey-600 dark:group-hover:text-survey-light flex items-center gap-1 transition-colors"
+            >
               Read article →
             </a>
           </div>

@@ -2,11 +2,11 @@
 // index.astro - Official AFWE Homepage
 import MarketingLayout from '../layouts/MarketingLayout.astro';
 import AfweIsometricHero from '../components/AfweIsometricHero.astro';
-import AtlasRadar from '../components/AtlasRadar.astro';
+import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
 ---
 
 <MarketingLayout
-  title="AFWE — Your agent forgets. Your repo shouldn't."
+  title="AFWE · Your agent forgets. Your repo shouldn't."
   description="AFWE records what your code is supposed to be, then checks every agent change against that intent. The intent layer for your codebase."
   activeNav="home"
 >
@@ -23,8 +23,8 @@ import AtlasRadar from '../components/AtlasRadar.astro';
             YOUR CODE. ITS MEMORY. ITS RULES.
           </div>
 
-          <!-- Hero Headline -->
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-graphite dark:text-white leading-[1.08] tracking-tight">
+          <!-- Hero Headline (Geometric Sans-Serif, bold, tight tracking) -->
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-graphite dark:text-white leading-[1.08] tracking-tight">
             Your agent forgets.<br />
             <span class="text-graphite/70 dark:text-stone-400">Your repo shouldn’t.</span>
           </h1>
@@ -88,37 +88,37 @@ import AtlasRadar from '../components/AtlasRadar.astro';
     </section>
 
     <!-- ========================================================================= -->
-    <!-- SECTION 2: THE ARCHITECTURAL ATLAS                                        -->
+    <!-- SECTION 2: THE CODEBASE BLUEPRINT                                         -->
     <!-- ========================================================================= -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-stone-300 dark:border-obsidian-800 pb-6">
         <div class="space-y-2 max-w-2xl">
           <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
-            THE ARCHITECTURAL ATLAS
+            THE CODEBASE BLUEPRINT
           </div>
-          <h2 class="text-3xl sm:text-4xl font-serif font-bold text-graphite dark:text-white tracking-tight">
+          <h2 class="text-3xl sm:text-4xl font-bold text-graphite dark:text-white tracking-tight">
             See your codebase in context.
           </h2>
           <p class="text-sm sm:text-base text-graphite/80 dark:text-stone-300 leading-relaxed">
-            The Atlas gives you a clear, interactive view of your architecture — components, dependencies, constraints and intent — so you can understand what matters, move with confidence and make better decisions.
+            The Blueprint gives you a clear, interactive view of your architecture: components, dependencies, constraints and intent, so you can understand what matters, move with confidence and make better decisions.
           </p>
         </div>
         <a 
           href="/docs/concepts/core-concepts#the-blueprint" 
           class="font-mono text-xs font-semibold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light flex items-center gap-1.5 transition-colors shrink-0"
         >
-          Explore the Atlas →
+          Explore the Blueprint →
         </a>
       </div>
 
       <!-- Live Interactive Sunburst Workstation -->
       <div class="pt-2">
-        <AtlasRadar />
+        <CodebaseBlueprintRadar />
       </div>
     </section>
 
     <!-- ========================================================================= -->
-    <!-- SECTION 3: HOW IT WORKS (THE 3-STEP PROCESS)                              -->
+    <!-- SECTION 3: HOW IT WORKS (THE REBORN TURN PROTOCOL)                        -->
     <!-- ========================================================================= -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
       <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-300 dark:border-obsidian-800 pb-6">
@@ -126,11 +126,11 @@ import AtlasRadar from '../components/AtlasRadar.astro';
           <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-graphite/70 dark:text-stone-400 uppercase mb-2">
             HOW IT WORKS
           </div>
-          <h2 class="text-3xl sm:text-4xl font-serif font-bold text-graphite dark:text-white tracking-tight">
-            From intent to verification.
+          <h2 class="text-3xl sm:text-4xl font-bold text-graphite dark:text-white tracking-tight">
+            Deterministic turn governance.
           </h2>
           <p class="text-sm sm:text-base text-graphite/80 dark:text-stone-300 mt-1 max-w-xl">
-            AFWE works with your AI agents to make sure changes respect your architecture, constraints and recorded decisions.
+            AFWE wraps every prompt to your AI coding agent in a reproducible 3-step protocol. The kernel never makes internal model calls.
           </p>
         </div>
         <a 
@@ -161,14 +161,14 @@ import AtlasRadar from '../components/AtlasRadar.astro';
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-serif font-bold text-graphite dark:text-white">Begin</h3>
+              <h3 class="text-lg font-bold text-graphite dark:text-white">1. Begin: Briefing Pack</h3>
               <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed mt-2 font-sans">
-                The agent receives scoped context from your codebase — architecture, active pins, invariant rules, and declared claims.
+                Captures a BLAKE3 and AST symbol baseline. Supplies the agent with scoped context: active block pins, living intents, memory records, constraints, and advisory probing guides.
               </p>
             </div>
           </div>
           <div class="mt-6 pt-3 border-t border-stone-300 dark:border-obsidian-800 font-mono text-[11px] text-survey-600 dark:text-survey-light">
-            afwe turn begin "..."
+            afwe turn begin "&lt;prompt&gt;" --target &lt;files&gt;
           </div>
         </div>
 
@@ -187,14 +187,14 @@ import AtlasRadar from '../components/AtlasRadar.astro';
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-serif font-bold text-graphite dark:text-white">Assume</h3>
+              <h3 class="text-lg font-bold text-graphite dark:text-white">2. Assume: Pre-Code Claims</h3>
               <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed mt-2 font-sans">
-                The agent proposes structural changes, declaring intent and exact AST claims <em>before</em> editing any source code.
+                The agent declares intents and verifiable Tree-Sitter AST claims (forbid imports, forbidden patterns, symbol requirements) before modifying code. Pin conflicts trigger immediate REDO.
               </p>
             </div>
           </div>
           <div class="mt-6 pt-3 border-t border-stone-300 dark:border-obsidian-800 font-mono text-[11px] text-survey-600 dark:text-survey-light">
-            afwe turn assume &lt;turn&gt;
+            afwe turn assume &lt;turn&gt; --file assumptions.json
           </div>
         </div>
 
@@ -212,93 +212,95 @@ import AtlasRadar from '../components/AtlasRadar.astro';
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-serif font-bold text-graphite dark:text-white">Commit</h3>
+              <h3 class="text-lg font-bold text-graphite dark:text-white">3. Commit: Gated Verification</h3>
               <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed mt-2 font-sans">
-                AFWE deterministically gates the commit against your constraints and pins, creating an audit receipt trailer.
+                Attributes changes against baseline, checks for undeclared feature loss, runs comment-blanked AST claims, and commits atomically with an AFWE-Turn receipt trailer.
               </p>
             </div>
           </div>
           <div class="mt-6 pt-3 border-t border-stone-300 dark:border-obsidian-800 font-mono text-[11px] text-survey-600 dark:text-survey-light">
-            afwe turn commit &lt;turn&gt;
+            afwe turn commit &lt;turn&gt; --summary "..."
           </div>
         </div>
       </div>
     </section>
 
     <!-- ========================================================================= -->
-    <!-- SECTION 4: WHY AFWE (MORE THAN DEPENDENCY MAPS)                           -->
+    <!-- SECTION 4: WHAT LIVES IN .AFWE/ (THE FOLDER IS THE PRODUCT)               -->
     <!-- ========================================================================= -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       <div class="border-b border-stone-300 dark:border-obsidian-800 pb-6">
         <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-graphite/70 dark:text-stone-400 uppercase mb-2">
-          WHY AFWE
+          THE FOLDER IS THE PRODUCT
         </div>
-        <h2 class="text-3xl sm:text-4xl font-serif font-bold text-graphite dark:text-white tracking-tight">
-          More than dependency maps.
+        <h2 class="text-3xl sm:text-4xl font-bold text-graphite dark:text-white tracking-tight">
+          Human-readable. Git-committed. Zero vendor lock-in.
         </h2>
         <p class="text-sm sm:text-base text-graphite/80 dark:text-stone-300 mt-1 max-w-2xl leading-relaxed">
-          Traditional tools show you what's connected. AFWE shows you what's allowed, what's intended, and how it all fits together over time.
+          AFWE stores architectural knowledge directly inside your repository in .afwe/. It stays with your code, survives tool migrations, and works with every AI coding assistant.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Feature 1 -->
-        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 p-5 space-y-3">
-          <div class="size-9 rounded-lg bg-stone-200/70 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-            <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="22" y1="12" x2="18" y2="12"></line>
-              <line x1="6" y1="12" x2="2" y2="12"></line>
-              <line x1="12" y1="6" x2="12" y2="2"></line>
-              <line x1="12" y1="22" x2="12" y2="18"></line>
-            </svg>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left: Tree View of .afwe/ -->
+        <div class="lg:col-span-5 rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-graphite-900 text-stone-200 dark:bg-obsidian-900 p-5 font-mono text-xs shadow-md">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-stone-700 dark:border-obsidian-750 text-stone-400 text-[11px]">
+            <span>YOUR-REPO/.afwe/</span>
+            <span class="text-survey-light">format: afwe/2</span>
           </div>
-          <h3 class="font-bold text-sm text-graphite dark:text-white">Intent-driven</h3>
-          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed font-sans">
-            Tracks purpose, constraints and decisions, not just dependencies.
-          </p>
+          <pre class="leading-relaxed text-[11px] sm:text-xs"><code>.afwe/
+├── <span class="text-emerald-400">afwe.yaml</span>            # Engine policy & test commands
+├── <span class="text-survey-light">blueprint/</span>
+│   ├── blueprint.yaml   # Component DAG & boundaries
+│   ├── relations.yaml   # Allowed architectural edges
+│   └── constraints.yaml # Non-negotiable boundary rules
+├── <span class="text-emerald-400">pins/</span>                # Human decisions locked from changes
+│   └── pin-auth.yaml    # Block/Confirm/Warn invariants
+├── <span class="text-survey-light">guardrails/</span>
+│   ├── active/          # AST import & pattern tripwires
+│   ├── passive/         # Natural language context briefs
+│   └── manifest.yaml    # BLAKE3 checksums for CI tamper-check
+├── <span class="text-emerald-400">intents/</span>             # Living feature DAGs & revisions
+├── <span class="text-survey-light">memory/</span>              # Architectural decision records
+│   ├── decisions/       # Why trade-offs were chosen
+│   └── terminology/     # Project-specific glossary
+└── <span class="text-emerald-400">turns/</span>               # Verified turn ledger receipts
+    └── t0001.yaml       # Verbatim prompt, claims, git hash</code></pre>
         </div>
 
-        <!-- Feature 2 -->
-        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 p-5 space-y-3">
-          <div class="size-9 rounded-lg bg-stone-200/70 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-            <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-              <polyline points="2 17 12 22 22 17"></polyline>
-              <polyline points="2 12 12 17 22 12"></polyline>
-            </svg>
+        <!-- Right: Why This Matters Grid -->
+        <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/60 dark:bg-obsidian-850 p-5 space-y-2">
+            <div class="font-mono text-xs font-bold text-survey-600 dark:text-survey-light uppercase">No Hidden Databases</div>
+            <h4 class="font-bold text-sm text-graphite dark:text-white">Inspectable with Git Diff</h4>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed">
+              Every turn, pin, constraint, and architectural evolution is a clear YAML diff in your pull requests. Review them like code.
+            </p>
           </div>
-          <h3 class="font-bold text-sm text-graphite dark:text-white">Architecture-aware</h3>
-          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed font-sans">
-            Understands your structure, boundaries and allowed <strong>relationships</strong>.
-          </p>
-        </div>
 
-        <!-- Feature 3 -->
-        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 p-5 space-y-3">
-          <div class="size-9 rounded-lg bg-stone-200/70 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-            <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
+          <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/60 dark:bg-obsidian-850 p-5 space-y-2">
+            <div class="font-mono text-xs font-bold text-survey-600 dark:text-survey-light uppercase">Codebase Pin Budget</div>
+            <h4 class="font-bold text-sm text-graphite dark:text-white">Prevents Rule Sprawl</h4>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed">
+              Pin budgets automatically scale with codebase size. Slider controls keep rules tight so agents do not drown in obsolete constraints.
+            </p>
           </div>
-          <h3 class="font-bold text-sm text-graphite dark:text-white">Historical trace</h3>
-          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed font-sans">
-            See how your architecture and intent evolved over time with 4D Dial Scrubbing.
-          </p>
-        </div>
 
-        <!-- Feature 4 -->
-        <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/50 dark:bg-obsidian-900 p-5 space-y-3">
-          <div class="size-9 rounded-lg bg-stone-200/70 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-            <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
+          <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/60 dark:bg-obsidian-850 p-5 space-y-2">
+            <div class="font-mono text-xs font-bold text-survey-600 dark:text-survey-light uppercase">Feature Restoration</div>
+            <h4 class="font-bold text-sm text-graphite dark:text-white">Recover Silent Feature Losses</h4>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed">
+              When an agent accidentally deletes code 15 prompts later, run <code>afwe timeline restore</code> to execute an automated 3-way merge against the last good turn.
+            </p>
           </div>
-          <h3 class="font-bold text-sm text-graphite dark:text-white">Agent-ready</h3>
-          <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed font-sans">
-            Built for modern workflows, where AI agents need structure, not just context.
-          </p>
+
+          <div class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/60 dark:bg-obsidian-850 p-5 space-y-2">
+            <div class="font-mono text-xs font-bold text-survey-600 dark:text-survey-light uppercase">Tripwire Materialization</div>
+            <h4 class="font-bold text-sm text-graphite dark:text-white">Enforce in Local Hooks and CI</h4>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 leading-relaxed">
+              Run <code>afwe materialize --apply</code> to generate chained git pre-commit hooks and GitHub Actions workflows verified against BLAKE3 manifests.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -314,7 +316,7 @@ import AtlasRadar from '../components/AtlasRadar.astro';
             <span class="text-xs font-mono font-bold tracking-widest text-survey-600 dark:text-survey-light uppercase">
               LOCAL-FIRST HARNESS
             </span>
-            <h2 class="text-2xl sm:text-3xl font-serif font-bold text-graphite dark:text-white">
+            <h2 class="text-2xl sm:text-3xl font-bold text-graphite dark:text-white">
               The intent layer for your codebase.
             </h2>
             <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed">
@@ -335,7 +337,7 @@ import AtlasRadar from '../components/AtlasRadar.astro';
             <div class="text-[11px] font-mono tracking-widest text-stone-400 uppercase font-semibold">
               READY TO GET STARTED?
             </div>
-            <h3 class="text-2xl sm:text-3xl font-serif font-bold text-white">
+            <h3 class="text-2xl sm:text-3xl font-bold text-white">
               Install AFWE in your project
             </h3>
             <p class="text-xs sm:text-sm text-stone-300 leading-relaxed max-w-md">

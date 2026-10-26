@@ -5,11 +5,13 @@ import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { OverviewPage } from "./components/OverviewPage";
 import { TimelinePage } from "./components/TimelinePage";
+import { BlueprintPage } from "./components/BlueprintPage";
 import { ChecksPage } from "./components/ChecksPage";
 import { DecisionsPage } from "./components/DecisionsPage";
 import { SettingsPage } from "./components/SettingsPage";
 import { DriftDrawer } from "./components/DriftDrawer";
 import { SearchPalette } from "./components/SearchPalette";
+import { GovernanceActionModal } from "./components/GovernanceActionModal";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { call } from "./api";
 
@@ -27,6 +29,8 @@ export default function App() {
     busy,
     setOnboardOpen,
     setConfigured,
+    undo,
+    redo,
   } = useStore();
 
   useEffect(() => {
@@ -43,6 +47,18 @@ export default function App() {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setDrawer(useStore.getState().drawer === "search" ? null : "search");
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        redo();
       }
       if (e.key === "Escape") setDrawer(null);
     };
@@ -87,7 +103,7 @@ export default function App() {
   }
 
   return (
-    <div className="app-container" style={{ display: "flex", height: "100vh", width: "100vw", overflow: "hidden", background: "#FAF8F3", color: "#1D1C1A", fontFamily: "'IBM Plex Sans', sans-serif" }}>
+    <div className="app-container" style={{ display: "flex", height: "100vh", width: "100vw", overflow: "hidden", background: "#FAF8F4", color: "#1D1C1A", fontFamily: "'IBM Plex Sans', sans-serif" }}>
       {/* 1. Left Vertical Navigation Sidebar */}
       <Sidebar />
 
@@ -103,8 +119,14 @@ export default function App() {
           )}
 
           {view === "timeline" && (
-            <ErrorBoundary name="Timeline">
+            <ErrorBoundary name="Timeline & Turns">
               <TimelinePage />
+            </ErrorBoundary>
+          )}
+
+          {view === "blueprint" && (
+            <ErrorBoundary name="Architectural Blueprint">
+              <BlueprintPage />
             </ErrorBoundary>
           )}
 
@@ -128,7 +150,7 @@ export default function App() {
         </main>
       </div>
 
-      {/* Drawers & Overlays */}
+      {/* Drawers, Overlays & Two-Tier Quarantine Modals */}
       {drawer === "drift" && (
         <ErrorBoundary name="Drift drawer">
           <DriftDrawer />
@@ -136,6 +158,8 @@ export default function App() {
       )}
 
       {drawer === "search" && <SearchPalette />}
+
+      <GovernanceActionModal />
 
       {toast && (
         <div

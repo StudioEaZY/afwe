@@ -3,7 +3,78 @@
 import MarketingLayout from '../../layouts/MarketingLayout.astro';
 
 export function getStaticPaths() {
+  const sponsoredSeatPoolArticle = {
+    title: "The Sponsored Seat Pool: Why AFWE Ties Free Access to Community Capacity",
+    date: 'October 26, 2026',
+    author: 'AFWE Core Architecture Team',
+    category: 'Economics & Open Source',
+    readTime: '7 min read',
+    content: `
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        Commercial developer tools face a difficult choice when sustaining open source software. Teams like React Flow have built a durable, reputable business around a Pro tier offering specialized components, layout templates, and dedicated enterprise support. That model works well for visual canvas frameworks where hobbyists need basic nodes while enterprise designers need advanced layouts.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        In architectural governance, however, feature gating introduces a dangerous paradox. If you place tree-sitter AST validation, guardrail tripwires, or the Codebase Radar behind a subscription paywall, individual developers and smaller teams simply run without them. When critical guardrails are missing, architectural drift accelerates. For AFWE to fulfill its mission, every engineer, hobbyist, and enterprise contributor needs identical access to the core engine, all 57 Model Context Protocol tools, and full local UI customization.
+      </p>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">The Real Economics of Open Tooling</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        Zero feature gatekeeping does not mean zero operating cost. Building and distributing a cross-platform Rust binary requires continuous integration, code-signing certificates, documentation hosting, tree-sitter parser grammar maintenance, and issue triage.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        When we calculated the actual cost to maintain and distribute AFWE per active developer, the figure settled between $0.40 and $0.60 per user per month. Rather than asking individual developers to pay a toll, we built the Community-Sponsored Seat Pool. Sustainers fund verified capacity in discrete bundles:
+      </p>
+      <ul class="list-disc list-inside space-y-2 mt-4 text-sm font-mono text-graphite/80 dark:text-stone-300">
+        <li><strong>Builder Sustainer ($29/mo)</strong>: Funds 50 community seats ($0.58/seat).</li>
+        <li><strong>Studio Sustainer ($79/mo)</strong>: Funds 150 community seats ($0.52/seat).</li>
+        <li><strong>Patron Sustainer ($199/mo)</strong>: Funds 500 community seats ($0.40/seat).</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">Transparent Seat Pool Telemetry</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        On our website, the community pool is displayed in real time: total seats funded, total seats claimed by active installations, and remaining open seats. When open seats exist, any developer can download the packaged binary with one click.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        If the open seat pool ever drops to zero, direct binary downloads from the website pause until new sustainer capacity is added. Importantly, AFWE remains 100% open source under the MIT license. Even if packaged website downloads pause, any developer can clone the repository and compile the binary with cargo build. Gating precompiled binary downloads protects our distribution infrastructure while honoring open source principles.
+      </p>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">The First-Launch Sustainer Gate</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        How do sustainers receive recognition without invasive ad tracking? When a new developer runs AFWE Studio for the first time, the client displays a thank-you splash screen attributing the installation to an active sustainer.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        This is a local routing mechanism, not an ad network. There are no tracking pixels, no behavioral telemetry, and no cookies. Even sustainers see another sustainer's attribution card on their initial run. If a sustainer cancels their subscription, the client automatically reroutes to an active sustainer the next time it connects online.
+      </p>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">Visual Tiers: Recognition Across the Community</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        Every developer can customize their own local AFWE Studio with themes, typography, and layout presets for free. Higher sustainer tiers do not gate local features; instead, they grant creative control over how your attribution card appears to the developers you support:
+      </p>
+      <ul class="list-disc list-inside space-y-2 mt-4 text-sm font-mono text-graphite/80 dark:text-stone-300">
+        <li><strong>Builder Tier</strong>: Opt-in attribution, chosen organization or personal name, and verified logo.</li>
+        <li><strong>Studio Tier</strong>: Custom brand color palette, rim styling, and badge design.</li>
+        <li><strong>Patron Tier</strong>: Bespoke micro-animations, glowing border aura, and interactive flair.</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">Unreal Engine-Style Support and 3:1 Monthly Points</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        Our support model takes inspiration from Epic Games and Unreal Engine: when our engineering team helps an organization solve a complex architectural boundary or create a custom AST guardrail, that solution is documented, sanitized, and published as an open blueprint for all developers.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        To prioritize engineering attention openly, every user receives governance points each month. When sustainers renew, they receive points at a 3:1 ratio (and up to 30:1 for Patrons). Points can be pooled to upvote community roadmap items or escalate architectural questions. Free users always retain an authentic voice, while sustainers gain amplified momentum to direct the future of AFWE.
+      </p>
+    `
+  };
+
   return [
+    {
+      params: { slug: 'the-sponsored-seat-pool' },
+      props: sponsoredSeatPoolArticle
+    },
+    {
+      params: { slug: 'why-afwe-rejects-feature-gatekeeping' },
+      props: sponsoredSeatPoolArticle
+    },
     {
       params: { slug: 'why-graphrag-isnt-enough' },
       props: {
@@ -20,7 +91,7 @@ export function getStaticPaths() {
             In practice, this model breaks down. Code search, AST query tools, and GraphRAG can tell an agent what your codebase <em>is</em> at this exact second. They cannot tell the agent what your code was <em>supposed to be</em>.
           </p>
           
-          <h2 class="text-2xl font-serif font-bold text-graphite dark:text-white mt-8 mb-4">The Accounting Defect in AI Coding</h2>
+          <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">The Accounting Defect in AI Coding</h2>
           <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
             For five hundred years, accountants have not relied on a single ledger. Single-entry bookkeeping is prone to silent fraud, missing entries, and drift. To prevent errors, double-entry bookkeeping requires every credit to balance an offsetting debit.
           </p>
@@ -29,10 +100,10 @@ export function getStaticPaths() {
           </p>
           <ul class="list-disc list-inside space-y-2 mt-4 text-sm font-mono text-graphite/80 dark:text-stone-300">
             <li><strong>Ledger 1 (The Implementation)</strong>: The actual physical source code in your repository, parsed via Tree-sitter.</li>
-            <li><strong>Ledger 2 (The Intent & Memory)</strong>: The declared AST claims, active pins, and geometric boundary constraints in <code class="px-1 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800">.afwe/</code>.</li>
+            <li><strong>Ledger 2 (The Intent and Memory)</strong>: The declared AST claims, active pins, and geometric boundary constraints in <code class="px-1 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800">.afwe/</code>.</li>
           </ul>
 
-          <h2 class="text-2xl font-serif font-bold text-graphite dark:text-white mt-8 mb-4">Verification at the Commit Boundary</h2>
+          <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">Verification at the Commit Boundary</h2>
           <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
             When an agent finishes editing files, AFWE does not ask an LLM if the change looks good. A deterministic Rust kernel checks every declared claim and invariant rule. If an agent silently dropped a checkout payment method or violated an architectural boundary, the turn gate returns a REDO with structured leaf-to-root diagnostics.
           </p>
@@ -55,7 +126,7 @@ export function getStaticPaths() {
             As conversations stretch and context windows fill up, agents reliably forget negative instructions. Prose instructions are advisory suggestions; compilers and git hooks require hard mathematics.
           </p>
 
-          <h2 class="text-2xl font-serif font-bold text-graphite dark:text-white mt-8 mb-4">Directional AST Invariants</h2>
+          <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">Directional AST Invariants</h2>
           <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
             In AFWE, architecture rules are defined as directed graph edges in <code class="px-1 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800">constraints.yaml</code>:
           </p>
@@ -84,7 +155,7 @@ constraints:
             When autonomous coding agents are granted pull request rights, a critical security vulnerability arises: what prevents the agent from modifying the CI configuration or deleting the linter rules that caught its bugs?
           </p>
 
-          <h2 class="text-2xl font-serif font-bold text-graphite dark:text-white mt-8 mb-4">Cryptographic Guardrail Manifests</h2>
+          <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">Cryptographic Guardrail Manifests</h2>
           <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
             When you run <code class="px-1 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">afwe materialize --apply</code>, AFWE computes a BLAKE3 cryptographic hash of every guardrail specification, constraint file, and pre-commit hook, storing them in <code class="px-1 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">.afwe/guardrails/manifest.yaml</code>.
           </p>
@@ -100,7 +171,7 @@ constraints:
 const { title, date, author, category, readTime, content } = Astro.props;
 ---
 
-<MarketingLayout title={`${title} — AFWE Blog`} activeNav="blog">
+<MarketingLayout title={`${title} · AFWE Blog`} activeNav="blog">
   <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-10">
     <div class="space-y-4 border-b border-stone-300 dark:border-obsidian-800 pb-8">
       <div class="flex items-center gap-2 text-xs font-mono text-graphite/60 dark:text-stone-400">
@@ -108,7 +179,7 @@ const { title, date, author, category, readTime, content } = Astro.props;
         <span>/</span>
         <span class="text-survey-600 dark:text-survey-light font-bold">{category}</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-graphite dark:text-white leading-[1.15] tracking-tight">
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-graphite dark:text-white leading-[1.15] tracking-tight">
         {title}
       </h1>
       <div class="flex items-center gap-4 text-xs font-mono text-graphite/70 dark:text-stone-400 pt-2">

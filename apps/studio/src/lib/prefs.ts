@@ -1,5 +1,5 @@
 // apps/studio/src/lib/prefs.ts
-// Local persistence for Studio user preferences (default start view, bookmarks, lens preference).
+// Local persistence for Studio user preferences (default start view, bookmarks, lens preference, color palettes, and quarantine grace timer).
 
 export interface StudioBookmark {
   id: string;
@@ -12,14 +12,20 @@ export interface StudioPrefs {
   defaultStartNodeId: string | null;
   defaultLens: "radial" | "topology";
   bookmarks: StudioBookmark[];
+  radialPalette: string;
+  topologyPalette: string;
+  graceSeconds: number; // Tier 1 quarantine countdown (default 10)
 }
 
-const PREFS_STORAGE_KEY = "afwe.studio.prefs.v2";
+const PREFS_STORAGE_KEY = "afwe.studio.prefs.v2.5";
 
 const DEFAULT_PREFS: StudioPrefs = {
   defaultStartNodeId: null,
   defaultLens: "radial",
   bookmarks: [],
+  radialPalette: "editorial",
+  topologyPalette: "cartographic",
+  graceSeconds: 10,
 };
 
 export function getStudioPrefs(): StudioPrefs {
@@ -31,6 +37,9 @@ export function getStudioPrefs(): StudioPrefs {
       defaultStartNodeId: parsed.defaultStartNodeId || null,
       defaultLens: parsed.defaultLens === "topology" ? "topology" : "radial",
       bookmarks: Array.isArray(parsed.bookmarks) ? parsed.bookmarks : [],
+      radialPalette: parsed.radialPalette || "editorial",
+      topologyPalette: parsed.topologyPalette || "cartographic",
+      graceSeconds: typeof parsed.graceSeconds === "number" ? parsed.graceSeconds : 10,
     };
   } catch {
     return DEFAULT_PREFS;
@@ -69,4 +78,12 @@ export function removeBookmark(bookmarkId: string): StudioPrefs {
   const current = getStudioPrefs();
   const updated = current.bookmarks.filter((b) => b.id !== bookmarkId);
   return saveStudioPrefs({ bookmarks: updated });
+}
+
+export function setPalettes(radialPalette: string, topologyPalette: string): StudioPrefs {
+  return saveStudioPrefs({ radialPalette, topologyPalette });
+}
+
+export function setGraceSeconds(graceSeconds: number): StudioPrefs {
+  return saveStudioPrefs({ graceSeconds });
 }

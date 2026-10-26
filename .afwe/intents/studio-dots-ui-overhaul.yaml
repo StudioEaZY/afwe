@@ -1,6 +1,6 @@
 id: studio-dots-ui-overhaul
-title: Fix Attachment & API response shape mismatches across Studio pages
-statement: Normalize Attachment objects ({nodes, files, symbols, global}) and unwrap API envelope responses ({turns}, {currently_missing}, {guides, questions, profiles}, {memory}) across hierarchy.ts, TimelinePage, ChecksPage, DecisionsPage, NodeInspector, and SettingsPage
+title: 'Studio v2.5: Two-Tier Quarantine Grace System, Turns Workstation, Dual Color System, Deep-Linked Checks, and Wonky Topology'
+statement: Implement Two-Tier Undo & Quarantine Architecture (10s quarantine before dispatching fixes to AI agents, modifying source files via 3-way restore/revert, or materializing hooks, because codebase actions ripple outward; instant apply + persistent undo for local actions); overhaul Timeline & Turns into unified visual diff workstation matching screenshot; build separate color engines for Radial and Topology with Settings; add deep-links to Checks; create Blueprint page; implement multi-lobe organic Topology hulls.
 status: active
 origin: human
 attaches:
@@ -10,6 +10,7 @@ from_turns:
 - t0020
 - t0024
 - t0026
+- t0027
 history:
 - turn: t0020
   ts: 2026-10-16T12:39:53Z
@@ -20,6 +21,9 @@ history:
 - turn: t0026
   ts: 2026-10-26T11:35:58Z
   statement: Normalize Attachment objects ({nodes, files, symbols, global}) and unwrap API envelope responses ({turns}, {currently_missing}, {guides, questions, profiles}, {memory}) across hierarchy.ts, TimelinePage, ChecksPage, DecisionsPage, NodeInspector, and SettingsPage
+- turn: t0027
+  ts: 2026-10-26T16:04:05Z
+  statement: Implement Two-Tier Undo & Quarantine Architecture (10s quarantine before dispatching fixes to AI agents, modifying source files via 3-way restore/revert, or materializing hooks, because codebase actions ripple outward; instant apply + persistent undo for local actions); overhaul Timeline & Turns into unified visual diff workstation matching screenshot; build separate color engines for Radial and Topology with Settings; add deep-links to Checks; create Blueprint page; implement multi-lobe organic Topology hulls.
 created: 2026-10-16T12:39:53Z
-updated: 2026-10-26T11:35:58Z
+updated: 2026-10-26T16:04:05Z
 task: task-f90086
