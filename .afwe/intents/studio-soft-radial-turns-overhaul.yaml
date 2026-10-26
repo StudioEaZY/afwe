@@ -1,0 +1,17 @@
+id: studio-soft-radial-turns-overhaul
+title: 'Studio v2.6: Soft Pill-Wedge Radial Map, Orbiting Dependencies, Interactive Dual Scrubber, and CodeMirror 6 Diff Engine'
+statement: Port soft editorial tactile visual system and light/dark theme from AFWE Codebase Atlas. Implement pill-wedge geometry, layer/growth scaling, hover lineage fade, orbiting dependency pills, and rewind timeline in RadialMap. Re-use TopologyMap in Timeline & Turns for live Before/After diffs. Build interactive dual scrubber with range selection handles, pan, and wheel zoom. Implement CodeMirror 6 side-by-side diff viewer with language support and universal stream fallback tokenizer. Ensure timeline::diff delivers unified git hunks.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0028
+history:
+- turn: t0028
+  ts: 2026-10-26T21:53:51Z
+  statement: Port soft editorial tactile visual system and light/dark theme from AFWE Codebase Atlas. Implement pill-wedge geometry, layer/growth scaling, hover lineage fade, orbiting dependency pills, and rewind timeline in RadialMap. Re-use TopologyMap in Timeline & Turns for live Before/After diffs. Build interactive dual scrubber with range selection handles, pan, and wheel zoom. Implement CodeMirror 6 side-by-side diff viewer with language support and universal stream fallback tokenizer. Ensure timeline::diff delivers unified git hunks.
+created: 2026-10-26T21:53:51Z
+updated: 2026-10-26T21:53:51Z
+task: task-t0028

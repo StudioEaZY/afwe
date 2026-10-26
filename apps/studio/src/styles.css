@@ -1,23 +1,129 @@
 :root {
-  --bg: #FAF8F3;
-  --bg2: #FFFFFF;
-  --bg3: #F4EFE6;
-  --line: #E5E0D5;
-  --fg: #1D1C1A;
-  --muted: #6B675D;
-  --accent: #2E7A57;
-  --accent2: #87661A;
-  --ok: #2E7A57;
-  --warn: #C98A3C;
-  --bad: #B23A2B;
-  --decision: #2E7A57;
-  --constraint: #87661A;
-  --exception: #B23A2B;
-  --terminology: #6B675D;
-  --problem: #B23A2B;
+  --bg: #F3EFE6;
+  --bg2: #FBF8F2;
+  --bg3: #EFEADF;
+  --panel: #FBF8F2;
+  --side: #EFEADF;
+  --line: #E5DFD0;
+  --ink: #2C2A25;
+  --fg: #2C2A25;
+  --mute: #8B8678;
+  --muted: #8B8678;
+  --shadow: rgba(90, 70, 30, 0.16);
+  --glow: rgba(255, 255, 255, 0.7);
+
+  /* Soft tactile category fills */
+  --mapped: #BCC8B0;
+  --inferred: #E9DAC0;
+  --legacy: #DACDBB;
+  --unm: #EEE8DA;
+  --hatch: #C3BAA6;
+
+  /* Accents */
+  --accent: #4A6150;
+  --accent-ink: #F6F3EA;
+  --accent2: #C07A12;
+  --amber: #C07A12;
+  --red: #C4513F;
+  --redbg: #F4D8D0;
+  --bad: #C4513F;
+  --warn: #C07A12;
+  --ok: #4A6150;
+
+  /* Bars, disc, & typography */
+  --bar: #D3CAB4;
+  --disc: #FBF9F3;
+  --decision: #4A6150;
+  --constraint: #C07A12;
+  --exception: #C4513F;
+  --terminology: #8B8678;
+  --problem: #C4513F;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --serif: "Newsreader", serif;
+  --sans: "Avenir Next", "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --serif: "Iowan Old Style", "Palatino Linotype", "Newsreader", Georgia, serif;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #191816;
+    --bg2: #22211E;
+    --bg3: #1D1C1A;
+    --panel: #22211E;
+    --side: #1D1C1A;
+    --line: #34322D;
+    --ink: #EDE8DC;
+    --fg: #EDE8DC;
+    --mute: #9C968A;
+    --muted: #9C968A;
+    --shadow: rgba(0, 0, 0, 0.5);
+    --glow: rgba(255, 255, 255, 0.05);
+
+    --mapped: #56694F;
+    --inferred: #76694F;
+    --legacy: #5E5547;
+    --unm: #2A2926;
+    --hatch: #6E6859;
+
+    --accent: #63806A;
+    --accent-ink: #F4F1E8;
+    --accent2: #E7A33A;
+    --amber: #E7A33A;
+    --red: #D4604C;
+    --redbg: #4B2722;
+    --bad: #D4604C;
+    --warn: #E7A33A;
+    --ok: #63806A;
+
+    --bar: #CFC9B8;
+    --disc: #201F1C;
+    --decision: #63806A;
+    --constraint: #E7A33A;
+    --exception: #D4604C;
+    --terminology: #9C968A;
+    --problem: #D4604C;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #191816;
+  --bg2: #22211E;
+  --bg3: #1D1C1A;
+  --panel: #22211E;
+  --side: #1D1C1A;
+  --line: #34322D;
+  --ink: #EDE8DC;
+  --fg: #EDE8DC;
+  --mute: #9C968A;
+  --muted: #9C968A;
+  --shadow: rgba(0, 0, 0, 0.5);
+  --glow: rgba(255, 255, 255, 0.05);
+
+  --mapped: #56694F;
+  --inferred: #76694F;
+  --legacy: #5E5547;
+  --unm: #2A2926;
+  --hatch: #6E6859;
+
+  --accent: #63806A;
+  --accent-ink: #F4F1E8;
+  --accent2: #E7A33A;
+  --amber: #E7A33A;
+  --red: #D4604C;
+  --redbg: #4B2722;
+  --bad: #D4604C;
+  --warn: #E7A33A;
+  --ok: #63806A;
+
+  --bar: #CFC9B8;
+  --disc: #201F1C;
+  --decision: #63806A;
+  --constraint: #E7A33A;
+  --exception: #D4604C;
+  --terminology: #9C968A;
+  --problem: #D4604C;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
@@ -842,4 +948,252 @@ pre.md.body { font-family: var(--sans); font-size: 13px; }
 .bnode.delta-plannedfuture {
   border-color: #a855f7 !important;
   border-style: dashed !important;
+}
+
+/* AFWE Soft Atlas & Tactile Radial / Topology System */
+.serif { font-family: var(--serif); font-weight: 600; }
+.card-soft {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 1px 0 var(--glow) inset, 0 18px 40px -26px var(--shadow);
+}
+.stage-soft {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at 50% 42%, var(--panel), var(--side) 135%);
+  padding: 10px 10px 32px;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 0 var(--glow) inset, 0 18px 40px -26px var(--shadow);
+}
+.co {
+  position: absolute;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 20px -14px var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+  z-index: 5;
+}
+.co:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px -12px var(--shadow);
+}
+.co b { display: block; font-weight: 600; font-size: 13px; color: var(--ink); }
+.co span { color: var(--mute); font-size: 11px; }
+.co i {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--unm);
+  font-style: normal;
+  flex-shrink: 0;
+}
+.zoom-controls {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 6;
+}
+.zoom-controls .btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px -4px var(--shadow);
+}
+.zoom-controls .btn-icon:hover {
+  background: var(--side);
+}
+.stage-legend {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--mute);
+  padding: 0 14px;
+  pointer-events: none;
+}
+.stage-legend i {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+
+/* SVG Pill-Wedge Elements */
+.cell {
+  cursor: pointer;
+  stroke-width: 6;
+  stroke-linejoin: round;
+  transition: filter 0.15s, opacity 0.2s;
+}
+.cell:hover { filter: brightness(1.07); }
+.s-mapped { fill: var(--mapped); stroke: var(--mapped); }
+.s-inferred { fill: var(--inferred); stroke: var(--inferred); }
+.s-legacy { fill: var(--legacy); stroke: var(--legacy); }
+.s-unmapped { fill: url(#hatch); stroke: var(--unm); }
+.cell.v { fill: var(--redbg); stroke: var(--redbg); }
+.cell.dim { opacity: 0.2; }
+.cells { filter: drop-shadow(0 6px 10px var(--shadow)); }
+.ov {
+  fill: none;
+  stroke-width: 1.5;
+  pointer-events: none;
+  stroke-linejoin: round;
+}
+.ov.pin, .ov.sp { stroke: var(--amber); stroke-dasharray: 5 4; }
+.ov.viol { stroke: var(--red); stroke-dasharray: 5 4; }
+.ov.prop { stroke: var(--red); stroke-dasharray: 2 4; }
+.selo {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.2;
+  pointer-events: none;
+  stroke-linejoin: round;
+}
+.disc {
+  fill: var(--disc);
+  stroke: var(--line);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 22px 34px var(--shadow));
+}
+.guide {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+  opacity: 0.55;
+}
+.cell.fade { opacity: 0.38; }
+.cell.dim.fade { opacity: 0.12; }
+.lbl { text-anchor: middle; fill: var(--ink); pointer-events: none; }
+.lbl.m { fill: var(--mute); }
+.ico { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; opacity: 0.8; }
+.lk { fill: none; stroke: var(--amber); stroke-width: 1.7; stroke-linecap: round; pointer-events: none; }
+.ctr { fill: url(#cg); stroke: var(--line); stroke-width: 1.5; }
+.ctr.link { cursor: pointer; }
+.ex { cursor: pointer; }
+.ex rect { fill: var(--panel); stroke: var(--line); stroke-width: 1.2; filter: drop-shadow(0 5px 8px var(--shadow)); }
+.ex.bad rect { fill: var(--redbg); stroke: var(--red); }
+.ex text { fill: var(--ink); font-size: 13px; font-weight: 500; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.edge { fill: none; stroke: var(--mute); stroke-width: 1.7; opacity: 0.75; }
+.edge.in { stroke-dasharray: 2 6; stroke-linecap: round; stroke-width: 2.2; }
+.edge.bad { stroke: var(--red); stroke-dasharray: 6 4; opacity: 1; }
+.ex:hover .edge { stroke: var(--ink); opacity: 1; stroke-width: 2.6; }
+.ex.bad:hover .edge { stroke: var(--red); }
+.dot { fill: var(--ink); stroke: var(--panel); stroke-width: 2; }
+.bar-t { fill: var(--bar); opacity: 0.9; }
+.bar-t.fut { opacity: 0.3; }
+
+/* Floating Tooltip */
+.tip-floating {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 13px;
+  font-size: 12px;
+  line-height: 1.45;
+  max-width: 260px;
+  box-shadow: 0 16px 34px -14px var(--shadow);
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.tip-floating.on { opacity: 1; }
+.tip-floating b { font-size: 14px; color: var(--ink); }
+.tip-floating .tm { color: var(--mute); font-size: 11px; }
+.tip-floating .fl { color: var(--amber); font-weight: 500; }
+.tip-floating .fr { color: var(--red); font-weight: 500; }
+
+/* Conic Ring & KPI in Sidebar */
+.conic-ring {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.conic-ring b {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--side);
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  color: var(--ink);
+}
+.kpi-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--mute);
+  font-size: 12px;
+  padding: 2px 0;
+}
+.kpi-row span:last-child {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* CodeMirror 6 Theming */
+.cm-editor {
+  height: 100%;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+  background: var(--panel) !important;
+  color: var(--ink) !important;
+}
+.cm-gutters {
+  background: var(--side) !important;
+  color: var(--mute) !important;
+  border-right: 1px solid var(--line) !important;
+}
+.cm-merge-view {
+  background: var(--panel) !important;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.cm-merge-gap {
+  background: var(--side) !important;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+.cm-insertedLine {
+  background-color: rgba(74, 97, 80, 0.15) !important;
+}
+.cm-deletedLine {
+  background-color: rgba(196, 81, 63, 0.15) !important;
 }

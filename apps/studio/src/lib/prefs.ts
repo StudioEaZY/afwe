@@ -15,9 +15,10 @@ export interface StudioPrefs {
   radialPalette: string;
   topologyPalette: string;
   graceSeconds: number; // Tier 1 quarantine countdown (default 10)
+  theme: "system" | "light" | "dark";
 }
 
-const PREFS_STORAGE_KEY = "afwe.studio.prefs.v2.5";
+const PREFS_STORAGE_KEY = "afwe.studio.prefs.v2.6";
 
 const DEFAULT_PREFS: StudioPrefs = {
   defaultStartNodeId: null,
@@ -26,6 +27,7 @@ const DEFAULT_PREFS: StudioPrefs = {
   radialPalette: "editorial",
   topologyPalette: "cartographic",
   graceSeconds: 10,
+  theme: "system",
 };
 
 export function getStudioPrefs(): StudioPrefs {
@@ -40,6 +42,7 @@ export function getStudioPrefs(): StudioPrefs {
       radialPalette: parsed.radialPalette || "editorial",
       topologyPalette: parsed.topologyPalette || "cartographic",
       graceSeconds: typeof parsed.graceSeconds === "number" ? parsed.graceSeconds : 10,
+      theme: parsed.theme === "dark" || parsed.theme === "light" ? parsed.theme : "system",
     };
   } catch {
     return DEFAULT_PREFS;
@@ -86,4 +89,19 @@ export function setPalettes(radialPalette: string, topologyPalette: string): Stu
 
 export function setGraceSeconds(graceSeconds: number): StudioPrefs {
   return saveStudioPrefs({ graceSeconds });
+}
+
+export function setTheme(theme: "system" | "light" | "dark"): StudioPrefs {
+  applyTheme(theme);
+  return saveStudioPrefs({ theme });
+}
+
+export function applyTheme(theme: "system" | "light" | "dark") {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  if (theme === "system") {
+    root.removeAttribute("data-theme");
+  } else {
+    root.setAttribute("data-theme", theme);
+  }
 }

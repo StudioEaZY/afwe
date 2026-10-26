@@ -23,7 +23,15 @@ export type View =
   | "memory"
   | "pins";
 
-export type FilterMode = "all" | "mapped" | "uncharted" | "proposals" | "issues";
+export type FilterMode =
+  | "all"
+  | "mapped"
+  | "inferred"
+  | "unmapped"
+  | "uncharted"
+  | "legacy"
+  | "proposals"
+  | "issues";
 
 export interface UndoAction {
   id: string;

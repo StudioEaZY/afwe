@@ -10,12 +10,30 @@ import {
 } from "../lib/hierarchy";
 import { getTopologyTerritoryStyle } from "../lib/palettes";
 
-interface TopologyMapProps {
+export interface TopologyDiffMode {
+  addedNodes?: Set<string>;
+  modifiedNodes?: Set<string>;
+  removedNodes?: Set<string>;
+  violatedNodes?: Set<string>;
+  addedEdges?: Set<string>;
+  removedEdges?: Set<string>;
+}
+
+export interface TopologyMapProps {
+  compact?: boolean;
+  snapshotScene?: any | null;
+  diffMode?: TopologyDiffMode | null;
   onSelectEntity?: (entity: SelectedEntity) => void;
   onDrillDown?: (nodeId: string) => void;
 }
 
-export const TopologyMap: React.FC<TopologyMapProps> = ({ onSelectEntity, onDrillDown }) => {
+export const TopologyMap: React.FC<TopologyMapProps> = ({
+  compact = false,
+  snapshotScene = null,
+  diffMode = null,
+  onSelectEntity,
+  onDrillDown,
+}) => {
   const {
     graph,
     currentScopeId,
@@ -30,7 +48,17 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({ onSelectEntity, onDril
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [activeAttentionTab, setActiveAttentionTab] = useState<"attention" | "turns" | "proposals" | "pins">("attention");
 
-  const rootHierarchy = useMemo(() => buildHierarchyTree(graph), [graph]);
+  // If a snapshotScene is provided, use its entities, else use live graph
+  const effectiveGraph = useMemo(() => {
+    if (!snapshotScene) return graph;
+    return {
+      ...graph,
+      nodes: snapshotScene.nodes || graph?.nodes || [],
+      code_edges: snapshotScene.edges || graph?.code_edges || [],
+    };
+  }, [snapshotScene, graph]);
+
+  const rootHierarchy = useMemo(() => buildHierarchyTree(effectiveGraph), [effectiveGraph]);
 
   const focusNode: HierarchyNode = useMemo(() => {
     if (!currentScopeId) return rootHierarchy;
@@ -288,74 +316,76 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({ onSelectEntity, onDril
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "#FAF8F4",
-        color: "#1D1C1A",
+        background: compact ? "transparent" : "var(--bg)",
+        color: "var(--ink)",
         fontFamily: "'IBM Plex Sans', sans-serif",
       }}
     >
-      {/* 1. Top KPI Summary Strip (Screenshot 3) */}
-      <div style={{ padding: "14px 24px 8px 24px", borderBottom: "1px solid #ECE7D9", background: "#FAF8F4" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
-            <h2 style={{ fontFamily: "Newsreader, serif", fontSize: "24px", fontWeight: 600, color: "#1D1C1A", margin: 0 }}>
-              {focusNode.label} {isDrilledIn ? "Domain Topology" : "Topology"}
-            </h2>
-            <span style={{ fontSize: "12px", background: "#E8F3ED", color: "#2E7A57", padding: "2px 8px", borderRadius: "12px", fontWeight: 600 }}>
-              ● {focusNode.mappedCount > 0 ? "Charted Architecture" : "Uncharted"}
-            </span>
-          </div>
-
-          {isDrilledIn && (
-            <button
-              onClick={() => drillUp()}
-              style={{
-                background: "#FFFFFF",
-                border: "1px solid #DCD9D0",
-                padding: "6px 14px",
-                borderRadius: "6px",
-                fontSize: "12px",
-                fontWeight: 600,
-                color: "#1D1C1A",
-                cursor: "pointer",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-              }}
-            >
-              ↑ Step out to Root
-            </button>
-          )}
-        </div>
-
-        {/* 6-KPI Metric Pill Strip */}
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          {[
-            { label: "Total files", value: totalFiles.toLocaleString() },
-            { label: "Features", value: children.length },
-            { label: "Modules", value: Math.max(1, Math.round(totalFiles / 32)) },
-            { label: "Pinned items", value: pinsCount, isPin: true },
-            { label: "Open proposals", value: questionsCount },
-            { label: "Rule violation", value: violationsCount, isViolation: violationsCount > 0 },
-          ].map((kpi, idx) => (
-            <div
-              key={idx}
-              style={{
-                background: kpi.isViolation ? "#FDECE9" : "#FFFFFF",
-                border: `1px solid ${kpi.isViolation ? "#FCD8D2" : "#ECE7D9"}`,
-                borderRadius: "6px",
-                padding: "4px 10px",
-                fontSize: "11px",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <span style={{ color: "#8E8878" }}>{kpi.label}</span>
-              <span style={{ fontWeight: 700, color: kpi.isViolation ? "#C94A38" : kpi.isPin ? "#87661A" : "#1D1C1A" }}>
-                {kpi.value}
+      {/* 1. Top KPI Summary Strip (Only when not compact) */}
+      {!compact && (
+        <div style={{ padding: "14px 24px 8px 24px", borderBottom: "1px solid var(--line)", background: "var(--panel)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+              <h2 style={{ fontFamily: "Newsreader, serif", fontSize: "24px", fontWeight: 600, color: "var(--ink)", margin: 0 }}>
+                {focusNode.label} {isDrilledIn ? "Domain Topology" : "Topology"}
+              </h2>
+              <span style={{ fontSize: "12px", background: "var(--side)", color: "var(--accent)", padding: "2px 8px", borderRadius: "12px", fontWeight: 600 }}>
+                ● {focusNode.mappedCount > 0 ? "Charted Architecture" : "Uncharted"}
               </span>
             </div>
-          ))}
+
+            {isDrilledIn && (
+              <button
+                onClick={() => drillUp()}
+                style={{
+                  background: "var(--panel)",
+                  border: "1px solid var(--line)",
+                  padding: "6px 14px",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  color: "var(--ink)",
+                  cursor: "pointer",
+                  boxShadow: "0 1px 3px var(--shadow)",
+                }}
+              >
+                ↑ Step out to Root
+              </button>
+            )}
+          </div>
+
+          {/* 6-KPI Metric Pill Strip */}
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            {[
+              { label: "Total files", value: totalFiles.toLocaleString() },
+              { label: "Features", value: children.length },
+              { label: "Modules", value: Math.max(1, Math.round(totalFiles / 32)) },
+              { label: "Pinned items", value: pinsCount, isPin: true },
+              { label: "Open proposals", value: questionsCount },
+              { label: "Rule violation", value: violationsCount, isViolation: violationsCount > 0 },
+            ].map((kpi, idx) => (
+              <div
+                key={idx}
+                style={{
+                  background: kpi.isViolation ? "var(--redbg)" : "var(--panel)",
+                  border: `1px solid ${kpi.isViolation ? "var(--red)" : "var(--line)"}`,
+                  borderRadius: "6px",
+                  padding: "4px 10px",
+                  fontSize: "11px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <span style={{ color: "var(--mute)" }}>{kpi.label}</span>
+                <span style={{ fontWeight: 700, color: kpi.isViolation ? "var(--red)" : kpi.isPin ? "var(--amber)" : "var(--ink)" }}>
+                  {kpi.value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 2. Main SVG Topology Canvas */}
       <div style={{ flex: 1, overflow: "auto", position: "relative" }}>
@@ -507,10 +537,19 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({ onSelectEntity, onDril
                 {/* Feature Cards Inside Territory */}
                 {territory.cards.map((card: any) => {
                   const isHovered = hoveredNodeId === card.id;
+                  const isAdded = diffMode?.addedNodes?.has(card.id) || diffMode?.addedNodes?.has(card.label);
+                  const isModified = diffMode?.modifiedNodes?.has(card.id) || diffMode?.modifiedNodes?.has(card.label);
+                  const isRemoved = diffMode?.removedNodes?.has(card.id) || diffMode?.removedNodes?.has(card.label);
+                  const isDiffViolated = diffMode?.violatedNodes?.has(card.id) || diffMode?.violatedNodes?.has(card.label);
+
+                  let strokeColor = card.hasViolation || isDiffViolated ? "var(--red)" : isAdded ? "var(--accent)" : isModified ? "var(--amber)" : isRemoved ? "var(--red)" : "var(--line)";
+                  let strokeWidth = isAdded || isModified || isRemoved || isDiffViolated || card.hasViolation ? 1.8 : 1;
+
                   return (
                     <g
                       key={card.id}
                       transform={`translate(${card.x}, ${card.y})`}
+                      opacity={isRemoved ? 0.45 : 1}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleSelectNode(card.node);
@@ -527,20 +566,31 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({ onSelectEntity, onDril
                         width={card.width}
                         height={card.height}
                         rx="6"
-                        fill={isHovered ? "#FBF9F4" : "#FFFFFF"}
-                        stroke={card.hasViolation ? "#C94A38" : "#E2DCce"}
-                        strokeWidth={card.hasViolation ? 1.5 : 1}
+                        fill={isHovered ? "var(--side)" : "var(--panel)"}
+                        stroke={strokeColor}
+                        strokeWidth={strokeWidth}
+                        strokeDasharray={isRemoved ? "4 3" : "none"}
                         filter="url(#topo-card-shadow)"
                       />
-                      <text x="8" y="16" fill="#1D1C1A" style={{ fontSize: "11px", fontWeight: 600 }}>
+                      <text x="8" y="16" fill="var(--ink)" style={{ fontSize: "11px", fontWeight: 600 }}>
                         {card.label.length > 12 ? `${card.label.slice(0, 11)}…` : card.label}
                       </text>
-                      <text x="8" y="30" fill="#8E8878" style={{ fontSize: "9.5px", fontFamily: "'IBM Plex Mono', monospace" }}>
+                      <text x="8" y="30" fill="var(--mute)" style={{ fontSize: "9.5px", fontFamily: "var(--mono)" }}>
                         {card.subPath}
                       </text>
-                      {card.hasViolation && <circle cx={card.width - 10} cy="12" r="4.5" fill="#C94A38" />}
-                      {card.hasPin && !card.hasViolation && (
-                        <text x={card.width - 14} y="15" fill="#C89D54" fontSize="10">
+                      {(card.hasViolation || isDiffViolated) && <circle cx={card.width - 10} cy="12" r="4.5" fill="var(--red)" />}
+                      {isAdded && (
+                        <text x={card.width - 14} y="15" fill="var(--accent)" fontSize="11" fontWeight="bold">
+                          +
+                        </text>
+                      )}
+                      {isModified && (
+                        <text x={card.width - 14} y="15" fill="var(--amber)" fontSize="10" fontWeight="bold">
+                          Δ
+                        </text>
+                      )}
+                      {card.hasPin && !card.hasViolation && !isAdded && !isModified && (
+                        <text x={card.width - 14} y="15" fill="var(--amber)" fontSize="10">
                           ✦
                         </text>
                       )}
@@ -553,107 +603,109 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({ onSelectEntity, onDril
         </svg>
       </div>
 
-      {/* 3. Bottom Attention Strip & Legend (Screenshot 2 & 3) */}
-      <div style={{ background: "#FFFFFF", borderTop: "1px solid #ECE7D9" }}>
-        {/* Bottom Legend */}
-        <div style={{ padding: "6px 24px", borderBottom: "1px solid #ECE7D9", display: "flex", alignItems: "center", gap: "16px", fontSize: "11px", color: "#6E685F" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#2E7A57", display: "inline-block" }} />
-            <span>Mapped</span>
+      {/* 3. Bottom Attention Strip & Legend (Only when not compact) */}
+      {!compact && (
+        <div style={{ background: "var(--panel)", borderTop: "1px solid var(--line)" }}>
+          {/* Bottom Legend */}
+          <div style={{ padding: "6px 24px", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", gap: "16px", fontSize: "11px", color: "var(--mute)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--accent)", display: "inline-block" }} />
+              <span>Mapped</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--red)", display: "inline-block" }} />
+              <span>Violation</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <span style={{ color: "var(--amber)", fontWeight: "bold" }}>✦</span>
+              <span>Pinned</span>
+            </div>
+            <span style={{ color: "var(--line)" }}>|</span>
+            <span>──→ Uses</span>
+            <span style={{ color: "var(--red)" }}>- - → Forbidden Dep</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#C94A38", display: "inline-block" }} />
-            <span>Violation</span>
+
+          {/* 4-Column Interactive Attention Tray */}
+          <div style={{ display: "flex", padding: "10px 24px", gap: "14px", background: "var(--side)" }}>
+            {/* Needs Attention Tab */}
+            <div
+              onClick={() => setActiveAttentionTab("attention")}
+              style={{
+                flex: 1,
+                background: activeAttentionTab === "attention" ? "var(--panel)" : "transparent",
+                border: `1px solid ${activeAttentionTab === "attention" ? "var(--line)" : "transparent"}`,
+                borderRadius: "6px",
+                padding: "8px 12px",
+                cursor: "pointer",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--red)" }}>● Needs attention ({violationsCount + questionsCount})</span>
+              </div>
+              <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "2px" }}>
+                {violationsCount} rule violation · {questionsCount} calibration questions
+              </div>
+            </div>
+
+            {/* Recent Turns Tab */}
+            <div
+              onClick={() => {
+                setActiveAttentionTab("turns");
+                jumpToTurn("t0004");
+              }}
+              style={{
+                flex: 1,
+                background: activeAttentionTab === "turns" ? "var(--panel)" : "transparent",
+                border: `1px solid ${activeAttentionTab === "turns" ? "var(--line)" : "transparent"}`,
+                borderRadius: "6px",
+                padding: "8px 12px",
+                cursor: "pointer",
+              }}
+            >
+              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--ink)" }}>Recent turns</div>
+              <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "2px" }}>
+                Browse chronological turn diffs
+              </div>
+            </div>
+
+            {/* Proposals Tab */}
+            <div
+              onClick={() => setActiveAttentionTab("proposals")}
+              style={{
+                flex: 1,
+                background: activeAttentionTab === "proposals" ? "var(--panel)" : "transparent",
+                border: `1px solid ${activeAttentionTab === "proposals" ? "var(--line)" : "transparent"}`,
+                borderRadius: "6px",
+                padding: "8px 12px",
+                cursor: "pointer",
+              }}
+            >
+              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--ink)" }}>Proposals</div>
+              <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "2px" }}>
+                Decouple payments and boundary changes
+              </div>
+            </div>
+
+            {/* Pinned Items Tab */}
+            <div
+              onClick={() => setActiveAttentionTab("pins")}
+              style={{
+                flex: 1,
+                background: activeAttentionTab === "pins" ? "var(--panel)" : "transparent",
+                border: `1px solid ${activeAttentionTab === "pins" ? "var(--line)" : "transparent"}`,
+                borderRadius: "6px",
+                padding: "8px 12px",
+                cursor: "pointer",
+              }}
+            >
+              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--amber)" }}>✦ Pinned items ({pinsCount})</div>
+              <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "2px" }}>
+                Invariants and governance checks locked
+              </div>
+            </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            <span style={{ color: "#C89D54", fontWeight: "bold" }}>✦</span>
-            <span>Pinned</span>
-          </div>
-          <span style={{ color: "#DCD9D0" }}>|</span>
-          <span>──→ Uses</span>
-          <span style={{ color: "#C94A38" }}>- - → Forbidden Dep</span>
         </div>
-
-        {/* 4-Column Interactive Attention Tray */}
-        <div style={{ display: "flex", padding: "10px 24px", gap: "14px", background: "#FAF8F4" }}>
-          {/* Needs Attention Tab */}
-          <div
-            onClick={() => setActiveAttentionTab("attention")}
-            style={{
-              flex: 1,
-              background: activeAttentionTab === "attention" ? "#FFFFFF" : "transparent",
-              border: `1px solid ${activeAttentionTab === "attention" ? "#DCD9D0" : "transparent"}`,
-              borderRadius: "6px",
-              padding: "8px 12px",
-              cursor: "pointer",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "#C94A38" }}>● Needs attention (3)</span>
-            </div>
-            <div style={{ fontSize: "11px", color: "#6E685F", marginTop: "2px" }}>
-              1 rule violation · 2 calibration questions
-            </div>
-          </div>
-
-          {/* Recent Turns Tab */}
-          <div
-            onClick={() => {
-              setActiveAttentionTab("turns");
-              jumpToTurn("t0004");
-            }}
-            style={{
-              flex: 1,
-              background: activeAttentionTab === "turns" ? "#FFFFFF" : "transparent",
-              border: `1px solid ${activeAttentionTab === "turns" ? "#DCD9D0" : "transparent"}`,
-              borderRadius: "6px",
-              padding: "8px 12px",
-              cursor: "pointer",
-            }}
-          >
-            <div style={{ fontSize: "11px", fontWeight: 700, color: "#1D1C1A" }}>Recent turns</div>
-            <div style={{ fontSize: "11px", color: "#6E685F", marginTop: "2px" }}>
-              #t0004 Checkout flow improvement (committed)
-            </div>
-          </div>
-
-          {/* Proposals Tab */}
-          <div
-            onClick={() => setActiveAttentionTab("proposals")}
-            style={{
-              flex: 1,
-              background: activeAttentionTab === "proposals" ? "#FFFFFF" : "transparent",
-              border: `1px solid ${activeAttentionTab === "proposals" ? "#DCD9D0" : "transparent"}`,
-              borderRadius: "6px",
-              padding: "8px 12px",
-              cursor: "pointer",
-            }}
-          >
-            <div style={{ fontSize: "11px", fontWeight: 700, color: "#1D1C1A" }}>Proposals (1)</div>
-            <div style={{ fontSize: "11px", color: "#6E685F", marginTop: "2px" }}>
-              Decouple payments from web/components
-            </div>
-          </div>
-
-          {/* Pinned Items Tab */}
-          <div
-            onClick={() => setActiveAttentionTab("pins")}
-            style={{
-              flex: 1,
-              background: activeAttentionTab === "pins" ? "#FFFFFF" : "transparent",
-              border: `1px solid ${activeAttentionTab === "pins" ? "#DCD9D0" : "transparent"}`,
-              borderRadius: "6px",
-              padding: "8px 12px",
-              cursor: "pointer",
-            }}
-          >
-            <div style={{ fontSize: "11px", fontWeight: 700, color: "#C89D54" }}>✦ Pinned items (7)</div>
-            <div style={{ fontSize: "11px", color: "#6E685F", marginTop: "2px" }}>
-              Payment signature & stripe webhook invariants locked
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

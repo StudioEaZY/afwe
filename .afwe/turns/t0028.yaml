@@ -1,0 +1,441 @@
+id: t0028
+ts: 2026-10-26T21:53:28Z
+origin: human
+prompt: Implement soft radial and topology overhaul, interactive dual timeline scrubber with CodeMirror 6 diff viewer, and editorial light/dark theme
+prompt_hash: cf8e8886303f6585
+task: task-t0028
+targets:
+- apps/studio/src/
+- crates/afwe-core/src/timeline.rs
+scope:
+  nodes:
+  - studio
+  files:
+  - crates/afwe-core/src/timeline.rs
+intents:
+- id: studio-soft-radial-turns-overhaul
+  action: update
+  targets:
+  - studio
+  title: 'Studio v2.6: Soft Pill-Wedge Radial Map, Orbiting Dependencies, Interactive Dual Scrubber, and CodeMirror 6 Diff Engine'
+  statement: Port soft editorial tactile visual system and light/dark theme from AFWE Codebase Atlas. Implement pill-wedge geometry, layer/growth scaling, hover lineage fade, orbiting dependency pills, and rewind timeline in RadialMap. Re-use TopologyMap in Timeline & Turns for live Before/After diffs. Build interactive dual scrubber with range selection handles, pan, and wheel zoom. Implement CodeMirror 6 side-by-side diff viewer with language support and universal stream fallback tokenizer. Ensure timeline::diff delivers unified git hunks.
+assumptions:
+- id: a1
+  text: afwe-core does not import afwe-cli
+  claim:
+    type: forbid_import
+    files:
+    - crates/afwe-core/**
+    to_nodes:
+    - afwe-cli
+  status: confirmed
+  computed_score: 0.85
+removes:
+- apps/studio/web-dist/assets/index-BrDJxyeZ.js
+- apps/studio/web-dist/assets/index-CKf__Ncg.css
+overrides:
+- pin: pin-5babbe
+  reason: deterministic diff synthesis for turns without model calls
+status: ready
+touched:
+  nodes:
+  - afwe-core
+  - crates
+  - studio
+  files:
+  - .afwe/intents-t0028.json
+  - .afwe/intents/studio-soft-radial-turns-overhaul.yaml
+  - apps/studio/package-lock.json
+  - apps/studio/package.json
+  - apps/studio/src/components/CodeDiffViewer.tsx
+  - apps/studio/src/components/OverviewPage.tsx
+  - apps/studio/src/components/RadialMap.tsx
+  - apps/studio/src/components/Sidebar.tsx
+  - apps/studio/src/components/TimelineDualScrubber.tsx
+  - apps/studio/src/components/TimelinePage.tsx
+  - apps/studio/src/components/TopBar.tsx
+  - apps/studio/src/components/TopologyMap.tsx
+  - apps/studio/src/lib/prefs.ts
+  - apps/studio/src/store.ts
+  - apps/studio/src/styles.css
+  - apps/studio/web-dist/assets/index-BKZzacgh.css
+  - apps/studio/web-dist/assets/index-BrDJxyeZ.js
+  - apps/studio/web-dist/assets/index-CKf__Ncg.css
+  - apps/studio/web-dist/index.html
+  - crates/afwe-core/src/timeline.rs
+  symbols:
+  - apps/studio/src/components/CodeDiffViewer.tsx::CodeDiffViewer
+  - apps/studio/src/components/CodeDiffViewer.tsx::CodeDiffViewerProps
+  - apps/studio/src/components/CodeDiffViewer.tsx::ParsedDiffFile
+  - apps/studio/src/components/CodeDiffViewer.tsx::getLanguageExtension
+  - apps/studio/src/components/CodeDiffViewer.tsx::parseUnifiedPatch
+  - apps/studio/src/components/OverviewPage.tsx::OverviewPage
+  - apps/studio/src/components/RadialMap.tsx::ExternalDependency
+  - apps/studio/src/components/RadialMap.tsx::RadialMap
+  - apps/studio/src/components/Sidebar.tsx::Sidebar
+  - apps/studio/src/components/TimelineDualScrubber.tsx::TimelineDualScrubber
+  - apps/studio/src/components/TimelineDualScrubber.tsx::TimelineDualScrubberProps
+  - apps/studio/src/components/TimelineDualScrubber.tsx::TimelineTurnItem
+  - apps/studio/src/components/TimelinePage.tsx::TimelinePage
+  - apps/studio/src/components/TopBar.tsx::TopBar
+  - apps/studio/src/components/TopologyMap.tsx::TopologyDiffMode
+  - apps/studio/src/components/TopologyMap.tsx::TopologyMap
+  - apps/studio/src/components/TopologyMap.tsx::TopologyMapProps
+  - apps/studio/src/lib/prefs.ts::DEFAULT_PREFS
+  - apps/studio/src/lib/prefs.ts::PREFS_STORAGE_KEY
+  - apps/studio/src/lib/prefs.ts::StudioPrefs
+  - apps/studio/src/lib/prefs.ts::applyTheme
+  - apps/studio/src/lib/prefs.ts::getStudioPrefs
+  - apps/studio/src/lib/prefs.ts::setTheme
+  - apps/studio/src/store.ts::FilterMode
+  - crates/afwe-core/src/timeline.rs::diff
+implements:
+  afwe-2:
+  - packages/afwe/README.md
+  - packages/afwe/bin/afwe.js
+  - packages/afwe/package.json
+  afwe-cli:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/docs.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  afwe-core:
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/baseline.rs
+  - crates/afwe-core/src/calibration.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/escalation.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/header.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/judgment.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/materialize.rs
+  - crates/afwe-core/src/mission.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/registry.rs
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/scene.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/timeline_4d.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  crates:
+  - crates/afwe-cli/Cargo.toml
+  - crates/afwe-cli/build.rs
+  - crates/afwe-cli/src/docs.rs
+  - crates/afwe-cli/src/main.rs
+  - crates/afwe-cli/src/mcp.rs
+  - crates/afwe-cli/src/render.rs
+  - crates/afwe-cli/src/studio.rs
+  - crates/afwe-core/Cargo.toml
+  - crates/afwe-core/src/analyze/langs.rs
+  - crates/afwe-core/src/analyze/mod.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/baseline.rs
+  - crates/afwe-core/src/calibration.rs
+  - crates/afwe-core/src/claims.rs
+  - crates/afwe-core/src/conflict.rs
+  - crates/afwe-core/src/context.rs
+  - crates/afwe-core/src/contract.rs
+  - crates/afwe-core/src/drift.rs
+  - crates/afwe-core/src/engine.rs
+  - crates/afwe-core/src/escalation.rs
+  - crates/afwe-core/src/gate.rs
+  - crates/afwe-core/src/header.rs
+  - crates/afwe-core/src/index.rs
+  - crates/afwe-core/src/init.rs
+  - crates/afwe-core/src/intent.rs
+  - crates/afwe-core/src/judgment.rs
+  - crates/afwe-core/src/lease.rs
+  - crates/afwe-core/src/lens.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/mapping.rs
+  - crates/afwe-core/src/materialize.rs
+  - crates/afwe-core/src/mission.rs
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/ops.rs
+  - crates/afwe-core/src/registry.rs
+  - crates/afwe-core/src/rollback.rs
+  - crates/afwe-core/src/scene.rs
+  - crates/afwe-core/src/store.rs
+  - crates/afwe-core/src/sync.rs
+  - crates/afwe-core/src/timeline.rs
+  - crates/afwe-core/src/timeline_4d.rs
+  - crates/afwe-core/src/turn.rs
+  - crates/afwe-core/src/util.rs
+  - crates/afwe-core/src/vcs/git.rs
+  - crates/afwe-core/src/vcs/mod.rs
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/tests/end_to_end.rs
+  - crates/afwe-core/tests/turn_flow.rs
+  demo-project:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/jwtSigner.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/billing/checkout/CheckoutController.ts
+  - examples/demo-project/src/billing/proration.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/cli-tools/seedRunner.ts
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/experiments/aiSuggest.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/legacy-sync/xmlImporter.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/ColorWheel.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  examples:
+  - examples/demo-project/README.md
+  - examples/demo-project/package.json
+  - examples/demo-project/services/status_worker.py
+  - examples/demo-project/src/auth/auth.ts
+  - examples/demo-project/src/auth/jwtSigner.ts
+  - examples/demo-project/src/auth/oauth.ts
+  - examples/demo-project/src/auth/session.ts
+  - examples/demo-project/src/auth/sessionStore.ts
+  - examples/demo-project/src/billing/checkout/CheckoutController.ts
+  - examples/demo-project/src/billing/proration.ts
+  - examples/demo-project/src/canvas/CanvasRenderer.tsx
+  - examples/demo-project/src/cli-tools/seedRunner.ts
+  - examples/demo-project/src/dashboard/Dashboard.tsx
+  - examples/demo-project/src/dashboard/Widget.tsx
+  - examples/demo-project/src/data/db.ts
+  - examples/demo-project/src/data/replica.ts
+  - examples/demo-project/src/experiments/aiSuggest.ts
+  - examples/demo-project/src/identity/user.ts
+  - examples/demo-project/src/legacy-sync/xmlImporter.ts
+  - examples/demo-project/src/notifications/mailer.ts
+  - examples/demo-project/src/payments/checkout.ts
+  - examples/demo-project/src/payments/stripe.ts
+  - examples/demo-project/src/ui/Button.tsx
+  - examples/demo-project/src/ui/Layout.tsx
+  - examples/demo-project/src/workspace/library/Library.ts
+  - examples/demo-project/src/workspace/preview/Preview.ts
+  - examples/demo-project/src/workspace/search/Search.ts
+  - examples/demo-project/src/workspace/tagging/ColorWheel.ts
+  - examples/demo-project/src/workspace/tagging/Tags.ts
+  - examples/multi-intent-funnel/package.json
+  - examples/multi-intent-funnel/src/Slide1.tsx
+  - examples/multi-intent-funnel/src/Slide2.tsx
+  - examples/multi-intent-funnel/src/Slide3.tsx
+  - examples/multi-intent-funnel/src/Slide4.tsx
+  - examples/multi-intent-funnel/src/Slide5.tsx
+  - examples/multi-intent-funnel/src/Slide6.tsx
+  - examples/multi-intent-funnel/src/acquisition/roiCalculator.ts
+  - examples/multi-intent-funnel/src/acquisition/utmTracker.ts
+  - examples/multi-intent-funnel/src/activation/funnelState.ts
+  - examples/multi-intent-funnel/src/affiliate-webhook/partnerPostback.ts
+  - examples/multi-intent-funnel/src/conversion/pricingEngine.ts
+  - examples/multi-intent-funnel/src/conversion/stripeElements.ts
+  - examples/multi-intent-funnel/src/index.tsx
+  - examples/multi-intent-funnel/src/legacy-pixel/fbPixel.ts
+  - examples/multi-intent-funnel/src/seo-scraper/metaHydrator.ts
+  - examples/multi-intent-funnel/src/telemetry/abCohort.ts
+  - examples/multi-intent-funnel/src/telemetry/eventSink.ts
+  - examples/multi-intent-funnel/src/unmapped-experiments/exitIntentModal.tsx
+  scripts:
+  - scripts/build.sh
+  - scripts/demo.sh
+  - scripts/dev.sh
+  - scripts/install.ps1
+  - scripts/install.sh
+  - scripts/populate_demo_project.js
+  - scripts/populate_funnel_project.js
+  studio:
+  - apps/studio/index.html
+  - apps/studio/package-lock.json
+  - apps/studio/package.json
+  - apps/studio/src-tauri/Cargo.toml
+  - apps/studio/src-tauri/README.md
+  - apps/studio/src-tauri/build.rs
+  - apps/studio/src-tauri/capabilities/default.json
+  - apps/studio/src-tauri/src/lib.rs
+  - apps/studio/src-tauri/src/main.rs
+  - apps/studio/src-tauri/tauri.conf.json
+  - apps/studio/src/App.tsx
+  - apps/studio/src/api.ts
+  - apps/studio/src/components/BlueprintPage.tsx
+  - apps/studio/src/components/BottomBar.tsx
+  - apps/studio/src/components/ChecksPage.tsx
+  - apps/studio/src/components/CodeDiffViewer.tsx
+  - apps/studio/src/components/ComponentInspector.tsx
+  - apps/studio/src/components/ContextPanel.tsx
+  - apps/studio/src/components/DecisionsPage.tsx
+  - apps/studio/src/components/DriftDrawer.tsx
+  - apps/studio/src/components/ErrorBoundary.tsx
+  - apps/studio/src/components/GovernanceActionModal.tsx
+  - apps/studio/src/components/GraphView.tsx
+  - apps/studio/src/components/MemoryView.tsx
+  - apps/studio/src/components/Modal.tsx
+  - apps/studio/src/components/NodeInspector.tsx
+  - apps/studio/src/components/OnboardingModal.tsx
+  - apps/studio/src/components/OverviewPage.tsx
+  - apps/studio/src/components/PinsView.tsx
+  - apps/studio/src/components/RadialMap.tsx
+  - apps/studio/src/components/SceneOutliner.tsx
+  - apps/studio/src/components/SearchPalette.tsx
+  - apps/studio/src/components/SettingsPage.tsx
+  - apps/studio/src/components/Sidebar.tsx
+  - apps/studio/src/components/TimelineDualScrubber.tsx
+  - apps/studio/src/components/TimelinePage.tsx
+  - apps/studio/src/components/TimelineScrubber4D.tsx
+  - apps/studio/src/components/TimelineView.tsx
+  - apps/studio/src/components/TopBar.tsx
+  - apps/studio/src/components/TopologyMap.tsx
+  - apps/studio/src/components/TreePanel.tsx
+  - apps/studio/src/lib/hierarchy.ts
+  - apps/studio/src/lib/palettes.ts
+  - apps/studio/src/lib/prefs.ts
+  - apps/studio/src/main.tsx
+  - apps/studio/src/store.ts
+  - apps/studio/src/styles.css
+  - apps/studio/tsconfig.json
+  - apps/studio/vite.config.ts
+  - apps/studio/web-dist/assets/core-DhEqZVGG.js
+  - apps/studio/web-dist/assets/index-BKZzacgh.css
+  - apps/studio/web-dist/index.html
+checks:
+- id: afwe-verify
+  title: constraints and active guardrails
+  trust: deterministic
+  authored_by: afwe
+  passed: true
+  blocking: true
+- id: project-tests
+  title: cargo test
+  trust: deterministic
+  authored_by: human
+  passed: true
+  blocking: true
+- id: claim:a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: agent
+  passed: true
+  blocking: true
+- id: t0021-a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0021-a2
+  title: calibration module exists in afwe-core
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0021-a3
+  title: judgment module exists in afwe-core
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0021-a4
+  title: materialize module exists in afwe-core
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0022-a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0023-a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0024-a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0025-a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0026-a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+- id: t0027-a1
+  title: afwe-core does not import afwe-cli
+  trust: deterministic
+  authored_by: checkgen
+  passed: true
+  blocking: true
+strength: deterministic
+confidence: 1.0
+confidence_parts:
+  clarity: 1.0
+  mapping: 1.0
+  pins: 1.0
+  verification: 1.0
+gate:
+  decision: ready
+  reasons:
+  - 'PARTIAL_LOSS: studio no longer realised by apps/studio/web-dist/assets/index-BrDJxyeZ.js, apps/studio/web-dist/assets/index-CKf__Ncg.css'
+  - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): deterministic diff synthesis for turns without model calls'
+footer_shown: false
+summary: Implement soft radial and topology overhaul, interactive dual timeline scrubber with CodeMirror 6 diff viewer, and editorial light/dark theme
+turn_token: 991dcf255125a5e4
+session_id: sess-cbf30d
+checkgen:
+- t0028-a1
+held_out_guides:
+- guide-t0022-a1
+- guide-t0025-a1
+- guide-t0026-a1
+- guide-t0027-a1

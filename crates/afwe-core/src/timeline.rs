@@ -115,7 +115,31 @@ pub fn diff(engine: &Engine, id: &str, file: Option<String>) -> Result<Value> {
             let on_disk = root.join(p);
             if on_disk.is_file() && vcs.show(&root, "HEAD", p).is_none() {
                 if let Ok(body) = std::fs::read_to_string(&on_disk) {
-                    text.push_str(&format!("\n+++ new file: {p}\n"));
+                    let line_count = body.lines().count().max(1);
+                    text.push_str(&format!("\ndiff --git a/{p} b/{p}\n--- /dev/null\n+++ b/{p}\n@@ -0,0 +1,{line_count} @@\n"));
+                    for line in body.lines().take(400) {
+                        text.push_str(&format!("+{line}\n"));
+                    }
+                }
+            }
+        }
+    }
+    // If diff is empty, check for an archived patch file or synthesize from touched files
+    if text.trim().is_empty() {
+        let patch_file = root.join(".afwe").join("turns").join(format!("{id}.patch"));
+        if patch_file.is_file() {
+            if let Ok(p_str) = std::fs::read_to_string(&patch_file) {
+                text = p_str;
+            }
+        }
+    }
+    if text.trim().is_empty() {
+        for p in &paths {
+            let on_disk = root.join(p);
+            if on_disk.is_file() {
+                if let Ok(body) = std::fs::read_to_string(&on_disk) {
+                    let line_count = body.lines().count().max(1);
+                    text.push_str(&format!("diff --git a/{p} b/{p}\n--- a/{p}\n+++ b/{p}\n@@ -1,0 +1,{line_count} @@\n"));
                     for line in body.lines().take(400) {
                         text.push_str(&format!("+{line}\n"));
                     }

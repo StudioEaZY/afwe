@@ -1,7 +1,8 @@
 // apps/studio/src/components/TopBar.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useStore } from "../store";
 import { api, isTauri, openProjectDialog } from "../api";
+import { getStudioPrefs, setTheme, applyTheme } from "../lib/prefs";
 
 export const TopBar: React.FC = () => {
   const {
@@ -20,6 +21,23 @@ export const TopBar: React.FC = () => {
   } = useStore();
 
   const [syncing, setSyncing] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const prefs = getStudioPrefs();
+    let effective = prefs.theme;
+    if (effective === "system") {
+      effective = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    setCurrentTheme(effective as "light" | "dark");
+    applyTheme(prefs.theme);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = currentTheme === "dark" ? "light" : "dark";
+    setCurrentTheme(next);
+    setTheme(next);
+  };
 
   if (!graph) return null;
 
@@ -41,8 +59,8 @@ export const TopBar: React.FC = () => {
       className="studio-topbar"
       style={{
         height: "52px",
-        background: "#FFFFFF",
-        borderBottom: "1px solid #E5E0D5",
+        background: "var(--panel)",
+        borderBottom: "1px solid var(--line)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -53,18 +71,18 @@ export const TopBar: React.FC = () => {
     >
       {/* Left: Project title & 4D time badge */}
       <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <span style={{ fontSize: "13px", color: "#6B675D" }}>Projects</span>
-          <span style={{ color: "#8E8878" }}>›</span>
-          <span style={{ fontWeight: 600, fontSize: "14px", color: "#1D1C1A" }}>{graph.project.name}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ fontSize: "13px", color: "var(--mute)" }}>Projects</span>
+          <span style={{ color: "var(--mute)" }}>›</span>
+          <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--ink)" }}>{graph.project.name}</span>
         </div>
 
         {activeTurn && (
           <span
             style={{
-              background: "#FAF3DB",
-              border: "1px solid #EEDEA8",
-              color: "#87661A",
+              background: "var(--side)",
+              border: "1px solid var(--line)",
+              color: "var(--amber)",
               fontSize: "11px",
               fontWeight: 600,
               padding: "2px 8px",
@@ -77,7 +95,7 @@ export const TopBar: React.FC = () => {
             4D Time-Travel: #{activeTurn}
             <button
               onClick={() => scrubToTurn(null)}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#87661A", fontSize: "14px", lineHeight: "1" }}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--amber)", fontSize: "14px", lineHeight: "1" }}
             >
               ×
             </button>
@@ -94,12 +112,12 @@ export const TopBar: React.FC = () => {
               }
             }}
             style={{
-              background: "#FAF8F3",
-              border: "1px solid #DCD9D0",
+              background: "var(--panel)",
+              border: "1px solid var(--line)",
               padding: "3px 8px",
               borderRadius: "4px",
               fontSize: "11px",
-              color: "#4A463E",
+              color: "var(--ink)",
               cursor: "pointer",
             }}
           >
@@ -110,8 +128,8 @@ export const TopBar: React.FC = () => {
 
       {/* Center: System Status Pill & Session Undo/Redo Controls */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#4A463E" }}>
-          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: violationsCount > 0 ? "#C94A38" : "#2E7A57", display: "inline-block" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "var(--mute)" }}>
+          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: violationsCount > 0 ? "var(--red)" : "var(--accent)", display: "inline-block" }} />
           <span>
             {violationsCount > 0
               ? `${violationsCount} rule violation(s) need attention`
@@ -126,8 +144,8 @@ export const TopBar: React.FC = () => {
               display: "flex",
               alignItems: "center",
               gap: "4px",
-              background: "#FAF8F4",
-              border: "1px solid #ECE7D9",
+              background: "var(--side)",
+              border: "1px solid var(--line)",
               borderRadius: "6px",
               padding: "2px 6px",
             }}
@@ -140,7 +158,7 @@ export const TopBar: React.FC = () => {
                 border: "none",
                 fontSize: "12px",
                 cursor: "pointer",
-                color: "#1D1C1A",
+                color: "var(--ink)",
                 padding: "2px 4px",
                 borderRadius: "3px",
               }}
@@ -156,7 +174,7 @@ export const TopBar: React.FC = () => {
                   border: "none",
                   fontSize: "12px",
                   cursor: "pointer",
-                  color: "#1D1C1A",
+                  color: "var(--ink)",
                   padding: "2px 4px",
                   borderRadius: "3px",
                 }}
@@ -167,11 +185,11 @@ export const TopBar: React.FC = () => {
             <button
               onClick={() => setDrawer(drawer === "history" ? null : "history")}
               style={{
-                background: "#ECE7D9",
+                background: "var(--line)",
                 border: "none",
                 fontSize: "10px",
                 fontWeight: 700,
-                color: "#4A463E",
+                color: "var(--ink)",
                 padding: "1px 5px",
                 borderRadius: "10px",
                 cursor: "pointer",
@@ -183,17 +201,17 @@ export const TopBar: React.FC = () => {
         )}
       </div>
 
-      {/* Right: Quick Search, Sync & Actions */}
+      {/* Right: Search, Sync, Theme Toggle */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <button
           onClick={() => setDrawer("search")}
           style={{
-            background: "#FAF8F3",
-            border: "1px solid #DCD9D0",
+            background: "var(--side)",
+            border: "1px solid var(--line)",
             padding: "5px 12px",
             borderRadius: "6px",
             fontSize: "12px",
-            color: "#6B675D",
+            color: "var(--mute)",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -201,23 +219,43 @@ export const TopBar: React.FC = () => {
           }}
         >
           <span>Search code, features, decisions…</span>
-          <kbd style={{ background: "#ECE7D9", padding: "1px 5px", borderRadius: "4px", fontSize: "10px" }}>⌘K</kbd>
+          <kbd style={{ background: "var(--line)", color: "var(--ink)", padding: "1px 5px", borderRadius: "4px", fontSize: "10px" }}>⌘K</kbd>
         </button>
 
         <button
           onClick={doSync}
           disabled={syncing}
           style={{
-            background: "#FAF8F3",
-            border: "1px solid #DCD9D0",
+            background: "var(--side)",
+            border: "1px solid var(--line)",
             padding: "5px 10px",
             borderRadius: "6px",
             fontSize: "12px",
-            color: "#4A463E",
+            color: "var(--ink)",
             cursor: "pointer",
           }}
         >
           {syncing ? "Syncing…" : "Sync"}
+        </button>
+
+        <button
+          onClick={toggleTheme}
+          title={`Switch to ${currentTheme === "dark" ? "light" : "dark"} theme`}
+          style={{
+            width: "32px",
+            height: "32px",
+            borderRadius: "50%",
+            border: "1px solid var(--line)",
+            background: "var(--side)",
+            color: "var(--ink)",
+            display: "grid",
+            placeItems: "center",
+            cursor: "pointer",
+            fontSize: "14px",
+            padding: 0,
+          }}
+        >
+          {currentTheme === "dark" ? "☀" : "☾"}
         </button>
       </div>
     </header>
