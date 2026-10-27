@@ -5,3 +5,5 @@ export const Web_views_catalog_entry = {
   name: "catalog",
   deps: [],
 };
+
+export * from "./mod_2";

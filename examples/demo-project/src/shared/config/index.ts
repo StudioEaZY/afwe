@@ -5,3 +5,7 @@ export const Shared_config_entry = {
   name: "config",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

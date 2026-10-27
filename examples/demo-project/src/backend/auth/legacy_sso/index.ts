@@ -5,3 +5,7 @@ export const Backend_auth_legacy_sso_entry = {
   name: "legacy_sso",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

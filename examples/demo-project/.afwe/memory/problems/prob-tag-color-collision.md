@@ -4,7 +4,7 @@ kind: problem
 title: "Hash collision on 5-color palette"
 status: accepted
 applies_to:
-  - tag-color-wheel
+  - "Core/models"
 created: 2026-10-24T12:00:00Z
 ---
 

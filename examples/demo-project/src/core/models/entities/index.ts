@@ -5,3 +5,7 @@ export const Core_models_entities_entry = {
   name: "entities",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

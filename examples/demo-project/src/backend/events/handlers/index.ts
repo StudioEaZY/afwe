@@ -6,3 +6,7 @@ export const Backend_events_handlers_entry = {
   name: "handlers",
   deps: [Backend_events_models_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

@@ -5,3 +5,7 @@ export const Core_events_dispatcher_entry = {
   name: "dispatcher",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

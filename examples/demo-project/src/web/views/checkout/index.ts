@@ -5,3 +5,7 @@ export const Web_views_checkout_entry = {
   name: "checkout",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

@@ -6,3 +6,5 @@ export const Infrastructure_queues_entry = {
   name: "queues",
   deps: [Backend_events_adapters_entry],
 };
+
+export * from "./mod_2";

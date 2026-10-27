@@ -313,7 +313,18 @@ pub fn detect(snap: &Snapshot, only_files: Option<&[String]>) -> Vec<Finding> {
                 continue;
             }
             let base = basename(&f.path);
-            if matches!(base, "main.rs" | "lib.rs" | "main.tsx" | "main.ts" | "main.jsx" | "main.js" | "index.tsx" | "index.ts" | "index.jsx" | "index.js" | "App.tsx" | "App.jsx") {
+            if matches!(base, "main.rs" | "lib.rs" | "main.tsx" | "main.ts" | "main.jsx" | "main.js" | "index.tsx" | "index.ts" | "index.jsx" | "index.js" | "App.tsx" | "App.jsx")
+                || f.path.starts_with("scripts/")
+                || f.path.contains("/pages/")
+                || f.path.ends_with(".astro")
+                || f.path.contains("/tests/")
+                || f.path.ends_with("_test.rs")
+                || f.path.ends_with(".test.ts")
+                || f.path.ends_with(".spec.ts")
+                || f.path.ends_with(".config.js")
+                || f.path.ends_with(".config.ts")
+                || f.path.ends_with(".config.mjs")
+            {
                 continue;
             }
             let count = importer_counts.get(f.path.as_str()).copied().unwrap_or(0);

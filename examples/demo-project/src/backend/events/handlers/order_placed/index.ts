@@ -5,3 +5,5 @@ export const Backend_events_handlers_order_placed_entry = {
   name: "order_placed",
   deps: [],
 };
+
+export * from "./mod_2";

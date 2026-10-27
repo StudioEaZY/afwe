@@ -1,117 +1,29 @@
 constraints:
-- id: "c-data-no-presentation"
+- id: c-workspace-no-billing
   rule: must_not_depend
-  from: "Data"
+  from: workspace
   to:
-  - "Web"
-  - "Mobile"
-  - "Services"
-  rationale: "Data layer must never import presentation or UI modules (Web, Mobile)."
+  - billing
+  rationale: Workspace core productivity must remain decoupled from billing and credit card handling.
   severity: error
-- id: "c-data-schema-no-web-views"
+- id: c-search-no-raw-db
   rule: must_not_depend
-  from: "Data/schema"
+  from: workspace-search
   to:
-  - "Web/views"
-  - "Web"
-  - "Mobile"
-  rationale: "Migrations must be backward-compatible for at least one release cycle. Must not reference Web or Mobile presentation state."
+  - db-client
+  rationale: Search must index memory objects and never query the primary database client directly.
   severity: error
-- id: "c-web-views-no-domain-models"
+- id: c-billing-no-auth-internals
   rule: must_not_depend
-  from: "Web/views"
+  from: billing-checkout
   to:
-  - "Backend/events/models"
-  - "Data/schema"
-  - "Data/models"
-  rationale: "Views must consume serialized DTOs, never database or domain event models directly."
+  - session-token
+  rationale: Checkout must receive authenticated claims from the HTTP context, not generate session tokens.
   severity: error
-- id: "c-backend-no-presentation"
+- id: c-realtime-read-only
   rule: must_not_depend
-  from: "Backend"
+  from: realtime
   to:
-  - "Web"
-  - "Mobile"
-  rationale: "API layer must stay independent of the presentation layer."
-  severity: error
-- id: "c-core-no-upper-tiers"
-  rule: must_not_depend
-  from: "Core"
-  to:
-  - "Web"
-  - "Mobile"
-  - "Backend"
-  rationale: "Core domain models and rules must remain pure and framework-independent."
-  severity: error
-- id: "c-shared-leaf-only"
-  rule: must_not_depend
-  from: "Shared"
-  to:
-  - "Web"
-  - "Mobile"
-  - "Backend"
-  - "Services"
-  - "Data"
-  rationale: "Shared utilities are leaf primitives and must not import higher architectural tiers."
-  severity: error
-- id: "c-infra-no-app-logic"
-  rule: must_not_depend
-  from: "Infrastructure"
-  to:
-  - "Web"
-  - "Mobile"
-  - "Services"
-  - "Backend"
-  rationale: "Terraform & deployment scripts must not depend on application business logic."
-  severity: error
-- id: "c-events-canonical-models"
-  rule: must_not_depend
-  from: "Backend/events"
-  to:
-  - "Web"
-  - "Mobile"
-  rationale: "Event publishers must use canonical schemas from events/models."
-  severity: error
-- id: "c-event-models-pure"
-  rule: must_not_depend
-  from: "Backend/events/models"
-  to:
-  - "Backend/api/handlers"
-  - "Web/views"
-  rationale: "Event payload models must remain pure data structures without side effects. Must not depend on HTTP handlers or presentation views."
-  severity: error
-- id: "c-event-handlers-idempotent"
-  rule: must_not_depend
-  from: "Backend/events/handlers"
-  to:
-  - "Web/views"
-  rationale: "Handlers must be idempotent across retries."
-  severity: error
-- id: "c-api-middleware"
-  rule: must_not_depend
-  from: "Backend/api"
-  to:
-  - "Web/views"
-  rationale: "All public routes require rate-limit and auth middleware."
-  severity: error
-- id: "c-api-routes-delegate"
-  rule: must_not_depend
-  from: "Backend/api/routes"
-  to:
-  - "Data/schema"
-  rationale: "Routes must delegate business rules to domain services."
-  severity: error
-- id: "c-web-versioned-api"
-  rule: must_not_depend
-  from: "Web"
-  to:
-  - "Data"
-  rationale: "Presentation layer must only call Backend via versioned API routes."
-  severity: error
-- id: "c-mobile-offline-sync"
-  rule: must_not_depend
-  from: "Mobile"
-  to:
-  - "Data"
-  rationale: "Offline queue must sync strictly through Backend/api."
+  - billing
+  rationale: Realtime heartbeat workers must never mutate billing ledgers or invoices.
   severity: error

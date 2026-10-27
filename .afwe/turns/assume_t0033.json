@@ -1,0 +1,50 @@
+{
+  "intents": [
+    {
+      "id": "topology-visual-and-routing-overhaul",
+      "targets": ["studio-maps"],
+      "action": "refine",
+      "rationale": "Overhaul topology domain cards with dedicated avatar icon badge, integrated status indicator, un-colliding text and file counts, distributed edge ports, and outward lateral routing for red upward violations"
+    },
+    {
+      "id": "dynamic-radial-depth-autoscaling",
+      "targets": ["studio-shell"],
+      "action": "refine",
+      "rationale": "Autoscale max selectable depth to actual focus node subtree depth"
+    },
+    {
+      "id": "timeline-real-data-wiring-and-id-normalization",
+      "targets": ["studio-timeline"],
+      "action": "refine",
+      "rationale": "Normalize turn.id vs turn.turn from timeline.list, call api.timeline.get on turn select, and replace mock data in the Right Drawer with live turn data"
+    },
+    {
+      "id": "timeline-api-id-inclusion",
+      "targets": ["afwe-core"],
+      "action": "refine",
+      "rationale": "Include id field alongside turn in timeline::list entries for universal client compatibility"
+    },
+    {
+      "id": "upgrade-demo-datasets",
+      "targets": ["scripts", "demo-project"],
+      "action": "refine",
+      "rationale": "Upgrade demo-project and multi-intent-funnel with clean import trees, zero stale memories, and full turn data"
+    }
+  ],
+  "claims": [
+    {
+      "id": "a1",
+      "kind": "ast",
+      "scope": "apps/studio/src/components/TopologyMap.tsx",
+      "description": "Card width increased to at least 220px to prevent text and icon collision",
+      "require_pattern": "width=\\{23"
+    },
+    {
+      "id": "a2",
+      "kind": "ast",
+      "scope": "crates/afwe-core/src/timeline.rs",
+      "description": "entry serializer includes id alongside turn",
+      "require_pattern": "\"id\": t\\.id"
+    }
+  ]
+}

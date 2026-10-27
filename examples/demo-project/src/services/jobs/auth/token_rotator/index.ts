@@ -5,3 +5,7 @@ export const Services_jobs_auth_token_rotator_entry = {
   name: "token_rotator",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

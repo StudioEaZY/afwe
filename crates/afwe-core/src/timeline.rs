@@ -46,6 +46,7 @@ fn effective_status(t: &Turn, c: Option<&CommitInfo>) -> String {
 fn entry(t: &Turn, c: Option<&CommitInfo>) -> Value {
     json!({
         "turn": t.id,
+        "id": t.id,
         "status": effective_status(t, c),
         "sha": c.map(|c| short(&c.sha)),
         "ts": t.ts,
@@ -70,7 +71,7 @@ pub fn list(engine: &Engine, limit: usize) -> Result<Value> {
     let mut entries: Vec<Value> = turns.iter().rev().map(|t| entry(t, commits.get(&t.id))).collect();
     for (tid, c) in &commits {
         if !turns.iter().any(|t| &t.id == tid) {
-            entries.push(json!({"turn": tid, "status": "committed", "sha": short(&c.sha), "ts": c.ts, "prompt": c.subject, "record": false}));
+            entries.push(json!({"turn": tid, "id": tid, "status": "committed", "sha": short(&c.sha), "ts": c.ts, "prompt": c.subject, "record": false}));
         }
     }
     let vcs_name = vcs::open(&engine.store.manifest()?.vcs.provider).name();

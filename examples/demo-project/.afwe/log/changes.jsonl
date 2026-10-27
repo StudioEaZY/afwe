@@ -73,3 +73,10 @@
 {"ts":"2026-10-26T11:16:38Z","origin":"human:sync","kind":"sync","summary":"Synced 29 files; applied 10, proposed 13, uncertain 6"}
 {"ts":"2026-10-26T11:16:42Z","origin":"human","kind":"verify","summary":"verify: failed (1 errors, 11 warnings)"}
 {"ts":"2026-10-26T15:24:29Z","origin":"human","kind":"check_remove","summary":"Check chk-sig-tag-color removed from the gate"}
+{"ts":"2026-10-27T08:54:26Z","origin":"human","kind":"verify","summary":"verify: failed (7 errors, 0 warnings)"}
+{"ts":"2026-10-27T09:03:01Z","origin":"human:reconcile","kind":"add_relation","summary":"code shows Data.models → Data.migrations (1 import edge) but the blueprint does not declare it","confidence":0.65,"uncertain":true,"details":{"op":"add_relation","from":"Data/models","to":"Data/migrations","kind":"depends_on"}}
+{"ts":"2026-10-27T09:03:01Z","origin":"human:reconcile","kind":"add_relation","summary":"code shows Services.billing → Web.views (1 import edge) but the blueprint does not declare it","confidence":0.65,"uncertain":true,"details":{"op":"add_relation","from":"Services/billing","to":"Web/views","kind":"depends_on"}}
+{"ts":"2026-10-27T09:03:01Z","origin":"human:reconcile","kind":"add_relation","summary":"code shows Web.views → Core.models (1 import edge) but the blueprint does not declare it","confidence":0.65,"uncertain":true,"details":{"op":"add_relation","from":"Web/views","to":"Core/models","kind":"depends_on"}}
+{"ts":"2026-10-27T09:03:02Z","origin":"human:sync","kind":"sync","summary":"Synced 371 files; applied 3, proposed 5, uncertain 3"}
+{"ts":"2026-10-27T09:28:42Z","origin":"human","kind":"verify","summary":"verify: failed (1 errors, 363 warnings)"}
+{"ts":"2026-10-27T09:32:12Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 26 warnings)"}

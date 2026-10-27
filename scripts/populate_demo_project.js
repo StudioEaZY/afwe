@@ -1815,25 +1815,25 @@ demoGuardrailsPassive.forEach(g => {
 // 1.11 Memory: 15 entries (3 per kind)
 const demoMemories = [
   // decisions
-  { kind: "decisions", id: "dec-flat-tags", title: "Flat tags without taxonomy", body: "We deliberately chose flat tags over hierarchical taxonomies to reduce cognitive load on end users.", applies_to: ["workspace-tagging"] },
-  { kind: "decisions", id: "dec-replica-reads", title: "Eventual consistency for status widgets", body: "Realtime status worker queries read replicas. Occasional 500ms staleness is accepted to isolate primary DB load.", applies_to: ["realtime-status-worker"] },
-  { kind: "decisions", id: "dec-jwt-stateless", title: "Stateless JWT access tokens", body: "Access tokens are signed statelessly with 15-minute expiration; sessions table only stores refresh tokens.", applies_to: ["jwt-signer", "session-token"] },
+  { kind: "decisions", id: "dec-flat-tags", title: "Flat tags without taxonomy", body: "We deliberately chose flat tags over hierarchical taxonomies to reduce cognitive load on end users.", applies_to: ["Core.models"] },
+  { kind: "decisions", id: "dec-replica-reads", title: "Eventual consistency for status widgets", body: "Realtime status worker queries read replicas. Occasional 500ms staleness is accepted to isolate primary DB load.", applies_to: ["Services.jobs"] },
+  { kind: "decisions", id: "dec-jwt-stateless", title: "Stateless JWT access tokens", body: "Access tokens are signed statelessly with 15-minute expiration; sessions table only stores refresh tokens.", applies_to: ["Services.auth"] },
   // constraints
-  { kind: "constraints", id: "con-workspace-billing-boundary", title: "Decoupling workspace from billing", body: "Workspace library code must never import Stripe or checkout controllers. Feature gating happens in the HTTP server layer.", applies_to: ["workspace", "billing"] },
-  { kind: "constraints", id: "con-idempotency-key-mandatory", title: "Mandatory idempotency keys on payment operations", body: "Double billing prevention requires an idempotency key hashed from client UUID and payload hash.", applies_to: ["billing-checkout", "stripe-gateway"] },
-  { kind: "constraints", id: "con-secret-entropy", title: "32-byte secret entropy requirement", body: "Cryptographic operations reject any secret with fewer than 32 characters or low entropy.", applies_to: ["jwt-signer"] },
+  { kind: "constraints", id: "con-workspace-billing-boundary", title: "Decoupling workspace from billing", body: "Workspace library code must never import Stripe or checkout controllers. Feature gating happens in the HTTP server layer.", applies_to: ["Core.models", "Services.billing"] },
+  { kind: "constraints", id: "con-idempotency-key-mandatory", title: "Mandatory idempotency keys on payment operations", body: "Double billing prevention requires an idempotency key hashed from client UUID and payload hash.", applies_to: ["Services.billing"] },
+  { kind: "constraints", id: "con-secret-entropy", title: "32-byte secret entropy requirement", body: "Cryptographic operations reject any secret with fewer than 32 characters or low entropy.", applies_to: ["Services.auth"] },
   // exceptions
-  { kind: "exceptions", id: "exc-search-direct-query", title: "Exception: Search index raw SQL read permitted during initial bulk load", body: "During seed startup, search index may execute bulk read queries directly before event sync starts.", applies_to: ["workspace-search"] },
-  { kind: "exceptions", id: "exc-billing-test-bypass", title: "Exception: Local sandbox bypass for stripe webhook signature", body: "In NODE_ENV=development, webhook signature HMAC check may be skipped if STRIPE_MOCK=true.", applies_to: ["stripe-gateway"] },
-  { kind: "exceptions", id: "exc-realtime-admin-override", title: "Exception: Manual cluster health check ping directly to primary DB", body: "Admin diagnostic CLI command may bypass replica pool to test primary connection health.", applies_to: ["realtime-status-worker"] },
+  { kind: "exceptions", id: "exc-search-direct-query", title: "Exception: Search index raw SQL read permitted during initial bulk load", body: "During seed startup, search index may execute bulk read queries directly before event sync starts.", applies_to: ["Core.models"] },
+  { kind: "exceptions", id: "exc-billing-test-bypass", title: "Exception: Local sandbox bypass for stripe webhook signature", body: "In NODE_ENV=development, webhook signature HMAC check may be skipped if STRIPE_MOCK=true.", applies_to: ["Services.billing"] },
+  { kind: "exceptions", id: "exc-realtime-admin-override", title: "Exception: Manual cluster health check ping directly to primary DB", body: "Admin diagnostic CLI command may bypass replica pool to test primary connection health.", applies_to: ["Services.jobs"] },
   // problems
-  { kind: "problems", id: "prob-tag-color-collision", title: "Hash collision on 5-color palette", body: "Short tag names can hash to the same color in close proximity; future revision should adjust seed salt.", applies_to: ["tag-color-wheel"] },
-  { kind: "problems", id: "prob-zombie-websockets", title: "Mobile clients dropping connections without TCP FIN", body: "Cellular network handoffs cause ghost presence state lingering up to 30 seconds before heartbeat timeout.", applies_to: ["realtime-presence"] },
-  { kind: "problems", id: "prob-proration-rounding-drift", title: "Sub-cent rounding discrepancies across multiple mid-month seat changes", body: "Repeated seat addition and removal in the same hour can drift by +/- 1 cent due to integer floor arithmetic.", applies_to: ["proration-calculator"] },
+  { kind: "problems", id: "prob-tag-color-collision", title: "Hash collision on 5-color palette", body: "Short tag names can hash to the same color in close proximity; future revision should adjust seed salt.", applies_to: ["Core.models"] },
+  { kind: "problems", id: "prob-zombie-websockets", title: "Mobile clients dropping connections without TCP FIN", body: "Cellular network handoffs cause ghost presence state lingering up to 30 seconds before heartbeat timeout.", applies_to: ["Services.jobs"] },
+  { kind: "problems", id: "prob-proration-rounding-drift", title: "Sub-cent rounding discrepancies across multiple mid-month seat changes", body: "Repeated seat addition and removal in the same hour can drift by +/- 1 cent due to integer floor arithmetic.", applies_to: ["Services.billing"] },
   // terminology
-  { kind: "terminology", id: "term-workspace-item", title: "Item vs Document", body: "An Item is the generic container in the library; Documents, Sheets, and Canvas boards are all Item variants.", applies_to: ["workspace-library"] },
-  { kind: "terminology", id: "term-proration", title: "Proration arithmetic", body: "Proration refers to charging or crediting the exact fraction of the unelapsed monthly subscription period.", applies_to: ["proration-calculator"] },
-  { kind: "terminology", id: "term-presence-heartbeat", title: "Presence Heartbeat vs Status Ping", body: "Presence heartbeats are user-to-server; Status pings are worker-to-cluster infrastructure checks.", applies_to: ["realtime-presence", "realtime-status-worker"] }
+  { kind: "terminology", id: "term-workspace-item", title: "Item vs Document", body: "An Item is the generic container in the library; Documents, Sheets, and Canvas boards are all Item variants.", applies_to: ["Core.models"] },
+  { kind: "terminology", id: "term-proration", title: "Proration arithmetic", body: "Proration refers to charging or crediting the exact fraction of the unelapsed monthly subscription period.", applies_to: ["Services.billing"] },
+  { kind: "terminology", id: "term-presence-heartbeat", title: "Presence Heartbeat vs Status Ping", body: "Presence heartbeats are user-to-server; Status pings are worker-to-cluster infrastructure checks.", applies_to: ["Services.jobs"] }
 ];
 
 demoMemories.forEach(m => {
@@ -2075,5 +2075,46 @@ write(path.join(demoAfwe, 'guardrails/generated_checks_test.sh'), `#!/usr/bin/en
 set -e
 afwe gate --ci
 `);
+
+// Ensure all dummy modules are reachable from their parent directory index.ts
+function wireReExports(dir) {
+  if (!fs.existsSync(dir)) return;
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const e of entries) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) {
+      wireReExports(full);
+    } else if (e.name === 'index.ts') {
+      let content = fs.readFileSync(full, 'utf8');
+      let modified = false;
+      const mod2 = path.join(dir, 'mod_2.ts');
+      const mod3 = path.join(dir, 'mod_3.ts');
+      if (fs.existsSync(mod2) && !content.includes('mod_2')) {
+        content += '\nexport * from "./mod_2";\n';
+        modified = true;
+      }
+      if (fs.existsSync(mod3) && !content.includes('mod_3')) {
+        content += '\nexport * from "./mod_3";\n';
+        modified = true;
+      }
+      if (modified) {
+        fs.writeFileSync(full, content, 'utf8');
+      }
+    }
+  }
+}
+wireReExports(path.join(demoRoot, 'src'));
+
+// Wire preview, search, and colorWheel into Core
+const coreIndex = path.join(demoRoot, 'src/core/index.ts');
+if (fs.existsSync(coreIndex)) {
+  let cc = fs.readFileSync(coreIndex, 'utf8');
+  if (!cc.includes('ColorWheel')) {
+    cc += '\nexport * from "../workspace/tagging/ColorWheel";\n';
+    cc += 'export * from "../workspace/search/Search";\n';
+    cc += 'export * from "../workspace/preview/Preview";\n';
+    fs.writeFileSync(coreIndex, cc, 'utf8');
+  }
+}
 
 console.log("demo-project fully populated with 3-day history exercising all ReBorn features >= 3 times.");

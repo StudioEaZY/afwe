@@ -6,3 +6,7 @@ export const Backend_api_routes_entry = {
   name: "routes",
   deps: [Backend_events_models_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

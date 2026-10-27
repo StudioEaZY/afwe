@@ -1,0 +1,18 @@
+id: timeline-real-data-wiring-and-id-normalization
+title: timeline-real-data-wiring-and-id-normalization
+statement: Upgrade demo datasets, autoscaling radial depth, multi-core architecture support, and overhaul topology map card visuals and line routing
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio-timeline
+from_turns:
+- t0033
+history:
+- turn: t0033
+  ts: 2026-10-27T09:02:52Z
+  statement: Upgrade demo datasets, autoscaling radial depth, multi-core architecture support, and overhaul topology map card visuals and line routing
+  rationale: Normalize turn.id vs turn.turn from timeline.list, call api.timeline.get on turn select, and replace mock data in the Right Drawer with live turn data
+created: 2026-10-27T09:02:52Z
+updated: 2026-10-27T09:02:52Z
+task: task-t0033

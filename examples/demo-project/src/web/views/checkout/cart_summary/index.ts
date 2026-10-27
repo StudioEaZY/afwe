@@ -5,3 +5,5 @@ export const Web_views_checkout_cart_summary_entry = {
   name: "cart_summary",
   deps: [],
 };
+
+export * from "./mod_2";

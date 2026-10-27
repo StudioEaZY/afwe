@@ -5,3 +5,5 @@ export const Backend_billing_webhooks_entry = {
   name: "webhooks",
   deps: [],
 };
+
+export * from "./mod_2";

@@ -5,3 +5,7 @@ export const Core_rules_permissions_entry = {
   name: "permissions",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

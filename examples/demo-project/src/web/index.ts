@@ -7,3 +7,5 @@ export const Web_entry = {
   name: "Web",
   deps: [Backend_entry, Shared_entry],
 };
+
+export * from "./mod_2";

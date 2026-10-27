@@ -5,3 +5,5 @@ export const Shared_types_domain_entry = {
   name: "domain",
   deps: [],
 };
+
+export * from "./mod_2";

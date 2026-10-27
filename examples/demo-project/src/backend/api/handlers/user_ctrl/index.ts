@@ -5,3 +5,5 @@ export const Backend_api_handlers_user_ctrl_entry = {
   name: "user_ctrl",
   deps: [],
 };
+
+export * from "./mod_2";

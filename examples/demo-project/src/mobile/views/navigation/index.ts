@@ -5,3 +5,5 @@ export const Mobile_views_navigation_entry = {
   name: "navigation",
   deps: [],
 };
+
+export * from "./mod_2";

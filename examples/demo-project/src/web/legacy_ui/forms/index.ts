@@ -5,3 +5,5 @@ export const Web_legacy_ui_forms_entry = {
   name: "forms",
   deps: [],
 };
+
+export * from "./mod_2";

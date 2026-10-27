@@ -4,7 +4,7 @@ kind: exception
 title: "Exception: Local sandbox bypass for stripe webhook signature"
 status: accepted
 applies_to:
-  - stripe-gateway
+  - "Services/billing"
 created: 2026-10-24T12:00:00Z
 ---
 

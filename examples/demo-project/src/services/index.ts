@@ -8,3 +8,5 @@ export const Services_entry = {
   name: "Services",
   deps: [Backend_entry, Core_entry, Data_entry],
 };
+
+export * from "./mod_2";

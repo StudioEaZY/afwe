@@ -5,3 +5,7 @@ export const Data_schema_tables_entry = {
   name: "tables",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

@@ -5,3 +5,5 @@ export const Web_api_client_entry = {
   name: "client",
   deps: [],
 };
+
+export * from "./mod_2";

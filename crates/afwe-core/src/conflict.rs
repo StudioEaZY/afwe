@@ -113,7 +113,7 @@ pub fn newly_orphaned_files(
     let mut out = vec![];
     let is_exempt = |f: &str| -> bool {
         let base = f.rsplit('/').next().unwrap_or(f);
-        matches!(
+        if matches!(
             base,
             "main.rs"
                 | "lib.rs"
@@ -127,7 +127,19 @@ pub fn newly_orphaned_files(
                 | "index.js"
                 | "App.tsx"
                 | "App.jsx"
-        )
+        ) {
+            return true;
+        }
+        f.starts_with("scripts/")
+            || f.contains("/pages/")
+            || f.ends_with(".astro")
+            || f.contains("/tests/")
+            || f.ends_with("_test.rs")
+            || f.ends_with(".test.ts")
+            || f.ends_with(".spec.ts")
+            || f.ends_with(".config.js")
+            || f.ends_with(".config.ts")
+            || f.ends_with(".config.mjs")
     };
 
     let is_declared = |f: &str| -> bool {

@@ -7,3 +7,7 @@ export const Core_models_entry = {
   name: "models",
   deps: [Core_rules_entry, Shared_utils_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

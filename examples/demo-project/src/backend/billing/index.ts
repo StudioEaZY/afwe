@@ -7,3 +7,5 @@ export const Backend_billing_entry = {
   name: "billing",
   deps: [Data_models_entry, Backend_events_entry],
 };
+
+export * from "./mod_2";

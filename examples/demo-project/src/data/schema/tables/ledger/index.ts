@@ -5,3 +5,5 @@ export const Data_schema_tables_ledger_entry = {
   name: "ledger",
   deps: [],
 };
+
+export * from "./mod_2";

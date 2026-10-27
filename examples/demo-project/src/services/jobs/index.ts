@@ -7,3 +7,7 @@ export const Services_jobs_entry = {
   name: "jobs",
   deps: [Backend_events_models_entry, Backend_events_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

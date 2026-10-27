@@ -8,3 +8,5 @@ export const Mobile_entry = {
   name: "Mobile",
   deps: [Backend_entry, Shared_entry, Core_entry],
 };
+
+export * from "./mod_2";

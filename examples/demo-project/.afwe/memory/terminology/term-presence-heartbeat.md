@@ -4,8 +4,7 @@ kind: terminolog
 title: "Presence Heartbeat vs Status Ping"
 status: accepted
 applies_to:
-  - realtime-presence
-  - realtime-status-worker
+  - "Services/jobs"
 created: 2026-10-24T12:00:00Z
 ---
 

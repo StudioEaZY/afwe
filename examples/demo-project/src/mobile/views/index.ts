@@ -7,3 +7,5 @@ export const Mobile_views_entry = {
   name: "views",
   deps: [Backend_api_routes_entry, Backend_api_entry],
 };
+
+export * from "./mod_2";

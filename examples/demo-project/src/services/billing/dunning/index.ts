@@ -5,3 +5,5 @@ export const Services_billing_dunning_entry = {
   name: "dunning",
   deps: [],
 };
+
+export * from "./mod_2";

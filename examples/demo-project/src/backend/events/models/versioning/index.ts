@@ -5,3 +5,5 @@ export const Backend_events_models_versioning_entry = {
   name: "versioning",
   deps: [],
 };
+
+export * from "./mod_2";

@@ -5,3 +5,7 @@ export const Web_views_dashboard_entry = {
   name: "dashboard",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

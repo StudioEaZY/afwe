@@ -5,3 +5,5 @@ export const Backend_events_handlers_invoice_paid_entry = {
   name: "invoice_paid",
   deps: [],
 };
+
+export * from "./mod_2";

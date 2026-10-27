@@ -5,3 +5,5 @@ export const Web_hooks_query_entry = {
   name: "query",
   deps: [],
 };
+
+export * from "./mod_2";

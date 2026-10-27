@@ -6,3 +6,5 @@ export const Mobile_adapters_entry = {
   name: "adapters",
   deps: [Backend_api_handlers_entry],
 };
+
+export * from "./mod_2";

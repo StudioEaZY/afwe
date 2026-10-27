@@ -5,3 +5,5 @@ export const Shared_types_api_entry = {
   name: "api",
   deps: [],
 };
+
+export * from "./mod_2";

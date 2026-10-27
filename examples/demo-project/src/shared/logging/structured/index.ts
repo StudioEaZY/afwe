@@ -5,3 +5,5 @@ export const Shared_logging_structured_entry = {
   name: "structured",
   deps: [],
 };
+
+export * from "./mod_2";

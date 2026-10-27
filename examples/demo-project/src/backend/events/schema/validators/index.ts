@@ -5,3 +5,5 @@ export const Backend_events_schema_validators_entry = {
   name: "validators",
   deps: [],
 };
+
+export * from "./mod_2";

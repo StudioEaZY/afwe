@@ -5,6 +5,9 @@ nodes:
   purpose: Multi-intent prospective developer acquisition, activation, and checkout funnel.
   status: active
   origin: human
+  implements:
+    files:
+    - src/index.tsx
   children:
   - id: acquisition-stage
     name: Acquisition Stage
@@ -15,6 +18,7 @@ nodes:
     implements:
       files:
       - src/Slide1.tsx
+      - src/Slide2.tsx
       - src/acquisition/**
     children:
     - id: hero-experience
@@ -63,6 +67,33 @@ nodes:
       kind: module
       purpose: Customer logo marquee and developer quote carousel.
       status: active
+      implements:
+        files:
+        - src/Slide2.tsx
+    - id: seo-scraper
+      name: SEO Meta Hydrator
+      kind: module
+      purpose: Dynamic SSR metadata and open-graph generation.
+      status: active
+      implements:
+        files:
+        - src/seo-scraper/**
+    - id: affiliate-webhook
+      name: Affiliate Postback
+      kind: module
+      purpose: Partner attribution webhook processor.
+      status: active
+      implements:
+        files:
+        - src/affiliate-webhook/**
+    - id: legacy-pixel
+      name: Legacy Tracking Pixel
+      kind: module
+      purpose: Historical tracking pixel adapters.
+      status: active
+      implements:
+        files:
+        - src/legacy-pixel/**
 
   - id: activation-stage
     name: Activation Stage
@@ -163,6 +194,14 @@ nodes:
         files:
         - src/Slide6.tsx
         - src/conversion/stripeElements.ts
+    - id: exit-intent-experiments
+      name: Exit Intent Experiments
+      kind: module
+      purpose: Interactive discount modals shown on mouse leave.
+      status: active
+      implements:
+        files:
+        - src/unmapped-experiments/**
 
   - id: telemetry-stage
     name: Telemetry Stage

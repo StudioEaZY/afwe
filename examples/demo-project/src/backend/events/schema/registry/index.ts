@@ -5,3 +5,5 @@ export const Backend_events_schema_registry_entry = {
   name: "registry",
   deps: [],
 };
+
+export * from "./mod_2";

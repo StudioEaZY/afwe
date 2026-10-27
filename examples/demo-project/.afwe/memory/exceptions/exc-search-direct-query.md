@@ -4,7 +4,7 @@ kind: exception
 title: "Exception: Search index raw SQL read permitted during initial bulk load"
 status: accepted
 applies_to:
-  - workspace-search
+  - "Core/models"
 created: 2026-10-24T12:00:00Z
 ---
 

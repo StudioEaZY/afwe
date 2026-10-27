@@ -5,3 +5,5 @@ export const Services_jobs_auth_key_sync_entry = {
   name: "key_sync",
   deps: [],
 };
+
+export * from "./mod_2";

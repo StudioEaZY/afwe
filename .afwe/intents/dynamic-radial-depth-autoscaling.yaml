@@ -1,0 +1,18 @@
+id: dynamic-radial-depth-autoscaling
+title: dynamic-radial-depth-autoscaling
+statement: Upgrade demo datasets, autoscaling radial depth, multi-core architecture support, and overhaul topology map card visuals and line routing
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio-shell
+from_turns:
+- t0033
+history:
+- turn: t0033
+  ts: 2026-10-27T09:02:52Z
+  statement: Upgrade demo datasets, autoscaling radial depth, multi-core architecture support, and overhaul topology map card visuals and line routing
+  rationale: Autoscale max selectable depth to actual focus node subtree depth
+created: 2026-10-27T09:02:52Z
+updated: 2026-10-27T09:02:52Z
+task: task-t0033

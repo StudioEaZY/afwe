@@ -5,3 +5,5 @@ export const Mobile_adapters_storage_entry = {
   name: "storage",
   deps: [],
 };
+
+export * from "./mod_2";

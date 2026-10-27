@@ -1,682 +1,3822 @@
 {
-  "generated": "2026-10-26T11:16:38Z",
+  "generated": "2026-10-27T09:03:01Z",
   "findings": [
     {
-      "id": "undeclared:0ade9933bb",
-      "kind": "undeclared_relation",
-      "severity": "info",
-      "confidence": 0.65,
-      "summary": "code shows Pulse SaaS Product.Identity Subsystem → Pulse SaaS Product.Workspace Subsystem.Workspace Library (1 import edge) but the blueprint does not declare it",
-      "evidence": [
-        "src/payments/checkout.ts → src/ui/Button.tsx"
-      ],
-      "change": {
-        "op": "add_relation",
-        "from": "identity",
-        "to": "workspace-library",
-        "kind": "depends_on"
-      },
-      "nodes": [
-        "identity",
-        "workspace-library"
-      ]
-    },
-    {
-      "id": "empty:dd8bd087fb",
-      "kind": "empty_node",
+      "id": "stale_memory:2c3ca4b541",
+      "kind": "stale_memory",
       "severity": "info",
       "confidence": 1.0,
-      "summary": "Pulse SaaS Product.Identity Subsystem.Auth API.OAuth Callback is active but nothing implements it (mark it `planned` or map files)",
-      "evidence": [],
-      "nodes": [
-        "oauth-callback"
+      "summary": "memory `dec-flat-tags` references things that no longer exist",
+      "evidence": [
+        "unknown node `workspace-tagging`"
+      ],
+      "files": [
+        "memory/decisions/dec-flat-tags.md"
       ]
     },
     {
-      "id": "empty:553c85f16e",
-      "kind": "empty_node",
+      "id": "stale_memory:ff27426a1e",
+      "kind": "stale_memory",
       "severity": "info",
       "confidence": 1.0,
-      "summary": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer.Token Entropy Guard is active but nothing implements it (mark it `planned` or map files)",
-      "evidence": [],
-      "nodes": [
-        "token-entropy-guard"
+      "summary": "memory `dec-jwt-stateless` references things that no longer exist",
+      "evidence": [
+        "unknown node `jwt-signer`",
+        "unknown node `session-token`"
+      ],
+      "files": [
+        "memory/decisions/dec-jwt-stateless.md"
       ]
     },
     {
-      "id": "empty:0595dfb86d",
-      "kind": "empty_node",
+      "id": "stale_memory:109572e4b9",
+      "kind": "stale_memory",
       "severity": "info",
       "confidence": 1.0,
-      "summary": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Normaliser is active but nothing implements it (mark it `planned` or map files)",
-      "evidence": [],
-      "nodes": [
-        "tag-normaliser"
+      "summary": "memory `dec-replica-reads` references things that no longer exist",
+      "evidence": [
+        "unknown node `realtime-status-worker`"
+      ],
+      "files": [
+        "memory/decisions/dec-replica-reads.md"
       ]
     },
     {
-      "id": "empty:13ce7deac0",
-      "kind": "empty_node",
+      "id": "stale_memory:1d8d43505d",
+      "kind": "stale_memory",
       "severity": "info",
       "confidence": 1.0,
-      "summary": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel.Tag Pill Renderer is active but nothing implements it (mark it `planned` or map files)",
-      "evidence": [],
-      "nodes": [
-        "tag-pill-renderer"
+      "summary": "memory `con-idempotency-key-mandatory` references things that no longer exist",
+      "evidence": [
+        "unknown node `billing-checkout`",
+        "unknown node `stripe-gateway`"
+      ],
+      "files": [
+        "memory/constraints/con-idempotency-key-mandatory.md"
       ]
     },
     {
-      "id": "empty:0a716cf282",
-      "kind": "empty_node",
+      "id": "stale_memory:4c4bb9dccb",
+      "kind": "stale_memory",
       "severity": "info",
       "confidence": 1.0,
-      "summary": "Pulse SaaS Product.Workspace Subsystem.Workspace Bulk Export is active but nothing implements it (mark it `planned` or map files)",
-      "evidence": [],
-      "nodes": [
-        "workspace-bulk-export"
+      "summary": "memory `con-secret-entropy` references things that no longer exist",
+      "evidence": [
+        "unknown node `jwt-signer`"
+      ],
+      "files": [
+        "memory/constraints/con-secret-entropy.md"
       ]
     },
     {
-      "id": "empty:204ebb5b98",
-      "kind": "empty_node",
+      "id": "stale_memory:cba10d307d",
+      "kind": "stale_memory",
       "severity": "info",
       "confidence": 1.0,
-      "summary": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Stripe Webhook Verifier is active but nothing implements it (mark it `planned` or map files)",
-      "evidence": [],
-      "nodes": [
-        "stripe-webhook-verifier"
+      "summary": "memory `con-workspace-billing-boundary` references things that no longer exist",
+      "evidence": [
+        "unknown node `workspace`",
+        "unknown node `billing`"
+      ],
+      "files": [
+        "memory/constraints/con-workspace-billing-boundary.md"
       ]
     },
     {
-      "id": "empty:227001ac1b",
-      "kind": "empty_node",
+      "id": "stale_memory:edf16a12ef",
+      "kind": "stale_memory",
       "severity": "info",
       "confidence": 1.0,
-      "summary": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator.Idempotency Key Hasher is active but nothing implements it (mark it `planned` or map files)",
-      "evidence": [],
-      "nodes": [
-        "idempotency-key-hasher"
+      "summary": "memory `exc-billing-test-bypass` references things that no longer exist",
+      "evidence": [
+        "unknown node `stripe-gateway`"
+      ],
+      "files": [
+        "memory/exceptions/exc-billing-test-bypass.md"
       ]
     },
     {
-      "id": "empty:620c0fd54c",
-      "kind": "empty_node",
+      "id": "stale_memory:c62f55ec58",
+      "kind": "stale_memory",
       "severity": "info",
       "confidence": 1.0,
-      "summary": "Pulse SaaS Product.Billing Subsystem.Invoice PDF Watermark is active but nothing implements it (mark it `planned` or map files)",
-      "evidence": [],
-      "nodes": [
-        "invoice-pdf-watermark"
+      "summary": "memory `exc-realtime-admin-override` references things that no longer exist",
+      "evidence": [
+        "unknown node `realtime-status-worker`"
+      ],
+      "files": [
+        "memory/exceptions/exc-realtime-admin-override.md"
       ]
     },
     {
-      "id": "empty:7005f5b6f2",
-      "kind": "empty_node",
+      "id": "stale_memory:5b3bbdbc2e",
+      "kind": "stale_memory",
       "severity": "info",
       "confidence": 1.0,
-      "summary": "Pulse SaaS Product.Realtime Subsystem.Legacy Webhook Retry is active but nothing implements it (mark it `planned` or map files)",
-      "evidence": [],
+      "summary": "memory `exc-search-direct-query` references things that no longer exist",
+      "evidence": [
+        "unknown node `workspace-search`"
+      ],
+      "files": [
+        "memory/exceptions/exc-search-direct-query.md"
+      ]
+    },
+    {
+      "id": "stale_memory:3f54c30556",
+      "kind": "stale_memory",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "memory `term-presence-heartbeat` references things that no longer exist",
+      "evidence": [
+        "unknown node `realtime-presence`",
+        "unknown node `realtime-status-worker`"
+      ],
+      "files": [
+        "memory/terminology/term-presence-heartbeat.md"
+      ]
+    },
+    {
+      "id": "stale_memory:5885192de9",
+      "kind": "stale_memory",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "memory `term-proration` references things that no longer exist",
+      "evidence": [
+        "unknown node `proration-calculator`"
+      ],
+      "files": [
+        "memory/terminology/term-proration.md"
+      ]
+    },
+    {
+      "id": "stale_memory:ab1ca46419",
+      "kind": "stale_memory",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "memory `term-workspace-item` references things that no longer exist",
+      "evidence": [
+        "unknown node `workspace-library`"
+      ],
+      "files": [
+        "memory/terminology/term-workspace-item.md"
+      ]
+    },
+    {
+      "id": "stale_memory:8214999e1f",
+      "kind": "stale_memory",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "memory `prob-proration-rounding-drift` references things that no longer exist",
+      "evidence": [
+        "unknown node `proration-calculator`"
+      ],
+      "files": [
+        "memory/problems/prob-proration-rounding-drift.md"
+      ]
+    },
+    {
+      "id": "stale_memory:315471a79f",
+      "kind": "stale_memory",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "memory `prob-tag-color-collision` references things that no longer exist",
+      "evidence": [
+        "unknown node `tag-color-wheel`"
+      ],
+      "files": [
+        "memory/problems/prob-tag-color-collision.md"
+      ]
+    },
+    {
+      "id": "stale_memory:af7b120faa",
+      "kind": "stale_memory",
+      "severity": "info",
+      "confidence": 1.0,
+      "summary": "memory `prob-zombie-websockets` references things that no longer exist",
+      "evidence": [
+        "unknown node `realtime-presence`"
+      ],
+      "files": [
+        "memory/problems/prob-zombie-websockets.md"
+      ]
+    },
+    {
+      "id": "orphaned_file:a4e74bb8d5",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`services/status_worker.py` in Services has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
       "nodes": [
-        "legacy-webhook-retry"
-      ]
-    }
-  ],
-  "applied": [
-    {
-      "id": "unmapped:574f63c766",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/canvas/CanvasRenderer.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem",
-      "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem"
+        "Services"
       ],
-      "change": {
-        "op": "map_file",
-        "node": "workspace",
-        "file": "src/canvas/CanvasRenderer.tsx"
-      },
-      "files": [
-        "src/canvas/CanvasRenderer.tsx"
-      ]
-    },
-    {
-      "id": "unmapped:6785fa0e15",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/dashboard/Dashboard.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
-      "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
-      ],
-      "change": {
-        "op": "map_file",
-        "node": "workspace-library",
-        "file": "src/dashboard/Dashboard.tsx"
-      },
-      "files": [
-        "src/dashboard/Dashboard.tsx"
-      ]
-    },
-    {
-      "id": "unmapped:75fe9104bd",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/data/db.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
-      "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Identity Subsystem"
-      ],
-      "change": {
-        "op": "map_file",
-        "node": "identity",
-        "file": "src/data/db.ts"
-      },
-      "files": [
-        "src/data/db.ts"
-      ]
-    },
-    {
-      "id": "unmapped:ba76d9dcbd",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.6,
-      "summary": "`src/identity/user.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
-      "evidence": [
-        "directory `identity` matches node Pulse SaaS Product.Identity Subsystem"
-      ],
-      "change": {
-        "op": "map_file",
-        "node": "identity",
-        "file": "src/identity/user.ts"
-      },
-      "files": [
-        "src/identity/user.ts"
-      ]
-    },
-    {
-      "id": "unmapped:a1f3795d9f",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.78,
-      "summary": "`src/dashboard/Widget.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
-      "evidence": [
-        "all 1 mapped sibling file(s) in `src/dashboard/` belong to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
-      ],
-      "change": {
-        "op": "map_file",
-        "node": "workspace-library",
-        "file": "src/dashboard/Widget.tsx"
-      },
-      "files": [
-        "src/dashboard/Widget.tsx"
-      ]
-    },
-    {
-      "id": "unmapped:9971888a25",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.78,
-      "summary": "`src/data/replica.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
-      "evidence": [
-        "all 1 mapped sibling file(s) in `src/data/` belong to Pulse SaaS Product.Identity Subsystem"
-      ],
-      "change": {
-        "op": "map_file",
-        "node": "identity",
-        "file": "src/data/replica.ts"
-      },
-      "files": [
-        "src/data/replica.ts"
-      ]
-    },
-    {
-      "id": "unmapped:270232cdab",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/payments/checkout.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
-      "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Identity Subsystem"
-      ],
-      "change": {
-        "op": "map_file",
-        "node": "identity",
-        "file": "src/payments/checkout.ts"
-      },
-      "files": [
-        "src/payments/checkout.ts"
-      ]
-    },
-    {
-      "id": "unmapped:2fffab6569",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/ui/Layout.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
-      "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
-      ],
-      "change": {
-        "op": "map_file",
-        "node": "workspace-library",
-        "file": "src/ui/Layout.tsx"
-      },
-      "files": [
-        "src/ui/Layout.tsx"
-      ]
-    },
-    {
-      "id": "unmapped:0ac61f8dbf",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.78,
-      "summary": "`src/payments/stripe.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
-      "evidence": [
-        "all 1 mapped sibling file(s) in `src/payments/` belong to Pulse SaaS Product.Identity Subsystem"
-      ],
-      "change": {
-        "op": "map_file",
-        "node": "identity",
-        "file": "src/payments/stripe.ts"
-      },
-      "files": [
-        "src/payments/stripe.ts"
-      ]
-    },
-    {
-      "id": "unmapped:99562566f4",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.78,
-      "summary": "`src/ui/Button.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
-      "evidence": [
-        "all 1 mapped sibling file(s) in `src/ui/` belong to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
-      ],
-      "change": {
-        "op": "map_file",
-        "node": "workspace-library",
-        "file": "src/ui/Button.tsx"
-      },
-      "files": [
-        "src/ui/Button.tsx"
-      ]
-    }
-  ],
-  "proposed": [
-    {
-      "id": "unmapped:a4e74bb8d5",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.3,
-      "summary": "`services/status_worker.py` has no blueprint home; maybe a new node `services`",
-      "evidence": [
-        "no sibling, import or name evidence"
-      ],
-      "change": {
-        "op": "create_node",
-        "parent": "demo-product",
-        "name": "services",
-        "files": [
-          "services/**"
-        ]
-      },
       "files": [
         "services/status_worker.py"
       ]
     },
     {
-      "id": "unmapped:1908630580",
-      "kind": "unmapped_file",
+      "id": "orphaned_file:cf5743a8db",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.3,
-      "summary": "`src/cli-tools/seedRunner.ts` has no blueprint home; maybe a new node `cli-tools`",
+      "confidence": 0.9,
+      "summary": "`src/auth/auth.ts` in Backend.auth has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "no sibling, import or name evidence"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "create_node",
-        "parent": "demo-product",
-        "name": "cli-tools",
-        "files": [
-          "src/cli-tools/**"
-        ]
-      },
+      "nodes": [
+        "Backend/auth"
+      ],
+      "files": [
+        "src/auth/auth.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:091917219d",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/auth/jwtSigner.ts` in Backend.auth has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/auth"
+      ],
+      "files": [
+        "src/auth/jwtSigner.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:caa0ab1b42",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/auth/mod_2.ts` in Backend.api.auth has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/auth"
+      ],
+      "files": [
+        "src/backend/api/auth/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f354bc36aa",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/auth/mod_3.ts` in Backend.api.auth has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/auth"
+      ],
+      "files": [
+        "src/backend/api/auth/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:4a971408f8",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/handlers/mod_2.ts` in Backend.api.handlers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/handlers"
+      ],
+      "files": [
+        "src/backend/api/handlers/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:5fe10bd727",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/handlers/mod_3.ts` in Backend.api.handlers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/handlers"
+      ],
+      "files": [
+        "src/backend/api/handlers/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9dc13303aa",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/handlers/mod_4.ts` in Backend.api.handlers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/handlers"
+      ],
+      "files": [
+        "src/backend/api/handlers/mod_4.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:521679f42f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/handlers/order_ctrl/mod_2.ts` in Backend.api.handlers.order_ctrl has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/handlers/order_ctrl"
+      ],
+      "files": [
+        "src/backend/api/handlers/order_ctrl/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:111285f314",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/handlers/user_ctrl/mod_2.ts` in Backend.api.handlers.user_ctrl has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/handlers/user_ctrl"
+      ],
+      "files": [
+        "src/backend/api/handlers/user_ctrl/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:b7b267e7f6",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/mod_2.ts` in Backend.api has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api"
+      ],
+      "files": [
+        "src/backend/api/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:8d3d93a47b",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/mod_3.ts` in Backend.api has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api"
+      ],
+      "files": [
+        "src/backend/api/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:17f425e49e",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/routes/mod_2.ts` in Backend.api.routes has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/routes"
+      ],
+      "files": [
+        "src/backend/api/routes/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:c4338deccb",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/routes/mod_3.ts` in Backend.api.routes has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/routes"
+      ],
+      "files": [
+        "src/backend/api/routes/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e35ad3971e",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/routes/mod_4.ts` in Backend.api.routes has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/routes"
+      ],
+      "files": [
+        "src/backend/api/routes/mod_4.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:750a3a8a8d",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/routes/v2_billing/mod_2.ts` in Backend.api.routes.v2_billing has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/routes/v2_billing"
+      ],
+      "files": [
+        "src/backend/api/routes/v2_billing/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9874b0bbf7",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/routes/v2_orders/mod_2.ts` in Backend.api.routes.v2_orders has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/routes/v2_orders"
+      ],
+      "files": [
+        "src/backend/api/routes/v2_orders/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e20ff35264",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/routes/v2_orders/mod_3.ts` in Backend.api.routes.v2_orders has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/routes/v2_orders"
+      ],
+      "files": [
+        "src/backend/api/routes/v2_orders/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:45ca014a09",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/api/routes/v2_users/mod_2.ts` in Backend.api.routes.v2_users has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/api/routes/v2_users"
+      ],
+      "files": [
+        "src/backend/api/routes/v2_users/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:aa9b034909",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/auth/legacy_sso/mod_2.ts` in Backend.auth.legacy_sso has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/auth/legacy_sso"
+      ],
+      "files": [
+        "src/backend/auth/legacy_sso/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9de3df73e9",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/auth/legacy_sso/mod_3.ts` in Backend.auth.legacy_sso has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/auth/legacy_sso"
+      ],
+      "files": [
+        "src/backend/auth/legacy_sso/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:cd9bc79637",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/auth/mod_2.ts` in Backend.auth has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/auth"
+      ],
+      "files": [
+        "src/backend/auth/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:0dda91a0ed",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/auth/mod_3.ts` in Backend.auth has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/auth"
+      ],
+      "files": [
+        "src/backend/auth/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:129a405176",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/auth/models/mod_2.ts` in Backend.auth.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/auth/models"
+      ],
+      "files": [
+        "src/backend/auth/models/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:caf53e7d6f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/auth/models/mod_3.ts` in Backend.auth.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/auth/models"
+      ],
+      "files": [
+        "src/backend/auth/models/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:4cc2d84c4b",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/auth/tokens/mod_2.ts` in Backend.auth.tokens has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/auth/tokens"
+      ],
+      "files": [
+        "src/backend/auth/tokens/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:45b56e4f46",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/auth/tokens/mod_3.ts` in Backend.auth.tokens has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/auth/tokens"
+      ],
+      "files": [
+        "src/backend/auth/tokens/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:77368ceb28",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/billing/jobs/mod_2.ts` in Backend.billing.jobs has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/billing/jobs"
+      ],
+      "files": [
+        "src/backend/billing/jobs/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:b31883580c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/billing/jobs/mod_3.ts` in Backend.billing.jobs has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/billing/jobs"
+      ],
+      "files": [
+        "src/backend/billing/jobs/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:5f78e80c0c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/billing/mod_2.ts` in Backend.billing has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/billing"
+      ],
+      "files": [
+        "src/backend/billing/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e0a34e249f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/billing/models/mod_2.ts` in Backend.billing.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/billing/models"
+      ],
+      "files": [
+        "src/backend/billing/models/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:327d087b96",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/billing/models/mod_3.ts` in Backend.billing.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/billing/models"
+      ],
+      "files": [
+        "src/backend/billing/models/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:8b15fc1721",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/billing/webhooks/mod_2.ts` in Backend.billing.webhooks has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/billing/webhooks"
+      ],
+      "files": [
+        "src/backend/billing/webhooks/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:860c60937c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/cache/mem/mod_2.ts` in Backend.cache.mem has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/cache/mem"
+      ],
+      "files": [
+        "src/backend/cache/mem/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:c0ca055e41",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/cache/mod_2.ts` in Backend.cache has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/cache"
+      ],
+      "files": [
+        "src/backend/cache/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:ebadb47df8",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/cache/redis/mod_2.ts` in Backend.cache.redis has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/cache/redis"
+      ],
+      "files": [
+        "src/backend/cache/redis/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:02a5f5d03f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/cache/redis/mod_3.ts` in Backend.cache.redis has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/cache/redis"
+      ],
+      "files": [
+        "src/backend/cache/redis/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:52db3d0b67",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/adapters/kafka_sink/mod_2.ts` in Backend.events.adapters.kafka_sink has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/adapters/kafka_sink"
+      ],
+      "files": [
+        "src/backend/events/adapters/kafka_sink/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:97f1dc547c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/adapters/mod_2.ts` in Backend.events.adapters has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/adapters"
+      ],
+      "files": [
+        "src/backend/events/adapters/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f653759e50",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/handlers/invoice_paid/mod_2.ts` in Backend.events.handlers.invoice_paid has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/handlers/invoice_paid"
+      ],
+      "files": [
+        "src/backend/events/handlers/invoice_paid/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9729b4afe5",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/handlers/mod_2.ts` in Backend.events.handlers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/handlers"
+      ],
+      "files": [
+        "src/backend/events/handlers/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:3f3f719576",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/handlers/mod_3.ts` in Backend.events.handlers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/handlers"
+      ],
+      "files": [
+        "src/backend/events/handlers/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:7f2b45e379",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/handlers/mod_4.ts` in Backend.events.handlers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/handlers"
+      ],
+      "files": [
+        "src/backend/events/handlers/mod_4.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e461efda0a",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/handlers/order_placed/mod_2.ts` in Backend.events.handlers.order_placed has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/handlers/order_placed"
+      ],
+      "files": [
+        "src/backend/events/handlers/order_placed/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e006a6ad80",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/handlers/user_signup/mod_2.ts` in Backend.events.handlers.user_signup has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/handlers/user_signup"
+      ],
+      "files": [
+        "src/backend/events/handlers/user_signup/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:0f325cbbbf",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/mod_2.ts` in Backend.events has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events"
+      ],
+      "files": [
+        "src/backend/events/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:c7fb0d5558",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/mod_3.ts` in Backend.events has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events"
+      ],
+      "files": [
+        "src/backend/events/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:64fb20249b",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/models/envelope/mod_2.ts` in Backend.events.models.envelope has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/models/envelope"
+      ],
+      "files": [
+        "src/backend/events/models/envelope/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:4f21091b1c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/models/envelope/mod_3.ts` in Backend.events.models.envelope has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/models/envelope"
+      ],
+      "files": [
+        "src/backend/events/models/envelope/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f45f64f921",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/models/mod_2.ts` in Backend.events.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/models"
+      ],
+      "files": [
+        "src/backend/events/models/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:b293d1103a",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/models/mod_3.ts` in Backend.events.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/models"
+      ],
+      "files": [
+        "src/backend/events/models/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:6dfb4ae3eb",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/models/mod_4.ts` in Backend.events.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/models"
+      ],
+      "files": [
+        "src/backend/events/models/mod_4.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:171b3cc474",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/models/payloads/mod_2.ts` in Backend.events.models.payloads has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/models/payloads"
+      ],
+      "files": [
+        "src/backend/events/models/payloads/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f4194cb353",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/models/payloads/mod_3.ts` in Backend.events.models.payloads has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/models/payloads"
+      ],
+      "files": [
+        "src/backend/events/models/payloads/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:8c8c205825",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/models/serializers/mod_2.ts` in Backend.events.models.serializers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/models/serializers"
+      ],
+      "files": [
+        "src/backend/events/models/serializers/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:c9eb6074ac",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/models/versioning/mod_2.ts` in Backend.events.models.versioning has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/models/versioning"
+      ],
+      "files": [
+        "src/backend/events/models/versioning/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:6a46d304c8",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/schema/mod_2.ts` in Backend.events.schema has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/schema"
+      ],
+      "files": [
+        "src/backend/events/schema/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:602331c6e0",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/schema/mod_3.ts` in Backend.events.schema has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/schema"
+      ],
+      "files": [
+        "src/backend/events/schema/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:4506f86d3f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/schema/registry/mod_2.ts` in Backend.events.schema.registry has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/schema/registry"
+      ],
+      "files": [
+        "src/backend/events/schema/registry/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:8519037540",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/events/schema/validators/mod_2.ts` in Backend.events.schema.validators has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend/events/schema/validators"
+      ],
+      "files": [
+        "src/backend/events/schema/validators/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:123759feb6",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/mod_2.ts` in Backend has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend"
+      ],
+      "files": [
+        "src/backend/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:038f2d5f26",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/backend/mod_3.ts` in Backend has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Backend"
+      ],
+      "files": [
+        "src/backend/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:35f2d532c9",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/billing/checkout/CheckoutController.ts` in Services.billing has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing"
+      ],
+      "files": [
+        "src/billing/checkout/CheckoutController.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:a2cad74474",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/billing/proration.ts` in Services.billing has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing"
+      ],
+      "files": [
+        "src/billing/proration.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:1908630580",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/cli-tools/seedRunner.ts` in Data.legacy_etl has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/legacy_etl"
+      ],
       "files": [
         "src/cli-tools/seedRunner.ts"
       ]
     },
     {
-      "id": "unmapped:9d612cb247",
-      "kind": "unmapped_file",
+      "id": "orphaned_file:c4e96ec2cc",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.3,
-      "summary": "`src/experiments/aiSuggest.ts` has no blueprint home; maybe a new node `experiments`",
+      "confidence": 0.9,
+      "summary": "`src/core/events/contracts/mod_2.ts` in Core.events.contracts has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "no sibling, import or name evidence"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "create_node",
-        "parent": "demo-product",
-        "name": "experiments",
-        "files": [
-          "src/experiments/**"
-        ]
-      },
-      "files": [
-        "src/experiments/aiSuggest.ts"
-      ]
-    },
-    {
-      "id": "unmapped:1fcb9f16b0",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.3,
-      "summary": "`src/legacy-sync/xmlImporter.ts` has no blueprint home; maybe a new node `legacy-sync`",
-      "evidence": [
-        "no sibling, import or name evidence"
-      ],
-      "change": {
-        "op": "create_node",
-        "parent": "demo-product",
-        "name": "legacy-sync",
-        "files": [
-          "src/legacy-sync/**"
-        ]
-      },
-      "files": [
-        "src/legacy-sync/xmlImporter.ts"
-      ]
-    },
-    {
-      "id": "unmapped:aff22d1faf",
-      "kind": "unmapped_file",
-      "severity": "warn",
-      "confidence": 0.3,
-      "summary": "`src/notifications/mailer.ts` has no blueprint home; maybe a new node `notifications`",
-      "evidence": [
-        "no sibling, import or name evidence"
-      ],
-      "change": {
-        "op": "create_node",
-        "parent": "demo-product",
-        "name": "notifications",
-        "files": [
-          "src/notifications/**"
-        ]
-      },
-      "files": [
-        "src/notifications/mailer.ts"
-      ]
-    },
-    {
-      "id": "missing:5d2258fcb4",
-      "kind": "missing_file",
-      "severity": "warn",
-      "confidence": 0.4,
-      "summary": "`src/auth/api.ts` (mapped to Pulse SaaS Product.Identity Subsystem.Auth API) no longer exists",
-      "evidence": [
-        "no rename candidate found"
-      ],
-      "change": {
-        "op": "unmap_file",
-        "node": "auth-api",
-        "file": "src/auth/api.ts"
-      },
       "nodes": [
-        "auth-api"
+        "Core/events/contracts"
       ],
       "files": [
-        "src/auth/api.ts"
+        "src/core/events/contracts/mod_2.ts"
       ]
     },
     {
-      "id": "missing:e3d1766863",
-      "kind": "missing_file",
+      "id": "orphaned_file:8a09aec4b0",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.4,
-      "summary": "`src/auth/users.ts` (mapped to Pulse SaaS Product.Identity Subsystem.User Store) no longer exists",
+      "confidence": 0.9,
+      "summary": "`src/core/events/contracts/mod_3.ts` in Core.events.contracts has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "no rename candidate found"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "unmap_file",
-        "node": "user-store",
-        "file": "src/auth/users.ts"
-      },
       "nodes": [
-        "user-store"
+        "Core/events/contracts"
       ],
       "files": [
-        "src/auth/users.ts"
+        "src/core/events/contracts/mod_3.ts"
       ]
     },
     {
-      "id": "missing:53d1dea7f2",
-      "kind": "missing_file",
+      "id": "orphaned_file:03d1b0a9c4",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.4,
-      "summary": "`src/realtime/presence.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Presence) no longer exists",
+      "confidence": 0.9,
+      "summary": "`src/core/events/dispatcher/mod_2.ts` in Core.events.dispatcher has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "no rename candidate found"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "unmap_file",
-        "node": "realtime-presence",
-        "file": "src/realtime/presence.ts"
-      },
       "nodes": [
-        "realtime-presence"
+        "Core/events/dispatcher"
       ],
       "files": [
-        "src/realtime/presence.ts"
+        "src/core/events/dispatcher/mod_2.ts"
       ]
     },
     {
-      "id": "missing:a6c0e482ec",
-      "kind": "missing_file",
+      "id": "orphaned_file:7b4f2de5e8",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.4,
-      "summary": "`src/realtime/worker.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Status Worker) no longer exists",
+      "confidence": 0.9,
+      "summary": "`src/core/events/dispatcher/mod_3.ts` in Core.events.dispatcher has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "no rename candidate found"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "unmap_file",
-        "node": "realtime-status-worker",
-        "file": "src/realtime/worker.ts"
-      },
       "nodes": [
-        "realtime-status-worker"
+        "Core/events/dispatcher"
       ],
       "files": [
-        "src/realtime/worker.ts"
+        "src/core/events/dispatcher/mod_3.ts"
       ]
     },
     {
-      "id": "missing:fa2c3a54f3",
-      "kind": "missing_file",
+      "id": "orphaned_file:fa8a4ff92a",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.4,
-      "summary": "`src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure) no longer exists",
+      "confidence": 0.9,
+      "summary": "`src/core/events/mod_2.ts` in Core.events has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "no rename candidate found"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "unmap_file",
-        "node": "platform",
-        "file": "src/server.ts"
-      },
       "nodes": [
-        "platform"
+        "Core/events"
       ],
       "files": [
-        "src/server.ts"
+        "src/core/events/mod_2.ts"
       ]
     },
     {
-      "id": "missing:00a7e1498a",
-      "kind": "missing_file",
+      "id": "orphaned_file:6bc2f84e1b",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.4,
-      "summary": "`src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure.HTTP Server) no longer exists",
+      "confidence": 0.9,
+      "summary": "`src/core/events/mod_3.ts` in Core.events has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "no rename candidate found"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "unmap_file",
-        "node": "http-server",
-        "file": "src/server.ts"
-      },
       "nodes": [
-        "http-server"
+        "Core/events"
       ],
       "files": [
-        "src/server.ts"
+        "src/core/events/mod_3.ts"
       ]
     },
     {
-      "id": "unsupported:98eb85d196",
-      "kind": "unsupported_relation",
-      "severity": "info",
-      "confidence": 0.3,
-      "summary": "blueprint declares Pulse SaaS Product.Identity Subsystem.Auth API → Pulse SaaS Product.Identity Subsystem.Session Token but no import edge supports it (planned, or stale?)",
-      "evidence": [],
-      "change": {
-        "op": "remove_relation",
-        "from": "auth-api",
-        "to": "session-token"
-      },
-      "nodes": [
-        "auth-api",
-        "session-token"
-      ]
-    },
-    {
-      "id": "unsupported:82291996b5",
-      "kind": "unsupported_relation",
-      "severity": "info",
-      "confidence": 0.3,
-      "summary": "blueprint declares Pulse SaaS Product.Billing Subsystem.Billing Checkout → Pulse SaaS Product.Billing Subsystem.Stripe Gateway but no import edge supports it (planned, or stale?)",
-      "evidence": [],
-      "change": {
-        "op": "remove_relation",
-        "from": "billing-checkout",
-        "to": "stripe-gateway"
-      },
-      "nodes": [
-        "billing-checkout",
-        "stripe-gateway"
-      ]
-    }
-  ],
-  "uncertain": [
-    {
-      "id": "unmapped:574f63c766",
-      "kind": "unmapped_file",
+      "id": "orphaned_file:df1e70b14f",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/canvas/CanvasRenderer.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem",
+      "confidence": 0.9,
+      "summary": "`src/core/mod_2.ts` in Core has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "map_file",
-        "node": "workspace",
-        "file": "src/canvas/CanvasRenderer.tsx"
-      },
+      "nodes": [
+        "Core"
+      ],
       "files": [
-        "src/canvas/CanvasRenderer.tsx"
+        "src/core/mod_2.ts"
       ]
     },
     {
-      "id": "unmapped:6785fa0e15",
-      "kind": "unmapped_file",
+      "id": "orphaned_file:0747644da8",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/dashboard/Dashboard.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "confidence": 0.9,
+      "summary": "`src/core/models/aggregates/mod_2.ts` in Core.models.aggregates has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "map_file",
-        "node": "workspace-library",
-        "file": "src/dashboard/Dashboard.tsx"
-      },
+      "nodes": [
+        "Core/models/aggregates"
+      ],
+      "files": [
+        "src/core/models/aggregates/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:a86dfd2091",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/models/aggregates/mod_3.ts` in Core.models.aggregates has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models/aggregates"
+      ],
+      "files": [
+        "src/core/models/aggregates/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:6d1cb0b791",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/models/entities/mod_2.ts` in Core.models.entities has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models/entities"
+      ],
+      "files": [
+        "src/core/models/entities/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:43b1c19a17",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/models/entities/mod_3.ts` in Core.models.entities has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models/entities"
+      ],
+      "files": [
+        "src/core/models/entities/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:2d84fb52da",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/models/entities/mod_4.ts` in Core.models.entities has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models/entities"
+      ],
+      "files": [
+        "src/core/models/entities/mod_4.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:bf10763fcb",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/models/mod_2.ts` in Core.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models"
+      ],
+      "files": [
+        "src/core/models/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:788313de1c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/models/mod_3.ts` in Core.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models"
+      ],
+      "files": [
+        "src/core/models/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:27565be1eb",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/models/mod_4.ts` in Core.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models"
+      ],
+      "files": [
+        "src/core/models/mod_4.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:042d135385",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/models/value_objects/mod_2.ts` in Core.models.value_objects has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models/value_objects"
+      ],
+      "files": [
+        "src/core/models/value_objects/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:6c5eeaa0ae",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/models/value_objects/mod_3.ts` in Core.models.value_objects has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models/value_objects"
+      ],
+      "files": [
+        "src/core/models/value_objects/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f4de949c35",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/rules/mod_2.ts` in Core.rules has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/rules"
+      ],
+      "files": [
+        "src/core/rules/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:cc8b41ad2b",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/rules/mod_3.ts` in Core.rules has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/rules"
+      ],
+      "files": [
+        "src/core/rules/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e7b84c614e",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/rules/permissions/mod_2.ts` in Core.rules.permissions has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/rules/permissions"
+      ],
+      "files": [
+        "src/core/rules/permissions/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:46a8147c8d",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/rules/permissions/mod_3.ts` in Core.rules.permissions has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/rules/permissions"
+      ],
+      "files": [
+        "src/core/rules/permissions/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:943344d288",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/rules/pricing/mod_2.ts` in Core.rules.pricing has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/rules/pricing"
+      ],
+      "files": [
+        "src/core/rules/pricing/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:1ec3577f1f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/rules/pricing/mod_3.ts` in Core.rules.pricing has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/rules/pricing"
+      ],
+      "files": [
+        "src/core/rules/pricing/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:62f369ea22",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/rules/quotas/mod_2.ts` in Core.rules.quotas has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/rules/quotas"
+      ],
+      "files": [
+        "src/core/rules/quotas/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:d41bae0047",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/utils/dates/mod_2.ts` in Core.utils.dates has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/utils/dates"
+      ],
+      "files": [
+        "src/core/utils/dates/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f357803f5b",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/utils/mod_2.ts` in Core.utils has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/utils"
+      ],
+      "files": [
+        "src/core/utils/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:8de5d114d5",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/utils/money/mod_2.ts` in Core.utils.money has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/utils/money"
+      ],
+      "files": [
+        "src/core/utils/money/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:4f3c61c4ac",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/core/utils/money/mod_3.ts` in Core.utils.money has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/utils/money"
+      ],
+      "files": [
+        "src/core/utils/money/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:6785fa0e15",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/dashboard/Dashboard.tsx` in Web.views has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views"
+      ],
       "files": [
         "src/dashboard/Dashboard.tsx"
       ]
     },
     {
-      "id": "unmapped:75fe9104bd",
-      "kind": "unmapped_file",
+      "id": "orphaned_file:ccaa4a9d59",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/data/db.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "confidence": 0.9,
+      "summary": "`src/data/legacy_etl/mod_2.ts` in Data.legacy_etl has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Identity Subsystem"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "map_file",
-        "node": "identity",
-        "file": "src/data/db.ts"
-      },
+      "nodes": [
+        "Data/legacy_etl"
+      ],
       "files": [
-        "src/data/db.ts"
+        "src/data/legacy_etl/mod_2.ts"
       ]
     },
     {
-      "id": "unmapped:ba76d9dcbd",
-      "kind": "unmapped_file",
+      "id": "orphaned_file:c42c9d61fc",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.6,
-      "summary": "`src/identity/user.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "confidence": 0.9,
+      "summary": "`src/data/migrations/history/mod_2.ts` in Data.migrations.history has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "directory `identity` matches node Pulse SaaS Product.Identity Subsystem"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "map_file",
-        "node": "identity",
-        "file": "src/identity/user.ts"
-      },
+      "nodes": [
+        "Data/migrations/history"
+      ],
       "files": [
-        "src/identity/user.ts"
+        "src/data/migrations/history/mod_2.ts"
       ]
     },
     {
-      "id": "unmapped:270232cdab",
-      "kind": "unmapped_file",
+      "id": "orphaned_file:6874fbf304",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/payments/checkout.ts` has no blueprint home; best fit: Pulse SaaS Product.Identity Subsystem",
+      "confidence": 0.9,
+      "summary": "`src/data/migrations/mod_2.ts` in Data.migrations has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Identity Subsystem"
+        "no project file imports this module"
       ],
-      "change": {
-        "op": "map_file",
-        "node": "identity",
-        "file": "src/payments/checkout.ts"
-      },
+      "nodes": [
+        "Data/migrations"
+      ],
+      "files": [
+        "src/data/migrations/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e956e7a9f5",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/migrations/runner/mod_2.ts` in Data.migrations.runner has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/migrations/runner"
+      ],
+      "files": [
+        "src/data/migrations/runner/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:153110b88b",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/mod_2.ts` in Data.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/models"
+      ],
+      "files": [
+        "src/data/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f8d4e6db30",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/models/mod_2.ts` in Data.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/models"
+      ],
+      "files": [
+        "src/data/models/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:0d1c79be22",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/models/mod_3.ts` in Data.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/models"
+      ],
+      "files": [
+        "src/data/models/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:139d8c82ab",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/models/queries/mod_2.ts` in Data.models.queries has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/models/queries"
+      ],
+      "files": [
+        "src/data/models/queries/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:73cacacc7d",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/models/repositories/mod_2.ts` in Data.models.repositories has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/models/repositories"
+      ],
+      "files": [
+        "src/data/models/repositories/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:44a460f2b9",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/models/repositories/mod_3.ts` in Data.models.repositories has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/models/repositories"
+      ],
+      "files": [
+        "src/data/models/repositories/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9971888a25",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/replica.ts` in Data.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/models"
+      ],
+      "files": [
+        "src/data/replica.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:60a0fb3107",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/schema/indexes/mod_2.ts` in Data.schema.indexes has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/schema/indexes"
+      ],
+      "files": [
+        "src/data/schema/indexes/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e2f2829f54",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/schema/mod_2.ts` in Data.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/models"
+      ],
+      "files": [
+        "src/data/schema/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:b96165f379",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/schema/mod_3.ts` in Data.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/models"
+      ],
+      "files": [
+        "src/data/schema/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:2504997d51",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/schema/tables/accounts/mod_2.ts` in Data.schema.tables.accounts has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/schema/tables/accounts"
+      ],
+      "files": [
+        "src/data/schema/tables/accounts/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:8637cf828f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/schema/tables/ledger/mod_2.ts` in Data.schema.tables.ledger has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/schema/tables/ledger"
+      ],
+      "files": [
+        "src/data/schema/tables/ledger/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:cbc0365fef",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/schema/tables/mod_2.ts` in Data.schema.tables has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/schema/tables"
+      ],
+      "files": [
+        "src/data/schema/tables/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f85a6580d0",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/schema/tables/mod_3.ts` in Data.schema.tables has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/schema/tables"
+      ],
+      "files": [
+        "src/data/schema/tables/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:2904e23384",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/data/schema/views/mod_2.ts` in Data.schema.views has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/schema/views"
+      ],
+      "files": [
+        "src/data/schema/views/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9d612cb247",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/experiments/aiSuggest.ts` in Data.legacy_etl has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/legacy_etl"
+      ],
+      "files": [
+        "src/experiments/aiSuggest.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:24973a9217",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/deploy/containers/mod_2.ts` in Infrastructure.deploy.containers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure/deploy/containers"
+      ],
+      "files": [
+        "src/infrastructure/deploy/containers/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:6d952b33e8",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/deploy/mod_2.ts` in Infrastructure.deploy has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure/deploy"
+      ],
+      "files": [
+        "src/infrastructure/deploy/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e6f7c3847e",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/deploy/terraform/mod_2.ts` in Infrastructure.deploy.terraform has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure/deploy/terraform"
+      ],
+      "files": [
+        "src/infrastructure/deploy/terraform/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:788e59ec17",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/mod_2.ts` in Infrastructure has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure"
+      ],
+      "files": [
+        "src/infrastructure/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:1b4a303b19",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/queues/broker/mod_2.ts` in Infrastructure.queues.broker has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure/queues/broker"
+      ],
+      "files": [
+        "src/infrastructure/queues/broker/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:ce9f4ffcbd",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/queues/dlq/mod_2.ts` in Infrastructure.queues.dlq has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure/queues/dlq"
+      ],
+      "files": [
+        "src/infrastructure/queues/dlq/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:432d0ab61f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/queues/mod_2.ts` in Infrastructure.queues has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure/queues"
+      ],
+      "files": [
+        "src/infrastructure/queues/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:76924dabfd",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/telemetry/metrics/mod_2.ts` in Infrastructure.telemetry.metrics has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure/telemetry/metrics"
+      ],
+      "files": [
+        "src/infrastructure/telemetry/metrics/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:543013c46c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/telemetry/mod_2.ts` in Infrastructure.telemetry has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure/telemetry"
+      ],
+      "files": [
+        "src/infrastructure/telemetry/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:0a0ca83007",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/infrastructure/telemetry/traces/mod_2.ts` in Infrastructure.telemetry.traces has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Infrastructure/telemetry/traces"
+      ],
+      "files": [
+        "src/infrastructure/telemetry/traces/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:1fcb9f16b0",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/legacy-sync/xmlImporter.ts` in Data.legacy_etl has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Data/legacy_etl"
+      ],
+      "files": [
+        "src/legacy-sync/xmlImporter.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:cdd2b8c99b",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/adapters/biometrics/mod_2.ts` in Mobile.adapters.biometrics has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/adapters/biometrics"
+      ],
+      "files": [
+        "src/mobile/adapters/biometrics/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f4b1f7fa19",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/adapters/mod_2.ts` in Mobile.adapters has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/adapters"
+      ],
+      "files": [
+        "src/mobile/adapters/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:b5350792aa",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/adapters/storage/mod_2.ts` in Mobile.adapters.storage has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/adapters/storage"
+      ],
+      "files": [
+        "src/mobile/adapters/storage/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:3684597f96",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/hooks/gestures/mod_2.ts` in Mobile.hooks.gestures has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/hooks/gestures"
+      ],
+      "files": [
+        "src/mobile/hooks/gestures/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e51433f12c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/hooks/mod_2.ts` in Mobile.hooks has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/hooks"
+      ],
+      "files": [
+        "src/mobile/hooks/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9c5e06a024",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/hooks/sync/mod_2.ts` in Mobile.hooks.sync has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/hooks/sync"
+      ],
+      "files": [
+        "src/mobile/hooks/sync/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:d06b9a7619",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/mod_2.ts` in Mobile has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile"
+      ],
+      "files": [
+        "src/mobile/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:dffe9c8aaa",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/views/mod_2.ts` in Mobile.views has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/views"
+      ],
+      "files": [
+        "src/mobile/views/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:cf5f2754d5",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/views/navigation/mod_2.ts` in Mobile.views.navigation has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/views/navigation"
+      ],
+      "files": [
+        "src/mobile/views/navigation/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:4279dfd629",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/views/screens/mod_2.ts` in Mobile.views.screens has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/views/screens"
+      ],
+      "files": [
+        "src/mobile/views/screens/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:607a34f4a5",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/views/screens/mod_3.ts` in Mobile.views.screens has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/views/screens"
+      ],
+      "files": [
+        "src/mobile/views/screens/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e61e6f6ac0",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/mobile/views/widgets/mod_2.ts` in Mobile.views.widgets has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Mobile/views/widgets"
+      ],
+      "files": [
+        "src/mobile/views/widgets/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:aff22d1faf",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/notifications/mailer.ts` in Services.notifications has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/notifications"
+      ],
+      "files": [
+        "src/notifications/mailer.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:270232cdab",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/payments/checkout.ts` in Services.billing has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing"
+      ],
       "files": [
         "src/payments/checkout.ts"
       ]
     },
     {
-      "id": "unmapped:2fffab6569",
-      "kind": "unmapped_file",
+      "id": "orphaned_file:abaf9bdc20",
+      "kind": "orphaned_file",
       "severity": "warn",
-      "confidence": 0.55,
-      "summary": "`src/ui/Layout.tsx` has no blueprint home; best fit: Pulse SaaS Product.Workspace Subsystem.Workspace Library",
+      "confidence": 0.9,
+      "summary": "`src/services/analytics/export/mod_2.ts` in Services.analytics.export has 0 incoming imports (unmounted component or dead module)",
       "evidence": [
-        "1/1 import edges connect it to Pulse SaaS Product.Workspace Subsystem.Workspace Library"
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/analytics/export"
+      ],
+      "files": [
+        "src/services/analytics/export/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:62971aeaa1",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/analytics/funnels/mod_2.ts` in Services.analytics.funnels has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/analytics/funnels"
+      ],
+      "files": [
+        "src/services/analytics/funnels/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:5347adec02",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/analytics/mod_2.ts` in Services.analytics has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/analytics"
+      ],
+      "files": [
+        "src/services/analytics/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:25a2bab738",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/analytics/mod_3.ts` in Services.analytics has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/analytics"
+      ],
+      "files": [
+        "src/services/analytics/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:6436b642ea",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/billing/dunning/mod_2.ts` in Services.billing.dunning has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing/dunning"
+      ],
+      "files": [
+        "src/services/billing/dunning/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:198f8d1aed",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/billing/invoices/mod_2.ts` in Services.billing.invoices has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing/invoices"
+      ],
+      "files": [
+        "src/services/billing/invoices/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:2b8107567d",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/billing/invoices/mod_3.ts` in Services.billing.invoices has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing/invoices"
+      ],
+      "files": [
+        "src/services/billing/invoices/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e23db7a417",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/billing/mod_2.ts` in Services.billing has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing"
+      ],
+      "files": [
+        "src/services/billing/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:848f774063",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/billing/mod_3.ts` in Services.billing has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing"
+      ],
+      "files": [
+        "src/services/billing/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:776c8fc7c7",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/billing/subscriptions/mod_2.ts` in Services.billing.subscriptions has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing/subscriptions"
+      ],
+      "files": [
+        "src/services/billing/subscriptions/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:046e2baf5c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/billing/subscriptions/mod_3.ts` in Services.billing.subscriptions has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/billing/subscriptions"
+      ],
+      "files": [
+        "src/services/billing/subscriptions/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:67a220826d",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/auth/key_sync/mod_2.ts` in Services.jobs.auth.key_sync has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/auth/key_sync"
+      ],
+      "files": [
+        "src/services/jobs/auth/key_sync/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:5388ab8a61",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/auth/mod_2.ts` in Services.jobs.auth has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/auth"
+      ],
+      "files": [
+        "src/services/jobs/auth/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:cbf4791f50",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/auth/mod_3.ts` in Services.jobs.auth has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/auth"
+      ],
+      "files": [
+        "src/services/jobs/auth/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:1561ebbc9d",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/auth/mod_4.ts` in Services.jobs.auth has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/auth"
+      ],
+      "files": [
+        "src/services/jobs/auth/mod_4.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:45c55cff3f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/auth/mod_5.ts` in Services.jobs.auth has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/auth"
+      ],
+      "files": [
+        "src/services/jobs/auth/mod_5.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9fd9db2ba8",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/auth/session_pruner/mod_2.ts` in Services.jobs.auth.session_pruner has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/auth/session_pruner"
+      ],
+      "files": [
+        "src/services/jobs/auth/session_pruner/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:1bf65a55d1",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/auth/token_rotator/mod_2.ts` in Services.jobs.auth.token_rotator has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/auth/token_rotator"
+      ],
+      "files": [
+        "src/services/jobs/auth/token_rotator/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:0ddc5e37f2",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/auth/token_rotator/mod_3.ts` in Services.jobs.auth.token_rotator has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/auth/token_rotator"
+      ],
+      "files": [
+        "src/services/jobs/auth/token_rotator/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:4e98aa8dea",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/mod_2.ts` in Services.jobs has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs"
+      ],
+      "files": [
+        "src/services/jobs/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:eb796119ca",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/mod_3.ts` in Services.jobs has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs"
+      ],
+      "files": [
+        "src/services/jobs/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e2f14d8ea8",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/scheduler/cron_runner/mod_2.ts` in Services.jobs.scheduler.cron_runner has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/scheduler/cron_runner"
+      ],
+      "files": [
+        "src/services/jobs/scheduler/cron_runner/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:bd93459dac",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/scheduler/lease_lock/mod_2.ts` in Services.jobs.scheduler.lease_lock has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/scheduler/lease_lock"
+      ],
+      "files": [
+        "src/services/jobs/scheduler/lease_lock/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:2cd8fbd750",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/scheduler/mod_2.ts` in Services.jobs.scheduler has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/scheduler"
+      ],
+      "files": [
+        "src/services/jobs/scheduler/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:75ac8efa48",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/scheduler/mod_3.ts` in Services.jobs.scheduler has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/scheduler"
+      ],
+      "files": [
+        "src/services/jobs/scheduler/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:873be84262",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/workers/mod_2.ts` in Services.jobs.workers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/workers"
+      ],
+      "files": [
+        "src/services/jobs/workers/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:065d68e87d",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/jobs/workers/mod_3.ts` in Services.jobs.workers has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/jobs/workers"
+      ],
+      "files": [
+        "src/services/jobs/workers/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:61fc6b14e3",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/mod_2.ts` in Services has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services"
+      ],
+      "files": [
+        "src/services/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:bdb87ad1a2",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/notifications/digests/mod_2.ts` in Services.notifications.digests has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/notifications/digests"
+      ],
+      "files": [
+        "src/services/notifications/digests/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:8d9e46ab2f",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/notifications/email/mod_2.ts` in Services.notifications.email has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/notifications/email"
+      ],
+      "files": [
+        "src/services/notifications/email/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e93e211797",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/notifications/email/mod_3.ts` in Services.notifications.email has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/notifications/email"
+      ],
+      "files": [
+        "src/services/notifications/email/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:dbe69de0c0",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/notifications/mod_2.ts` in Services.notifications has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/notifications"
+      ],
+      "files": [
+        "src/services/notifications/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:7a8bd22d1b",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/services/notifications/push/mod_2.ts` in Services.notifications.push has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Services/notifications/push"
+      ],
+      "files": [
+        "src/services/notifications/push/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:2b3e76099e",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/config/env/mod_2.ts` in Shared.config.env has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/config/env"
+      ],
+      "files": [
+        "src/shared/config/env/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:a7e1865950",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/config/flags/mod_2.ts` in Shared.config.flags has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/config/flags"
+      ],
+      "files": [
+        "src/shared/config/flags/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e0cead7339",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/config/mod_2.ts` in Shared.config has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/config"
+      ],
+      "files": [
+        "src/shared/config/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:49df3ad4c1",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/config/mod_3.ts` in Shared.config has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/config"
+      ],
+      "files": [
+        "src/shared/config/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:3ff4a9d546",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/logging/mod_2.ts` in Shared.logging has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/logging"
+      ],
+      "files": [
+        "src/shared/logging/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:2b0175e731",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/logging/redaction/mod_2.ts` in Shared.logging.redaction has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/logging/redaction"
+      ],
+      "files": [
+        "src/shared/logging/redaction/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:1c8e3ac88e",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/logging/structured/mod_2.ts` in Shared.logging.structured has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/logging/structured"
+      ],
+      "files": [
+        "src/shared/logging/structured/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:25e1ba2ff7",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/mod_2.ts` in Shared has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared"
+      ],
+      "files": [
+        "src/shared/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:3acf7486b1",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/types/api/mod_2.ts` in Shared.types.api has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/types/api"
+      ],
+      "files": [
+        "src/shared/types/api/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:5a0efa640a",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/types/domain/mod_2.ts` in Shared.types.domain has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/types/domain"
+      ],
+      "files": [
+        "src/shared/types/domain/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:74da4dde43",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/types/mod_2.ts` in Shared.types has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/types"
+      ],
+      "files": [
+        "src/shared/types/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:f6631d4714",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/utils/crypto/mod_2.ts` in Shared.utils.crypto has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/utils/crypto"
+      ],
+      "files": [
+        "src/shared/utils/crypto/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:6be1c309c1",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/utils/crypto/mod_3.ts` in Shared.utils.crypto has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/utils/crypto"
+      ],
+      "files": [
+        "src/shared/utils/crypto/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:8daab484a2",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/utils/mod_2.ts` in Shared.utils has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/utils"
+      ],
+      "files": [
+        "src/shared/utils/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:bcf5fe783b",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/utils/mod_3.ts` in Shared.utils has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/utils"
+      ],
+      "files": [
+        "src/shared/utils/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:4b2016eb66",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/utils/retry/mod_2.ts` in Shared.utils.retry has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/utils/retry"
+      ],
+      "files": [
+        "src/shared/utils/retry/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9e1022ef39",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/utils/strings/mod_2.ts` in Shared.utils.strings has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/utils/strings"
+      ],
+      "files": [
+        "src/shared/utils/strings/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:24ec55e963",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/shared/utils/strings/mod_3.ts` in Shared.utils.strings has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Shared/utils/strings"
+      ],
+      "files": [
+        "src/shared/utils/strings/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:55a749848d",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/api/client/mod_2.ts` in Web.api.client has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/api/client"
+      ],
+      "files": [
+        "src/web/api/client/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:77cba73e4c",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/api/interceptors/mod_2.ts` in Web.api.interceptors has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/api/interceptors"
+      ],
+      "files": [
+        "src/web/api/interceptors/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:3a94d46517",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/api/mod_2.ts` in Web.api has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/api"
+      ],
+      "files": [
+        "src/web/api/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:e710a860c0",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/hooks/cart/mod_2.ts` in Web.hooks.cart has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/hooks/cart"
+      ],
+      "files": [
+        "src/web/hooks/cart/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:18c8eb6da0",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/hooks/mod_2.ts` in Web.hooks has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/hooks"
+      ],
+      "files": [
+        "src/web/hooks/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:3882f87177",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/hooks/query/mod_2.ts` in Web.hooks.query has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/hooks/query"
+      ],
+      "files": [
+        "src/web/hooks/query/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:46714f9cff",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/hooks/session/mod_2.ts` in Web.hooks.session has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/hooks/session"
+      ],
+      "files": [
+        "src/web/hooks/session/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:0277ce6742",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/legacy_ui/forms/mod_2.ts` in Web.legacy_ui.forms has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/legacy_ui/forms"
+      ],
+      "files": [
+        "src/web/legacy_ui/forms/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:cd7d0c7c53",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/legacy_ui/mod_2.ts` in Web.legacy_ui has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/legacy_ui"
+      ],
+      "files": [
+        "src/web/legacy_ui/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:c19cca3996",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/mod_2.ts` in Web has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web"
+      ],
+      "files": [
+        "src/web/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:3135b39908",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/catalog/mod_2.ts` in Web.views.catalog has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views/catalog"
+      ],
+      "files": [
+        "src/web/views/catalog/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:914e24e793",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/checkout/cart_summary/mod_2.ts` in Web.views.checkout.cart_summary has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views/checkout/cart_summary"
+      ],
+      "files": [
+        "src/web/views/checkout/cart_summary/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:7368f439fc",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/checkout/mod_2.ts` in Web.views.checkout has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views/checkout"
+      ],
+      "files": [
+        "src/web/views/checkout/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:2d6204a147",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/checkout/mod_3.ts` in Web.views.checkout has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views/checkout"
+      ],
+      "files": [
+        "src/web/views/checkout/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:64eb0cea99",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/checkout/payment_form/mod_2.ts` in Web.views.checkout.payment_form has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views/checkout/payment_form"
+      ],
+      "files": [
+        "src/web/views/checkout/payment_form/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:1a25bb9de3",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/dashboard/metrics_grid/mod_2.ts` in Web.views.dashboard.metrics_grid has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views/dashboard/metrics_grid"
+      ],
+      "files": [
+        "src/web/views/dashboard/metrics_grid/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:20b7c0dfb5",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/dashboard/mod_2.ts` in Web.views.dashboard has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views/dashboard"
+      ],
+      "files": [
+        "src/web/views/dashboard/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:efe24d52af",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/dashboard/mod_3.ts` in Web.views.dashboard has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views/dashboard"
+      ],
+      "files": [
+        "src/web/views/dashboard/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:a9570c23af",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/mod_2.ts` in Web.views has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views"
+      ],
+      "files": [
+        "src/web/views/mod_2.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:72dd467d25",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/web/views/mod_3.ts` in Web.views has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Web/views"
+      ],
+      "files": [
+        "src/web/views/mod_3.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:d67039bc79",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/workspace/preview/Preview.ts` in Core.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models"
+      ],
+      "files": [
+        "src/workspace/preview/Preview.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:9dd92b0bf6",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/workspace/search/Search.ts` in Core.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models"
+      ],
+      "files": [
+        "src/workspace/search/Search.ts"
+      ]
+    },
+    {
+      "id": "orphaned_file:56d213f8d1",
+      "kind": "orphaned_file",
+      "severity": "warn",
+      "confidence": 0.9,
+      "summary": "`src/workspace/tagging/ColorWheel.ts` in Core.models has 0 incoming imports (unmounted component or dead module)",
+      "evidence": [
+        "no project file imports this module"
+      ],
+      "nodes": [
+        "Core/models"
+      ],
+      "files": [
+        "src/workspace/tagging/ColorWheel.ts"
+      ]
+    }
+  ],
+  "applied": [
+    {
+      "id": "undeclared:279372439d",
+      "kind": "undeclared_relation",
+      "severity": "info",
+      "confidence": 0.65,
+      "summary": "code shows Data.models → Data.migrations (1 import edge) but the blueprint does not declare it",
+      "evidence": [
+        "src/data/schema/index.ts → src/data/migrations/index.ts"
       ],
       "change": {
-        "op": "map_file",
-        "node": "workspace-library",
-        "file": "src/ui/Layout.tsx"
+        "op": "add_relation",
+        "from": "Data/models",
+        "to": "Data/migrations",
+        "kind": "depends_on"
       },
-      "files": [
-        "src/ui/Layout.tsx"
+      "nodes": [
+        "Data/models",
+        "Data/migrations"
+      ]
+    },
+    {
+      "id": "undeclared:b0d944d53b",
+      "kind": "undeclared_relation",
+      "severity": "info",
+      "confidence": 0.65,
+      "summary": "code shows Services.billing → Web.views (1 import edge) but the blueprint does not declare it",
+      "evidence": [
+        "src/payments/checkout.ts → src/ui/Button.tsx"
+      ],
+      "change": {
+        "op": "add_relation",
+        "from": "Services/billing",
+        "to": "Web/views",
+        "kind": "depends_on"
+      },
+      "nodes": [
+        "Services/billing",
+        "Web/views"
+      ]
+    },
+    {
+      "id": "undeclared:2ecf363691",
+      "kind": "undeclared_relation",
+      "severity": "info",
+      "confidence": 0.65,
+      "summary": "code shows Web.views → Core.models (1 import edge) but the blueprint does not declare it",
+      "evidence": [
+        "src/dashboard/Dashboard.tsx → src/workspace/library/Library.ts"
+      ],
+      "change": {
+        "op": "add_relation",
+        "from": "Web/views",
+        "to": "Core/models",
+        "kind": "depends_on"
+      },
+      "nodes": [
+        "Web/views",
+        "Core/models"
+      ]
+    }
+  ],
+  "proposed": [
+    {
+      "id": "unsupported:31c2cc0ca8",
+      "kind": "unsupported_relation",
+      "severity": "info",
+      "confidence": 0.3,
+      "summary": "blueprint declares Backend.events.models → Data.schema but no import edge supports it (planned, or stale?)",
+      "evidence": [],
+      "change": {
+        "op": "remove_relation",
+        "from": "Backend/events/models",
+        "to": "Data/schema"
+      },
+      "nodes": [
+        "Backend/events/models",
+        "Data/schema"
+      ]
+    },
+    {
+      "id": "unsupported:8cb579e47f",
+      "kind": "unsupported_relation",
+      "severity": "info",
+      "confidence": 0.3,
+      "summary": "blueprint declares Data.schema → Data.migrations but no import edge supports it (planned, or stale?)",
+      "evidence": [],
+      "change": {
+        "op": "remove_relation",
+        "from": "Data/schema",
+        "to": "Data/migrations"
+      },
+      "nodes": [
+        "Data/schema",
+        "Data/migrations"
+      ]
+    },
+    {
+      "id": "unsupported:2bb403b100",
+      "kind": "unsupported_relation",
+      "severity": "info",
+      "confidence": 0.3,
+      "summary": "blueprint declares Data.schema → Shared.config but no import edge supports it (planned, or stale?)",
+      "evidence": [],
+      "change": {
+        "op": "remove_relation",
+        "from": "Data/schema",
+        "to": "Shared/config"
+      },
+      "nodes": [
+        "Data/schema",
+        "Shared/config"
+      ]
+    },
+    {
+      "id": "unsupported:d5c89500b7",
+      "kind": "unsupported_relation",
+      "severity": "info",
+      "confidence": 0.3,
+      "summary": "blueprint declares Backend.events → Data.schema but no import edge supports it (planned, or stale?)",
+      "evidence": [],
+      "change": {
+        "op": "remove_relation",
+        "from": "Backend/events",
+        "to": "Data/schema"
+      },
+      "nodes": [
+        "Backend/events",
+        "Data/schema"
+      ]
+    },
+    {
+      "id": "unsupported:9cced90b02",
+      "kind": "unsupported_relation",
+      "severity": "info",
+      "confidence": 0.3,
+      "summary": "blueprint declares Data.models → Data.schema but no import edge supports it (planned, or stale?)",
+      "evidence": [],
+      "change": {
+        "op": "remove_relation",
+        "from": "Data/models",
+        "to": "Data/schema"
+      },
+      "nodes": [
+        "Data/models",
+        "Data/schema"
+      ]
+    }
+  ],
+  "uncertain": [
+    {
+      "id": "undeclared:279372439d",
+      "kind": "undeclared_relation",
+      "severity": "info",
+      "confidence": 0.65,
+      "summary": "code shows Data.models → Data.migrations (1 import edge) but the blueprint does not declare it",
+      "evidence": [
+        "src/data/schema/index.ts → src/data/migrations/index.ts"
+      ],
+      "change": {
+        "op": "add_relation",
+        "from": "Data/models",
+        "to": "Data/migrations",
+        "kind": "depends_on"
+      },
+      "nodes": [
+        "Data/models",
+        "Data/migrations"
+      ]
+    },
+    {
+      "id": "undeclared:b0d944d53b",
+      "kind": "undeclared_relation",
+      "severity": "info",
+      "confidence": 0.65,
+      "summary": "code shows Services.billing → Web.views (1 import edge) but the blueprint does not declare it",
+      "evidence": [
+        "src/payments/checkout.ts → src/ui/Button.tsx"
+      ],
+      "change": {
+        "op": "add_relation",
+        "from": "Services/billing",
+        "to": "Web/views",
+        "kind": "depends_on"
+      },
+      "nodes": [
+        "Services/billing",
+        "Web/views"
+      ]
+    },
+    {
+      "id": "undeclared:2ecf363691",
+      "kind": "undeclared_relation",
+      "severity": "info",
+      "confidence": 0.65,
+      "summary": "code shows Web.views → Core.models (1 import edge) but the blueprint does not declare it",
+      "evidence": [
+        "src/dashboard/Dashboard.tsx → src/workspace/library/Library.ts"
+      ],
+      "change": {
+        "op": "add_relation",
+        "from": "Web/views",
+        "to": "Core/models",
+        "kind": "depends_on"
+      },
+      "nodes": [
+        "Web/views",
+        "Core/models"
       ]
     }
   ]

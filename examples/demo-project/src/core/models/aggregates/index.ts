@@ -5,3 +5,7 @@ export const Core_models_aggregates_entry = {
   name: "aggregates",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

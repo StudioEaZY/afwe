@@ -6,3 +6,5 @@ export const Data_migrations_entry = {
   name: "migrations",
   deps: [Infrastructure_deploy_entry],
 };
+
+export * from "./mod_2";

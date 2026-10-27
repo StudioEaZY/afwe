@@ -6,3 +6,7 @@ export const Core_events_entry = {
   name: "events",
   deps: [Backend_events_models_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

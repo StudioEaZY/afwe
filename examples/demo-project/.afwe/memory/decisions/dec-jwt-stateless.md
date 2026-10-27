@@ -4,8 +4,7 @@ kind: decision
 title: "Stateless JWT access tokens"
 status: accepted
 applies_to:
-  - jwt-signer
-  - session-token
+  - "Backend/auth"
 created: 2026-10-24T12:00:00Z
 ---
 

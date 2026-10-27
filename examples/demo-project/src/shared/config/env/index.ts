@@ -5,3 +5,5 @@ export const Shared_config_env_entry = {
   name: "env",
   deps: [],
 };
+
+export * from "./mod_2";

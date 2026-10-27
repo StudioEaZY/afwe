@@ -5,3 +5,5 @@ export const Infrastructure_telemetry_traces_entry = {
   name: "traces",
   deps: [],
 };
+
+export * from "./mod_2";

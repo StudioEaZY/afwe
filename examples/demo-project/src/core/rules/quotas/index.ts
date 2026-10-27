@@ -5,3 +5,5 @@ export const Core_rules_quotas_entry = {
   name: "quotas",
   deps: [],
 };
+
+export * from "./mod_2";

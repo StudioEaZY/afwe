@@ -5,3 +5,5 @@ export const Data_legacy_etl_entry = {
   name: "legacy_etl",
   deps: [],
 };
+
+export * from "./mod_2";

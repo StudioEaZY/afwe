@@ -5,3 +5,7 @@ export const Backend_api_routes_v2_orders_entry = {
   name: "v2_orders",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

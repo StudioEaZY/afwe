@@ -5,3 +5,5 @@ export const Mobile_hooks_gestures_entry = {
   name: "gestures",
   deps: [],
 };
+
+export * from "./mod_2";

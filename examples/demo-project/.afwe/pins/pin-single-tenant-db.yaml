@@ -1,0 +1,16 @@
+{
+  "id": "pin-single-tenant-db",
+  "statement": "Database client assumes single schema without tenant ID column segregation.",
+  "kind": "decision",
+  "attaches": {
+    "nodes": [
+      "db-client"
+    ]
+  },
+  "severity": "block",
+  "status": "retired",
+  "origin": "human:founder",
+  "created": "2026-10-23T06:00:00Z",
+  "retired": "2026-10-25T10:00:00Z",
+  "reason": "migrated-to-row-level-security"
+}

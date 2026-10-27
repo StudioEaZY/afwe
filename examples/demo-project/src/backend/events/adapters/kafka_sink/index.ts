@@ -5,3 +5,5 @@ export const Backend_events_adapters_kafka_sink_entry = {
   name: "kafka_sink",
   deps: [],
 };
+
+export * from "./mod_2";

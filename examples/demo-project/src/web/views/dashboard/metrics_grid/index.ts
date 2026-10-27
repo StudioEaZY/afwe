@@ -5,3 +5,5 @@ export const Web_views_dashboard_metrics_grid_entry = {
   name: "metrics_grid",
   deps: [],
 };
+
+export * from "./mod_2";

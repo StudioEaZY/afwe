@@ -5,3 +5,7 @@ export const Core_rules_pricing_entry = {
   name: "pricing",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

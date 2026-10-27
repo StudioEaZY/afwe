@@ -5,3 +5,5 @@ export const Shared_logging_redaction_entry = {
   name: "redaction",
   deps: [],
 };
+
+export * from "./mod_2";

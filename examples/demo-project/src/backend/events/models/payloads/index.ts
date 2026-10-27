@@ -5,3 +5,7 @@ export const Backend_events_models_payloads_entry = {
   name: "payloads",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

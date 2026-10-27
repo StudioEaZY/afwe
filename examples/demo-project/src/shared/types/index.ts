@@ -5,3 +5,5 @@ export const Shared_types_entry = {
   name: "types",
   deps: [],
 };
+
+export * from "./mod_2";

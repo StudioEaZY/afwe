@@ -7,3 +7,7 @@ export const Data_models_entry = {
   name: "models",
   deps: [Data_schema_entry, Shared_types_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

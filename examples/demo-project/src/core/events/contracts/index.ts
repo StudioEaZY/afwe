@@ -5,3 +5,7 @@ export const Core_events_contracts_entry = {
   name: "contracts",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

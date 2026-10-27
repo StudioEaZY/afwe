@@ -6,3 +6,9 @@ export const Core_entry = {
   name: "Core",
   deps: [Shared_entry],
 };
+
+export * from "./mod_2";
+
+export * from "../workspace/tagging/ColorWheel";
+export * from "../workspace/search/Search";
+export * from "../workspace/preview/Preview";

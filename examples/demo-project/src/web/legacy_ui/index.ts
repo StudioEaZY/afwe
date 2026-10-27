@@ -5,3 +5,5 @@ export const Web_legacy_ui_entry = {
   name: "legacy_ui",
   deps: [],
 };
+
+export * from "./mod_2";

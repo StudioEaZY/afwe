@@ -1,0 +1,19 @@
+id: upgrade-demo-datasets
+title: upgrade-demo-datasets
+statement: Upgrade demo datasets, autoscaling radial depth, multi-core architecture support, and overhaul topology map card visuals and line routing
+status: active
+origin: human
+attaches:
+  nodes:
+  - scripts
+  - demo-project
+from_turns:
+- t0033
+history:
+- turn: t0033
+  ts: 2026-10-27T09:02:52Z
+  statement: Upgrade demo datasets, autoscaling radial depth, multi-core architecture support, and overhaul topology map card visuals and line routing
+  rationale: Upgrade demo-project and multi-intent-funnel with clean import trees, zero stale memories, and full turn data
+created: 2026-10-27T09:02:52Z
+updated: 2026-10-27T09:02:52Z
+task: task-t0033

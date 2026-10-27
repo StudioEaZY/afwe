@@ -7,3 +7,5 @@ export const Data_entry = {
   name: "Data",
   deps: [Shared_entry, Web_entry],
 };
+
+export * from "./mod_2";

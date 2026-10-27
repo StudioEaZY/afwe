@@ -8,3 +8,7 @@ export const Data_schema_entry = {
   name: "schema",
   deps: [Data_migrations_entry, Shared_config_entry, Web_views_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

@@ -5,3 +5,5 @@ export const Infrastructure_queues_dlq_entry = {
   name: "dlq",
   deps: [],
 };
+
+export * from "./mod_2";

@@ -5,3 +5,5 @@ export const Backend_api_routes_v2_billing_entry = {
   name: "v2_billing",
   deps: [],
 };
+
+export * from "./mod_2";

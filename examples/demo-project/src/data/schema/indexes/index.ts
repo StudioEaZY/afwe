@@ -5,3 +5,5 @@ export const Data_schema_indexes_entry = {
   name: "indexes",
   deps: [],
 };
+
+export * from "./mod_2";

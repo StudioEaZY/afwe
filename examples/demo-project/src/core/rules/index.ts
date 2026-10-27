@@ -6,3 +6,7 @@ export const Core_rules_entry = {
   name: "rules",
   deps: [Shared_config_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

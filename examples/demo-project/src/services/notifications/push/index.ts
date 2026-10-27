@@ -5,3 +5,5 @@ export const Services_notifications_push_entry = {
   name: "push",
   deps: [],
 };
+
+export * from "./mod_2";

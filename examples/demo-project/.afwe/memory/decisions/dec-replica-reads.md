@@ -4,7 +4,7 @@ kind: decision
 title: "Eventual consistency for status widgets"
 status: accepted
 applies_to:
-  - realtime-status-worker
+  - "Services/jobs"
 created: 2026-10-24T12:00:00Z
 ---
 

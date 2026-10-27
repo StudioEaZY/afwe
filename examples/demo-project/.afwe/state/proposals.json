@@ -1,59 +1,101 @@
 {
   "proposals": [
     {
-      "id": "prop-chart-analytics",
+      "id": "unmapped:aff22d1faf",
       "created": "2026-10-25T16:52:15Z",
       "finding": {
-        "id": "prop-chart-analytics",
+        "id": "unmapped:aff22d1faf",
         "kind": "unmapped_file",
         "severity": "warn",
-        "confidence": 0.42,
-        "summary": "`src/services/analytics/` has 7 uncharted files; propose promoting `Services/analytics` to mapped module",
+        "confidence": 0.35,
+        "summary": "`src/notifications/mailer.ts` has no blueprint home; propose new module `notifications`",
         "evidence": [
-          "Imported by Infrastructure/telemetry and consumes Backend/events/handlers"
+          "mailer.ts located outside declared subsystem scopes"
         ],
         "change": {
           "op": "create_node",
-          "parent": "Services",
-          "name": "analytics",
+          "parent": "demo-product",
+          "name": "notifications",
           "files": [
-            "src/services/analytics/**"
+            "src/notifications/**"
           ]
         },
-        "nodes": [
-          "Services/analytics"
-        ],
         "files": [
-          "src/services/analytics/index.ts"
+          "src/notifications/mailer.ts"
         ]
       },
       "status": "pending"
     },
     {
-      "id": "prop-chart-webhooks",
-      "created": "2026-10-26T11:16:38Z",
+      "id": "unmapped:ai-suggest",
+      "created": "2026-10-25T17:00:00Z",
       "finding": {
-        "id": "prop-chart-webhooks",
+        "id": "unmapped:ai-suggest",
+        "kind": "unmapped_file",
+        "severity": "info",
+        "confidence": 0.4,
+        "summary": "`src/experiments/aiSuggest.ts` found in unmapped folder; map to workspace-tagging",
+        "evidence": [
+          "suggestWorkspaceTags symbol imports Tag interface"
+        ],
+        "change": {
+          "op": "map_file",
+          "node": "workspace-tagging",
+          "file": "src/experiments/aiSuggest.ts"
+        },
+        "files": [
+          "src/experiments/aiSuggest.ts"
+        ]
+      },
+      "status": "pending"
+    },
+    {
+      "id": "unmapped:xml-importer",
+      "created": "2026-10-25T17:15:00Z",
+      "finding": {
+        "id": "unmapped:xml-importer",
         "kind": "unmapped_file",
         "severity": "warn",
-        "confidence": 0.38,
-        "summary": "`src/backend/billing/webhooks/` has unverified webhook receivers; propose charting under `Backend/billing`",
+        "confidence": 0.25,
+        "summary": "`src/legacy-sync/xmlImporter.ts` belongs to unmapped legacy sync subsystem",
         "evidence": [
-          "Receives external Stripe payloads without blueprint contract"
+          "standalone XML batch parser"
         ],
         "change": {
           "op": "create_node",
-          "parent": "Backend/billing",
-          "name": "webhooks",
+          "parent": "platform",
+          "name": "legacy-sync",
           "files": [
-            "src/backend/billing/webhooks/**"
+            "src/legacy-sync/**"
           ]
         },
-        "nodes": [
-          "Backend/billing/webhooks"
-        ],
         "files": [
-          "src/backend/billing/webhooks/index.ts"
+          "src/legacy-sync/xmlImporter.ts"
+        ]
+      },
+      "status": "pending"
+    },
+    {
+      "id": "drift:rel-worker-events",
+      "created": "2026-10-25T18:00:00Z",
+      "finding": {
+        "id": "drift:rel-worker-events",
+        "kind": "undeclared_relation",
+        "severity": "info",
+        "confidence": 0.7,
+        "summary": "Inferred dependency: realtime-status-worker reads event-bus",
+        "evidence": [
+          "worker.ts imports EventBus singleton"
+        ],
+        "change": {
+          "op": "add_relation",
+          "from": "realtime-status-worker",
+          "to": "event-bus",
+          "kind": "reads"
+        },
+        "nodes": [
+          "realtime-status-worker",
+          "event-bus"
         ]
       },
       "status": "pending"

@@ -4,7 +4,7 @@ kind: constraint
 title: "32-byte secret entropy requirement"
 status: accepted
 applies_to:
-  - jwt-signer
+  - "Backend/auth"
 created: 2026-10-24T12:00:00Z
 ---
 

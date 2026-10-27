@@ -21,10 +21,11 @@
       "id": "item-f79d74",
       "kind": "proposal",
       "title": "Proposal (30%): `src/notifications/mailer.ts` has no blueprint home; maybe a new node `notifications`",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "unmapped:aff22d1faf",
-      "created": "2026-09-22T16:52:15Z"
+      "created": "2026-09-22T16:52:15Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-50b238",
@@ -51,12 +52,13 @@
       "id": "task-cacf40:verify",
       "kind": "contract_step",
       "title": "afwe_verify — Make widget titles editable",
-      "status": "open",
+      "status": "done",
       "task": "task-cacf40",
       "action": "afwe_verify",
       "detail": "Run `afwe verify --changed <files>` (tool `afwe_verify`). Fix constraint violations and failed active guardrails; do not silence them.",
       "reference": "default",
-      "created": "2026-09-22T16:52:15Z"
+      "created": "2026-09-22T16:52:15Z",
+      "resolved": "2026-10-27T09:32:12Z"
     },
     {
       "id": "task-cacf40:update",
@@ -96,109 +98,121 @@
       "id": "item-ac2d32",
       "kind": "proposal",
       "title": "Proposal (30%): `services/status_worker.py` has no blueprint home; maybe a new node `services`",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "unmapped:a4e74bb8d5",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-721373",
       "kind": "proposal",
       "title": "Proposal (30%): `src/cli-tools/seedRunner.ts` has no blueprint home; maybe a new node `cli-tools`",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "unmapped:1908630580",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-665f60",
       "kind": "proposal",
       "title": "Proposal (30%): `src/experiments/aiSuggest.ts` has no blueprint home; maybe a new node `experiments`",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "unmapped:9d612cb247",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-7f1f48",
       "kind": "proposal",
       "title": "Proposal (30%): `src/legacy-sync/xmlImporter.ts` has no blueprint home; maybe a new node `legacy-sync`",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "unmapped:1fcb9f16b0",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-ff5483",
       "kind": "proposal",
       "title": "Proposal (40%): `src/auth/api.ts` (mapped to Pulse SaaS Product.Identity Subsystem.Auth API) no longer exists",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "missing:5d2258fcb4",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-620687",
       "kind": "proposal",
       "title": "Proposal (40%): `src/auth/users.ts` (mapped to Pulse SaaS Product.Identity Subsystem.User Store) no longer exists",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "missing:e3d1766863",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-227b64",
       "kind": "proposal",
       "title": "Proposal (40%): `src/realtime/presence.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Presence) no longer exists",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "missing:53d1dea7f2",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-a98bd4",
       "kind": "proposal",
       "title": "Proposal (40%): `src/realtime/worker.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Status Worker) no longer exists",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "missing:a6c0e482ec",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-bd6a95",
       "kind": "proposal",
       "title": "Proposal (40%): `src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure) no longer exists",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "missing:fa2c3a54f3",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-cf927d",
       "kind": "proposal",
       "title": "Proposal (40%): `src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure.HTTP Server) no longer exists",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "missing:00a7e1498a",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-627144",
       "kind": "proposal",
       "title": "Proposal (30%): blueprint declares Pulse SaaS Product.Identity Subsystem.Auth API → Pulse SaaS Product.Identity Subsystem.Session Token but no import edge supports it (planned, or stale?)",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "unsupported:98eb85d196",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-b1ebda",
       "kind": "proposal",
       "title": "Proposal (30%): blueprint declares Pulse SaaS Product.Billing Subsystem.Billing Checkout → Pulse SaaS Product.Billing Subsystem.Stripe Gateway but no import edge supports it (planned, or stale?)",
-      "status": "open",
+      "status": "done",
       "detail": "accept / revert / review with `afwe proposals`",
       "reference": "unsupported:82291996b5",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-6906a0",
@@ -258,82 +272,298 @@
       "id": "item-517536",
       "kind": "drift",
       "title": "Pulse SaaS Product.Identity Subsystem.Auth API.OAuth Callback is active but nothing implements it (mark it `planned` or map files)",
-      "status": "open",
+      "status": "done",
       "detail": "",
       "reference": "empty:dd8bd087fb",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-0700e2",
       "kind": "drift",
       "title": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer.Token Entropy Guard is active but nothing implements it (mark it `planned` or map files)",
-      "status": "open",
+      "status": "done",
       "detail": "",
       "reference": "empty:553c85f16e",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-7aaca4",
       "kind": "drift",
       "title": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Normaliser is active but nothing implements it (mark it `planned` or map files)",
-      "status": "open",
+      "status": "done",
       "detail": "",
       "reference": "empty:0595dfb86d",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-db3a68",
       "kind": "drift",
       "title": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel.Tag Pill Renderer is active but nothing implements it (mark it `planned` or map files)",
-      "status": "open",
+      "status": "done",
       "detail": "",
       "reference": "empty:13ce7deac0",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-70b450",
       "kind": "drift",
       "title": "Pulse SaaS Product.Workspace Subsystem.Workspace Bulk Export is active but nothing implements it (mark it `planned` or map files)",
-      "status": "open",
+      "status": "done",
       "detail": "",
       "reference": "empty:0a716cf282",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-22bcb3",
       "kind": "drift",
       "title": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Stripe Webhook Verifier is active but nothing implements it (mark it `planned` or map files)",
-      "status": "open",
+      "status": "done",
       "detail": "",
       "reference": "empty:204ebb5b98",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-8c2055",
       "kind": "drift",
       "title": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator.Idempotency Key Hasher is active but nothing implements it (mark it `planned` or map files)",
-      "status": "open",
+      "status": "done",
       "detail": "",
       "reference": "empty:227001ac1b",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-543bd7",
       "kind": "drift",
       "title": "Pulse SaaS Product.Billing Subsystem.Invoice PDF Watermark is active but nothing implements it (mark it `planned` or map files)",
-      "status": "open",
+      "status": "done",
       "detail": "",
       "reference": "empty:620c0fd54c",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
     },
     {
       "id": "item-559a99",
       "kind": "drift",
       "title": "Pulse SaaS Product.Realtime Subsystem.Legacy Webhook Retry is active but nothing implements it (mark it `planned` or map files)",
-      "status": "open",
+      "status": "done",
       "detail": "",
       "reference": "empty:7005f5b6f2",
-      "created": "2026-10-26T11:16:38Z"
+      "created": "2026-10-26T11:16:38Z",
+      "resolved": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-1eceb5",
+      "kind": "proposal",
+      "title": "Proposal (30%): blueprint declares Backend.events.models → Data.schema but no import edge supports it (planned, or stale?)",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unsupported:31c2cc0ca8",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-c88f1b",
+      "kind": "proposal",
+      "title": "Proposal (30%): blueprint declares Data.schema → Data.migrations but no import edge supports it (planned, or stale?)",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unsupported:8cb579e47f",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-463033",
+      "kind": "proposal",
+      "title": "Proposal (30%): blueprint declares Data.schema → Shared.config but no import edge supports it (planned, or stale?)",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unsupported:2bb403b100",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-cf8a0a",
+      "kind": "proposal",
+      "title": "Proposal (30%): blueprint declares Backend.events → Data.schema but no import edge supports it (planned, or stale?)",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unsupported:d5c89500b7",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-821c8b",
+      "kind": "proposal",
+      "title": "Proposal (30%): blueprint declares Data.models → Data.schema but no import edge supports it (planned, or stale?)",
+      "status": "open",
+      "detail": "accept / revert / review with `afwe proposals`",
+      "reference": "unsupported:9cced90b02",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-448f88",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 65% confidence: code shows Data.models → Data.migrations (1 import edge) but the blueprint does not declare it",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "undeclared:279372439d",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-2ab5a7",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 65% confidence: code shows Services.billing → Web.views (1 import edge) but the blueprint does not declare it",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "undeclared:b0d944d53b",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-5e3041",
+      "kind": "uncertain",
+      "title": "Auto-reconciled with 65% confidence: code shows Web.views → Core.models (1 import edge) but the blueprint does not declare it",
+      "status": "open",
+      "detail": "review at leisure; dismiss with `afwe board dismiss <id>`; revert via the change log if wrong",
+      "reference": "undeclared:2ecf363691",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-3bb567",
+      "kind": "drift",
+      "title": "memory `dec-flat-tags` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `workspace-tagging`",
+      "reference": "stale_memory:2c3ca4b541",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-b9c5ff",
+      "kind": "drift",
+      "title": "memory `dec-jwt-stateless` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `jwt-signer`; unknown node `session-token`",
+      "reference": "stale_memory:ff27426a1e",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-65a6b2",
+      "kind": "drift",
+      "title": "memory `dec-replica-reads` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `realtime-status-worker`",
+      "reference": "stale_memory:109572e4b9",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-bf5568",
+      "kind": "drift",
+      "title": "memory `con-idempotency-key-mandatory` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `billing-checkout`; unknown node `stripe-gateway`",
+      "reference": "stale_memory:1d8d43505d",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-2f8c75",
+      "kind": "drift",
+      "title": "memory `con-secret-entropy` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `jwt-signer`",
+      "reference": "stale_memory:4c4bb9dccb",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-077145",
+      "kind": "drift",
+      "title": "memory `con-workspace-billing-boundary` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `workspace`; unknown node `billing`",
+      "reference": "stale_memory:cba10d307d",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-68dc65",
+      "kind": "drift",
+      "title": "memory `exc-billing-test-bypass` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `stripe-gateway`",
+      "reference": "stale_memory:edf16a12ef",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-025ea6",
+      "kind": "drift",
+      "title": "memory `exc-realtime-admin-override` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `realtime-status-worker`",
+      "reference": "stale_memory:c62f55ec58",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-173273",
+      "kind": "drift",
+      "title": "memory `exc-search-direct-query` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `workspace-search`",
+      "reference": "stale_memory:5b3bbdbc2e",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-10b065",
+      "kind": "drift",
+      "title": "memory `term-presence-heartbeat` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `realtime-presence`; unknown node `realtime-status-worker`",
+      "reference": "stale_memory:3f54c30556",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-586cde",
+      "kind": "drift",
+      "title": "memory `term-proration` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `proration-calculator`",
+      "reference": "stale_memory:5885192de9",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-c318b0",
+      "kind": "drift",
+      "title": "memory `term-workspace-item` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `workspace-library`",
+      "reference": "stale_memory:ab1ca46419",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-0416bd",
+      "kind": "drift",
+      "title": "memory `prob-proration-rounding-drift` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `proration-calculator`",
+      "reference": "stale_memory:8214999e1f",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-7af87b",
+      "kind": "drift",
+      "title": "memory `prob-tag-color-collision` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `tag-color-wheel`",
+      "reference": "stale_memory:315471a79f",
+      "created": "2026-10-27T09:03:02Z"
+    },
+    {
+      "id": "item-3fc31f",
+      "kind": "drift",
+      "title": "memory `prob-zombie-websockets` references things that no longer exist",
+      "status": "open",
+      "detail": "unknown node `realtime-presence`",
+      "reference": "stale_memory:af7b120faa",
+      "created": "2026-10-27T09:03:02Z"
     }
   ]
 }

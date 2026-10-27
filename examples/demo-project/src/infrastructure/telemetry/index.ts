@@ -6,3 +6,5 @@ export const Infrastructure_telemetry_entry = {
   name: "telemetry",
   deps: [Services_analytics_entry],
 };
+
+export * from "./mod_2";

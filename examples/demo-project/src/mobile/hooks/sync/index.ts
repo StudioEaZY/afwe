@@ -5,3 +5,5 @@ export const Mobile_hooks_sync_entry = {
   name: "sync",
   deps: [],
 };
+
+export * from "./mod_2";

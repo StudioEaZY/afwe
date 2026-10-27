@@ -5,3 +5,7 @@ export const Services_jobs_workers_entry = {
   name: "workers",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

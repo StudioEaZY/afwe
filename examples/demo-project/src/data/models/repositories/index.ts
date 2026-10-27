@@ -5,3 +5,7 @@ export const Data_models_repositories_entry = {
   name: "repositories",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

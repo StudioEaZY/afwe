@@ -6,3 +6,5 @@ export const Web_api_entry = {
   name: "api",
   deps: [Backend_api_handlers_entry],
 };
+
+export * from "./mod_2";

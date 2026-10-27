@@ -5,3 +5,5 @@ export const Infrastructure_deploy_containers_entry = {
   name: "containers",
   deps: [],
 };
+
+export * from "./mod_2";

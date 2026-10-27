@@ -8,3 +8,5 @@ export const Services_notifications_entry = {
   name: "notifications",
   deps: [Backend_events_models_entry, Backend_events_handlers_entry, Backend_events_entry],
 };
+
+export * from "./mod_2";

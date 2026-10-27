@@ -4,7 +4,7 @@ kind: exception
 title: "Exception: Manual cluster health check ping directly to primary DB"
 status: accepted
 applies_to:
-  - realtime-status-worker
+  - "Services/jobs"
 created: 2026-10-24T12:00:00Z
 ---
 

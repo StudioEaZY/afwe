@@ -5,3 +5,5 @@ export const Shared_entry = {
   name: "Shared",
   deps: [],
 };
+
+export * from "./mod_2";

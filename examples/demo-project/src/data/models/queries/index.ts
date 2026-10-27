@@ -5,3 +5,5 @@ export const Data_models_queries_entry = {
   name: "queries",
   deps: [],
 };
+
+export * from "./mod_2";

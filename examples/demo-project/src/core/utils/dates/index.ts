@@ -5,3 +5,5 @@ export const Core_utils_dates_entry = {
   name: "dates",
   deps: [],
 };
+
+export * from "./mod_2";

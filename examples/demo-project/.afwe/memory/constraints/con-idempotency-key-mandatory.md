@@ -4,8 +4,7 @@ kind: constraint
 title: "Mandatory idempotency keys on payment operations"
 status: accepted
 applies_to:
-  - billing-checkout
-  - stripe-gateway
+  - "Services/billing"
 created: 2026-10-24T12:00:00Z
 ---
 

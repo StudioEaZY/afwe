@@ -5,3 +5,5 @@ export const Backend_api_handlers_order_ctrl_entry = {
   name: "order_ctrl",
   deps: [],
 };
+
+export * from "./mod_2";

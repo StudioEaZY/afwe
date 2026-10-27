@@ -6,3 +6,5 @@ export const Backend_events_adapters_entry = {
   name: "adapters",
   deps: [Backend_events_models_entry],
 };
+
+export * from "./mod_2";

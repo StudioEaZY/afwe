@@ -4,7 +4,7 @@ kind: problem
 title: "Sub-cent rounding discrepancies across multiple mid-month seat changes"
 status: accepted
 applies_to:
-  - proration-calculator
+  - "Services/billing"
 created: 2026-10-24T12:00:00Z
 ---
 

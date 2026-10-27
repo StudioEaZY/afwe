@@ -5,3 +5,5 @@ export const Services_jobs_scheduler_lease_lock_entry = {
   name: "lease_lock",
   deps: [],
 };
+
+export * from "./mod_2";

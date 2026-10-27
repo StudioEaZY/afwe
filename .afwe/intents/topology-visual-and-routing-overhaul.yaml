@@ -1,0 +1,18 @@
+id: topology-visual-and-routing-overhaul
+title: topology-visual-and-routing-overhaul
+statement: Upgrade demo datasets, autoscaling radial depth, multi-core architecture support, and overhaul topology map card visuals and line routing
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio-maps
+from_turns:
+- t0033
+history:
+- turn: t0033
+  ts: 2026-10-27T09:02:52Z
+  statement: Upgrade demo datasets, autoscaling radial depth, multi-core architecture support, and overhaul topology map card visuals and line routing
+  rationale: Overhaul topology domain cards with dedicated avatar icon badge, integrated status indicator, un-colliding text and file counts, distributed edge ports, and outward lateral routing for red upward violations
+created: 2026-10-27T09:02:52Z
+updated: 2026-10-27T09:02:52Z
+task: task-t0033

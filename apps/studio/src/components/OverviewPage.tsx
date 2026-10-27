@@ -94,6 +94,19 @@ export const OverviewPage: React.FC = () => {
     return findNodeById(rootHierarchy, currentScopeId) || rootHierarchy;
   }, [rootHierarchy, currentScopeId]);
 
+  // Dynamically calculate the maximum available tree depth under the current focus node
+  const maxAvailableDepth = useMemo(() => {
+    function computeSubtreeDepth(node: HierarchyNode): number {
+      if (!node.children || node.children.length === 0) return 1;
+      return 1 + Math.max(...node.children.map(computeSubtreeDepth));
+    }
+    const availableRings = computeSubtreeDepth(focusNode) - 1;
+    return Math.max(1, Math.min(6, availableRings));
+  }, [focusNode]);
+
+  // Autoscale depth if current depth exceeds available depth in this focus subtree
+  const effectiveRadialDepth = Math.min(radialDepth, maxAvailableDepth);
+
   // Resolve current Constellation anchor node & fallback status for header/breadcrumbs
   const constellationHeaderCtx = useMemo(() => {
     const req =
@@ -340,21 +353,23 @@ export const OverviewPage: React.FC = () => {
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span
                 className="ctl"
-                title="Controls how many concentric folder tiers are projected simultaneously (1 to 4)"
+                title={`Controls how many concentric folder tiers are projected simultaneously (1 to ${maxAvailableDepth} available in this subtree)`}
               >
                 Depth in this map
                 <button
                   type="button"
-                  onClick={() => setRadialDepth((d) => Math.max(1, d - 1))}
+                  onClick={() => setRadialDepth((d) => Math.max(1, Math.min(d, maxAvailableDepth) - 1))}
                   title="Decrease depth"
+                  disabled={effectiveRadialDepth <= 1}
                 >
                   −
                 </button>
-                <b>{radialDepth}</b>
+                <b>{effectiveRadialDepth}</b>
                 <button
                   type="button"
-                  onClick={() => setRadialDepth((d) => Math.min(4, d + 1))}
+                  onClick={() => setRadialDepth((d) => Math.min(maxAvailableDepth, d + 1))}
                   title="Increase depth"
+                  disabled={effectiveRadialDepth >= maxAvailableDepth}
                 >
                   +
                 </button>
@@ -463,7 +478,7 @@ export const OverviewPage: React.FC = () => {
           <RadialMap
             root={rootHierarchy}
             focusNode={focusNode}
-            depth={radialDepth}
+            depth={effectiveRadialDepth}
             growth={growth}
             denseL4={denseL4}
             timelineT={overviewTimelineT}

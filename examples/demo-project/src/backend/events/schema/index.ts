@@ -7,3 +7,7 @@ export const Backend_events_schema_entry = {
   name: "schema",
   deps: [Shared_types_entry, Shared_config_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

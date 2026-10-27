@@ -5,3 +5,5 @@ export const Web_api_interceptors_entry = {
   name: "interceptors",
   deps: [],
 };
+
+export * from "./mod_2";

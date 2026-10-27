@@ -5,3 +5,5 @@ export const Services_notifications_digests_entry = {
   name: "digests",
   deps: [],
 };
+
+export * from "./mod_2";

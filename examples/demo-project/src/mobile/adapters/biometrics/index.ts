@@ -5,3 +5,5 @@ export const Mobile_adapters_biometrics_entry = {
   name: "biometrics",
   deps: [],
 };
+
+export * from "./mod_2";

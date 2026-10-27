@@ -5,3 +5,7 @@ export const Services_notifications_email_entry = {
   name: "email",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

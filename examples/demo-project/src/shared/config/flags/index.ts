@@ -5,3 +5,5 @@ export const Shared_config_flags_entry = {
   name: "flags",
   deps: [],
 };
+
+export * from "./mod_2";

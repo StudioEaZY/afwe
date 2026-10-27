@@ -5,3 +5,5 @@ export const Mobile_hooks_entry = {
   name: "hooks",
   deps: [],
 };
+
+export * from "./mod_2";

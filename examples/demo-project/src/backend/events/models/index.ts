@@ -10,3 +10,7 @@ export const Backend_events_models_entry = {
   name: "models",
   deps: [Backend_events_schema_entry, Data_schema_entry, Core_models_entry, Shared_types_entry, Shared_utils_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

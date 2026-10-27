@@ -5,3 +5,5 @@ export const Data_migrations_history_entry = {
   name: "history",
   deps: [],
 };
+
+export * from "./mod_2";

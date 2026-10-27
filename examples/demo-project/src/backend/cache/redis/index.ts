@@ -5,3 +5,7 @@ export const Backend_cache_redis_entry = {
   name: "redis",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

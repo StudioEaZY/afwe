@@ -5,3 +5,5 @@ export const Data_migrations_runner_entry = {
   name: "runner",
   deps: [],
 };
+
+export * from "./mod_2";

@@ -4,7 +4,7 @@ kind: problem
 title: "Mobile clients dropping connections without TCP FIN"
 status: accepted
 applies_to:
-  - realtime-presence
+  - "Services/jobs"
 created: 2026-10-24T12:00:00Z
 ---
 

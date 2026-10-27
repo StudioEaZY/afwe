@@ -5,3 +5,5 @@ export const Infrastructure_queues_broker_entry = {
   name: "broker",
   deps: [],
 };
+
+export * from "./mod_2";

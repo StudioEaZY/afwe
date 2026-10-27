@@ -5,3 +5,5 @@ export const Services_analytics_funnels_entry = {
   name: "funnels",
   deps: [],
 };
+
+export * from "./mod_2";

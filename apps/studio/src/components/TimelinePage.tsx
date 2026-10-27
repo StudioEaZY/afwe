@@ -22,6 +22,7 @@ import { api, SceneData } from "../api";
 import { TimelineDualScrubber, TimelineTurnItem } from "./TimelineDualScrubber";
 import { CodeDiffViewer } from "./CodeDiffViewer";
 import { TopologyMap, TopologyDiffMode } from "./TopologyMap";
+import { HarnessFixButton } from "./HarnessFixPrompt";
 
 export const TimelinePage: React.FC = () => {
   const {
@@ -39,6 +40,7 @@ export const TimelinePage: React.FC = () => {
   const [activeDiffTab, setActiveDiffTab] = useState<"files" | "map" | "deps" | "checks">("files");
   const [activeInspectorTab, setActiveInspectorTab] = useState<"summary" | "changes" | "decisions" | "checks">("summary");
   const [diffText, setDiffText] = useState<string>("");
+  const [turnRecord, setTurnRecord] = useState<any | null>(null);
 
   // Scenes for Before vs After live topology comparison
   const [beforeScene, setBeforeScene] = useState<SceneData | null>(null);
@@ -55,9 +57,12 @@ export const TimelinePage: React.FC = () => {
         ? turnRes.turns
         : [];
 
-      // High-fidelity turns history matching reference design
+      // Normalize turn records so id is always defined whether backend sends 'turn' or 'id'
       const list = fetched.length > 0
-        ? fetched
+        ? fetched.map((t: any, idx: number) => ({
+            ...t,
+            id: t.id || t.turn || `t${String(idx + 1).padStart(4, "0")}`,
+          }))
         : [
             { id: "t0001", date: "Jun 10", prompt: "Initial project setup and architecture boundary definition", status: "committed" },
             { id: "t0002", date: "Jun 12", prompt: "Add auth service and session verification token engine", status: "committed", hasPin: true },
@@ -130,6 +135,14 @@ export const TimelinePage: React.FC = () => {
       } else {
         setBeforeScene(null);
       }
+
+      // 3. Fetch comprehensive turn record (intents, gate decision, touched files/nodes, checks)
+      try {
+        const full = await api.timeline.get(turnId);
+        setTurnRecord(full);
+      } catch {
+        setTurnRecord(null);
+      }
     } catch (err: any) {
       console.warn("Could not load full turn details:", err);
     }
@@ -170,13 +183,22 @@ export const TimelinePage: React.FC = () => {
 
   // Compute live structural delta between Before and After
   const diffData: TopologyDiffMode = useMemo(() => {
-    const addedNodes = new Set<string>(["payments", "services/payments"]);
-    const modifiedNodes = new Set<string>(["components", "apps/web/components"]);
-    const removedNodes = new Set<string>(["stripe", "apps/web/lib/stripe.ts"]);
-    const violatedNodes = new Set<string>(["services/auth", "web/components"]);
+    const t = turnRecord?.turn;
+    const touchedNodes: string[] = t?.touched?.nodes || selectedTurn?.nodes || [];
+    const reasons: string[] = t?.gate?.reasons || selectedTurn?.reasons || [];
+    const isViolated = reasons.some((r: string) =>
+      r.toLowerCase().includes("violation") ||
+      r.toLowerCase().includes("forbid") ||
+      r.toLowerCase().includes("blocked")
+    );
+
+    const modifiedNodes = new Set<string>(touchedNodes);
+    const addedNodes = new Set<string>();
+    const removedNodes = new Set<string>();
+    const violatedNodes = new Set<string>(isViolated ? touchedNodes : []);
 
     return { addedNodes, modifiedNodes, removedNodes, violatedNodes };
-  }, [selectedTurn]);
+  }, [turnRecord, selectedTurn]);
 
   // Revert turn triggers Tier 1 Quarantine with 10-second grace timer
   const handleRevertTurn = () => {
@@ -557,301 +579,273 @@ export const TimelinePage: React.FC = () => {
         }}
       >
         {/* Drawer Header with Turn ID and Status Badge */}
-        <div style={{ padding: "16px 18px 12px 18px", borderBottom: "1px solid var(--line)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--ink)" }}>
-                Turn #{selectedTurn?.id}
-              </span>
-              <span
-                style={{
-                  fontSize: "10.5px",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  padding: "1px 6px",
-                  borderRadius: "4px",
-                  background: "var(--side)",
-                  color: "var(--accent)",
-                  border: "1px solid var(--line)",
-                }}
-              >
-                COMMIT
-              </span>
-            </div>
-            <button
-              type="button"
-              style={{ background: "none", border: "none", color: "var(--mute)", cursor: "pointer", padding: 0 }}
-            >
-              <X size={14} />
-            </button>
-          </div>
-          <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "4px" }}>
-            {selectedTurn?.afterTime || "Jun 26, 2025 · 14:32"}
-          </div>
+        {(() => {
+          const turnData = turnRecord?.turn || selectedTurn;
+          const touchedFiles: string[] = turnData?.touched?.files || turnData?.files || [];
+          const turnIntents: any[] = turnData?.intents || [];
+          const gateReasons: string[] = turnData?.gate?.reasons || turnData?.reasons || [];
+          const gateDecision: string = turnData?.gate?.decision || turnData?.status || "committed";
+          const isViolated = gateReasons.some((r: string) =>
+            r.toLowerCase().includes("violation") ||
+            r.toLowerCase().includes("forbid") ||
+            r.toLowerCase().includes("blocked")
+          );
 
-          <h2 className="serif" style={{ fontSize: "18px", fontWeight: 700, margin: "10px 0 4px 0", color: "var(--ink)" }}>
-            {selectedTurn?.title || "Checkout flow improvement"}
-          </h2>
-          <div style={{ fontSize: "12px", color: "var(--mute)", lineHeight: "1.45" }}>
-            {selectedTurn?.prompt || "Refactors the checkout flow, moves payment logic into Services, and updates related UI components."}
-          </div>
-
-          {/* Author avatar & Add a note */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <div
-                style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: "50%",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  display: "grid",
-                  placeItems: "center",
-                  fontSize: 10,
-                  fontWeight: 700,
-                }}
-              >
-                A
-              </div>
-              <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 500 }}>
-                By {selectedTurn?.author || "Alex"}
-              </span>
-            </div>
-            <span style={{ fontSize: "11.5px", color: "var(--mute)", cursor: "pointer" }}>
-              Add a note…
-            </span>
-          </div>
-        </div>
-
-        {/* Inspector tabs */}
-        <div style={{ display: "flex", borderBottom: "1px solid var(--line)", padding: "4px 8px", background: "var(--side)" }}>
-          {(["summary", "changes", "decisions", "checks"] as const).map((tab) => {
-            const countLabel = tab === "changes" ? " 12" : tab === "decisions" ? " 1" : tab === "checks" ? " 2" : "";
-            return (
-              <button
-                key={tab}
-                onClick={() => setActiveInspectorTab(tab)}
-                style={{
-                  flex: 1,
-                  border: "none",
-                  background: activeInspectorTab === tab ? "var(--panel)" : "transparent",
-                  color: activeInspectorTab === tab ? "var(--ink)" : "var(--mute)",
-                  borderRadius: "6px",
-                  padding: "4px 4px",
-                  fontSize: "11px",
-                  fontWeight: activeInspectorTab === tab ? 600 : 500,
-                  cursor: "pointer",
-                  textTransform: "capitalize",
-                }}
-              >
-                {tab}{countLabel}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Inspector Tab Content */}
-        <div style={{ padding: "16px 18px", fontSize: "12px", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "16px" }}>
-          {activeInspectorTab === "summary" && (
+          return (
             <>
-              {/* Key Changes Section */}
-              <div>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-                  Key changes
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 5, color: "var(--ink)", fontWeight: 500 }}>
-                        <span style={{ color: "var(--accent)", fontWeight: 700 }}>+</span> Added payments service module
-                      </div>
-                      <div style={{ color: "var(--mute)", fontSize: "11px", marginLeft: 12 }}>
-                        services/payments/ (8 files)
-                      </div>
-                    </div>
-                    <span style={{ color: "var(--ink)", fontSize: "11px", cursor: "pointer" }}>View files →</span>
-                  </div>
-
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 5, color: "var(--ink)", fontWeight: 500 }}>
-                        <span style={{ color: "var(--amber)", fontWeight: 700 }}>●</span> Modified checkout components
-                      </div>
-                      <div style={{ color: "var(--mute)", fontSize: "11px", marginLeft: 12 }}>
-                        apps/web/components/ (4 files)
-                      </div>
-                    </div>
-                    <span style={{ color: "var(--ink)", fontSize: "11px", cursor: "pointer" }}>View files →</span>
-                  </div>
-
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 5, color: "var(--ink)", fontWeight: 500 }}>
-                        <span style={{ color: "var(--red)", fontWeight: 700 }}>−</span> Removed direct payment provider calls
-                      </div>
-                      <div style={{ color: "var(--mute)", fontSize: "11px", marginLeft: 12 }}>
-                        apps/web/lib/stripe.ts
-                      </div>
-                    </div>
-                    <span style={{ color: "var(--ink)", fontSize: "11px", cursor: "pointer" }}>View file →</span>
-                  </div>
-                </div>
-                <div style={{ marginTop: "8px", fontSize: "11px", color: "var(--mute)", cursor: "pointer" }}>
-                  View all 12 changed files →
-                </div>
-              </div>
-
-              {/* Intent & Rationale Section */}
-              <div>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-                  Intent &amp; rationale
-                </div>
-                <div style={{ background: "var(--side)", padding: "10px 12px", borderRadius: "8px", border: "1px solid var(--line)", fontSize: "12px", color: "var(--ink)" }}>
-                  Moves payment processing from the UI layer to a dedicated service. Improves separation of concerns and prepares for webhook handling.
-                </div>
-              </div>
-
-              {/* Rules & Checks Section */}
-              <div>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-                  Rules &amp; checks
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <div style={{ background: "var(--redbg)", border: "1px solid var(--red)", borderRadius: "8px", padding: "8px 10px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ color: "var(--red)", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 5 }}>
-                        <AlertTriangle size={12} /> Rule violation
-                      </span>
-                      <span style={{ background: "var(--red)", color: "#fff", fontSize: "9.5px", fontWeight: 700, padding: "1px 5px", borderRadius: "4px" }}>
-                        Failed
-                      </span>
-                    </div>
-                    <div style={{ color: "var(--ink)", fontSize: "11.5px", marginTop: "3px" }}>
-                      UI layer must not depend on Services (services/auth → web/components)
-                    </div>
-                    <div style={{ color: "var(--red)", fontSize: "11px", marginTop: "4px", cursor: "pointer", fontWeight: 500 }}>
-                      View details →
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 2px" }}>
-                    <span style={{ color: "var(--ink)", display: "inline-flex", alignItems: "center", gap: 6 }}>
-                      <CheckCircle2 size={13} style={{ color: "var(--accent)" }} /> Other checks
+              <div style={{ padding: "16px 18px 12px 18px", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--ink)" }}>
+                      Turn #{selectedTurn?.id}
                     </span>
-                    <span style={{ color: "var(--mute)", fontSize: "11px" }}>8 passed, 1 warning</span>
+                    <span
+                      style={{
+                        fontSize: "10.5px",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        padding: "1px 6px",
+                        borderRadius: "4px",
+                        background: isViolated ? "var(--redbg)" : "var(--side)",
+                        color: isViolated ? "var(--red)" : "var(--accent)",
+                        border: "1px solid var(--line)",
+                      }}
+                    >
+                      {gateDecision.toUpperCase()}
+                    </span>
                   </div>
+                  {isViolated && (
+                    <HarnessFixButton
+                      issueType="constraint_violation"
+                      title={`Turn #${selectedTurn?.id} Rule Violation`}
+                      rationale={gateReasons.join("\n")}
+                      cliCommand={`afwe turn redo ${selectedTurn?.id}`}
+                      compact={true}
+                    />
+                  )}
+                </div>
+                <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "4px" }}>
+                  {turnData?.ts ? new Date(turnData.ts).toLocaleString() : selectedTurn?.afterTime || "Committed turn"}
+                </div>
+
+                <h2 className="serif" style={{ fontSize: "16px", fontWeight: 700, margin: "10px 0 4px 0", color: "var(--ink)" }}>
+                  {turnData?.summary || turnData?.prompt || `Turn #${selectedTurn?.id}`}
+                </h2>
+                <div style={{ fontSize: "12px", color: "var(--mute)", lineHeight: "1.45" }}>
+                  {turnData?.prompt || "Architecture state verification and gated changes."}
+                </div>
+
+                {/* Author / Origin */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "12px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "50%",
+                        background: "var(--accent)",
+                        color: "#fff",
+                        display: "grid",
+                        placeItems: "center",
+                        fontSize: 10,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {(turnData?.origin || "H").charAt(0).toUpperCase()}
+                    </div>
+                    <span style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 500 }}>
+                      {turnData?.origin === "human" ? "Human Engineer" : `Agent (${turnData?.agent || turnData?.origin || "autonomous"})`}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: "11px", color: "var(--mute)" }}>
+                    {turnData?.strength || "deterministic"} · {Math.round((turnData?.confidence ?? 0.9) * 100)}%
+                  </span>
                 </div>
               </div>
 
-              {/* Related Items Section */}
-              <div>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-                  Related items
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--side)", padding: "7px 10px", borderRadius: "6px" }}>
-                    <div>
-                      <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: "11.5px" }}>Pin recommendation</div>
-                      <div style={{ color: "var(--mute)", fontSize: "11px" }}>Protect core payment behavior</div>
-                    </div>
-                    <button type="button" className="btn-soft" style={{ fontSize: "11px", padding: "2px 8px" }}>
-                      Review ▾
+              {/* Inspector tabs */}
+              <div style={{ display: "flex", borderBottom: "1px solid var(--line)", padding: "4px 8px", background: "var(--side)" }}>
+                {(["summary", "changes", "decisions", "checks"] as const).map((tab) => {
+                  const countLabel =
+                    tab === "changes"
+                      ? ` ${touchedFiles.length}`
+                      : tab === "decisions"
+                      ? ` ${turnIntents.length}`
+                      : tab === "checks"
+                      ? ` ${gateReasons.length}`
+                      : "";
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveInspectorTab(tab)}
+                      style={{
+                        flex: 1,
+                        border: "none",
+                        background: activeInspectorTab === tab ? "var(--panel)" : "transparent",
+                        color: activeInspectorTab === tab ? "var(--ink)" : "var(--mute)",
+                        borderRadius: "6px",
+                        padding: "4px 4px",
+                        fontSize: "11px",
+                        fontWeight: activeInspectorTab === tab ? 600 : 500,
+                        cursor: "pointer",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {tab}{countLabel}
                     </button>
-                  </div>
-
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--side)", padding: "7px 10px", borderRadius: "6px" }}>
-                    <div>
-                      <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: "11.5px" }}>Proposal</div>
-                      <div style={{ color: "var(--mute)", fontSize: "11px" }}>Split analytics into separate module (Related turn #483)</div>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
 
-              {/* Action Buttons: Revert & Create follow-up */}
-              <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
-                <button
-                  type="button"
-                  onClick={handleRevertTurn}
-                  style={{
-                    flex: 1,
-                    background: "var(--panel)",
-                    border: "1px solid var(--line)",
-                    borderRadius: "8px",
-                    padding: "7px 10px",
-                    fontSize: "12px",
-                    color: "var(--red)",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 5,
-                  }}
-                >
-                  <RotateCcw size={12} />
-                  Revert this turn
-                </button>
-                <button
-                  type="button"
-                  className="btn-soft primary"
-                  style={{
-                    flex: 1,
-                    borderRadius: "8px",
-                    padding: "7px 10px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 5,
-                  }}
-                >
-                  <Plus size={12} />
-                  Create follow-up
-                </button>
+              {/* Inspector Tab Content */}
+              <div style={{ padding: "16px 18px", fontSize: "12px", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "16px" }}>
+                {activeInspectorTab === "summary" && (
+                  <>
+                    {/* Key Changes Section */}
+                    <div>
+                      <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                        Touched Files ({touchedFiles.length})
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        {touchedFiles.slice(0, 5).map((f) => (
+                          <div key={f} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--side)", padding: "6px 8px", borderRadius: "6px" }}>
+                            <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {f}
+                            </span>
+                          </div>
+                        ))}
+                        {touchedFiles.length === 0 && (
+                          <div style={{ color: "var(--mute)", fontSize: "11.5px" }}>No code files modified in this turn.</div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Intent & Rationale Section */}
+                    <div>
+                      <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                        Intents ({turnIntents.length})
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        {turnIntents.map((it: any) => (
+                          <div key={it.id || it} style={{ background: "var(--side)", padding: "8px 10px", borderRadius: "6px", border: "1px solid var(--line)", fontSize: "11.5px", color: "var(--ink)" }}>
+                            <b>{it.id || it}</b>
+                            {it.rationale && <div style={{ color: "var(--mute)", marginTop: "2px" }}>{it.rationale}</div>}
+                          </div>
+                        ))}
+                        {turnIntents.length === 0 && (
+                          <div style={{ background: "var(--side)", padding: "8px 10px", borderRadius: "6px", border: "1px solid var(--line)", fontSize: "11.5px", color: "var(--mute)" }}>
+                            {turnData?.summary || "Initial baseline snapshot."}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Rules & Checks Section */}
+                    <div>
+                      <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                        Gate Decision &amp; Checks
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        {gateReasons.map((r, i) => (
+                          <div key={i} style={{ background: isViolated ? "var(--redbg)" : "var(--side)", border: `1px solid ${isViolated ? "var(--red)" : "var(--line)"}`, borderRadius: "8px", padding: "8px 10px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span style={{ color: isViolated ? "var(--red)" : "var(--ink)", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 5 }}>
+                                {isViolated ? <AlertTriangle size={12} /> : <CheckCircle2 size={12} style={{ color: "var(--accent)" }} />}
+                                {isViolated ? "Rule Violation" : "Gate Passed"}
+                              </span>
+                            </div>
+                            <div style={{ color: "var(--ink)", fontSize: "11.5px", marginTop: "3px" }}>
+                              {r}
+                            </div>
+                          </div>
+                        ))}
+                        {gateReasons.length === 0 && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--accent)", fontSize: "11.5px" }}>
+                            <CheckCircle2 size={13} /> All architectural invariant checks passed.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Buttons: Revert */}
+                    <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+                      <button
+                        type="button"
+                        onClick={handleRevertTurn}
+                        style={{
+                          flex: 1,
+                          background: "var(--panel)",
+                          border: "1px solid var(--line)",
+                          borderRadius: "8px",
+                          padding: "7px 10px",
+                          fontSize: "12px",
+                          color: "var(--red)",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 5,
+                        }}
+                      >
+                        <RotateCcw size={12} />
+                        Revert this turn
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {activeInspectorTab === "changes" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase" }}>
+                      All Modified Files ({touchedFiles.length})
+                    </div>
+                    {touchedFiles.map((f) => (
+                      <div key={f} style={{ background: "var(--side)", padding: "8px 10px", borderRadius: "6px", fontFamily: "monospace", fontSize: "11px", color: "var(--ink)", wordBreak: "break-all" }}>
+                        {f}
+                      </div>
+                    ))}
+                    {touchedFiles.length === 0 && <div style={{ color: "var(--mute)" }}>No files touched.</div>}
+                  </div>
+                )}
+
+                {activeInspectorTab === "decisions" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase" }}>
+                      Declared Intents ({turnIntents.length})
+                    </div>
+                    {turnIntents.map((it: any) => (
+                      <div key={it.id || it} style={{ background: "var(--side)", padding: "10px", borderRadius: "6px", border: "1px solid var(--line)" }}>
+                        <div style={{ fontWeight: 600, color: "var(--ink)" }}>{it.id || it}</div>
+                        {it.action && <div style={{ fontSize: "11px", color: "var(--accent)" }}>Action: {it.action}</div>}
+                        {it.rationale && <div style={{ fontSize: "11.5px", color: "var(--mute)", marginTop: "4px" }}>{it.rationale}</div>}
+                      </div>
+                    ))}
+                    {turnIntents.length === 0 && <div style={{ color: "var(--mute)" }}>No explicit intents declared.</div>}
+                  </div>
+                )}
+
+                {activeInspectorTab === "checks" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase" }}>
+                      Checks &amp; Gate Evaluation
+                    </div>
+                    <div style={{ background: "var(--side)", padding: "8px 10px", borderRadius: "6px" }}>
+                      <div><b>Decision:</b> {gateDecision}</div>
+                      <div><b>Strength:</b> {turnData?.strength || "deterministic"}</div>
+                      <div><b>Confidence:</b> {Math.round((turnData?.confidence ?? 0.9) * 100)}%</div>
+                    </div>
+                    {gateReasons.map((r, i) => (
+                      <div key={i} style={{ background: "var(--panel)", border: "1px solid var(--line)", padding: "8px 10px", borderRadius: "6px", fontSize: "11.5px" }}>
+                        {r}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </>
-          )}
-
-          {activeInspectorTab === "changes" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <b style={{ color: "var(--ink)" }}>12 Changed Files:</b>
-              {[
-                "apps/web/components/CheckoutForm.tsx (M)",
-                "services/payments/processor.ts (A)",
-                "services/payments/types.ts (A)",
-                "apps/web/lib/stripe.ts (D)",
-                "services/payments/index.ts (A)",
-                "services/payments/config.ts (A)",
-                "apps/web/components/OrderSummary.tsx (M)",
-                "apps/web/components/PaymentModal.tsx (M)",
-              ].map((f) => (
-                <div key={f} style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "var(--mute)" }}>
-                  • {f}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {activeInspectorTab === "decisions" && (
-            <div style={{ color: "var(--mute)" }}>
-              <b>Decision ADR-014:</b> Decouple payment gateway provider bindings into headless service layer.
-            </div>
-          )}
-
-          {activeInspectorTab === "checks" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <div style={{ color: "var(--red)", display: "flex", alignItems: "center", gap: 5 }}>
-                <AlertTriangle size={13} /> Forbidden import from Web to Services detected
-              </div>
-              <div style={{ color: "var(--accent)", display: "flex", alignItems: "center", gap: 5 }}>
-                <CheckCircle2 size={13} /> Invariant pin boundaries verified
-              </div>
-            </div>
-          )}
-        </div>
+          );
+        })()}
       </aside>
     </div>
   );

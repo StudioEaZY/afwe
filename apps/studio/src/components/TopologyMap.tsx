@@ -132,10 +132,10 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
     const nodePos: Record<string, { x: number; y: number; tier: number; node: HierarchyNode }> = {};
     tierBuckets.forEach((list, ti) => {
-      const y = -195 + ti * 130;
+      const y = -195 + ti * 140;
       const count = list.length;
       list.forEach((n, idx) => {
-        const x = (idx - (count - 1) / 2) * 230;
+        const x = (idx - (count - 1) / 2) * 280;
         nodePos[n.key] = { x, y, tier: ti, node: n };
       });
     });
@@ -157,6 +157,34 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
     }
     return res;
   }, [basePos, customOffsets]);
+
+  // Group active edges by source and target to distribute attachment ports across card width
+  const edgePortOffsets = useMemo(() => {
+    const outgoingCounts: Record<string, number> = {};
+    const incomingCounts: Record<string, number> = {};
+    activeEdges.forEach((e) => {
+      outgoingCounts[e.a] = (outgoingCounts[e.a] || 0) + 1;
+      incomingCounts[e.b] = (incomingCounts[e.b] || 0) + 1;
+    });
+
+    const outgoingIdx: Record<string, number> = {};
+    const incomingIdx: Record<string, number> = {};
+
+    return activeEdges.map((e) => {
+      const outTotal = outgoingCounts[e.a] || 1;
+      const inTotal = incomingCounts[e.b] || 1;
+      const outI = outgoingIdx[e.a] || 0;
+      outgoingIdx[e.a] = outI + 1;
+      const inI = incomingIdx[e.b] || 0;
+      incomingIdx[e.b] = inI + 1;
+
+      // Distribute ports across +/- 55px of the card width (236px)
+      const outOffset = outTotal > 1 ? -50 + (outI / (outTotal - 1)) * 100 : 0;
+      const inOffset = inTotal > 1 ? -50 + (inI / (inTotal - 1)) * 100 : 0;
+
+      return { outOffset, inOffset };
+    });
+  }, [activeEdges]);
 
   // Non-passive wheel zoom listener
   useEffect(() => {
@@ -432,20 +460,20 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
         <g transform={`translate(${zoom.x},${zoom.y}) scale(${zoom.k})`}>
           {/* 4 Architectural Tier Bands */}
           {tiers.map((_, ti) => {
-            const y = -195 + ti * 130;
+            const y = -195 + ti * 140;
             return (
               <g key={`tier-${ti}`}>
                 <rect
-                  x={-370}
-                  y={y - 44}
-                  width={740}
-                  height={88}
+                  x={-380}
+                  y={y - 50}
+                  width={760}
+                  height={100}
                   rx={16}
                   className="tier-box"
                 />
                 <text
-                  x={-354}
-                  y={y - 26}
+                  x={-362}
+                  y={y - 32}
                   fontSize="10"
                   letterSpacing=".08em"
                   fill="var(--mute)"
@@ -463,12 +491,23 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
               const p2 = livePos[e.b];
               if (!p1 || !p2) return null;
 
+              const { outOffset = 0, inOffset = 0 } = edgePortOffsets[idx] || {};
+              const startX = p1.x + outOffset;
+              const targetX = p2.x + inOffset;
               const up = p1.y > p2.y;
-              const y1 = p1.y + (up ? -26 : 26);
-              const y2 = p2.y + (up ? 26 : -26);
-              const cx = (p1.x + p2.x) * 0.5 + (e.bad ? 90 : 0);
-              const cy = (y1 + y2) * 0.5;
-              const dPath = `M${p1.x},${y1} Q${cx},${cy} ${p2.x},${y2}`;
+              const startY = p1.y + (up ? -34 : 34);
+              const targetY = p2.y + (up ? 34 : -34);
+
+              let dPath: string;
+              if (e.bad && up) {
+                // Route upward rule violations cleanly around intermediate tiers via the lateral gutter
+                const isRight = (startX + targetX) >= 0;
+                const gutterX = isRight ? 350 : -350;
+                dPath = `M${startX},${startY} C${gutterX},${startY} ${gutterX},${targetY} ${targetX},${targetY}`;
+              } else {
+                const midY = (startY + targetY) * 0.5;
+                dPath = `M${startX},${startY} C${startX},${midY} ${targetX},${midY} ${targetX},${targetY}`;
+              }
 
               const isHoveredEdge = hoveredEdgeIdx === idx;
               const isConnectedToHover =
@@ -600,10 +639,10 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                 }}
               >
                 <rect
-                  x={-92}
-                  y={-26}
-                  width={184}
-                  height={52}
+                  x={-118}
+                  y={-34}
+                  width={236}
+                  height={68}
                   rx={14}
                   fill={fillFor(st)}
                   stroke={
@@ -625,32 +664,84 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                   strokeDasharray={st === "inferred" ? "4 2.5" : undefined}
                 />
 
-                {/* Left Domain Icon */}
-                <g transform="translate(-76, -12) scale(0.75)">
-                  <SvgDomainIcon iconKey={n.icon} stroke="var(--ink)" strokeWidth={1.7} />
+                {/* Left Avatar Icon Container Badge with Integrated Status Dot */}
+                <g transform="translate(-104, -20)">
+                  <rect
+                    x={0}
+                    y={0}
+                    width={34}
+                    height={34}
+                    rx={8}
+                    fill="var(--panel)"
+                    stroke="var(--line)"
+                    strokeWidth={1}
+                  />
+                  <g transform="translate(5, 5) scale(0.85)">
+                    <SvgDomainIcon iconKey={n.icon} stroke="var(--ink)" strokeWidth={1.8} />
+                  </g>
+                  <circle
+                    cx={30}
+                    cy={4}
+                    r={3.5}
+                    fill={dotColorFor(st)}
+                    stroke="var(--panel)"
+                    strokeWidth={1.2}
+                  />
                 </g>
 
-                {/* Status Dot */}
-                <circle cx={-52} cy={-6} r={3.5} fill={dotColorFor(st)} />
-
-                {/* Primary Domain Name & File Count */}
-                <text x={-42} y={-2} fontSize="13" fontWeight="600" fill="var(--ink)">
+                {/* Primary Domain Name */}
+                <text
+                  x={-60}
+                  y={-6}
+                  fontSize="14"
+                  fontWeight="600"
+                  fill="var(--ink)"
+                  dominantBaseline="central"
+                >
                   {n.label}
                 </text>
-                <text x={80} y={-2} textAnchor="end" fontSize="10.5" fill="var(--mute)">
-                  {n.fileCount}f
-                </text>
+
+                {/* File Count Soft Pill on Right */}
+                <g transform="translate(68, -16)">
+                  <rect
+                    x={0}
+                    y={0}
+                    width={38}
+                    height={20}
+                    rx={5}
+                    fill="var(--side)"
+                    stroke="var(--line)"
+                    strokeWidth={0.8}
+                  />
+                  <text
+                    x={19}
+                    y={10}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize="10.5"
+                    fontWeight="600"
+                    fill="var(--mute)"
+                  >
+                    {n.fileCount}f
+                  </text>
+                </g>
 
                 {/* Submodules Preview Line (Hidden at low zoom for Google Maps LOD) */}
                 {showSubnames && (
-                  <text x={-74} y={15} fontSize="9.5" fill="var(--mute)">
+                  <text
+                    x={-60}
+                    y={15}
+                    fontSize="9.5"
+                    fill="var(--mute)"
+                    dominantBaseline="central"
+                  >
                     {subNames}
                   </text>
                 )}
 
                 {/* Pin Badge */}
                 {n.hasPin && (
-                  <g transform="translate(82, -22)">
+                  <g transform="translate(108, -28)">
                     <circle r={7} fill="var(--panel)" stroke="var(--ink)" strokeWidth="1.1" />
                     <SvgMiniLock stroke="var(--ink)" />
                   </g>
@@ -658,7 +749,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
                 {/* Violation Badge */}
                 {n.hasViolation && (
-                  <g transform="translate(-82, -22)">
+                  <g transform="translate(-108, -28)">
                     <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
                   </g>
                 )}

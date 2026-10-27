@@ -5,3 +5,5 @@ export const Infrastructure_deploy_entry = {
   name: "deploy",
   deps: [],
 };
+
+export * from "./mod_2";

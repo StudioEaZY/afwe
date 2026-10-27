@@ -5,3 +5,7 @@ export const Core_models_value_objects_entry = {
   name: "value_objects",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

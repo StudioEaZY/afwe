@@ -4,7 +4,7 @@ kind: terminolog
 title: "Item vs Document"
 status: accepted
 applies_to:
-  - workspace-library
+  - "Core/models"
 created: 2026-10-24T12:00:00Z
 ---
 

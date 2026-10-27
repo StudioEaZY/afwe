@@ -5,3 +5,5 @@ export const Infrastructure_deploy_terraform_entry = {
   name: "terraform",
   deps: [],
 };
+
+export * from "./mod_2";

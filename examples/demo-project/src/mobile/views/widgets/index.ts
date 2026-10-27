@@ -5,3 +5,5 @@ export const Mobile_views_widgets_entry = {
   name: "widgets",
   deps: [],
 };
+
+export * from "./mod_2";

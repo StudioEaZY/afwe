@@ -6,3 +6,5 @@ export const Web_hooks_entry = {
   name: "hooks",
   deps: [Backend_api_routes_entry],
 };
+
+export * from "./mod_2";

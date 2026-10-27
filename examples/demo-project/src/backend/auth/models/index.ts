@@ -6,3 +6,7 @@ export const Backend_auth_models_entry = {
   name: "models",
   deps: [Backend_events_models_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

@@ -6,3 +6,7 @@ export const Services_analytics_entry = {
   name: "analytics",
   deps: [Backend_events_handlers_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

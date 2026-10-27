@@ -5,3 +5,5 @@ export const Backend_events_models_serializers_entry = {
   name: "serializers",
   deps: [],
 };
+
+export * from "./mod_2";

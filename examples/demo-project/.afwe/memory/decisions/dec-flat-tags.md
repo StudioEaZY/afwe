@@ -4,7 +4,7 @@ kind: decision
 title: "Flat tags without taxonomy"
 status: accepted
 applies_to:
-  - workspace-tagging
+  - "Core/models"
 created: 2026-10-24T12:00:00Z
 ---
 

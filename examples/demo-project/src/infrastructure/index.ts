@@ -7,3 +7,5 @@ export const Infrastructure_entry = {
   name: "Infrastructure",
   deps: [Core_entry, Shared_entry],
 };
+
+export * from "./mod_2";

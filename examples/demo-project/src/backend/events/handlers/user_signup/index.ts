@@ -5,3 +5,5 @@ export const Backend_events_handlers_user_signup_entry = {
   name: "user_signup",
   deps: [],
 };
+
+export * from "./mod_2";

@@ -8,3 +8,7 @@ export const Web_views_entry = {
   name: "views",
   deps: [Backend_events_models_entry, Backend_api_routes_entry, Backend_api_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

@@ -8,3 +8,7 @@ export const Backend_events_entry = {
   name: "events",
   deps: [Data_schema_entry, Core_events_entry, Shared_utils_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

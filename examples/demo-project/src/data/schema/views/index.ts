@@ -5,3 +5,5 @@ export const Data_schema_views_entry = {
   name: "views",
   deps: [],
 };
+
+export * from "./mod_2";

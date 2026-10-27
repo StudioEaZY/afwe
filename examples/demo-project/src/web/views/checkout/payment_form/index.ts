@@ -5,3 +5,5 @@ export const Web_views_checkout_payment_form_entry = {
   name: "payment_form",
   deps: [],
 };
+
+export * from "./mod_2";

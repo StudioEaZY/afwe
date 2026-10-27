@@ -8,3 +8,7 @@ export const Backend_api_entry = {
   name: "api",
   deps: [Backend_events_entry, Backend_auth_entry, Data_models_entry],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";

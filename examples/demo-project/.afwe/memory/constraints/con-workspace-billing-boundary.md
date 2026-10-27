@@ -4,8 +4,8 @@ kind: constraint
 title: "Decoupling workspace from billing"
 status: accepted
 applies_to:
-  - workspace
-  - billing
+  - "Core"
+  - "Services/billing"
 created: 2026-10-24T12:00:00Z
 ---
 

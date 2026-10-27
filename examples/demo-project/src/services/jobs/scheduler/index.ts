@@ -5,3 +5,7 @@ export const Services_jobs_scheduler_entry = {
   name: "scheduler",
   deps: [],
 };
+
+export * from "./mod_2";
+
+export * from "./mod_3";
