@@ -283,43 +283,48 @@ export const TopBar: React.FC = () => {
           )}
         </label>
 
-        <div className={`sdrop ${searchOpen ? "on" : ""}`}>
-          {searchQuery.trim().length === 0 && searchHits.length > 0 && (
-            <div
-              style={{
-                padding: "5px 10px 4px",
-                fontSize: "11px",
-                fontWeight: 700,
-                color: "var(--mute)",
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-              }}
-            >
-              Suggested modules &amp; subnodes
-            </div>
-          )}
-          {searchHits.length > 0 ? (
-            searchHits.map((n) => (
+        {searchOpen && (
+          <div className="sdrop on">
+            {searchQuery.trim().length === 0 && searchHits.length > 0 && (
               <div
-                key={n.key}
-                className="sitem"
-                onClick={() => handleSelectSearchResult(n)}
+                style={{
+                  padding: "5px 10px 4px",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  color: "var(--mute)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                }}
               >
-                <span>
-                  <b>{n.label}</b>{" "}
-                  <small>· {n.breadcrumbLabels.join(" › ")}</small>
-                </span>
-                <small>
-                  {n.state} · {n.fileCount}f
-                </small>
+                Suggested modules &amp; subnodes
               </div>
-            ))
-          ) : (
-            <div className="sitem" style={{ color: "var(--mute)", cursor: "default" }}>
-              <span>No matching modules or subnodes for &quot;{searchQuery}&quot;</span>
-            </div>
-          )}
-        </div>
+            )}
+            {searchHits.length > 0 ? (
+              searchHits.map((n) => (
+                <div
+                  key={n.key}
+                  className="sitem"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleSelectSearchResult(n);
+                  }}
+                >
+                  <span>
+                    <b>{n.label}</b>{" "}
+                    <small>· {n.breadcrumbLabels.join(" › ")}</small>
+                  </span>
+                  <small>
+                    {n.state} · {n.fileCount}f
+                  </small>
+                </div>
+              ))
+            ) : (
+              <div className="sitem" style={{ color: "var(--mute)", cursor: "default" }}>
+                <span>No matching modules or subnodes for &quot;{searchQuery}&quot;</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Right: Status Pill, Session Undo/Redo, Sync, Theme Toggle */}

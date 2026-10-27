@@ -8,6 +8,7 @@ import {
   Plus,
   Minus,
   RotateCcw,
+  Move,
 } from "lucide-react";
 import { useStore } from "../store";
 import {
@@ -90,6 +91,11 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
   const [hoveredEdgeIdx, setHoveredEdgeIdx] = useState<number | null>(null);
   const [tip, setTip] = useState<{ x: number; y: number; html: React.ReactNode } | null>(null);
 
+  // Drag-and-drop node offsets state
+  const [customOffsets, setCustomOffsets] = useState<Record<string, { x: number; y: number }>>({});
+  const [draggingKey, setDraggingKey] = useState<string | null>(null);
+  const dragNodeStartRef = useRef<{ clientX: number; clientY: number; initX: number; initY: number } | null>(null);
+
   const effectiveT = timelineT ?? overviewTimelineT ?? 1;
 
   const effectiveGraph = useMemo(() => {
@@ -108,7 +114,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
   );
 
   // Group top-level domains into 4 architectural tiers
-  const { tiers, pos, activeEdges } = useMemo(() => {
+  const { tiers, basePos, activeEdges } = useMemo(() => {
     const tierBuckets: HierarchyNode[][] = [[], [], [], []];
     const aliveDomains = (root.children || []).filter((d) => (d.birth || 0) <= effectiveT);
 
@@ -125,7 +131,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
       const y = -195 + ti * 130;
       const count = list.length;
       list.forEach((n, idx) => {
-        const x = (idx - (count - 1) / 2) * 240;
+        const x = (idx - (count - 1) / 2) * 230;
         nodePos[n.key] = { x, y, tier: ti, node: n };
       });
     });
@@ -135,8 +141,18 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
       return e.birth <= effectiveT && (e.death === null || e.death > effectiveT);
     });
 
-    return { tiers: tierBuckets, pos: nodePos, activeEdges: edges };
+    return { tiers: tierBuckets, basePos: nodePos, activeEdges: edges };
   }, [root, domainEdges, effectiveT]);
+
+  // Compute live positions with custom drag offsets
+  const livePos = useMemo(() => {
+    const res: Record<string, { x: number; y: number; tier: number; node: HierarchyNode }> = {};
+    for (const [k, p] of Object.entries(basePos)) {
+      const off = customOffsets[k] || { x: 0, y: 0 };
+      res[k] = { ...p, x: p.x + off.x, y: p.y + off.y };
+    }
+    return res;
+  }, [basePos, customOffsets]);
 
   // Non-passive wheel zoom listener
   useEffect(() => {
@@ -229,6 +245,42 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
     }
   };
 
+  // Node Drag Handlers
+  const handleNodePointerDown = (ev: React.PointerEvent, key: string) => {
+    ev.stopPropagation();
+    setDraggingKey(key);
+    dragNodeStartRef.current = {
+      clientX: ev.clientX,
+      clientY: ev.clientY,
+      initX: customOffsets[key]?.x || 0,
+      initY: customOffsets[key]?.y || 0,
+    };
+    (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
+  };
+
+  const handleNodePointerMove = (ev: React.PointerEvent) => {
+    if (!draggingKey || !dragNodeStartRef.current) return;
+    const dx = (ev.clientX - dragNodeStartRef.current.clientX) / zoom.k;
+    const dy = (ev.clientY - dragNodeStartRef.current.clientY) / zoom.k;
+    setCustomOffsets((prev) => ({
+      ...prev,
+      [draggingKey]: {
+        x: dragNodeStartRef.current!.initX + dx,
+        y: dragNodeStartRef.current!.initY + dy,
+      },
+    }));
+  };
+
+  const handleNodePointerUp = (ev: React.PointerEvent) => {
+    if (draggingKey) {
+      setDraggingKey(null);
+      dragNodeStartRef.current = null;
+      try {
+        (ev.currentTarget as HTMLElement).releasePointerCapture(ev.pointerId);
+      } catch {}
+    }
+  };
+
   const selectedNode =
     selectedEntity && selectedEntity.kind !== "edge"
       ? selectedEntity.node || findNodeById(root, selectedEntity.key || selectedEntity.id)
@@ -242,6 +294,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
         flex: 1,
         minHeight: compact ? 340 : 460,
         userSelect: "none",
+        position: "relative",
       }}
       onPointerDown={(e) => {
         if ((e.target as HTMLElement).closest("button,.zctl,.ex")) return;
@@ -262,8 +315,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
         <div className="stage-top">
           <div className="ctx-banner">
             <span>
-              Layered architecture · Top-to-bottom flow · Red upward arrows = forbidden
-              dependencies
+              Layered architecture · Top-to-bottom flow · Drag any card to reposition
             </span>
           </div>
 
@@ -293,7 +345,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
       {/* Main Topology SVG */}
       <svg
-        viewBox="-360 -295 720 590"
+        viewBox="-400 -295 800 590"
         aria-label="Architectural topology map"
         style={{
           width: "100%",
@@ -345,15 +397,15 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
             return (
               <g key={`tier-${ti}`}>
                 <rect
-                  x={-320}
+                  x={-370}
                   y={y - 44}
-                  width={640}
+                  width={740}
                   height={88}
                   rx={16}
                   className="tier-box"
                 />
                 <text
-                  x={-304}
+                  x={-354}
                   y={y - 26}
                   fontSize="10"
                   letterSpacing=".08em"
@@ -368,8 +420,8 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
           {/* Directed Edges Between Tiers */}
           <g>
             {activeEdges.map((e, idx) => {
-              const p1 = pos[e.a];
-              const p2 = pos[e.b];
+              const p1 = livePos[e.a];
+              const p2 = livePos[e.b];
               if (!p1 || !p2) return null;
 
               const up = p1.y > p2.y;
@@ -427,8 +479,8 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
             })}
           </g>
 
-          {/* Tier Domain Cards */}
-          {Object.entries(pos).map(([k, p]) => {
+          {/* Tier Domain Cards with Drag Support */}
+          {Object.entries(livePos).map(([k, p]) => {
             const n = p.node;
             const st = n.state;
             const flags = computeNodeFlags(n);
@@ -450,17 +502,23 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
               );
             const dimmed = !pass || (hoveredKey !== null && !isConnectedToHover);
 
-            const subNames = (n.children || [])
-              .slice(0, 3)
-              .map((c) => c.label)
-              .join(" · ");
+            // Google Maps Semantic LOD: hide submodules if zoomed out
+            const showSubnames = zoom.k >= 0.88;
+            const rawSubNames = (n.children || []).slice(0, 3).map((c) => c.label).join(" · ");
+            const subNames = rawSubNames.length > 24 ? `${rawSubNames.slice(0, 22)}…` : rawSubNames;
 
             return (
               <g
                 key={k}
                 className="ex"
                 transform={`translate(${p.x},${p.y + 6})`}
-                style={dimmed ? { opacity: 0.25 } : undefined}
+                style={{
+                  opacity: dimmed ? 0.25 : 1,
+                  cursor: draggingKey === k ? "grabbing" : "grab",
+                }}
+                onPointerDown={(ev) => handleNodePointerDown(ev, k)}
+                onPointerMove={handleNodePointerMove}
+                onPointerUp={handleNodePointerUp}
                 onMouseMove={(ev) => {
                   setHoveredKey(k);
                   updateTipPos(
@@ -483,7 +541,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                         </div>
                       )}
                       <div className="tm">
-                        Click to inspect · double-click to open in Radial
+                        Click to inspect · Drag to reposition · double-click to open in Radial
                       </div>
                     </div>
                   );
@@ -543,10 +601,12 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                   {n.fileCount}f
                 </text>
 
-                {/* Submodules Preview Line */}
-                <text x={-74} y={15} fontSize="10" fill="var(--mute)">
-                  {subNames}
-                </text>
+                {/* Submodules Preview Line (Hidden at low zoom for Google Maps LOD) */}
+                {showSubnames && (
+                  <text x={-74} y={15} fontSize="9.5" fill="var(--mute)">
+                    {subNames}
+                  </text>
+                )}
 
                 {/* Pin Badge */}
                 {n.hasPin && (
@@ -568,49 +628,34 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
         </g>
       </svg>
 
-      {/* 4 Corner Instructional Callouts (100% Lucide Icons) */}
+      {/* Arrow Legend in Bottom Bar */}
       {!compact && (
-        <>
-          <div className="call c-tl">
-            <div className="ic">
-              <Layers size={16} />
-            </div>
-            <div>
-              <b>4 Architectural Tiers</b>
-              Presentation at top down to Foundation at bottom.
-            </div>
-          </div>
-
-          <div className="call c-tr">
-            <div className="ic">
-              <ArrowDown size={16} />
-            </div>
-            <div>
-              <b>Downward Flow</b>
-              Upper tiers may depend on lower tiers, never the reverse.
-            </div>
-          </div>
-
-          <div className="call c-bl">
-            <div className="ic">
-              <Lock size={16} />
-            </div>
-            <div>
-              <b>Click Card or Line</b>
-              Inspect domain submodules or jump to Constellation.
-            </div>
-          </div>
-
-          <div className="call c-br">
-            <div className="ic" style={{ color: "var(--red)" }}>
-              <AlertTriangle size={16} />
-            </div>
-            <div>
-              <b>Upward Red Curve = Violation</b>
-              Data → Web violates the downward dependency rule.
-            </div>
-          </div>
-        </>
+        <div
+          style={{
+            position: "absolute",
+            bottom: "12px",
+            left: "16px",
+            background: "var(--panel)",
+            border: "1px solid var(--line)",
+            borderRadius: "10px",
+            padding: "5px 12px",
+            display: "flex",
+            alignItems: "center",
+            gap: "14px",
+            fontSize: "11px",
+            color: "var(--mute)",
+            boxShadow: "0 2px 8px var(--shadow)",
+          }}
+        >
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <span style={{ width: 16, height: 2, background: "var(--mute)", display: "inline-block" }} />
+            Downward dependency
+          </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--red)" }}>
+            <span style={{ width: 16, height: 2, background: "var(--red)", borderTop: "1px dashed var(--red)", display: "inline-block" }} />
+            Forbidden upward violation
+          </span>
+        </div>
       )}
 
       {/* Zoom Controls (Lucide Icons) */}
@@ -631,8 +676,11 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
         </button>
         <button
           type="button"
-          title="Reset view"
-          onClick={() => setZoom({ k: 1, x: 0, y: 0 })}
+          title="Reset view & layout"
+          onClick={() => {
+            setZoom({ k: 1, x: 0, y: 0 });
+            setCustomOffsets({});
+          }}
         >
           <RotateCcw size={13} />
         </button>

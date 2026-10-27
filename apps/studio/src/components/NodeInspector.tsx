@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+// apps/studio/src/components/NodeInspector.tsx
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Globe,
   Smartphone,
@@ -12,6 +13,7 @@ import {
   ArrowRight,
   Lock,
   FileCode,
+  Bookmark,
 } from "lucide-react";
 import { useStore } from "../store";
 import {
@@ -24,7 +26,10 @@ import {
   stateDescription,
   shortLabel,
   HierarchyNode,
+  DirectedEdge,
+  SelectedEntity,
 } from "../lib/hierarchy";
+import { getStudioPrefs, addBookmark, removeBookmark, StudioBookmark } from "../lib/prefs";
 
 function renderDomainLucideIcon(iconKey?: string) {
   switch (iconKey) {
@@ -48,6 +53,140 @@ function renderDomainLucideIcon(iconKey?: string) {
   }
 }
 
+interface EdgeInspectorViewProps {
+  edgeData: DirectedEdge;
+  root: HierarchyNode;
+  onSelectEntity: (entity: SelectedEntity) => void;
+  onOpenConstellation: (nodeKey: string) => void;
+}
+
+const EdgeInspectorView: React.FC<EdgeInspectorViewProps> = ({
+  edgeData: e,
+  root,
+  onSelectEntity,
+  onOpenConstellation,
+}) => {
+  const nFrom = findNodeById(root, e.a);
+  const nTo = findNodeById(root, e.b);
+  const isNodeEdge = e.a.includes("/") || e.b.includes("/");
+
+  const inspectEndpoint = (n: HierarchyNode | null, fallbackKey: string) => {
+    if (!n) return;
+    onSelectEntity({
+      id: n.id,
+      key: n.key,
+      kind: n.kind,
+      label: n.label,
+      path: n.path,
+      status: n.hasViolation ? "violation" : "mapped",
+      state: n.state,
+      fileCount: n.fileCount,
+      node: n,
+    });
+  };
+
+  return (
+    <aside className="side-inspector" aria-label="Inspector">
+      <div className="sh">
+        <div
+          className="ic"
+          style={
+            e.bad
+              ? { borderColor: "var(--red)", color: "var(--red)" }
+              : undefined
+          }
+        >
+          {e.bad ? <AlertTriangle size={18} /> : <ArrowRight size={18} />}
+        </div>
+        <div>
+          <h2 className="serif">
+            {shortLabel(e.a)} → {shortLabel(e.b)}{" "}
+            <span className={`st ${e.bad ? "s-violation" : "s-mapped"}`}>
+              {e.bad ? "violation" : "allowed"}
+            </span>
+          </h2>
+          <p>
+            {isNodeEdge ? "Node-level" : "Domain-level"} directed dependency · Introduced at{" "}
+            {Math.round((e.birth || 0.1) * 100)}% of timeline
+          </p>
+        </div>
+      </div>
+
+      <div className="sec">
+        <h3>Direction &amp; Meaning</h3>
+        <div className="row">
+          <span>From (Consumer)</span>
+          <b>{e.a}</b>
+        </div>
+        <div className="row">
+          <span>To (Dependency)</span>
+          <b>{e.b}</b>
+        </div>
+        <p style={{ margin: "6px 0 0", fontSize: 12.5, color: "var(--mute)" }}>
+          <b>{e.a}</b> imports or calls interfaces exposed by <b>{e.b}</b>.
+        </p>
+      </div>
+
+      {e.bad && (
+        <div className="warn">
+          <b>Rule violation</b>
+          <br />
+          {e.a} must not depend on {e.b}.<br />
+          <span style={{ opacity: 0.85 }}>
+            Suggested fix: invert dependency via an event or move shared types into Shared.
+          </span>
+        </div>
+      )}
+
+      <div className="sec">
+        <h3>Inspect Endpoints</h3>
+        {nFrom && (
+          <div
+            className="row click"
+            onClick={() => inspectEndpoint(nFrom, e.a)}
+          >
+            <span>Inspect {e.a}</span>
+            <span style={{ color: "var(--mute)" }}>
+              {nFrom.fileCount} files · {nFrom.state}
+            </span>
+          </div>
+        )}
+        {nTo && (
+          <div
+            className="row click"
+            onClick={() => inspectEndpoint(nTo, e.b)}
+          >
+            <span>Inspect {e.b}</span>
+            <span style={{ color: "var(--mute)" }}>
+              {nTo.fileCount} files · {nTo.state}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="sec">
+        <h3>Constellation Focus</h3>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+          <button
+            type="button"
+            className="btn-soft primary"
+            onClick={() => onOpenConstellation(e.a)}
+          >
+            Centre on {shortLabel(e.a)}
+          </button>
+          <button
+            type="button"
+            className="btn-soft"
+            onClick={() => onOpenConstellation(e.b)}
+          >
+            Centre on {shortLabel(e.b)}
+          </button>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
 export const NodeInspector: React.FC = () => {
   const {
     graph,
@@ -66,6 +205,16 @@ export const NodeInspector: React.FC = () => {
     openCodePreview,
   } = useStore();
 
+  const [bookmarks, setBookmarks] = useState<StudioBookmark[]>(() => getStudioPrefs().bookmarks);
+
+  useEffect(() => {
+    const handleSync = () => {
+      setBookmarks(getStudioPrefs().bookmarks);
+    };
+    window.addEventListener("afwe:bookmarks-changed", handleSync);
+    return () => window.removeEventListener("afwe:bookmarks-changed", handleSync);
+  }, []);
+
   const root = useMemo(() => buildHierarchyTree(graph), [graph]);
   const { domainEdges, nodeEdges } = useMemo(
     () => buildDirectedEdges(graph, root),
@@ -77,131 +226,7 @@ export const NodeInspector: React.FC = () => {
     return findNodeById(root, currentScopeId) || root;
   }, [root, currentScopeId]);
 
-  // 1. Edge Inspection Mode (when selectedEntity.kind === "edge")
-  if (selectedEntity && selectedEntity.kind === "edge" && selectedEntity.edgeData) {
-    const e = selectedEntity.edgeData;
-    const nFrom = findNodeById(root, e.a);
-    const nTo = findNodeById(root, e.b);
-    const isNodeEdge = e.a.includes("/") || e.b.includes("/");
-
-    const inspectEndpoint = (n: HierarchyNode | null, fallbackKey: string) => {
-      if (!n) return;
-      selectEntity({
-        id: n.id,
-        key: n.key,
-        kind: n.kind,
-        label: n.label,
-        path: n.path,
-        status: n.hasViolation ? "violation" : "mapped",
-        state: n.state,
-        fileCount: n.fileCount,
-        node: n,
-      });
-    };
-
-    return (
-      <aside className="side-inspector" aria-label="Inspector">
-        <div className="sh">
-          <div
-            className="ic"
-            style={
-              e.bad
-                ? { borderColor: "var(--red)", color: "var(--red)" }
-                : undefined
-            }
-          >
-            {e.bad ? <AlertTriangle size={18} /> : <ArrowRight size={18} />}
-          </div>
-          <div>
-            <h2 className="serif">
-              {shortLabel(e.a)} → {shortLabel(e.b)}{" "}
-              <span className={`st ${e.bad ? "s-violation" : "s-mapped"}`}>
-                {e.bad ? "violation" : "allowed"}
-              </span>
-            </h2>
-            <p>
-              {isNodeEdge ? "Node-level" : "Domain-level"} directed dependency · Introduced at{" "}
-              {Math.round((e.birth || 0.1) * 100)}% of timeline
-            </p>
-          </div>
-        </div>
-
-        <div className="sec">
-          <h3>Direction &amp; Meaning</h3>
-          <div className="row">
-            <span>From (Consumer)</span>
-            <b>{e.a}</b>
-          </div>
-          <div className="row">
-            <span>To (Dependency)</span>
-            <b>{e.b}</b>
-          </div>
-          <p style={{ margin: "6px 0 0", fontSize: 12.5, color: "var(--mute)" }}>
-            <b>{e.a}</b> imports or calls interfaces exposed by <b>{e.b}</b>.
-          </p>
-        </div>
-
-        {e.bad && (
-          <div className="warn">
-            <b>Rule violation</b>
-            <br />
-            {e.a} must not depend on {e.b}.<br />
-            <span style={{ opacity: 0.85 }}>
-              Suggested fix: invert dependency via an event or move shared types into Shared.
-            </span>
-          </div>
-        )}
-
-        <div className="sec">
-          <h3>Inspect Endpoints</h3>
-          {nFrom && (
-            <div
-              className="row click"
-              onClick={() => inspectEndpoint(nFrom, e.a)}
-            >
-              <span>Inspect {e.a}</span>
-              <span style={{ color: "var(--mute)" }}>
-                {nFrom.fileCount} files · {nFrom.state}
-              </span>
-            </div>
-          )}
-          {nTo && (
-            <div
-              className="row click"
-              onClick={() => inspectEndpoint(nTo, e.b)}
-            >
-              <span>Inspect {e.b}</span>
-              <span style={{ color: "var(--mute)" }}>
-                {nTo.fileCount} files · {nTo.state}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="sec">
-          <h3>Constellation Focus</h3>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
-            <button
-              type="button"
-              className="btn-soft primary"
-              onClick={() => openConstellationFor(e.a)}
-            >
-              Centre on {shortLabel(e.a)}
-            </button>
-            <button
-              type="button"
-              className="btn-soft"
-              onClick={() => openConstellationFor(e.b)}
-            >
-              Centre on {shortLabel(e.b)}
-            </button>
-          </div>
-        </div>
-      </aside>
-    );
-  }
-
-  // 2. Node Inspection Mode
+  // Determine active node unconditionally so hook count never diverges
   const activeNode: HierarchyNode = useMemo(() => {
     if (selectedEntity) {
       const found =
@@ -239,57 +264,140 @@ export const NodeInspector: React.FC = () => {
     return `Global depth ${globalD}`;
   }, [activeLens, focusNode, activeNode]);
 
-  // Determine relationships (Node-level vs Domain-level fallback)
-  const relContext = useMemo(() => {
-    const isDom = activeNode.depth <= 1;
-    const hasDirect = isDom
-      ? true
-      : nodeEdges.some((e) => e.a === activeNode.key || e.b === activeNode.key);
-    const isFallback = !isDom && (!hasDirect || forceParentFallback);
+  // Determine dependencies & consumers
+  const { deps, used, isFallback, relScopeLabel } = useMemo(() => {
+    const isDomain = activeNode.depth <= 1;
+    const directNodeEdges = nodeEdges.filter(
+      (e) => e.a === activeNode.key || e.b === activeNode.key
+    );
 
-    const useNodeRel = !isDom && hasDirect && !forceParentFallback;
-    const relKey = useNodeRel ? activeNode.key : dom.key;
-    const relPool = useNodeRel ? nodeEdges : domainEdges;
+    if (isDomain) {
+      const d = domainEdges.filter(
+        (e) =>
+          e.a === dom.label &&
+          e.birth <= overviewTimelineT &&
+          (e.death === null || e.death > overviewTimelineT)
+      );
+      const u = domainEdges.filter(
+        (e) =>
+          e.b === dom.label &&
+          e.birth <= overviewTimelineT &&
+          (e.death === null || e.death > overviewTimelineT)
+      );
+      return { deps: d, used: u, isFallback: false, relScopeLabel: "Domain" };
+    }
 
-    const aliveEdges = relPool.filter(
+    if (directNodeEdges.length > 0 && !forceParentFallback) {
+      const d = directNodeEdges.filter(
+        (e) =>
+          e.a === activeNode.key &&
+          e.birth <= overviewTimelineT &&
+          (e.death === null || e.death > overviewTimelineT)
+      );
+      const u = directNodeEdges.filter(
+        (e) =>
+          e.b === activeNode.key &&
+          e.birth <= overviewTimelineT &&
+          (e.death === null || e.death > overviewTimelineT)
+      );
+      return { deps: d, used: u, isFallback: false, relScopeLabel: "Node-level" };
+    }
+
+    const d = domainEdges.filter(
       (e) =>
+        e.a === dom.label &&
         e.birth <= overviewTimelineT &&
         (e.death === null || e.death > overviewTimelineT)
     );
-
-    const deps = aliveEdges.filter((e) => e.a === relKey);
-    const used = aliveEdges.filter((e) => e.b === relKey);
-    const bads = aliveEdges.filter(
-      (e) => e.bad && (e.a === relKey || e.b === relKey)
+    const u = domainEdges.filter(
+      (e) =>
+        e.b === dom.label &&
+        e.birth <= overviewTimelineT &&
+        (e.death === null || e.death > overviewTimelineT)
     );
-
-    const relScopeLabel = useNodeRel
-      ? "Node-level"
-      : isDom
-      ? "Domain-level"
-      : `Module-level (${dom.label})`;
-
-    return { isDom, hasDirect, isFallback, useNodeRel, deps, used, bads, relScopeLabel };
+    return {
+      deps: d,
+      used: u,
+      isFallback: true,
+      relScopeLabel: `Parent domain (${dom.label})`,
+    };
   }, [activeNode, dom, nodeEdges, domainEdges, forceParentFallback, overviewTimelineT]);
 
-  const { isFallback, deps, used, bads, relScopeLabel } = relContext;
+  // Check blueprint mapping & constraints
+  const { nodeLinked, constraintsToShow } = useMemo(() => {
+    const linked = hasBlueprintLinks(activeNode);
+    const constraints: string[] = [];
 
-  const nodeLinked = hasBlueprintLinks(activeNode);
-  const constraintsToShow =
-    activeNode.constraints && activeNode.constraints.length > 0
-      ? activeNode.constraints
-      : activeNode.state === "mapped" && dom.constraints && dom.constraints.length > 0
-      ? dom.constraints
-      : [];
-  const decisionsToShow =
-    activeNode.decisions && activeNode.decisions.length > 0
-      ? activeNode.decisions
-      : activeNode.state === "mapped" && dom.decisions && dom.decisions.length > 0
-      ? dom.decisions
-      : [];
+    if (graph && (graph as any).constraints && Array.isArray((graph as any).constraints)) {
+      (graph as any).constraints.forEach((c: any) => {
+        const matchesScope =
+          c.from === activeNode.key ||
+          c.to === activeNode.key ||
+          c.from === dom.label ||
+          c.to === dom.label;
+        if (matchesScope && c.rule) {
+          constraints.push(c.rule);
+        }
+      });
+    }
 
-  const handleSelectChildOrTarget = (targetKeyOrId: string) => {
-    const found = findNodeById(root, targetKeyOrId);
+    if (constraints.length === 0 && linked) {
+      constraints.push(
+        `${activeNode.label} is governed by ${dom.label} architectural boundary conventions.`
+      );
+    }
+    return { nodeLinked: linked, constraintsToShow: constraints };
+  }, [graph, activeNode, dom]);
+
+  // Check applicable decisions
+  const decisionsToShow = useMemo(() => {
+    const list: [string, string][] = [];
+    if (graph && (graph as any).decisions && Array.isArray((graph as any).decisions)) {
+      (graph as any).decisions.forEach((d: any) => {
+        const matches =
+          (d.nodes && (d.nodes.includes(activeNode.key) || d.nodes.includes(dom.label))) ||
+          (d.title && d.title.toLowerCase().includes(activeNode.label.toLowerCase()));
+        if (matches) {
+          list.push([d.title, d.status || "Accepted"]);
+        }
+      });
+    }
+    return list;
+  }, [graph, activeNode, dom]);
+
+  // If selectedEntity is an edge, render EdgeInspectorView without violating hook count
+  if (selectedEntity && selectedEntity.kind === "edge" && selectedEntity.edgeData) {
+    return (
+      <EdgeInspectorView
+        edgeData={selectedEntity.edgeData}
+        root={root}
+        onSelectEntity={selectEntity}
+        onOpenConstellation={openConstellationFor}
+      />
+    );
+  }
+
+  const isBookmarked = bookmarks.some((b) => b.id === activeNode.key);
+
+  const handleToggleBookmark = () => {
+    if (isBookmarked) {
+      removeBookmark(activeNode.key);
+    } else {
+      addBookmark({
+        id: activeNode.key,
+        label: activeNode.label,
+        path: activeNode.path,
+        lens: activeLens,
+      });
+    }
+    setBookmarks(getStudioPrefs().bookmarks);
+    window.dispatchEvent(new Event("afwe:bookmarks-changed"));
+  };
+
+  const bads = deps.filter((e) => e.bad).concat(used.filter((e) => e.bad));
+
+  const handleSelectChildOrTarget = (targetKey: string) => {
+    const found = findNodeById(root, targetKey);
     if (!found) return;
     selectEntity({
       id: found.id,
@@ -312,12 +420,24 @@ export const NodeInspector: React.FC = () => {
       {/* Header (.sh) */}
       <div className="sh">
         <div className="ic">{renderDomainLucideIcon(dom.icon)}</div>
-        <div style={{ minWidth: 0 }}>
-          <h2 className="serif">
-            {activeNode.label}{" "}
-            <span className={`st s-${activeNode.state}`}>{activeNode.state}</span>
-          </h2>
-          <p>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 6 }}>
+            <h2 className="serif" style={{ margin: 0 }}>
+              {activeNode.label}{" "}
+              <span className={`st s-${activeNode.state}`}>{activeNode.state}</span>
+            </h2>
+            <button
+              type="button"
+              className={`btn-soft ${isBookmarked ? "primary" : ""}`}
+              onClick={handleToggleBookmark}
+              title={isBookmarked ? "Remove bookmark" : "Bookmark this node"}
+              style={{ padding: "3px 6px", display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0 }}
+            >
+              <Bookmark size={12} fill={isBookmarked ? "currentColor" : "none"} />
+              <span style={{ fontSize: "11px" }}>{isBookmarked ? "Saved" : "Star"}</span>
+            </button>
+          </div>
+          <p style={{ margin: "4px 0 0" }}>
             {activeNode.path}/ · {activeNode.fileCount} files
           </p>
           <p style={{ marginTop: 2 }}>{layerInfo}</p>
@@ -352,7 +472,7 @@ export const NodeInspector: React.FC = () => {
       )}
 
       {/* Contextual Action Buttons */}
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "10px 0" }}>
         {activeLens === "radial" && (
           <>
             {activeNode.children &&
@@ -366,11 +486,6 @@ export const NodeInspector: React.FC = () => {
                   Open map
                 </button>
               )}
-            {focusNode.depth > 0 && activeNode.id === focusNode.id && (
-              <button type="button" className="btn-soft" onClick={drillUp}>
-                ‹ Up one level
-              </button>
-            )}
             <button
               type="button"
               className="btn-soft"
@@ -404,7 +519,7 @@ export const NodeInspector: React.FC = () => {
                 }
               }}
             >
-              Open map in Atlas
+              Open map
             </button>
           </>
         )}
@@ -419,7 +534,7 @@ export const NodeInspector: React.FC = () => {
                 drillDown(activeNode.id);
               }}
             >
-              Open map in Atlas
+              Open map
             </button>
             <button
               type="button"

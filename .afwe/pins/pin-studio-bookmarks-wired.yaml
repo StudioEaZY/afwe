@@ -1,0 +1,10 @@
+id: pin-studio-bookmarks-wired
+statement: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector
+kind: invariant
+attaches:
+  nodes:
+  - studio
+severity: warn
+status: active
+origin: human
+created: 2026-10-27T06:47:00Z

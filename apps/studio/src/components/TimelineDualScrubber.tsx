@@ -1,7 +1,7 @@
 // apps/studio/src/components/TimelineDualScrubber.tsx
 // Interactive dual timeline scrubber with mouse-wheel zoom/pan, draggable handles, and upper wave curve
 import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2, Star } from "lucide-react";
 import { SvgMiniLock, SvgMiniAlertTriangle } from "../lib/lucideSvgPaths";
 
 export interface TimelineTurnItem {
@@ -147,41 +147,44 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
     const rect = lowerSvgRef.current.getBoundingClientRect();
     const deltaFrac = (e.clientX - dragStartRef.current.startX) / rect.width;
     const [initStart, initEnd] = dragStartRef.current.initialRange;
+    const currentSpan = initEnd - initStart;
 
     if (draggingTarget === "window-body") {
-      const span = initEnd - initStart;
-      let newStart = Math.max(0, Math.min(1 - span, initStart + deltaFrac));
-      setRange([newStart, newStart + span]);
+      const newStart = Math.max(0, Math.min(1 - currentSpan, initStart + deltaFrac));
+      setRange([newStart, newStart + currentSpan]);
     } else if (draggingTarget === "left-handle") {
-      const newStart = Math.max(0, Math.min(initEnd - 0.04, initStart + deltaFrac));
+      const newStart = Math.max(0, Math.min(initEnd - 0.05, initStart + deltaFrac));
       setRange([newStart, initEnd]);
     } else if (draggingTarget === "right-handle") {
-      const newEnd = Math.min(1, Math.max(initStart + 0.04, initEnd + deltaFrac));
+      const newEnd = Math.min(1, Math.max(initStart + 0.05, initEnd + deltaFrac));
       setRange([initStart, newEnd]);
     }
   };
 
-  const handleLowerPointerUp = () => {
-    setDraggingTarget(null);
+  const handleLowerPointerUp = (e: React.PointerEvent) => {
+    if (draggingTarget) {
+      setDraggingTarget(null);
+      try {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {}
+    }
   };
 
-  // Geometry for Upper Wave
+  // Wave Layout Coordinates Calculation
   const upperWidth = 1000;
-  const upperHeight = 120;
-  const waveBaseY = 82;
+  const upperHeight = 110;
+  const waveBaseY = 70;
 
-  // Compute smooth curve points for visible turns
   const wavePoints = useMemo(() => {
-    if (visibleTurnIndices.length === 0) return [];
     const count = visibleTurnIndices.length;
-    const margin = 60;
+    const margin = 48;
     const usableW = upperWidth - margin * 2;
 
     return visibleTurnIndices.map((idx, i) => {
       const turn = turns[idx];
       const x = margin + (count > 1 ? (i / (count - 1)) * usableW : usableW / 2);
       // Elevation wave based on status / violations
-      const lift = turn.hasViolation ? 32 : turn.hasPin ? 24 : turn.status === "committed" ? 18 : 12;
+      const lift = turn.hasViolation ? 28 : turn.hasPin ? 22 : turn.status === "committed" ? 16 : 10;
       const y = waveBaseY - lift;
       return { x, y, turn, idx };
     });
@@ -212,265 +215,201 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
         background: "var(--panel)",
         border: "1px solid var(--line)",
         borderRadius: "16px",
-        padding: "10px 18px",
-        boxShadow: "0 1px 0 var(--glow) inset, 0 14px 30px -20px var(--shadow)",
+        padding: "8px 16px 12px 16px",
+        boxShadow: "0 1px 0 var(--glow) inset, 0 12px 24px -16px var(--shadow)",
         userSelect: "none",
-        gap: "6px",
+        gap: "4px",
       }}
     >
-      {/* Top Header Strip: Status, Title, Zoom Controls, Step Buttons */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-            Turns Workstation Timeline
-          </span>
-          <span style={{ fontSize: "11px", color: "var(--ink)", background: "var(--side)", padding: "2px 8px", borderRadius: "10px", fontWeight: 600 }}>
-            {visibleTurnIndices.length} of {turns.length} turns in view
-          </span>
-        </div>
+      {/* 1. Upper Spline Wave Scrubber with Chevrons on sides */}
+      <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+        {/* Left Step Button */}
+        <button
+          onClick={() => handleStep(-1)}
+          title="Step to previous turn"
+          style={{
+            position: "absolute",
+            left: "-6px",
+            zIndex: 10,
+            background: "var(--panel)",
+            border: "1px solid var(--line)",
+            color: "var(--ink)",
+            borderRadius: "50%",
+            width: "28px",
+            height: "28px",
+            display: "grid",
+            placeItems: "center",
+            cursor: "pointer",
+            boxShadow: "0 2px 6px var(--shadow)",
+          }}
+        >
+          <ChevronLeft size={16} />
+        </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          {/* Step Back / Step Forward Buttons */}
-          <button
-            onClick={() => handleStep(-1)}
-            title="Step to previous turn"
-            style={{
-              background: "var(--side)",
-              border: "1px solid var(--line)",
-              color: "var(--ink)",
-              borderRadius: "6px",
-              padding: "3px 6px",
-              display: "inline-flex",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-          >
-            <ChevronLeft size={14} />
-          </button>
-          <button
-            onClick={() => handleStep(1)}
-            title="Step to next turn"
-            style={{
-              background: "var(--side)",
-              border: "1px solid var(--line)",
-              color: "var(--ink)",
-              borderRadius: "6px",
-              padding: "3px 6px",
-              display: "inline-flex",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-          >
-            <ChevronRight size={14} />
-          </button>
+        <svg
+          ref={upperSvgRef}
+          viewBox={`0 0 ${upperWidth} ${upperHeight}`}
+          style={{ width: "100%", height: "105px", overflow: "visible" }}
+        >
+          {/* Base guideline */}
+          <line x1={36} y1={waveBaseY} x2={upperWidth - 36} y2={waveBaseY} stroke="var(--line)" strokeWidth={1.5} />
 
-          {/* Zoom controls */}
-          <button
-            onClick={handleZoomIn}
-            title="Zoom In"
-            style={{
-              background: "var(--side)",
-              border: "1px solid var(--line)",
-              color: "var(--ink)",
-              borderRadius: "6px",
-              padding: "3px 6px",
-              display: "inline-flex",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-          >
-            <Plus size={14} />
-          </button>
-          <button
-            onClick={handleZoomOut}
-            title="Zoom Out"
-            style={{
-              background: "var(--side)",
-              border: "1px solid var(--line)",
-              color: "var(--ink)",
-              borderRadius: "6px",
-              padding: "3px 6px",
-              display: "inline-flex",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-          >
-            <Minus size={14} />
-          </button>
-          <button
-            onClick={handleFit}
-            title="Fit All History"
-            style={{
-              background: "var(--side)",
-              border: "1px solid var(--line)",
-              color: "var(--ink)",
-              borderRadius: "6px",
-              padding: "3px 8px",
-              fontSize: "11px",
-              fontWeight: 600,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 4,
-              cursor: "pointer",
-            }}
-          >
-            <Maximize2 size={11} />
-            Fit
-          </button>
-        </div>
+          {/* Wave Spline */}
+          {wavePathD && (
+            <path
+              d={wavePathD}
+              fill="none"
+              stroke="var(--accent)"
+              strokeWidth={2.4}
+              strokeLinecap="round"
+              style={{ opacity: 0.85 }}
+            />
+          )}
+
+          {/* Turn points on wave */}
+          {wavePoints.map(({ x, y, turn }) => {
+            const isSelected = turn.id === selectedTurnId;
+            const isCommitted = turn.status === "committed";
+            const isFailed = turn.status === "failed";
+            const isStage = turn.status === "ready" || turn.status === "staged";
+
+            const dotColor = isFailed ? "var(--red)" : isStage ? "var(--amber)" : isCommitted ? "var(--accent)" : "var(--mute)";
+
+            return (
+              <g
+                key={turn.id}
+                onClick={() => onSelectTurn(turn.id)}
+                style={{ cursor: "pointer" }}
+              >
+                {/* Vertical connector stem to base line */}
+                <line
+                  x1={x}
+                  y1={y}
+                  x2={x}
+                  y2={waveBaseY}
+                  stroke={isSelected ? "var(--ink)" : "var(--line)"}
+                  strokeWidth={isSelected ? 1.8 : 1}
+                  strokeDasharray={isSelected ? "none" : "3 3"}
+                />
+
+                {/* Turn status point */}
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={isSelected ? 7 : 4}
+                  fill={isSelected ? "var(--ink)" : dotColor}
+                  stroke="var(--panel)"
+                  strokeWidth={2}
+                />
+
+                {/* Selected Star Pill / Violations / Pins above */}
+                {isSelected ? (
+                  <g transform={`translate(${x}, ${y - 32})`}>
+                    <path
+                      d="M0 -11 L2.5 -3.5 L10.5 -3.5 L4.2 1.2 L6.5 8.8 L0 4.2 L-6.5 8.8 L-4.2 1.2 L-10.5 -3.5 L-2.5 -3.5 Z"
+                      fill="var(--amber)"
+                      transform="scale(0.85)"
+                    />
+                    <rect
+                      x={-34}
+                      y={-2}
+                      width={68}
+                      height={20}
+                      rx={10}
+                      fill="var(--ink)"
+                      stroke="var(--panel)"
+                      strokeWidth={1.2}
+                    />
+                    <text
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fill="#fff"
+                      fontSize={10.5}
+                      fontWeight={700}
+                      y={8}
+                    >
+                      #{turn.id}
+                    </text>
+                  </g>
+                ) : turn.hasViolation ? (
+                  <g transform={`translate(${x}, ${y - 18})`}>
+                    <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
+                  </g>
+                ) : turn.hasPin ? (
+                  <g transform={`translate(${x}, ${y - 18})`}>
+                    <circle r={6.5} fill="var(--panel)" stroke="var(--ink)" strokeWidth={1.1} />
+                    <SvgMiniLock stroke="var(--ink)" />
+                  </g>
+                ) : null}
+
+                {/* Date label below baseline */}
+                <text
+                  x={x}
+                  y={waveBaseY + 16}
+                  textAnchor="middle"
+                  fontSize={10}
+                  fontWeight={isSelected ? 700 : 500}
+                  fill={isSelected ? "var(--ink)" : "var(--mute)"}
+                >
+                  {turn.date}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Right Step Button */}
+        <button
+          onClick={() => handleStep(1)}
+          title="Step to next turn"
+          style={{
+            position: "absolute",
+            right: "-6px",
+            zIndex: 10,
+            background: "var(--panel)",
+            border: "1px solid var(--line)",
+            color: "var(--ink)",
+            borderRadius: "50%",
+            width: "28px",
+            height: "28px",
+            display: "grid",
+            placeItems: "center",
+            cursor: "pointer",
+            boxShadow: "0 2px 6px var(--shadow)",
+          }}
+        >
+          <ChevronRight size={16} />
+        </button>
       </div>
 
-      {/* 1. Upper Spline Wave Scrubber */}
-      <svg
-        ref={upperSvgRef}
-        viewBox={`0 0 ${upperWidth} ${upperHeight}`}
-        style={{ width: "100%", height: "110px", overflow: "visible" }}
-      >
-        <defs>
-          <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.0" />
-          </linearGradient>
-        </defs>
-
-        {/* Base guideline and date ticks */}
-        <line x1={40} y1={waveBaseY} x2={upperWidth - 40} y2={waveBaseY} stroke="var(--line)" strokeWidth={1.5} />
-
-        {/* Wave Spline */}
-        {wavePathD && (
-          <path
-            d={wavePathD}
-            fill="none"
-            stroke="var(--accent)"
-            strokeWidth={2.4}
-            strokeLinecap="round"
-            style={{ opacity: 0.85 }}
-          />
-        )}
-
-        {/* Turn points on wave */}
-        {wavePoints.map(({ x, y, turn }) => {
-          const isSelected = turn.id === selectedTurnId;
-          const isCommitted = turn.status === "committed";
-          const isFailed = turn.status === "failed";
-          const isStage = turn.status === "ready" || turn.status === "staged";
-
-          const dotColor = isFailed ? "var(--red)" : isStage ? "var(--amber)" : isCommitted ? "var(--accent)" : "var(--mute)";
-
-          return (
-            <g
-              key={turn.id}
-              onClick={() => onSelectTurn(turn.id)}
-              style={{ cursor: "pointer" }}
-            >
-              {/* Vertical connector stem to base line */}
-              <line
-                x1={x}
-                y1={y}
-                x2={x}
-                y2={waveBaseY}
-                stroke={isSelected ? "var(--ink)" : "var(--line)"}
-                strokeWidth={isSelected ? 1.8 : 1}
-                strokeDasharray={isSelected ? "none" : "3 3"}
-              />
-
-              {/* Turn status point */}
-              <circle
-                cx={x}
-                cy={y}
-                r={isSelected ? 6 : 4}
-                fill={dotColor}
-                stroke="var(--panel)"
-                strokeWidth={2}
-              />
-
-              {/* Elevated Badges / Callouts */}
-              {isSelected ? (
-                <g transform={`translate(${x}, ${y - 28})`}>
-                  <rect
-                    x={-34}
-                    y={-12}
-                    width={68}
-                    height={22}
-                    rx={11}
-                    fill="var(--ink)"
-                    stroke="var(--panel)"
-                    strokeWidth={1.5}
-                  />
-                  <text
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fill="var(--panel)"
-                    fontSize={11}
-                    fontWeight={700}
-                  >
-                    #{turn.id}
-                  </text>
-                </g>
-              ) : turn.hasViolation ? (
-                <g transform={`translate(${x}, ${y - 18})`}>
-                  <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
-                </g>
-              ) : turn.hasPin ? (
-                <g transform={`translate(${x}, ${y - 18})`}>
-                  <circle r={6.5} fill="var(--panel)" stroke="var(--ink)" strokeWidth={1.1} />
-                  <SvgMiniLock stroke="var(--ink)" />
-                </g>
-              ) : null}
-
-              {/* Turn ID and Date below baseline */}
-              <text
-                x={x}
-                y={waveBaseY + 14}
-                textAnchor="middle"
-                fontSize={10}
-                fontWeight={isSelected ? 700 : 500}
-                fill={isSelected ? "var(--ink)" : "var(--mute)"}
-              >
-                #{turn.id}
-              </text>
-              <text
-                x={x}
-                y={waveBaseY + 26}
-                textAnchor="middle"
-                fontSize={9}
-                fill="var(--mute)"
-              >
-                {turn.date}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-
       {/* 2. Lower Block Heatmap with Draggable Selection Window */}
-      <div style={{ position: "relative", height: "42px", marginTop: "2px" }}>
+      <div style={{ position: "relative", height: "32px", marginTop: "2px" }}>
         <svg
           ref={lowerSvgRef}
-          viewBox="0 0 1000 40"
+          viewBox="0 0 1000 32"
           style={{ width: "100%", height: "100%", display: "block" }}
           onPointerMove={handleLowerPointerMove}
           onPointerUp={handleLowerPointerUp}
         >
           {/* Background Heatmap Blocks */}
           {turns.map((t, idx) => {
-            const blockW = Math.max(2, 980 / totalCount - 2);
+            const blockW = Math.max(3, 980 / totalCount - 2.5);
             const bx = 10 + (idx / totalCount) * 980;
             const isCommitted = t.status === "committed";
             const isFailed = t.status === "failed";
             const isStage = t.status === "ready" || t.status === "staged";
-            const color = isFailed ? "var(--red)" : isStage ? "var(--amber)" : isCommitted ? "var(--mapped)" : "var(--unm)";
+            const color = isFailed ? "var(--red)" : isStage ? "var(--amber)" : isCommitted ? "var(--mapped)" : "var(--line)";
 
             return (
               <rect
                 key={t.id}
                 x={bx}
-                y={8}
+                y={6}
                 width={blockW}
-                height={24}
+                height={20}
                 rx={2}
                 fill={color}
-                opacity={0.8}
+                opacity={0.85}
                 onClick={() => onSelectTurn(t.id)}
                 style={{ cursor: "pointer" }}
               >
@@ -479,53 +418,59 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
             );
           })}
 
-          {/* Selection Window Overlay */}
+          {/* Selection Window Overlay with [ ||| ] Grips */}
           {(() => {
             const leftX = 10 + range[0] * 980;
             const rightX = 10 + range[1] * 980;
-            const windowW = Math.max(20, rightX - leftX);
+            const windowW = Math.max(26, rightX - leftX);
+            const midX = leftX + windowW / 2;
 
             return (
               <g>
                 {/* Window body */}
                 <rect
                   x={leftX}
-                  y={4}
+                  y={3}
                   width={windowW}
-                  height={32}
-                  rx={6}
+                  height={26}
+                  rx={5}
                   fill="var(--accent)"
-                  fillOpacity={0.18}
+                  fillOpacity={0.14}
                   stroke="var(--accent)"
                   strokeWidth={1.5}
                   style={{ cursor: "grab" }}
                   onPointerDown={(e) => handleLowerPointerDown(e, "window-body")}
                 />
 
+                {/* Triple center grip lines [ ||| ] */}
+                <line x1={midX - 3.5} y1={9} x2={midX - 3.5} y2={23} stroke="var(--accent)" strokeWidth={1.4} opacity={0.7} />
+                <line x1={midX} y1={9} x2={midX} y2={23} stroke="var(--accent)" strokeWidth={1.4} opacity={0.7} />
+                <line x1={midX + 3.5} y1={9} x2={midX + 3.5} y2={23} stroke="var(--accent)" strokeWidth={1.4} opacity={0.7} />
+
                 {/* Left Grip Handle */}
                 <rect
-                  x={leftX - 4}
-                  y={6}
-                  width={8}
-                  height={28}
-                  rx={4}
+                  x={leftX - 3}
+                  y={4}
+                  width={6}
+                  height={24}
+                  rx={3}
                   fill="var(--accent)"
                   stroke="var(--panel)"
-                  strokeWidth={1.5}
+                  strokeWidth={1.2}
                   style={{ cursor: "ew-resize" }}
                   onPointerDown={(e) => handleLowerPointerDown(e, "left-handle")}
                 />
 
                 {/* Right Grip Handle */}
                 <rect
-                  x={rightX - 4}
-                  y={6}
-                  width={8}
-                  height={28}
-                  rx={4}
+                  x={rightX - 3}
+                  y={4}
+                  width={6}
+                  height={24}
+                  rx={3}
                   fill="var(--accent)"
                   stroke="var(--panel)"
-                  strokeWidth={1.5}
+                  strokeWidth={1.2}
                   style={{ cursor: "ew-resize" }}
                   onPointerDown={(e) => handleLowerPointerDown(e, "right-handle")}
                 />
@@ -533,6 +478,69 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
             );
           })()}
         </svg>
+      </div>
+
+      {/* 3. Bottom Scrubber Info & Zoom Controls */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "4px" }}>
+        <span style={{ fontSize: "11px", color: "var(--mute)" }}>
+          Drag to explore. Each block represents a turn.
+        </span>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+          <button
+            type="button"
+            onClick={handleZoomOut}
+            title="Zoom Out"
+            style={{
+              background: "var(--side)",
+              border: "1px solid var(--line)",
+              color: "var(--ink)",
+              borderRadius: "5px",
+              padding: "2px 6px",
+              display: "inline-flex",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+          >
+            <Minus size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={handleZoomIn}
+            title="Zoom In"
+            style={{
+              background: "var(--side)",
+              border: "1px solid var(--line)",
+              color: "var(--ink)",
+              borderRadius: "5px",
+              padding: "2px 6px",
+              display: "inline-flex",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+          >
+            <Plus size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={handleFit}
+            title="Fit All History"
+            style={{
+              background: "var(--side)",
+              border: "1px solid var(--line)",
+              color: "var(--ink)",
+              borderRadius: "5px",
+              padding: "2px 8px",
+              fontSize: "11px",
+              fontWeight: 600,
+              display: "inline-flex",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+          >
+            Fit
+          </button>
+        </div>
       </div>
     </div>
   );

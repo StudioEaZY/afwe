@@ -196,10 +196,10 @@ export const OverviewPage: React.FC = () => {
           {activeLens === "radial" && (
             <>
               {breadcrumbs.length === 0 ? (
-                <b onClick={() => setScope(null)}>Atlas</b>
+                <b onClick={() => setScope(null)}>Overview</b>
               ) : (
                 <>
-                  <a onClick={() => setScope(null)}>Atlas</a>
+                  <a onClick={() => setScope(null)}>Overview</a>
                   {breadcrumbs.map((crumb, idx) => (
                     <React.Fragment key={crumb.id}>
                       {" › "}
@@ -258,7 +258,7 @@ export const OverviewPage: React.FC = () => {
               className={activeLens === "radial" ? "on" : ""}
               onClick={() => setActiveLens("radial")}
             >
-              Atlas (Radial)
+              Radial
             </button>
             <button
               type="button"
@@ -340,12 +340,13 @@ export const OverviewPage: React.FC = () => {
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span
                 className="ctl"
-                title="How many nested rings to show inside the current map"
+                title="Controls how many concentric folder tiers are projected simultaneously (1 to 4)"
               >
                 Depth in this map
                 <button
                   type="button"
                   onClick={() => setRadialDepth((d) => Math.max(1, d - 1))}
+                  title="Decrease depth"
                 >
                   −
                 </button>
@@ -353,19 +354,11 @@ export const OverviewPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setRadialDepth((d) => Math.min(4, d + 1))}
+                  title="Increase depth"
                 >
                   +
                 </button>
               </span>
-
-              <button
-                type="button"
-                className={`ctl toggle ${growth ? "on" : ""}`}
-                onClick={() => setGrowth((g) => !g)}
-                title="Scale outer rings with the timeline slider"
-              >
-                Growth: <b>{growth ? "On" : "Off"}</b>
-              </button>
 
               <button
                 type="button"
@@ -520,11 +513,11 @@ export const OverviewPage: React.FC = () => {
 
         {/* Bottom Legend & Rewind Timeline Scrubber (.foot) */}
         <div className="foot">
-          <span className="leg">
+          <span className="leg" title="Files mapped to declared blueprint domains with verified boundaries and rules">
             <i className="sw" style={{ background: "var(--mapped)" }} />
             Mapped
           </span>
-          <span className="leg">
+          <span className="leg" title="Inferred module boundaries automatically detected from folder structures and imports">
             <i
               className="sw"
               style={{
@@ -535,7 +528,7 @@ export const OverviewPage: React.FC = () => {
             />
             Inferred
           </span>
-          <span className="leg">
+          <span className="leg" title="Uncharted area. Hatched slices have not been charted into a blueprint domain yet.">
             <i
               className="sw"
               style={{
@@ -543,17 +536,17 @@ export const OverviewPage: React.FC = () => {
                   "repeating-linear-gradient(45deg,var(--unm) 0 3px,var(--hatch) 3px 5px)",
               }}
             />
-            Unmapped
+            Unmapped (?)
           </span>
-          <span className="leg">
+          <span className="leg" title="Legacy subsystems maintained with quarantine boundaries">
             <i className="sw" style={{ background: "var(--legacy)" }} />
             Legacy
           </span>
-          <span className="leg">
+          <span className="leg" title="Lock icon: Enforced invariant rule strictly checked before commit">
             <Lock size={12} style={{ color: "var(--ink)" }} />
             Pinned check
           </span>
-          <span className="leg">
+          <span className="leg" title="Amber ! badge: Pending proposal awaiting review or confirmation">
             <span
               style={{
                 display: "inline-grid",
@@ -571,7 +564,7 @@ export const OverviewPage: React.FC = () => {
             </span>
             Pending proposal
           </span>
-          <span className="leg">
+          <span className="leg" title="Red triangle: Boundary violation detected between architectural subsystems">
             <i
               style={{
                 width: 16,

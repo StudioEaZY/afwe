@@ -1,7 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
-  Grid,
-  Box,
   Lock,
   AlertTriangle,
   Plus,
@@ -529,18 +527,23 @@ export const RadialMap: React.FC<Props> = ({
                         </g>
                       ) : (
                         (() => {
-                          const arcLen = span * midR;
-                          if (arcLen < 24 || r1 - r0 < 16) return null;
+                          // Google Maps style Level-of-Detail (LOD)
+                          // Suppress Ring 3 & 4 labels when zoomed out to prevent text collision
+                          if (i >= 2 && zoom.k < 1.05) return null;
+                          const arcLen = span * midR * zoom.k;
+                          if (arcLen < 28 || r1 - r0 < 14) return null;
                           const maxC = Math.max(3, Math.floor((r1 - r0 - 6) / 5.2));
                           const txt =
                             n.label.length > maxC ? `${n.label.slice(0, maxC - 1)}…` : n.label;
+                          const baseSize = i === 0 ? 12 : i === 1 ? 10.5 : 9.5;
+                          const scaledFont = Math.max(8.5, Math.min(13, baseSize / Math.pow(zoom.k, 0.35)));
                           return (
                             <text
                               x={lx.toFixed(1)}
                               y={ly.toFixed(1)}
                               textAnchor="middle"
                               dominantBaseline="central"
-                              fontSize={i === 0 ? "11.5" : i === 1 ? "10" : "9"}
+                              fontSize={scaledFont.toFixed(1)}
                               fontWeight={i === 0 ? 600 : 500}
                               fill="var(--ink)"
                               style={{ pointerEvents: "none" }}
@@ -645,10 +648,10 @@ export const RadialMap: React.FC<Props> = ({
               fill="var(--ink)"
               className="serif"
             >
-              {isRootFocus ? root.label : focusNode.label}
+              {isRootFocus ? "Codebase" : focusNode.label}
             </text>
             <text y={isRootFocus ? 12 : 8} textAnchor="middle" fontSize="11" fill="var(--mute)">
-              {isRootFocus ? `${mappedPct}% mapped` : `${focusNode.fileCount} files`}
+              {isRootFocus ? `${mappedPct}% mapped · ${totalFiles}f` : `${focusNode.fileCount} files`}
             </text>
             <text
               y={26}
@@ -657,52 +660,11 @@ export const RadialMap: React.FC<Props> = ({
               fill={isRootFocus ? "var(--mute)" : "var(--accent)"}
               fontWeight={isRootFocus ? undefined : "600"}
             >
-              {isRootFocus ? `${totalFiles} files` : "‹ Up one level"}
+              {isRootFocus ? "Click slice to inspect" : "‹ Up one level"}
             </text>
           </g>
         </g>
       </svg>
-
-      {/* 4 Corner Instructional Callouts (100% Lucide Icons) */}
-      <div className="call c-tl">
-        <div className="ic">
-          <Grid size={16} />
-        </div>
-        <div>
-          <b>Unmapped area (?)</b>
-          Hatched slices haven&apos;t been charted yet.
-        </div>
-      </div>
-
-      <div className="call c-tr">
-        <div className="ic">
-          <Box size={16} />
-        </div>
-        <div>
-          <b>Click to inspect · Open map</b>
-          Select any slice and click <b>Open map</b> (or double-click).
-        </div>
-      </div>
-
-      <div className="call c-bl">
-        <div className="ic">
-          <Lock size={16} />
-        </div>
-        <div>
-          <b>Pinned checks &amp; proposals</b>
-          Lock = enforced rule. Amber ! = pending proposal.
-        </div>
-      </div>
-
-      <div className="call c-br">
-        <div className="ic" style={{ color: "var(--red)" }}>
-          <AlertTriangle size={16} />
-        </div>
-        <div>
-          <b>Red triangle = Violation</b>
-          Switch to Constellation or Topology to see the offending link.
-        </div>
-      </div>
 
       {/* Zoom Controls (Lucide Icons) */}
       <div className="zctl">

@@ -1,5 +1,5 @@
 // apps/studio/src/components/Sidebar.tsx
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Compass,
   History,
@@ -8,18 +8,34 @@ import {
   Scale,
   Settings,
   CircleDot,
+  Bookmark,
+  X,
 } from "lucide-react";
 import { useStore, View } from "../store";
-import { buildHierarchyTree, HierarchyNode } from "../lib/hierarchy";
+import { buildHierarchyTree, HierarchyNode, findNodeById } from "../lib/hierarchy";
+import { getStudioPrefs, removeBookmark, StudioBookmark } from "../lib/prefs";
 
 export const Sidebar: React.FC = () => {
   const {
     graph,
     view,
     setView,
+    setActiveLens,
+    selectEntity,
+    setScope,
+    openConstellationFor,
   } = useStore();
 
-  const projectName = graph?.project?.name || "Acme App";
+  const [bookmarks, setBookmarks] = useState<StudioBookmark[]>(() => getStudioPrefs().bookmarks);
+
+  useEffect(() => {
+    const handleSync = () => {
+      setBookmarks(getStudioPrefs().bookmarks);
+    };
+    window.addEventListener("afwe:bookmarks-changed", handleSync);
+    return () => window.removeEventListener("afwe:bookmarks-changed", handleSync);
+  }, []);
+
   const violationsCount = (graph?.code_edges || []).filter((e: any) => e.violation).length;
   const questionsCount = (graph?.calibration?.questions || []).filter((q: any) => q.status === "open").length;
   const pinsCount = (graph?.pins || []).filter((p: any) => p.status === "active").length;
@@ -27,7 +43,7 @@ export const Sidebar: React.FC = () => {
 
   const root = useMemo(() => buildHierarchyTree(graph), [graph]);
 
-  // Compute accurate leaf file coverage matching AFWE Codebase Atlas
+  // Compute accurate leaf file coverage
   const { totalFiles, mappedPct, inferredPct, unmappedPct, domainsCount, subnodesCount } =
     useMemo(() => {
       let tot = 0;
@@ -78,7 +94,7 @@ export const Sidebar: React.FC = () => {
     {
       key: "overview",
       label: "Codebase Overview",
-      sub: "Atlas · Constellation · Topology",
+      sub: "Radial · Constellation · Topology",
       icon: <Compass size={15} />,
     },
     {
@@ -116,6 +132,45 @@ export const Sidebar: React.FC = () => {
       icon: <Settings size={15} />,
     },
   ];
+
+  const handleSelectBookmark = (b: StudioBookmark) => {
+    if (view !== "overview") {
+      setView("overview");
+    }
+    const node = findNodeById(root, b.id);
+    if (node) {
+      selectEntity({
+        id: node.id,
+        key: node.key,
+        kind: node.kind,
+        label: node.label,
+        path: node.path,
+        status: node.hasViolation ? "violation" : "mapped",
+        state: node.state,
+        fileCount: node.fileCount,
+        node,
+      });
+    }
+    if (b.lens) {
+      setActiveLens(b.lens);
+      if (b.lens === "radial") {
+        if (node?.children && node.children.length > 0) {
+          setScope(node.id);
+        } else if (node?.parentId && node.parentId !== "root") {
+          setScope(node.parentId);
+        }
+      } else if (b.lens === "constellation") {
+        openConstellationFor(b.id);
+      }
+    }
+  };
+
+  const handleRemoveBookmark = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    removeBookmark(id);
+    setBookmarks(getStudioPrefs().bookmarks);
+    window.dispatchEvent(new Event("afwe:bookmarks-changed"));
+  };
 
   return (
     <aside
@@ -186,37 +241,32 @@ export const Sidebar: React.FC = () => {
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "8px 10px",
-                    borderRadius: "12px",
+                    borderRadius: "8px",
                     border: "none",
                     background: isActive ? "var(--panel)" : "transparent",
-                    boxShadow: isActive ? "0 6px 16px -10px var(--shadow)" : "none",
-                    color: "var(--ink)",
+                    color: isActive ? "var(--ink)" : "var(--mute)",
+                    boxShadow: isActive ? "0 1px 4px var(--shadow)" : "none",
                     cursor: "pointer",
                     textAlign: "left",
-                    transition: "background 0.15s ease",
+                    transition: "all 0.15s ease",
                     width: "100%",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span
-                      style={{
-                        color: isActive ? "var(--accent)" : "var(--mute)",
-                        display: "inline-flex",
-                      }}
-                    >
+                    <span style={{ color: isActive ? "var(--accent)" : "var(--mute)" }}>
                       {item.icon}
                     </span>
                     <div>
-                      <div style={{ fontWeight: isActive ? 600 : 500, fontSize: "13px" }}>
-                        {item.label}
-                      </div>
                       <div
                         style={{
-                          fontSize: "10.5px",
-                          color: "var(--mute)",
-                          marginTop: "1px",
+                          fontSize: "13px",
+                          fontWeight: isActive ? 600 : 500,
+                          color: "var(--ink)",
                         }}
                       >
+                        {item.label}
+                      </div>
+                      <div style={{ fontSize: "10.5px", color: "var(--mute)" }}>
                         {item.sub}
                       </div>
                     </div>
@@ -224,8 +274,8 @@ export const Sidebar: React.FC = () => {
                   {item.badge !== undefined && (
                     <span
                       style={{
-                        background: item.badgeColor || "var(--ink)",
-                        color: "#FFFFFF",
+                        background: item.badgeColor || "var(--accent)",
+                        color: "#fff",
                         fontSize: "10px",
                         fontWeight: 700,
                         padding: "1px 6px",
@@ -240,6 +290,86 @@ export const Sidebar: React.FC = () => {
             );
           })}
         </nav>
+
+        {/* Dedicated Bookmarks Section */}
+        <div style={{ padding: "8px 12px 12px", borderTop: "1px solid var(--line)" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              fontSize: "11px",
+              fontWeight: 700,
+              color: "var(--mute)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "6px",
+              padding: "0 4px",
+            }}
+          >
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+              <Bookmark size={11} />
+              Bookmarks
+            </span>
+            <span style={{ fontSize: "10px", opacity: 0.7 }}>{bookmarks.length}</span>
+          </div>
+
+          {bookmarks.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+              {bookmarks.map((b) => (
+                <div
+                  key={b.id}
+                  onClick={() => handleSelectBookmark(b)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "5px 8px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    color: "var(--ink)",
+                    background: "transparent",
+                    transition: "background 0.1s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--panel)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "140px" }}>
+                    <b>{b.label}</b>
+                  </span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ fontSize: "9.5px", color: "var(--mute)", textTransform: "uppercase" }}>
+                      {b.lens?.[0] || "r"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => handleRemoveBookmark(e, b.id)}
+                      title="Remove bookmark"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        cursor: "pointer",
+                        color: "var(--mute)",
+                        display: "inline-flex",
+                        opacity: 0.6,
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                      onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.6")}
+                    >
+                      <X size={11} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ fontSize: "11px", color: "var(--mute)", padding: "4px 6px", fontStyle: "italic" }}>
+              Star nodes in inspector to pin bookmarks here.
+            </div>
+          )}
+        </div>
 
         {/* Tactile Conic Coverage Ring & Coverage KPI breakdown */}
         <div style={{ padding: "14px 16px", borderTop: "1px solid var(--line)" }}>
@@ -322,18 +452,17 @@ export const Sidebar: React.FC = () => {
         style={{
           padding: "12px 16px",
           borderTop: "1px solid var(--line)",
-          background: "var(--side)",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          fontSize: "11.5px",
+          color: "var(--mute)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <CircleDot size={11} style={{ color: "var(--accent)" }} />
-          <span style={{ fontWeight: 600, fontSize: "12px", color: "var(--ink)" }}>
-            {projectName}
-          </span>
-        </div>
-        <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "2px" }}>
-          {totalFiles.toLocaleString()} files · main
-        </div>
+        <CircleDot size={12} style={{ color: "var(--accent)" }} />
+        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          Engine active
+        </span>
       </div>
     </aside>
   );

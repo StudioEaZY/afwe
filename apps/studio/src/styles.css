@@ -1369,6 +1369,7 @@ pre.md.body { font-family: var(--sans); font-size: 13px; }
   font-size: 12.5px;
 }
 .sdrop {
+  display: none;
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
@@ -1381,6 +1382,9 @@ pre.md.body { font-family: var(--sans); font-size: 13px; }
   max-height: 290px;
   overflow: auto;
   padding: 6px;
+}
+.sdrop.on {
+  display: block;
 }
 .sitem {
   display: flex;

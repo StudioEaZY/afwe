@@ -80,6 +80,46 @@ export const ConstellationMap: React.FC<Props> = ({
   const [hoveredEdgeIdx, setHoveredEdgeIdx] = useState<number | null>(null);
   const [tip, setTip] = useState<{ x: number; y: number; html: React.ReactNode } | null>(null);
 
+  // Drag-and-drop node offsets state
+  const [customOffsets, setCustomOffsets] = useState<Record<string, { x: number; y: number }>>({});
+  const [draggingKey, setDraggingKey] = useState<string | null>(null);
+  const dragNodeStartRef = useRef<{ clientX: number; clientY: number; initX: number; initY: number } | null>(null);
+
+  const handleNodePointerDown = (ev: React.PointerEvent, key: string) => {
+    ev.stopPropagation();
+    setDraggingKey(key);
+    dragNodeStartRef.current = {
+      clientX: ev.clientX,
+      clientY: ev.clientY,
+      initX: customOffsets[key]?.x || 0,
+      initY: customOffsets[key]?.y || 0,
+    };
+    (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
+  };
+
+  const handleNodePointerMove = (ev: React.PointerEvent) => {
+    if (!draggingKey || !dragNodeStartRef.current) return;
+    const dx = (ev.clientX - dragNodeStartRef.current.clientX) / zoom.k;
+    const dy = (ev.clientY - dragNodeStartRef.current.clientY) / zoom.k;
+    setCustomOffsets((prev) => ({
+      ...prev,
+      [draggingKey]: {
+        x: dragNodeStartRef.current!.initX + dx,
+        y: dragNodeStartRef.current!.initY + dy,
+      },
+    }));
+  };
+
+  const handleNodePointerUp = (ev: React.PointerEvent) => {
+    if (draggingKey) {
+      setDraggingKey(null);
+      dragNodeStartRef.current = null;
+      try {
+        (ev.currentTarget as HTMLElement).releasePointerCapture(ev.pointerId);
+      } catch {}
+    }
+  };
+
   // Progressive disclosure state per effective anchor
   const [expAnchor, setExpAnchor] = useState<string>("");
   const [depHops, setDepHops] = useState<number>(1);
@@ -374,20 +414,29 @@ export const ConstellationMap: React.FC<Props> = ({
 
   const { pos, depFiltered, conFiltered, hasHop2, R1, R2 } = layout;
 
-  // Compute visible edges (both endpoints in pos, and relevant to anchor/hop1->hop2/violation)
+  const livePos = useMemo(() => {
+    const res: typeof pos = {};
+    for (const [k, p] of Object.entries(pos)) {
+      const off = customOffsets[k] || { x: 0, y: 0 };
+      res[k] = { ...p, x: p.x + off.x, y: p.y + off.y };
+    }
+    return res;
+  }, [pos, customOffsets]);
+
+  // Compute visible edges (both endpoints in livePos, and relevant to anchor/hop1->hop2/violation)
   const visibleEdges = useMemo(() => {
     const two = scope === "two";
     return activeEdges.filter((e) => {
-      if (!pos[e.a] || !pos[e.b]) return false;
+      if (!livePos[e.a] || !livePos[e.b]) return false;
       const involvesAnchor = e.a === effKey || e.b === effKey;
       const hopBridge =
-        (pos[e.a].hop === 1 && pos[e.b].hop > 1) || (pos[e.b].hop === 1 && pos[e.a].hop > 1);
+        (livePos[e.a].hop === 1 && livePos[e.b].hop > 1) || (livePos[e.b].hop === 1 && livePos[e.a].hop > 1);
       if (!involvesAnchor && !hopBridge && !e.bad) return false;
       return two
         ? edgeActiveAt(e, timelineT) || edgeActiveAt(e, compareT)
         : edgeActiveAt(e, timelineT);
     });
-  }, [activeEdges, pos, effKey, scope, timelineT, compareT]);
+  }, [activeEdges, livePos, effKey, scope, timelineT, compareT]);
 
   // Check if filter mode matches a node
   const passFilter = (n: HierarchyNode): boolean => {
@@ -687,8 +736,8 @@ export const ConstellationMap: React.FC<Props> = ({
           {/* Directed Edges */}
           <g>
             {visibleEdges.map((e, idx) => {
-              const p1 = pos[e.a];
-              const p2 = pos[e.b];
+              const p1 = livePos[e.a];
+              const p2 = livePos[e.b];
               if (!p1 || !p2) return null;
 
               const two = scope === "two";
@@ -803,7 +852,7 @@ export const ConstellationMap: React.FC<Props> = ({
           </g>
 
           {/* Perimeter Nodes */}
-          {Object.entries(pos).map(([k, p]) => {
+          {Object.entries(livePos).map(([k, p]) => {
             if (k === effKey) return null;
             const n = p.node;
             const st = n.state;
@@ -842,7 +891,13 @@ export const ConstellationMap: React.FC<Props> = ({
                 key={k}
                 className={`ex hop-${p.hop} ${p.side === "bidi" ? "bidi" : ""}`}
                 transform={`translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`}
-                style={dimmed ? { opacity: 0.22 } : undefined}
+                style={{
+                  opacity: dimmed ? 0.22 : 1,
+                  cursor: draggingKey === k ? "grabbing" : "grab",
+                }}
+                onPointerDown={(ev) => handleNodePointerDown(ev, k)}
+                onPointerMove={handleNodePointerMove}
+                onPointerUp={handleNodePointerUp}
                 onMouseMove={(ev) => {
                   setHoveredKey(k);
                   const roleLabel =
@@ -1176,47 +1231,6 @@ export const ConstellationMap: React.FC<Props> = ({
         </g>
       </svg>
 
-      {/* 4 Corner Instructional Callouts (100% Lucide Icons) */}
-      <div className="call c-tl">
-        <div className="ic">
-          <ArrowLeft size={16} />
-        </div>
-        <div>
-          <b>Left = Dependencies</b>
-          What the centered anchor imports or relies on.
-        </div>
-      </div>
-
-      <div className="call c-tr">
-        <div className="ic">
-          <ArrowRight size={16} />
-        </div>
-        <div>
-          <b>Right = Consumers</b>
-          Modules that import or depend on the anchor.
-        </div>
-      </div>
-
-      <div className="call c-bl">
-        <div className="ic">
-          <ArrowLeftRight size={16} />
-        </div>
-        <div>
-          <b>Bottom = Mutual</b>
-          Two-way dependencies highlighted in amber.
-        </div>
-      </div>
-
-      <div className="call c-br">
-        <div className="ic" style={{ color: "var(--red)" }}>
-          <AlertTriangle size={16} />
-        </div>
-        <div>
-          <b>Dashed Red = Violation</b>
-          Click any line or node to inspect rule details.
-        </div>
-      </div>
-
       {/* Zoom Controls (Lucide Icons) */}
       <div className="zctl">
         <button
@@ -1235,8 +1249,11 @@ export const ConstellationMap: React.FC<Props> = ({
         </button>
         <button
           type="button"
-          title="Reset view"
-          onClick={() => setZoom({ k: 1, x: 0, y: 0 })}
+          title="Reset view & layout"
+          onClick={() => {
+            setZoom({ k: 1, x: 0, y: 0 });
+            setCustomOffsets({});
+          }}
         >
           <RotateCcw size={13} />
         </button>

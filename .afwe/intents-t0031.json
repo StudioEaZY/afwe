@@ -1,0 +1,23 @@
+{
+  "intents": [
+    {
+      "id": "overhaul-timeline-studio-zoom-and-bookmarks",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Revamp Timeline & Turns, add Google Maps zoom, drag-and-drop, clean canvas callouts, and pinned bookmarks",
+      "rationale": "Fix React invariant 300 in NodeInspector, fix sdrop display:none in styles.css, implement Google Maps semantic zoom across maps, enable node drag-and-drop in Constellation and Topology, remove 4 intrusive canvas callouts, remove redundant Atlas/Acme branding, restore Bookmarking in Sidebar and NodeInspector, add invariant pin in .afwe/pins.yaml, and overhaul Timeline & Turns workstation to match reference design."
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "status": "proposed"
+    },
+    {
+      "id": "a2",
+      "text": "Studio UI wires StudioPrefs bookmarks to Sidebar navigation and NodeInspector",
+      "status": "proposed"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+id: overhaul-timeline-studio-zoom-and-bookmarks
+title: Revamp Timeline & Turns, add Google Maps zoom, drag-and-drop, clean canvas callouts, and pinned bookmarks
+statement: Revamp Timeline & Turns, add Google Maps zoom, drag-and-drop, clean canvas callouts, and pinned bookmarks
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0031
+history:
+- turn: t0031
+  ts: 2026-10-27T06:46:14Z
+  statement: Revamp Timeline & Turns, add Google Maps zoom, drag-and-drop, clean canvas callouts, and pinned bookmarks
+  rationale: Fix React invariant 300 in NodeInspector, fix sdrop display:none in styles.css, implement Google Maps semantic zoom across maps, enable node drag-and-drop in Constellation and Topology, remove 4 intrusive canvas callouts, remove redundant Atlas/Acme branding, restore Bookmarking in Sidebar and NodeInspector, add invariant pin in .afwe/pins.yaml, and overhaul Timeline & Turns workstation to match reference design.
+created: 2026-10-27T06:46:14Z
+updated: 2026-10-27T06:46:14Z
+task: task-t0031
