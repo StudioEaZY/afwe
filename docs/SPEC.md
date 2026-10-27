@@ -517,4 +517,27 @@ Inferred rules with confidence between 0.85 and 0.90 are designated as advisory 
 ### 14.4 Explore Mode
 When `policy.explore_mode: true` is active (enabled via `afwe unlock --reason "..."`), blocking checks and constraints are downgraded to warnings, allowing rapid exploratory prototyping. Running `afwe lock` re-arms deterministic gating.
 
+---
+
+## 15. Cross-Boundary Capabilities & Decision-to-Code Ratchets
+
+### 15.1 Philosophy: Rust for Project Intent
+Rust made memory safety violations impossible to make quietly; AFWE makes regressions of architectural intent impossible to make quietly. You can still break things on purpose, but you can never break them by accident.
+
+### 15.2 Decision-to-Code Link Ratchet (Prong 1)
+- **`ORPHANED_DECISION`**: Triggered when a node, file, or symbol anchored to an active architectural memory entry (`.afwe/memory/**/*.md`) is removed without updating `applies_to` or declaring the decision superseded.
+- **`ORPHANED_PIN`**: Triggered when a pinned architectural invariant loses its underlying code.
+- **`DOCS_DRIFT`**: Triggered when modified docs or deleted code leave local markdown file links broken.
+
+### 15.3 Minimal Inbound-Reference Ratchet (Prong 2)
+- **`SEVERED_CAPABILITY`**: Intercepts cross-module caller deletions workspace-wide. If an agent removes all call sites of an exported symbol in external files, the callee drops from $>0$ to $0$ inbound references and is blocked—even if the callee file was untouched.
+- **`DEAD_ON_ARRIVAL`**: Blocks newly introduced public symbols born with 0 callers in touched files, unless tested in `tests/` or declared in `turn assume`.
+
+### 15.4 Over-Approximation Policy & Trade-offs
+To prevent false alarms on dynamic method dispatch, macros, or string lookups, the identifier index over-approximates references. Any identifier token occurrence in code counts as a reference.
+- **The Guarantee**: AFWE will never falsely block live code.
+- **The Trade-off**: Generic names (`new`, `len`, `init`, `run`, `default`, `get`, `set`) are intentionally treated as always referenced and unflaggable.
+- **Language-Adaptive**: Weakly typed languages (Python/JS) leverage identifier token matching across files; typed languages (Rust/Go/TS) leverage module-scoped import specifiers where available.
+- **Baseline Grandfathering**: Pre-existing zero-reference symbols in `baseline.yaml` are grandfathered to prevent alert fatigue on existing codebases.
+
 

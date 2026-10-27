@@ -127,9 +127,28 @@ If an assumption violates a locked Pin or has an invalid schema, AFWE returns **
 
 ### Step 3: `afwe turn commit`
 After writing code, the harness calls `turn commit`.
-AFWE's gate runs parser checks, verifies claims, and inspects imports.
-- If checks fail: **REDO** — nothing is committed to git.
-- If checks pass: The change is committed with trailer `AFWE-Turn: tXXXX`.
+AFWE's gate executes the deterministic commit engine:
+- **Parser & Constraint Checks**: Verifies AST boundaries (`forbid_import`, `require_pattern`).
+- **Assumption Verification**: Evaluates all claims declared in `turn assume`.
+- **Intra-file Dropped Capabilities (`DROPPED_CAPABILITY`)**: Detects exported functions/types dropped from touched files.
+- **Cross-module Inbound Reference Ratchet (`SEVERED_CAPABILITY`)**: Scans inbound caller deltas workspace-wide. If an agent removes a call in one file leaving a function dead with 0 callers in an untouched file, the gate blocks with `SEVERED_CAPABILITY`.
+- **Dead-on-Arrival Detection (`DEAD_ON_ARRIVAL`)**: Flags new exported functions born with 0 callers unless tested in `tests/` or declared in `turn assume`.
+- **Decision-to-Code Link Ratchet (`ORPHANED_DECISION` / `ORPHANED_PIN`)**: Blocks if an architectural decision or pin loses its anchored node, file, or symbol without an explicit update or supersede declaration.
+- **Documentation Drift (`DOCS_DRIFT`)**: Blocks if doc files contain broken links to missing project code.
+
+- If any check fails: **REDO** — nothing is committed to git.
+- If all checks pass: The change is committed with trailer `AFWE-Turn: tXXXX`.
+
+> [!NOTE]
+> **"Rust for Project Intent"**:
+> Rust made memory mistakes impossible to make quietly, and AFWE makes regressions of intent impossible to make quietly. *"Quietly"* is the word that keeps the claim honest: you can still break things on purpose, but you can never break them by accident.
+
+> [!IMPORTANT]
+> **Over-Approximation Policy (Safe Error Direction)**:
+> To prevent false alarms on dynamic dispatch, macros, or string lookups, the identifier index over-approximates references. Any identifier token occurrence in code counts as a reference.
+> - **The Guarantee**: AFWE will never falsely block live code.
+> - **The Trade-off**: Generic names (`new`, `len`, `init`, `run`, `default`, `get`, `set`) are intentionally treated as always referenced and unflaggable.
+> - **Language-Adaptive**: Weakly typed languages (Python/JS) leverage identifier token matching across files; typed languages (Rust/Go/TS) leverage module-scoped import specifiers where available.
 
 ---
 

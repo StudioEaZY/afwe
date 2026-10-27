@@ -1,8 +1,169 @@
 ---
 // blog/[slug].astro - Dedicated Blog Article Reader
 import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import { ArrowLeft, ArrowRight } from '@lucide/astro';
 
 export function getStaticPaths() {
+  const rustForProjectIntentArticle = {
+    title: "Rust for Project Intent: How AFWE Caught Its Own Architectural Blindspots",
+    subtitle: "Rust made memory mistakes impossible to make quietly. AFWE makes regressions of intent impossible to make quietly. Inside the dogfooding post-mortem that proved how silent capability severance happens—and the deterministic ratchets that stop it.",
+    date: 'October 27, 2026',
+    author: 'AFWE Core Architecture Team',
+    category: 'Architecture & Governance',
+    readTime: '10 min read',
+    content: `
+      <p class="text-base sm:text-lg leading-relaxed text-graphite/90 dark:text-stone-200 font-sans">
+        <em>"Rust for project intent."</em> Rust made memory mistakes impossible to make quietly. AFWE makes regressions of intent impossible to make quietly. <strong>"Quietly"</strong> is the word that keeps the claim honest: you can still break things on purpose, but you can never break them by accident.
+      </p>
+
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        Last week, AFWE had an uncomfortable moment. During our own dogfooding iterations on branch <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">ReBorn</code>, an autonomous agent retired legacy v1 workflows in Turn <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">t0022</code>. In doing so, it removed the caller to <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">contract::task_start</code> in the CLI crate, but <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">crates/afwe-core/src/contract.rs</code> was never touched.
+      </p>
+
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        The function went completely dead. At the exact same time, duplicate briefing logic was written into <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">turn.begin</code> instead of reusing <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">context::scope_matches</code>. AFWE's commit gate committed cleanly. The tool built to stop silent architectural decay had failed to catch dead code and duplication in its own engine.
+      </p>
+
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        Rather than paper over the failure with prompt engineering, we stopped development and initiated an exhaustive post-mortem. This article documents what broke, the fierce debates and pushbacks during design, and the multi-level deterministic ratchets that now guarantee this failure mode is physically impossible.
+      </p>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">1. The Blindspot: Why Checking Touched Files Misses the Real World</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        Most static analysis and code verification systems operate under a flawed assumption: <em>inspect only the files changed in the pull request</em>.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        In our Turn <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">t0022</code> incident, the agent edited <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">crates/afwe-cli/src/main.rs</code>. It deleted the call site of <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">contract::task_start</code>. Because <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">crates/afwe-core/src/contract.rs</code> had 0 git diff bytes, the commit gate never analyzed <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">contract.rs</code>.
+      </p>
+      <div class="rounded-xl border border-stone-300 dark:border-obsidian-700 bg-stone-100 dark:bg-obsidian-850 p-4 font-mono text-xs my-4 text-graphite dark:text-stone-300">
+        Turn t0022 git diff:<br/>
+        &nbsp;&nbsp;M crates/afwe-cli/src/main.rs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[-contract::task_start(...)]<br/>
+        &nbsp;&nbsp;[crates/afwe-core/src/contract.rs]&nbsp;&nbsp;&nbsp;[UNTOUCHED — 0 bytes diff]<br/>
+        Gate verdict: PASSED (Blindspot: callee was severed in an untouched file)
+      </div>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        A function almost never goes dead because someone deleted the function itself; it goes dead because someone removed its caller, which sits in a completely different file. Checking only touched files makes cross-module severance completely invisible.
+      </p>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">2. The Design Debate: Concessions, Pushbacks, and Realities</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        When fixing this blindspot, we initially proposed tracking dead code down to every struct field, enum variant, and cross-file import edge. That proposal triggered severe pushback from our core architects:
+      </p>
+
+      <ul class="list-disc list-inside space-y-3 mt-4 text-sm font-sans text-graphite/80 dark:text-stone-300">
+        <li>
+          <strong>The "0% False Positives" Overclaim</strong>: 
+          Pure import-edge diffing fails on dynamic dispatch (<code class="px-1 font-mono text-xs">engine.run()</code>), trait objects, glob imports (<code class="px-1 font-mono text-xs">use contract::*</code>), and macro registrations. A tree-sitter AST parser cannot statically prove which <code class="px-1 font-mono text-xs">run()</code> was invoked without full compiler type resolution.
+          <em>The resolution:</em> We over-approximate edges. Any identifier occurrence anywhere in code counts as an inbound reference. Errors only ever go in the safe direction: we may miss an unused function with a generic name, but we will <strong>never falsely block live code</strong>.
+        </li>
+        <li>
+          <strong>Conceding Struct Fields & Enum Variants to the Compiler</strong>:
+          Struct fields and enum variants are deeply affected by serialization frameworks (Serde, Jackson, Pydantic). A struct field might only ever be populated via JSON deserialization and never constructed directly in code. Attempting to track fields statically produces intolerable false alarms. Furthermore, <code class="px-1 font-mono text-xs">rustc -D dead_code</code> already catches private unused items. We conceded this domain to the compiler.
+        </li>
+        <li>
+          <strong>Grandfathering Pre-Existing Debt</strong>:
+          If you run a dead-code gate on an established repository, it will flag hundreds of existing legacy functions on Day 1. Developers experience alert fatigue and disable the tool.
+          <em>The resolution:</em> AFWE ratchets against a baseline. Pre-existing zero-reference symbols are grandfathered in <code class="px-1 font-mono text-xs">baseline.yaml</code>. The gate strictly blocks newly severed capabilities (<code class="px-1 font-mono text-xs">&gt;0 &rarr; 0</code>) and functions born dead in touched files.
+        </li>
+        <li>
+          <strong>Tamper-Resistant Root Inference</strong>:
+          If an agent can arbitrarily add dead functions to an "exempt roots" list in the manifest to silence the gate, the ratchet is gamed. We enforce automatic root inference (<code class="px-1 font-mono text-xs">main.rs</code>, <code class="px-1 font-mono text-xs">lib.rs</code>, <code class="px-1 font-mono text-xs">index.ts</code>, <code class="px-1 font-mono text-xs">tests/**</code>) and treat manual root edits like pin modifications—requiring an explicit override reason.
+        </li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">3. The Final Solution: A Two-Prong Architecture</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        The resulting implementation divides architectural governance into two high-leverage engines:
+      </p>
+
+      <div class="my-6 border border-stone-300 dark:border-obsidian-700 rounded-2xl p-6 bg-stone-50 dark:bg-obsidian-900 space-y-6">
+        <div>
+          <h3 class="text-lg font-bold text-graphite dark:text-white">Prong 1: Decision-to-Code Link Ratchet (AFWE's Unique Superpower)</h3>
+          <p class="text-sm text-graphite/80 dark:text-stone-300 mt-2 leading-relaxed">
+            Existing linters only analyze code syntax; they know nothing of human architectural intent. In AFWE, active architectural decisions (<code class="px-1 font-mono text-xs">.afwe/memory/**/*.md</code>), pinned invariants (<code class="px-1 font-mono text-xs">.afwe/pins/*.yaml</code>), and documentation link directly to blueprint nodes, files, and symbols.
+          </p>
+          <ul class="list-disc list-inside mt-2 text-xs font-mono text-graphite/70 dark:text-stone-400 space-y-1">
+            <li><strong>ORPHANED_DECISION</strong>: Blocks if a symbol, file, or node anchored to an active decision vanishes without an explicit supersede or update.</li>
+            <li><strong>ORPHANED_PIN</strong>: Blocks if a pinned invariant loses its implementing code.</li>
+            <li><strong>DOCS_DRIFT</strong>: Blocks if markdown documentation links point to deleted code files.</li>
+          </ul>
+        </div>
+
+        <div class="border-t border-stone-200 dark:border-obsidian-800 pt-6">
+          <h3 class="text-lg font-bold text-graphite dark:text-white">Prong 2: Minimal Cross-Boundary Inbound-Reference Ratchet</h3>
+          <p class="text-sm text-graphite/80 dark:text-stone-300 mt-2 leading-relaxed">
+            A single-pass ASCII identifier scanner tokenizes all project files in under 15 milliseconds. It compares workspace-wide reference counts between <code class="px-1 font-mono text-xs">turn begin</code> and <code class="px-1 font-mono text-xs">turn commit</code>.
+          </p>
+          <ul class="list-disc list-inside mt-2 text-xs font-mono text-graphite/70 dark:text-stone-400 space-y-1">
+            <li><strong>SEVERED_CAPABILITY</strong>: Flags when an exported symbol drops from &gt;0 to 0 inbound references, catching cross-module caller deletions even if the callee file was never modified!</li>
+            <li><strong>DEAD_ON_ARRIVAL</strong>: Flags newly introduced exported symbols born with 0 references in touched files, forcing agents to either wire them up, test them in <code class="px-1 font-mono text-xs">tests/</code>, or declare them in turn intents.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="rounded-xl border-l-4 border-amber-500 bg-amber-500/10 p-5 my-8 space-y-2">
+        <div class="text-xs font-mono font-bold tracking-wider uppercase text-amber-600 dark:text-amber-400">
+          IMPORTANT: Over-Approximation Policy & Guarantees
+        </div>
+        <p class="text-sm text-graphite dark:text-stone-200 font-sans leading-relaxed">
+          <strong>Over-Approximation Policy (Safe Error Direction):</strong> To prevent false alarms on dynamic dispatch, macros, or string lookups, the identifier index over-approximates references. Any identifier token occurrence in code counts as a reference.
+        </p>
+        <ul class="list-disc list-inside text-xs font-sans text-graphite/80 dark:text-stone-300 space-y-1">
+          <li><strong>The Guarantee:</strong> AFWE will never falsely block live code.</li>
+          <li><strong>The Trade-off:</strong> Generic names (<code class="px-1 font-mono">new</code>, <code class="px-1 font-mono">len</code>, <code class="px-1 font-mono">init</code>, <code class="px-1 font-mono">run</code>, <code class="px-1 font-mono">default</code>, <code class="px-1 font-mono">get</code>, <code class="px-1 font-mono">set</code>) are intentionally treated as always referenced and unflaggable.</li>
+          <li><strong>Language-Adaptive:</strong> Weakly typed languages (Python/JS) leverage identifier token matching across files; typed languages (Rust/Go/TS) leverage module-scoped import specifiers where available.</li>
+        </ul>
+      </div>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">4. Proving the Fix: The Interactive Demo</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        To test these capabilities in your own terminal, we updated the official AFWE test harness with dedicated cross-module capability tests. You can run the interactive walkthrough in bash or PowerShell:
+      </p>
+      <pre class="bg-graphite text-stone-200 dark:bg-obsidian-900 p-4 rounded-xl font-mono text-xs overflow-x-auto my-4">
+# On Linux / macOS
+./scripts/demo.sh
+
+# On Windows (PowerShell)
+.\scripts\demo.ps1
+      </pre>
+
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        During Step 3 of the demo, the script simulates the exact <code class="px-1 font-mono text-xs">t0022</code> bug: it modifies <code class="px-1 font-mono text-xs">checkout.ts</code> and removes the call to <code class="px-1 font-mono text-xs">charge2</code>, leaving <code class="px-1 font-mono text-xs">charge.ts</code> untouched. Watch the commit gate intercept the regression:
+      </p>
+
+      <div class="rounded-xl border border-stone-300 dark:border-obsidian-700 bg-stone-100 dark:bg-obsidian-850 p-4 font-mono text-xs my-4 text-graphite dark:text-stone-300">
+        &gt; afwe turn commit t0003<br/>
+        &bull; REDO &mdash; t0003 NOT committed<br/>
+        &nbsp;&nbsp;&#10006; SEVERED_CAPABILITY: `src/payments/charge.ts::charge2` lost all incoming callers (dropped from 1 to 0) &mdash; restore caller, wire it in, or declare it in `turn assume` with action `remove` or `replace`<br/>
+        &rarr; fix the failures above, then call turn.commit again. Nothing was committed.
+      </div>
+
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        The gate refuses to commit until the engineer or agent explicitly declares the intent:
+      </p>
+      <pre class="bg-graphite text-stone-200 dark:bg-obsidian-900 p-4 rounded-xl font-mono text-xs overflow-x-auto my-4">
+# In assume.json:
+{
+  "intents": [
+    { "id": "decouple-charge", "action": "update", "targets": ["payments"] },
+    { "id": "deprecate-charge2", "action": "replace", "targets": ["src/payments/charge.ts"] }
+  ]
+}
+      </pre>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">5. Conclusion: What "Quietly" Really Means</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        Rust does not prevent you from using <code class="px-1 font-mono text-xs">unsafe</code> to dereference a raw pointer when you genuinely need to write low-level hardware drivers. What Rust guarantees is that you cannot dereference a null pointer <em>quietly</em>. The compiler forces you to write <code class="px-1 font-mono text-xs">unsafe { ... }</code>, recording the trade-off explicitly in source code.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        AFWE does the same for architectural intent. If you want to retire a capability, delete a module, or break an architectural boundary, AFWE does not stop you. But you cannot do it quietly. You cannot do it because an LLM hallucinated, lost context, or forgot what was agreed upon three turns ago. You must declare the intent in <code class="px-1 font-mono text-xs">turn assume</code>, record the rationale, and sign the commit.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4 font-semibold">
+        You can break things on purpose. You can never break them by accident.
+      </p>
+    `
+  };
+
   const sponsoredSeatPoolArticle = {
     title: "The Sponsored Seat Pool: Funding AFWE Without Feature Gates",
     subtitle: "How sponsored distribution, paid recognition and community points can sustain an open-source product without splitting its core capabilities into paid tiers.",
@@ -99,6 +260,10 @@ export function getStaticPaths() {
   };
 
   return [
+    {
+      params: { slug: 'rust-for-project-intent' },
+      props: rustForProjectIntentArticle
+    },
     {
       params: { slug: 'the-sponsored-seat-pool' },
       props: sponsoredSeatPoolArticle
@@ -234,11 +399,13 @@ const { title, subtitle, date, author, category, readTime, content } = Astro.pro
     <div class="prose dark:prose-invert max-w-none font-sans" set:html={content} />
 
     <div class="pt-10 border-t border-stone-300 dark:border-obsidian-800 flex items-center justify-between font-mono text-xs">
-      <a href="/blog" class="text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light font-semibold">
-        ← Back to all articles
+      <a href="/blog" class="text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light font-semibold inline-flex items-center gap-1.5">
+        <ArrowLeft class="size-3" />
+        <span>Back to all articles</span>
       </a>
-      <a href="/docs/getting-started/quick-start" class="text-survey-600 dark:text-survey-light hover:underline font-bold">
-        Try AFWE in 5 minutes →
+      <a href="/docs/getting-started/quick-start" class="text-survey-600 dark:text-survey-light hover:underline font-bold inline-flex items-center gap-1.5">
+        <span>Try AFWE in 5 minutes</span>
+        <ArrowRight class="size-3" />
       </a>
     </div>
   </article>

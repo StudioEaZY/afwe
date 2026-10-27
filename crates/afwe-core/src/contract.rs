@@ -90,6 +90,13 @@ When interacting with this codebase:
      - Update MCP tool specs and handlers (`mcp.rs`, `api.rs`) whenever tool capabilities expand.
      - Persist non-obvious design choices via `afwe memory add --kind decision ...` (or `afwe_memory_add`).
    - Commit the turn via `afwe turn commit <turn> --summary "..."` (or MCP `afwe_turn_commit`).
+     The commit gate deterministically enforces capability and governance ratchets:
+     - `DROPPED_CAPABILITY`: intra-file export dropped without declared remove/replace intent.
+     - `SEVERED_CAPABILITY`: cross-module caller severance dropping inbound references from >0 to 0.
+     - `DEAD_ON_ARRIVAL`: new uncalled exported function born with 0 callers without test or intent declaration.
+     - `ORPHANED_DECISION` / `ORPHANED_PIN`: anchored architectural memory or pin lost its target code.
+     - `DOCS_DRIFT`: markdown documentation links pointing to missing code files.
+     Remember: "Rust for project intent" — you can break things on purpose by declaring them in `turn assume`, but you can never break them by accident.
    - Inspect stats and gate telemetry with `afwe stats`.
 "#;
 

@@ -1,8 +1,18 @@
 ---
 // blog/index.astro - Technical Engineering Blog
 import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import { ArrowRight } from '@lucide/astro';
 
 const posts = [
+  {
+    slug: 'rust-for-project-intent',
+    title: "Rust for Project Intent: How AFWE Caught Its Own Architectural Blindspots",
+    date: 'October 27, 2026',
+    author: 'AFWE Core Architecture Team',
+    category: 'Architecture & Governance',
+    readTime: '10 min read',
+    summary: 'Rust made memory mistakes impossible to make quietly. AFWE makes regressions of intent impossible to make quietly. Inside the dogfooding post-mortem that proved how silent capability severance happens—and the deterministic ratchets that stop it.'
+  },
   {
     slug: 'the-sponsored-seat-pool',
     title: "The Sponsored Seat Pool: Funding AFWE Without Feature Gates",
@@ -93,9 +103,10 @@ const posts = [
             </span>
             <a 
               href={`/blog/${post.slug}`} 
-              class="font-mono text-xs font-bold text-graphite dark:text-stone-200 group-hover:text-survey-600 dark:group-hover:text-survey-light flex items-center gap-1 transition-colors"
+              class="font-mono text-xs font-bold text-graphite dark:text-stone-200 group-hover:text-survey-600 dark:group-hover:text-survey-light flex items-center gap-1.5 transition-colors"
             >
-              Read article →
+              <span>Read article</span>
+              <ArrowRight class="size-3" />
             </a>
           </div>
         </article>

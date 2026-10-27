@@ -1,0 +1,17 @@
+id: update-demos
+title: Interactive Capability and Governance Demos
+statement: Update scripts/demo.sh and add scripts/demo.ps1 demonstrating SEVERED_CAPABILITY, ORPHANED_DECISION, and DEAD_ON_ARRIVAL ratchets.
+status: active
+origin: human
+attaches:
+  nodes:
+  - scripts
+from_turns:
+- t0037
+history:
+- turn: t0037
+  ts: 2026-10-27T20:22:23Z
+  statement: Update scripts/demo.sh and add scripts/demo.ps1 demonstrating SEVERED_CAPABILITY, ORPHANED_DECISION, and DEAD_ON_ARRIVAL ratchets.
+created: 2026-10-27T20:22:23Z
+updated: 2026-10-27T20:22:23Z
+task: task-t0037

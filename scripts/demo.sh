@@ -3,6 +3,8 @@
 #   Part 1: a read-only tour of the shipped demo project (it deliberately fails `verify`).
 #   Part 2: the turn protocol on a throw-away copy under git: begin → assume → commit, a REDO,
 #           a fix that commits, and the intent-indexed timeline.
+#   Part 3: Multi-level ratchets: cross-module caller severance, dead-on-arrival exports,
+#           and decision-to-code link verification.
 # Usage:  scripts/demo.sh            (uses `afwe` on PATH)
 #         AFWE=target/release/afwe scripts/demo.sh
 set -uo pipefail
@@ -29,7 +31,7 @@ git -c user.name=demo -c user.email=demo@example.com commit -qm "demo baseline"
 
 run $AFWE turn begin "Add a charge helper to payments" --target payments
 cat > "$WORK/assume-1.json" <<'JSON'
-{"intents": [{"id": "charge-helper", "action": "create", "targets": ["payments"], "title": "Charge helper"}],
+{"intents": [{"id": "charge2", "action": "create", "targets": ["payments"], "title": "Charge helper"}],
  "assumptions": [{"id": "no-debugger", "text": "the new charge code has no debugger statements",
    "claim": {"type": "forbid_pattern", "pattern": "debugger", "files": ["src/payments/charge.ts"]}}]}
 JSON
@@ -50,14 +52,48 @@ run $AFWE turn commit t0002 || echo "(REDO, exit $? — nothing was committed)"
 # Fix: no UI import, no debug log. Now the gate passes and the turn commits.
 cat > src/payments/checkout.ts <<'TS'
 import { User } from '../identity/user';
-export function checkout(user: User) { return user.id; }
+import { charge2 } from './charge';
+export function checkout(user: User) { return charge2(10); }
 TS
-run $AFWE turn commit t0002 --summary "Checkout returns the user id (no UI, no debug log)"
+run $AFWE turn commit t0002 --summary "Checkout uses charge2 (no UI, no debug log)"
 
-step "3. What the history now says"
+step "3. Cross-boundary capability ratchet: severed callers (The t0022 bug catcher)"
+run $AFWE turn begin "Refactor checkout without calling charge2" --target payments
+echo '{"intents": [{"id": "decouple-charge", "action": "update", "targets": ["payments"]}]}' > "$WORK/assume-3.json"
+run $AFWE turn assume t0003 --file "$WORK/assume-3.json"
+# Turn touches checkout.ts and removes the call to charge2. charge.ts is completely UNTOUCHED!
+cat > src/payments/checkout.ts <<'TS'
+import { User } from '../identity/user';
+export function checkout(user: User) { return 42; }
+TS
+# AFWE intercepts the severed caller across files and blocks commit with SEVERED_CAPABILITY!
+run $AFWE turn commit t0003 || echo "(SEVERED_CAPABILITY intercepted — exit $? — callee went dead in untouched file)"
+
+# Proper fix: declare the deprecation/replacement in turn assume!
+cat > "$WORK/assume-3-fixed.json" <<'JSON'
+{"intents": [
+  {"id": "decouple-charge", "action": "update", "targets": ["payments"]},
+  {"id": "deprecate-charge2", "action": "replace", "targets": ["src/payments/charge.ts"]}
+]}
+JSON
+run $AFWE turn assume t0003 --file "$WORK/assume-3-fixed.json"
+run $AFWE turn commit t0003 --summary "Decoupled charge2 with explicit replacement declaration"
+
+step "4. Dead-on-arrival capability detection"
+run $AFWE turn begin "Add uncalled zombie helper" --target payments
+echo '{"intents": [{"id": "touch-checkout", "action": "update", "targets": ["payments"]}]}' > "$WORK/assume-4.json"
+run $AFWE turn assume t0004 --file "$WORK/assume-4.json"
+# Introduce a brand new exported function with 0 callers without declaring it
+cat >> src/payments/checkout.ts <<'TS'
+export function zombieFunction(x: number) { return x * 999; }
+TS
+run $AFWE turn commit t0004 || echo "(DEAD_ON_ARRIVAL intercepted — exit $? — new export born with 0 references)"
+
+step "5. What the history now says"
 run $AFWE timeline
 run $AFWE timeline losses
-run git -C "$TMP" log --format='%h %s%n    %b' -3
+run $AFWE board
+run git -C "$TMP" log --format='%h %s%n    %b' -4
 echo
 echo "The throw-away repository is at: $TMP"
 echo "Open the Studio on the shipped demo with:  cd examples/demo-project && $AFWE studio"

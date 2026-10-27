@@ -1,0 +1,20 @@
+id: document-rust-for-project-intent
+title: Rust for Project Intent Blog & Documentation
+statement: Document the over-approximation trade-offs, language-adaptive indexing, and publish the in-depth post-mortem engineering blog on AFWE's internal dogfooding lessons.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  files:
+  - docs/TUTORIAL.md
+  - docs/SPEC.md
+from_turns:
+- t0037
+history:
+- turn: t0037
+  ts: 2026-10-27T20:22:23Z
+  statement: Document the over-approximation trade-offs, language-adaptive indexing, and publish the in-depth post-mortem engineering blog on AFWE's internal dogfooding lessons.
+created: 2026-10-27T20:22:23Z
+updated: 2026-10-27T20:22:23Z
+task: task-t0037
