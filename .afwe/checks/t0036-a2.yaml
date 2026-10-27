@@ -1,0 +1,20 @@
+id: t0036-a2
+title: detect_orphaned_governance is exported from drift.rs
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-core
+  - crates
+  files:
+  - crates/afwe-core/src/drift.rs
+claim:
+  type: export_exists
+  symbol: detect_orphaned_governance
+  files:
+  - crates/afwe-core/src/drift.rs
+status: active
+origin: afwe:checkgen
+created: 2026-10-27T20:11:24Z
+created_from: t0036
+provenance: confirmed

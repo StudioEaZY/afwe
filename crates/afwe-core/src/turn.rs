@@ -15,6 +15,7 @@ use crate::analyze::build_globset;
 use crate::claims;
 use crate::conflict;
 use crate::contract;
+use crate::drift;
 use crate::engine::{Engine, Snapshot};
 use crate::gate::{self, ConfidenceInput, Decision, GateInput};
 use crate::intent::{self, PinSpec};
@@ -467,6 +468,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
             exported_symbols.insert(f.path.clone(), syms);
         }
     }
+    let symbol_inbound = conflict::compute_inbound_reference_counts(&snap.code.files, &root);
     let baseline = Baseline {
         head: vcs::open(&snap.manifest.vcs.provider).head(&root),
         files: tree_hashes(engine, &snap),
@@ -475,6 +477,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         guards: guard_fps,
         importer_counts,
         exported_symbols,
+        symbol_inbound,
     };
     engine.store.save_baseline(&id, &baseline)?;
 
@@ -814,6 +817,23 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         }
         for dropped in conflict::dropped_intrafile_capabilities(&b.exported_symbols, &now_exported, &code_rel, &removes, &turn.intents) {
             blocking.push(format!("DROPPED_CAPABILITY: `{dropped}` was deleted or dropped from exports — restore it, or declare it in `turn assume` with action `remove` or `replace`"));
+        }
+
+        // Minimal Inbound-Reference capability ratchet: detect severed callers across modules & dead-on-arrival exports
+        let now_inbound = conflict::compute_inbound_reference_counts(&snap.code.files, &root);
+        let all_current_syms: Vec<SymbolInfo> = snap.code.files.iter().flat_map(|f| f.symbols.clone()).collect();
+        for sc in conflict::severed_capabilities(&b.symbol_inbound, &now_inbound, &all_current_syms, &code_rel, &removes, &turn.intents) {
+            if sc.reason == "caller_severed" {
+                blocking.push(format!("SEVERED_CAPABILITY: `{}` lost all incoming callers (dropped from {} to 0) — restore caller, wire it in, or declare it in `turn assume` with action `remove` or `replace`", sc.symbol_id, sc.before_count));
+            } else if turn.restore.is_none() {
+                blocking.push(format!("DEAD_ON_ARRIVAL: `{}` was introduced with 0 callers/references — wire it in, test it in tests/, or declare it in `turn assume`", sc.symbol_id));
+            }
+        }
+
+        // Decision-to-code link ratchet: detect orphaned memory, pins, and broken doc links
+        let gov_violations = drift::detect_orphaned_governance(&snap, Some(b), &code_rel, &root);
+        for gv in gov_violations {
+            blocking.push(format!("{}: {}", gv.kind, gv.message));
         }
     }
 

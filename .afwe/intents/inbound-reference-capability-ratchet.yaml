@@ -1,0 +1,17 @@
+id: inbound-reference-capability-ratchet
+title: Minimal Inbound-Reference Capability Ratchet
+statement: Implement over-approximated workspace inbound-reference delta tracking and dead-on-arrival capability detection.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0036
+history:
+- turn: t0036
+  ts: 2026-10-27T19:25:38Z
+  statement: Implement over-approximated workspace inbound-reference delta tracking and dead-on-arrival capability detection.
+created: 2026-10-27T19:25:38Z
+updated: 2026-10-27T19:25:38Z
+task: task-t0036

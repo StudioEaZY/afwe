@@ -76,3 +76,8 @@ pub fn is_covered(base: &ViolationBaseline, issue: &VerifyIssue) -> bool {
             && (v.target.is_none() || v.target == target)
     })
 }
+
+/// Infer framework and language roots (entrypoint files) from project tree.
+pub fn infer_project_roots(files: &[String]) -> Vec<String> {
+    files.iter().filter(|f| crate::conflict::is_entrypoint_file(f)).cloned().collect()
+}

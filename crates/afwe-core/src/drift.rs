@@ -7,6 +7,7 @@ use crate::model::*;
 use crate::util::{clamp01, hash_str, now};
 use anyhow::{anyhow, Result};
 use std::collections::{BTreeMap, HashMap, HashSet};
+use std::path::Path;
 
 fn dir_of(f: &str) -> &str {
     match f.rfind('/') {
@@ -692,4 +693,309 @@ pub fn review_impact(snap: &Snapshot, f: &Finding) -> serde_json::Value {
         "nodes": nodes.iter().map(|n| snap.table.path_of(n)).collect::<Vec<_>>(),
         "memory": memory, "guardrails": guardrails, "constraints": constraints, "files": files,
     })
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
+pub struct GovernanceViolation {
+    pub kind: String,   // "ORPHANED_DECISION" | "ORPHANED_PIN" | "DOCS_DRIFT"
+    pub id: String,     // e.g. "decision:foo", "pin:p1", "docs:TUTORIAL.md"
+    pub target: String, // e.g. "crates/afwe-core/src/foo.rs"
+    pub message: String,
+}
+
+/// Detects orphaned decisions, pins, and broken doc links.
+/// Strictly ratcheted against baseline so pre-existing debt does not cause false alarms.
+pub fn detect_orphaned_governance(
+    snap: &Snapshot,
+    baseline: Option<&crate::model::Baseline>,
+    touched_files: &[String],
+    project_root: &Path,
+) -> Vec<GovernanceViolation> {
+    let mut out = vec![];
+    let file_set: HashSet<&str> = snap.code.files.iter().map(|f| f.path.as_str()).collect();
+    let touched_set: HashSet<&str> = touched_files.iter().map(|s| s.trim_start_matches("./")).collect();
+
+    // 1. Decisions / Memory
+    let superseded_ids: HashSet<String> = snap.sources.memory.iter().flat_map(|m| m.meta.supersedes.clone()).collect();
+    let active_memories: Vec<&crate::model::MemoryEntry> = snap.sources.memory.iter()
+        .filter(|m| m.meta.status.as_deref().unwrap_or("active") != "superseded" && !superseded_ids.contains(&m.meta.id))
+        .collect();
+
+    for m in &active_memories {
+        // If the memory file itself was touched/updated in this turn, don't flag as orphan
+        let mem_path_clean = m.path.trim_start_matches("./");
+        if touched_set.contains(mem_path_clean) {
+            continue;
+        }
+
+        // Check attached symbols
+        for s in &m.meta.symbols {
+            let existed_in_baseline = baseline.map(|b| {
+                b.symbols.contains_key(s) || b.exported_symbols.values().any(|v| v.contains(s))
+            }).unwrap_or(true);
+
+            let exists_now = snap.index.symbols.contains_key(s)
+                || snap.code.files.iter().any(|f| f.symbols.iter().any(|sym| &sym.id == s || &sym.qualified == s || &sym.name == s));
+
+            if existed_in_baseline && !exists_now {
+                out.push(GovernanceViolation {
+                    kind: "ORPHANED_DECISION".to_string(),
+                    id: m.meta.id.clone(),
+                    target: s.clone(),
+                    message: format!("memory `{}` is anchored to symbol `{s}` which no longer exists — update applies_to or supersede the decision", m.meta.id),
+                });
+            }
+        }
+
+        // Check attached files
+        for f in &m.meta.files {
+            if crate::util::is_glob(f) {
+                continue;
+            }
+            let clean_f = f.trim_start_matches("./");
+            let existed_in_baseline = baseline.map(|b| b.files.contains_key(clean_f)).unwrap_or(true);
+            let exists_now = file_set.contains(clean_f) || snap.code.files.iter().any(|x| x.path.starts_with(&format!("{}/", clean_f.trim_end_matches('/'))));
+
+            if existed_in_baseline && !exists_now {
+                out.push(GovernanceViolation {
+                    kind: "ORPHANED_DECISION".to_string(),
+                    id: m.meta.id.clone(),
+                    target: clean_f.to_string(),
+                    message: format!("memory `{}` is anchored to file `{clean_f}` which was deleted — update files list or supersede the decision", m.meta.id),
+                });
+            }
+        }
+
+        // Check attached blueprint nodes
+        for n in &m.meta.applies_to {
+            let existed_in_baseline = baseline.map(|b| b.implements.contains_key(n)).unwrap_or(true);
+            let exists_now = snap.table.resolve(n).is_some();
+            if existed_in_baseline && !exists_now {
+                out.push(GovernanceViolation {
+                    kind: "ORPHANED_DECISION".to_string(),
+                    id: m.meta.id.clone(),
+                    target: n.clone(),
+                    message: format!("memory `{}` is anchored to blueprint node `{n}` which was deleted — update applies_to or supersede the decision", m.meta.id),
+                });
+            }
+        }
+    }
+
+    // 2. Active Pins
+    for p in snap.sources.pins.iter().filter(|p| p.status == "active") {
+        for s in &p.attaches.symbols {
+            let existed_in_baseline = baseline.map(|b| b.symbols.contains_key(s)).unwrap_or(true);
+            let exists_now = snap.index.symbols.contains_key(s)
+                || snap.code.files.iter().any(|f| f.symbols.iter().any(|sym| &sym.id == s || &sym.qualified == s || &sym.name == s));
+            if existed_in_baseline && !exists_now {
+                out.push(GovernanceViolation {
+                    kind: "ORPHANED_PIN".to_string(),
+                    id: p.id.clone(),
+                    target: s.clone(),
+                    message: format!("pin `{}` attaches to symbol `{s}` which was deleted — retire the pin or restore the symbol", p.id),
+                });
+            }
+        }
+
+        for f in &p.attaches.files {
+            if crate::util::is_glob(f) {
+                continue;
+            }
+            let clean_f = f.trim_start_matches("./");
+            let existed_in_baseline = baseline.map(|b| b.files.contains_key(clean_f)).unwrap_or(true);
+            let exists_now = file_set.contains(clean_f);
+            if existed_in_baseline && !exists_now {
+                out.push(GovernanceViolation {
+                    kind: "ORPHANED_PIN".to_string(),
+                    id: p.id.clone(),
+                    target: clean_f.to_string(),
+                    message: format!("pin `{}` attaches to file `{clean_f}` which was deleted — retire the pin or restore the file", p.id),
+                });
+            }
+        }
+    }
+
+    // 3. Documentation Drift (broken markdown links to local project files)
+    let mut candidate_docs = vec![];
+    for prefix in &["docs", ".afwe/docs"] {
+        let dir = project_root.join(prefix);
+        if let Ok(entries) = std::fs::read_dir(&dir) {
+            for entry in entries.flatten() {
+                let p = entry.path();
+                if p.is_file() && p.extension().map(|e| e == "md").unwrap_or(false) {
+                    if let Ok(rel) = p.strip_prefix(project_root) {
+                        candidate_docs.push(crate::util::to_unix(rel));
+                    }
+                }
+            }
+        }
+    }
+    for t in touched_files {
+        if t.ends_with(".md") && !candidate_docs.contains(t) {
+            candidate_docs.push(t.trim_start_matches("./").to_string());
+        }
+    }
+
+    for doc in candidate_docs {
+        let abs_doc = project_root.join(&doc);
+        let Ok(content) = std::fs::read_to_string(&abs_doc) else { continue };
+        let doc_dir = std::path::Path::new(&doc).parent().unwrap_or(std::path::Path::new(""));
+
+        let bytes = content.as_bytes();
+        let mut i = 0;
+        while i < bytes.len() {
+            if bytes[i] == b']' && i + 1 < bytes.len() && bytes[i + 1] == b'(' {
+                let link_start = i + 2;
+                if let Some(end_offset) = bytes[link_start..].iter().position(|&b| b == b')') {
+                    let raw_link = &content[link_start..link_start + end_offset];
+                    let link = raw_link.trim();
+                    if !link.starts_with("http://")
+                        && !link.starts_with("https://")
+                        && !link.starts_with("mailto:")
+                        && !link.starts_with('#')
+                        && !link.is_empty()
+                    {
+                        let clean_link = link
+                            .strip_prefix("file:///")
+                            .or_else(|| link.strip_prefix("file://"))
+                            .unwrap_or(link);
+                        let file_part = clean_link.split(['#', '?']).next().unwrap_or(clean_link).trim();
+                        if !file_part.is_empty()
+                            && (file_part.ends_with(".md")
+                                || file_part.ends_with(".rs")
+                                || file_part.ends_with(".ts")
+                                || file_part.ends_with(".js")
+                                || file_part.ends_with(".png")
+                                || file_part.ends_with(".yaml"))
+                        {
+                            let target_from_doc = doc_dir.join(file_part);
+                            let target_from_root = std::path::Path::new(file_part);
+                            let exists = project_root.join(&target_from_doc).exists()
+                                || project_root.join(target_from_root).exists();
+
+                            if !exists {
+                                let norm_target = crate::util::to_unix(&target_from_doc);
+                                let norm_root_target = crate::util::to_unix(target_from_root);
+                                let doc_was_touched = touched_set.contains(doc.as_str());
+                                let target_was_in_baseline = baseline.map(|b| {
+                                    b.files.contains_key(&norm_target) || b.files.contains_key(&norm_root_target)
+                                }).unwrap_or(false);
+
+                                if doc_was_touched || target_was_in_baseline {
+                                    out.push(GovernanceViolation {
+                                        kind: "DOCS_DRIFT".to_string(),
+                                        id: doc.clone(),
+                                        target: norm_root_target.clone(),
+                                        message: format!("markdown file `{doc}` references `{norm_root_target}` which does not exist — update doc link or restore file"),
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    i = link_start + end_offset;
+                }
+            }
+            i += 1;
+        }
+    }
+
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::mapping::MappingResult;
+    use crate::store::Sources;
+
+    #[test]
+    fn test_deleting_anchored_symbol_flags_orphaned_decision() {
+        let mem = MemoryEntry {
+            path: ".afwe/memory/decisions/auth.md".into(),
+            meta: MemoryMeta {
+                id: "auth-contract".into(),
+                title: "Auth contract".into(),
+                kind: "decision".into(),
+                status: Some("active".into()),
+                applies_to: vec![],
+                files: vec![],
+                symbols: vec!["auth::verify_token".into()],
+                tags: vec![],
+                origin: None,
+                created: None,
+                updated: None,
+                supersedes: None,
+                enforces: vec![],
+                workflow: None,
+            },
+            body: "content".into(),
+        };
+
+        let snap = Snapshot {
+            manifest: Manifest::default(),
+            sources: Sources {
+                memory: vec![mem],
+                ..Default::default()
+            },
+            table: NodeTable::default(),
+            code: CodeModel::default(),
+            mapping: MappingResult::default(),
+            index: Index::default(),
+            fresh: true,
+        };
+
+        let baseline = Baseline {
+            symbols: BTreeMap::from([("auth::verify_token".into(), "fp".into())]),
+            ..Default::default()
+        };
+
+        let violations = detect_orphaned_governance(&snap, Some(&baseline), &[], Path::new("."));
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].kind, "ORPHANED_DECISION");
+        assert_eq!(violations[0].target, "auth::verify_token");
+    }
+
+    #[test]
+    fn test_orphaned_pin_detected_when_attached_file_deleted() {
+        let pin = Pin {
+            id: "pin-core".into(),
+            statement: "keep core".into(),
+            kind: "architecture".into(),
+            attaches: Attachment {
+                files: vec!["crates/core/src/lib.rs".into()],
+                ..Default::default()
+            },
+            severity: "block".into(),
+            status: "active".into(),
+            origin: "human".into(),
+            created: "now".into(),
+            created_from: None,
+            reason: None,
+            retired: None,
+            intentional: false,
+        };
+
+        let snap = Snapshot {
+            manifest: Manifest::default(),
+            sources: Sources {
+                pins: vec![pin],
+                ..Default::default()
+            },
+            table: NodeTable::default(),
+            code: CodeModel::default(),
+            mapping: MappingResult::default(),
+            index: Index::default(),
+            fresh: true,
+        };
+
+        let baseline = Baseline {
+            files: BTreeMap::from([("crates/core/src/lib.rs".into(), "hash1".into())]),
+            ..Default::default()
+        };
+
+        let violations = detect_orphaned_governance(&snap, Some(&baseline), &[], Path::new("."));
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].kind, "ORPHANED_PIN");
+        assert_eq!(violations[0].target, "crates/core/src/lib.rs");
+    }
 }

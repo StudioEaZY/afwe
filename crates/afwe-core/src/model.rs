@@ -40,6 +40,20 @@ fn default_format() -> String {
     FORMAT_VERSION.to_string()
 }
 
+impl Default for Manifest {
+    fn default() -> Self {
+        Self {
+            format: default_format(),
+            project: ProjectMeta::default(),
+            analyzer: AnalyzerConfig::default(),
+            policy: Policy::default(),
+            provenance: ProvenanceConfig::default(),
+            vcs: VcsConfig::default(),
+            profile: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ProjectMeta {
     pub name: String,
@@ -1419,4 +1433,7 @@ pub struct Baseline {
     /// Exported symbol signatures per file at begin (used for intra-file dropped capability detection)
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub exported_symbols: BTreeMap<String, Vec<String>>,
+    /// Inbound reference counts per exported symbol at begin (qualified id -> reference count)
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub symbol_inbound: BTreeMap<String, usize>,
 }
