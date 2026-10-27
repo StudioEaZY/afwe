@@ -190,22 +190,28 @@ export const OverviewPage: React.FC = () => {
   return (
     <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
       {/* Main Center Stage Column */}
-      <main style={{ flex: 1, padding: "20px 24px", minWidth: 0, overflowY: "auto" }}>
+      <main style={{ flex: 1, padding: "16px 22px", minWidth: 0, overflowY: "auto" }}>
         {/* Breadcrumbs (#crumbs) */}
         <div className="crumbs">
-          {activeLens === "radial" && breadcrumbs.length > 0 && (
+          {activeLens === "radial" && (
             <>
-              <b onClick={() => setScope(null)}>Codebase</b>
-              {breadcrumbs.map((crumb, idx) => (
-                <React.Fragment key={crumb.id}>
-                  {" › "}
-                  {idx < breadcrumbs.length - 1 ? (
-                    <b onClick={() => setScope(crumb.id)}>{crumb.label}</b>
-                  ) : (
-                    <span>{crumb.label}</span>
-                  )}
-                </React.Fragment>
-              ))}
+              {breadcrumbs.length === 0 ? (
+                <b onClick={() => setScope(null)}>Atlas</b>
+              ) : (
+                <>
+                  <a onClick={() => setScope(null)}>Atlas</a>
+                  {breadcrumbs.map((crumb, idx) => (
+                    <React.Fragment key={crumb.id}>
+                      {" › "}
+                      {idx < breadcrumbs.length - 1 ? (
+                        <a onClick={() => setScope(crumb.id)}>{crumb.label}</a>
+                      ) : (
+                        <b>{crumb.label}</b>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </>
+              )}
             </>
           )}
 

@@ -84,14 +84,34 @@ export const TopBar: React.FC = () => {
   }, [graph]);
 
   const searchHits = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const raw = searchQuery.trim();
+    if (!raw) {
+      // When input is focused but empty, show curated suggestions
+      const presets = [
+        "Backend/events/models",
+        "Services/jobs/auth",
+        "Data/schema",
+        "Web/views/checkout",
+        "Backend/api/routes",
+        "Backend",
+        "Services",
+        "Data",
+        "Web",
+      ];
+      return allHierarchyNodes
+        .filter((n) => presets.includes(n.key))
+        .slice(0, 8);
+    }
+    // Clean query: strip noise/punctuation
+    const q = raw.toLowerCase().replace(/[^a-z0-9_\-\/]/g, "").trim();
     if (!q) return [];
     return allHierarchyNodes
       .filter(
         (n) =>
           n.label.toLowerCase().includes(q) ||
           n.path.toLowerCase().includes(q) ||
-          n.key.toLowerCase().includes(q)
+          n.key.toLowerCase().includes(q) ||
+          n.breadcrumbLabels.some((b) => b.toLowerCase().includes(q))
       )
       .slice(0, 12);
   }, [allHierarchyNodes, searchQuery]);
@@ -228,7 +248,7 @@ export const TopBar: React.FC = () => {
           <input
             type="text"
             value={searchQuery}
-            placeholder="Search modules, paths, or subnodes (e.g. models, auth, schema)…"
+            placeholder="Search modules, features, or paths…"
             aria-label="Search"
             onFocus={() => setSearchOpen(true)}
             onChange={(e) => {
@@ -263,7 +283,21 @@ export const TopBar: React.FC = () => {
           )}
         </label>
 
-        <div className={`sdrop ${searchOpen && searchQuery.trim().length > 0 ? "on" : ""}`}>
+        <div className={`sdrop ${searchOpen ? "on" : ""}`}>
+          {searchQuery.trim().length === 0 && searchHits.length > 0 && (
+            <div
+              style={{
+                padding: "5px 10px 4px",
+                fontSize: "11px",
+                fontWeight: 700,
+                color: "var(--mute)",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
+              Suggested modules &amp; subnodes
+            </div>
+          )}
           {searchHits.length > 0 ? (
             searchHits.map((n) => (
               <div
@@ -282,7 +316,7 @@ export const TopBar: React.FC = () => {
             ))
           ) : (
             <div className="sitem" style={{ color: "var(--mute)", cursor: "default" }}>
-              <span>No matching modules or subnodes</span>
+              <span>No matching modules or subnodes for &quot;{searchQuery}&quot;</span>
             </div>
           )}
         </div>

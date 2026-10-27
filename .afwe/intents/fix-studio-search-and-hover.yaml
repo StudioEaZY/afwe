@@ -1,0 +1,18 @@
+id: fix-studio-search-and-hover
+title: Fix search suggestions, hover lineage, passive wheel listener, callout positioning, and remove demo item
+statement: Fix Studio search, hover lineage, passive wheel listener, callout positioning, and remove demo item
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0030
+history:
+- turn: t0030
+  ts: 2026-10-27T05:03:33Z
+  statement: Fix Studio search, hover lineage, passive wheel listener, callout positioning, and remove demo item
+  rationale: Fix passive wheel event listener preventDefault errors, remove hardcoded demo item from Sidebar, fix .call/.zctl positioning and .cell hover lineage in CSS, add instant suggestions to TopBar search, and ensure clean layout without vertical pushdown.
+created: 2026-10-27T05:03:33Z
+updated: 2026-10-27T05:03:33Z
+task: task-t0030

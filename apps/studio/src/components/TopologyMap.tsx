@@ -1,5 +1,5 @@
 // apps/studio/src/components/TopologyMap.tsx
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import {
   Layers,
   ArrowDown,
@@ -138,6 +138,21 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
     return { tiers: tierBuckets, pos: nodePos, activeEdges: edges };
   }, [root, domainEdges, effectiveT]);
 
+  // Non-passive wheel zoom listener
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoom((z) => ({
+        ...z,
+        k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
+      }));
+    };
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, []);
+
   const passFilter = (n: HierarchyNode): boolean => {
     if (filterMode === "all") return true;
     if (filterMode === "uncharted" || filterMode === "unmapped") return n.state === "unmapped";
@@ -147,11 +162,14 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
   };
 
   const updateTipPos = (ev: React.MouseEvent, content: React.ReactNode) => {
-    if (!stageRef.current) return;
-    const r = stageRef.current.getBoundingClientRect();
+    const w = 270;
+    const h = 150;
+    const x =
+      ev.clientX + 16 + w > window.innerWidth ? ev.clientX - w - 12 : ev.clientX + 16;
+    const y = Math.max(8, Math.min(ev.clientY + 16, window.innerHeight - h - 8));
     setTip({
-      x: Math.min(r.width - 280, Math.max(12, ev.clientX - r.left + 14)),
-      y: Math.min(r.height - 150, Math.max(12, ev.clientY - r.top + 14)),
+      x,
+      y,
       html: content,
     });
   };
@@ -222,15 +240,8 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
       className="stage-soft"
       style={{
         flex: 1,
-        minHeight: compact ? 380 : 540,
+        minHeight: compact ? 340 : 460,
         userSelect: "none",
-      }}
-      onWheel={(e) => {
-        e.preventDefault();
-        setZoom((z) => ({
-          ...z,
-          k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
-        }));
       }}
       onPointerDown={(e) => {
         if ((e.target as HTMLElement).closest("button,.zctl,.ex")) return;

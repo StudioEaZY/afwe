@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   Grid,
   Box,
@@ -202,6 +202,21 @@ export const RadialMap: React.FC<Props> = ({
     };
   }, [focusNode, depth, growth, denseL4, timelineT, root]);
 
+  // Non-passive wheel zoom listener to prevent passive event listener invocation errors
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoom((z) => ({
+        ...z,
+        k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
+      }));
+    };
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, []);
+
   const passFilter = (n: HierarchyNode): boolean => {
     if (filterMode === "all") return true;
     if (filterMode === "uncharted" || filterMode === "unmapped") return n.state === "unmapped";
@@ -211,11 +226,14 @@ export const RadialMap: React.FC<Props> = ({
   };
 
   const updateTipPos = (ev: React.MouseEvent, content: React.ReactNode) => {
-    if (!stageRef.current) return;
-    const r = stageRef.current.getBoundingClientRect();
+    const w = 270;
+    const h = 150;
+    const x =
+      ev.clientX + 16 + w > window.innerWidth ? ev.clientX - w - 12 : ev.clientX + 16;
+    const y = Math.max(8, Math.min(ev.clientY + 16, window.innerHeight - h - 8));
     setTip({
-      x: Math.min(r.width - 280, Math.max(12, ev.clientX - r.left + 14)),
-      y: Math.min(r.height - 150, Math.max(12, ev.clientY - r.top + 14)),
+      x,
+      y,
       html: content,
     });
   };
@@ -253,16 +271,9 @@ export const RadialMap: React.FC<Props> = ({
     <div
       ref={stageRef}
       className="stage-soft"
-      style={{ flex: 1, minHeight: 540, userSelect: "none" }}
-      onWheel={(e) => {
-        e.preventDefault();
-        setZoom((z) => ({
-          ...z,
-          k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
-        }));
-      }}
+      style={{ flex: 1, minHeight: 460, userSelect: "none" }}
       onPointerDown={(e) => {
-        if ((e.target as HTMLElement).closest("button,.zctl,.sect")) return;
+        if ((e.target as HTMLElement).closest("button,.zctl,.cell,.sect")) return;
         setDragStart({ x: e.clientX, y: e.clientY, zx: zoom.x, zy: zoom.y });
       }}
       onPointerMove={(e) => {
@@ -323,7 +334,7 @@ export const RadialMap: React.FC<Props> = ({
       <svg
         viewBox="-360 -295 720 590"
         aria-label="Radial codebase atlas"
-        style={{ width: "100%", height: "100%", maxHeight: 610, display: "block", margin: "0 auto" }}
+        style={{ width: "100%", height: "100%", maxHeight: 540, display: "block", margin: "0 auto" }}
       >
         <defs>
           <pattern
@@ -370,8 +381,6 @@ export const RadialMap: React.FC<Props> = ({
                   const midR = (r0 + r1) * 0.5;
                   const lx = Math.sin(midAngle) * midR;
                   const ly = -Math.cos(midAngle) * midR;
-                  const deg = (midAngle * 180) / Math.PI;
-                  const rot = deg > 90 && deg < 270 ? deg + 180 : deg;
 
                   const flags = computeNodeFlags(n);
                   const globalDepth = n.depth;
@@ -388,9 +397,48 @@ export const RadialMap: React.FC<Props> = ({
                   return (
                     <g
                       key={n.key}
-                      className={`sect ${isSelected ? "sel" : ""} ${dimmed ? "dim" : ""}`}
-                      onMouseMove={(ev) => {
+                      className={`cell sect ${isSelected ? "sel" : ""} ${dimmed ? "dim fade" : ""}`}
+                      style={{
+                        opacity: dimmed ? 0.22 : 1,
+                        transition: "opacity 0.15s ease",
+                        cursor: "pointer",
+                      }}
+                      onMouseEnter={(ev) => {
                         setHoveredKey(n.key);
+                        updateTipPos(
+                          ev,
+                          <div>
+                            <b className="serif">{n.label}</b>
+                            <div className="tm">{n.breadcrumbLabels.join(" › ")}</div>
+                            <div>
+                              <b>Layer {i + 1} in this map</b>
+                              {globalNote} · {n.state} · {n.fileCount} files
+                            </div>
+                            <div className="tm">{stateDescription(n.state, n)}</div>
+                            {flags.pin > 0 && (
+                              <div style={{ color: "var(--accent)", fontWeight: 600 }}>
+                                Pinned check active ({flags.pin})
+                              </div>
+                            )}
+                            {flags.prop > 0 && (
+                              <div style={{ color: "var(--amber)", fontWeight: 600 }}>
+                                Pending proposal ({flags.prop})
+                              </div>
+                            )}
+                            {flags.viol > 0 && (
+                              <div style={{ color: "var(--red)", fontWeight: 600 }}>
+                                Rule violation ({flags.viol})
+                              </div>
+                            )}
+                            <div className="tm">
+                              {n.children && n.children.length > 0
+                                ? 'Click to inspect (or use "Open map") · double-click shortcut'
+                                : "Click to inspect (leaf node)"}
+                            </div>
+                          </div>
+                        );
+                      }}
+                      onMouseMove={(ev) => {
                         updateTipPos(
                           ev,
                           <div>
@@ -482,18 +530,18 @@ export const RadialMap: React.FC<Props> = ({
                       ) : (
                         (() => {
                           const arcLen = span * midR;
-                          if (arcLen < 26 || r1 - r0 < 18) return null;
-                          const maxC = Math.max(3, Math.floor((r1 - r0 - 8) / 5.6));
+                          if (arcLen < 24 || r1 - r0 < 16) return null;
+                          const maxC = Math.max(3, Math.floor((r1 - r0 - 6) / 5.2));
                           const txt =
                             n.label.length > maxC ? `${n.label.slice(0, maxC - 1)}…` : n.label;
                           return (
                             <text
-                              transform={`translate(${lx.toFixed(1)},${ly.toFixed(
-                                1
-                              )}) rotate(${rot - 90})`}
+                              x={lx.toFixed(1)}
+                              y={ly.toFixed(1)}
                               textAnchor="middle"
                               dominantBaseline="central"
-                              fontSize={i === 0 ? "11" : i === 1 ? "10" : "9"}
+                              fontSize={i === 0 ? "11.5" : i === 1 ? "10" : "9"}
+                              fontWeight={i === 0 ? 600 : 500}
                               fill="var(--ink)"
                               style={{ pointerEvents: "none" }}
                             >

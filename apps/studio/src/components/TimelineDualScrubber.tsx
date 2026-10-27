@@ -91,21 +91,26 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
   );
 
   // Wheel zoom / pan handler
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY > 0 ? 1.15 : 0.85;
-    const currentSpan = range[1] - range[0];
-    const newSpan = Math.max(0.05, Math.min(1, currentSpan * zoomFactor));
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY > 0 ? 1.15 : 0.85;
+      const currentSpan = range[1] - range[0];
+      const newSpan = Math.max(0.05, Math.min(1, currentSpan * zoomFactor));
 
-    // Center zoom around cursor position
-    const rect = containerRef.current?.getBoundingClientRect();
-    const cursorFrac = rect ? Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) : 0.5;
-    const anchor = range[0] + cursorFrac * currentSpan;
+      const rect = el.getBoundingClientRect();
+      const cursorFrac = rect ? Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) : 0.5;
+      const anchor = range[0] + cursorFrac * currentSpan;
 
-    const newStart = Math.max(0, anchor - cursorFrac * newSpan);
-    const newEnd = Math.min(1, newStart + newSpan);
-    setRange([newStart, newEnd]);
-  };
+      const newStart = Math.max(0, anchor - cursorFrac * newSpan);
+      const newEnd = Math.min(1, newStart + newSpan);
+      setRange([newStart, newEnd]);
+    };
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, [range]);
 
   // Zoom button controls
   const handleZoomIn = () => {
@@ -201,7 +206,6 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
   return (
     <div
       ref={containerRef}
-      onWheel={handleWheel}
       style={{
         display: "flex",
         flexDirection: "column",

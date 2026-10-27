@@ -398,13 +398,31 @@ export const ConstellationMap: React.FC<Props> = ({
     return n.state === filterMode;
   };
 
+  // Non-passive wheel zoom listener to prevent passive event listener invocation errors
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoom((z) => ({
+        ...z,
+        k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
+      }));
+    };
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, []);
+
   // Tooltip position updater
   const updateTipPos = (ev: React.MouseEvent, content: React.ReactNode) => {
-    if (!stageRef.current) return;
-    const r = stageRef.current.getBoundingClientRect();
+    const w = 270;
+    const h = 150;
+    const x =
+      ev.clientX + 16 + w > window.innerWidth ? ev.clientX - w - 12 : ev.clientX + 16;
+    const y = Math.max(8, Math.min(ev.clientY + 16, window.innerHeight - h - 8));
     setTip({
-      x: Math.min(r.width - 280, Math.max(12, ev.clientX - r.left + 14)),
-      y: Math.min(r.height - 150, Math.max(12, ev.clientY - r.top + 14)),
+      x,
+      y,
       html: content,
     });
   };
@@ -465,14 +483,7 @@ export const ConstellationMap: React.FC<Props> = ({
     <div
       ref={stageRef}
       className="stage-soft"
-      style={{ flex: 1, minHeight: 540, userSelect: "none" }}
-      onWheel={(e) => {
-        e.preventDefault();
-        setZoom((z) => ({
-          ...z,
-          k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
-        }));
-      }}
+      style={{ flex: 1, minHeight: 460, userSelect: "none" }}
       onPointerDown={(e) => {
         if ((e.target as HTMLElement).closest("button,.zctl,.exp-pill,.br-btn,.ex")) return;
         setDragStart({ x: e.clientX, y: e.clientY, zx: zoom.x, zy: zoom.y });

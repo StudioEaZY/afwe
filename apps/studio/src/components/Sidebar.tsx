@@ -2,7 +2,6 @@
 import React, { useMemo } from "react";
 import {
   Compass,
-  Sparkles,
   History,
   GitBranch,
   ShieldCheck,
@@ -11,17 +10,13 @@ import {
   CircleDot,
 } from "lucide-react";
 import { useStore, View } from "../store";
-import { buildHierarchyTree, findNodeById, HierarchyNode } from "../lib/hierarchy";
+import { buildHierarchyTree, HierarchyNode } from "../lib/hierarchy";
 
 export const Sidebar: React.FC = () => {
   const {
     graph,
     view,
-    activeLens,
-    constellationAnchorKey,
     setView,
-    openConstellationFor,
-    selectEntity,
   } = useStore();
 
   const projectName = graph?.project?.name || "Acme App";
@@ -122,11 +117,6 @@ export const Sidebar: React.FC = () => {
     },
   ];
 
-  const isModelsPresetActive =
-    view === "overview" &&
-    activeLens === "constellation" &&
-    constellationAnchorKey === "Backend/events/models";
-
   return (
     <aside
       className="studio-sidebar"
@@ -185,8 +175,7 @@ export const Sidebar: React.FC = () => {
           }}
         >
           {navItems.map((item) => {
-            const isActive =
-              view === item.key && !(item.key === "overview" && isModelsPresetActive);
+            const isActive = view === item.key;
             return (
               <React.Fragment key={item.key}>
                 <button
@@ -247,68 +236,6 @@ export const Sidebar: React.FC = () => {
                     </span>
                   )}
                 </button>
-
-                {/* Direct Preset Link right under Codebase Overview matching AFWE Codebase Atlas */}
-                {item.key === "overview" && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      openConstellationFor("Backend/events/models");
-                      const n = findNodeById(root, "Backend/events/models");
-                      if (n) {
-                        selectEntity({
-                          id: n.id,
-                          key: n.key,
-                          kind: n.kind,
-                          label: n.label,
-                          path: n.path,
-                          status: "mapped",
-                          state: n.state,
-                          fileCount: n.fileCount,
-                          node: n,
-                        });
-                      }
-                    }}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "7px 10px",
-                      borderRadius: "12px",
-                      border: "none",
-                      background: isModelsPresetActive ? "var(--panel)" : "transparent",
-                      boxShadow: isModelsPresetActive
-                        ? "0 6px 16px -10px var(--shadow)"
-                        : "none",
-                      color: "var(--ink)",
-                      cursor: "pointer",
-                      textAlign: "left",
-                      width: "100%",
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: isModelsPresetActive ? "var(--accent)" : "var(--mute)",
-                        display: "inline-flex",
-                      }}
-                    >
-                      <Sparkles size={14} />
-                    </span>
-                    <div>
-                      <div
-                        style={{
-                          fontWeight: isModelsPresetActive ? 600 : 500,
-                          fontSize: "12.5px",
-                        }}
-                      >
-                        Example: models
-                      </div>
-                      <div style={{ fontSize: "10.5px", color: "var(--mute)" }}>
-                        Backend › events › models
-                      </div>
-                    </div>
-                  </button>
-                )}
               </React.Fragment>
             );
           })}

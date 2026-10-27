@@ -1,0 +1,19 @@
+{
+  "intents": [
+    {
+      "id": "fix-studio-search-and-hover",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Fix search suggestions, hover lineage, passive wheel listener, callout positioning, and remove demo item",
+      "rationale": "Fix passive wheel event listener preventDefault errors, remove hardcoded demo item from Sidebar, fix .call/.zctl positioning and .cell hover lineage in CSS, add instant suggestions to TopBar search, and ensure clean layout without vertical pushdown."
+    }
+  ],
+  "claims": [],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "domain": "architecture"
+    }
+  ]
+}
