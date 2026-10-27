@@ -7,6 +7,7 @@ import {
   Plus,
   Minus,
   RotateCcw,
+  Hand,
 } from "lucide-react";
 import {
   HierarchyNode,
@@ -21,6 +22,13 @@ import {
 } from "../lib/hierarchy";
 import { SvgDomainIcon, SvgMiniLock, SvgMiniAlertTriangle, SvgMiniMutual } from "../lib/lucideSvgPaths";
 import { FilterMode, ConstellationScope } from "../store";
+import {
+  computeFocalZoom,
+  computeStepZoom,
+  computeAdaptiveLabel,
+  computeBadgeInverseScale,
+  useSpacebarPan,
+} from "../lib/semanticZoomEngine";
 
 interface Props {
   root: HierarchyNode;
@@ -80,12 +88,16 @@ export const ConstellationMap: React.FC<Props> = ({
   const [hoveredEdgeIdx, setHoveredEdgeIdx] = useState<number | null>(null);
   const [tip, setTip] = useState<{ x: number; y: number; html: React.ReactNode } | null>(null);
 
+  const [isHandToolActive, setIsHandToolActive] = useState(false);
+  const { isPanMode, cursorStyle, setIsDraggingCanvas } = useSpacebarPan(isHandToolActive);
+
   // Drag-and-drop node offsets state
   const [customOffsets, setCustomOffsets] = useState<Record<string, { x: number; y: number }>>({});
   const [draggingKey, setDraggingKey] = useState<string | null>(null);
   const dragNodeStartRef = useRef<{ clientX: number; clientY: number; initX: number; initY: number } | null>(null);
 
   const handleNodePointerDown = (ev: React.PointerEvent, key: string) => {
+    if (isPanMode) return;
     ev.stopPropagation();
     setDraggingKey(key);
     dragNodeStartRef.current = {
@@ -447,16 +459,14 @@ export const ConstellationMap: React.FC<Props> = ({
     return n.state === filterMode;
   };
 
-  // Non-passive wheel zoom listener to prevent passive event listener invocation errors
+  // Google Maps mouse-anchored focal zoom listener
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      setZoom((z) => ({
-        ...z,
-        k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
-      }));
+      const rect = el.getBoundingClientRect();
+      setZoom((z) => computeFocalZoom(z, e.deltaY, e.clientX, e.clientY, rect));
     };
     el.addEventListener("wheel", handleWheel, { passive: false });
     return () => el.removeEventListener("wheel", handleWheel);
@@ -528,14 +538,22 @@ export const ConstellationMap: React.FC<Props> = ({
 
   const anchorDomain = getDomainNode(root, effectiveNode);
 
+  const badgeScale = computeBadgeInverseScale(zoom.k);
+
   return (
     <div
       ref={stageRef}
       className="stage-soft"
-      style={{ flex: 1, minHeight: 460, userSelect: "none" }}
+      style={{
+        flex: 1,
+        minHeight: 460,
+        userSelect: "none",
+        cursor: cursorStyle || (dragStart ? "grabbing" : "default"),
+      }}
       onPointerDown={(e) => {
-        if ((e.target as HTMLElement).closest("button,.zctl,.exp-pill,.br-btn,.ex")) return;
+        if (!isPanMode && (e.target as HTMLElement).closest("button,.zctl,.exp-pill,.br-btn,.ex")) return;
         setDragStart({ x: e.clientX, y: e.clientY, zx: zoom.x, zy: zoom.y });
+        setIsDraggingCanvas(true);
       }}
       onPointerMove={(e) => {
         if (!dragStart) return;
@@ -545,7 +563,10 @@ export const ConstellationMap: React.FC<Props> = ({
           y: dragStart.zy + (e.clientY - dragStart.y),
         }));
       }}
-      onPointerUp={() => setDragStart(null)}
+      onPointerUp={() => {
+        setDragStart(null);
+        setIsDraggingCanvas(false);
+      }}
     >
       {/* Top Overlay Context Banner & Selection Bar (#stageTop) */}
       <div className="stage-top">
@@ -968,38 +989,50 @@ export const ConstellationMap: React.FC<Props> = ({
                   strokeDasharray={st === "inferred" ? "3 2" : undefined}
                 />
 
-                {p.isSub ? (
-                  <>
-                    <circle cx={-56} cy={-4} r={4} fill={dotColorFor(st)} />
-                    <text
-                      x={4}
-                      y={-2}
-                      textAnchor="middle"
-                      fontSize="11.5"
-                      fontWeight="600"
-                      fill="var(--ink)"
-                    >
-                      {n.label}
-                    </text>
-                    <text x={4} y={11} textAnchor="middle" className="sub-t">
-                      {n.breadcrumbLabels.slice(0, -1).join(" › ")}
-                    </text>
-                  </>
-                ) : (
-                  <>
-                    <circle cx={-43} cy={0} r={4} fill={dotColorFor(st)} />
-                    <text
-                      x={4}
-                      y={4}
-                      textAnchor="middle"
-                      fontSize="12"
-                      fontWeight="500"
-                      fill="var(--ink)"
-                    >
-                      {n.label}
-                    </text>
-                  </>
-                )}
+                {(() => {
+                  const labelLayout = computeAdaptiveLabel(
+                    n.label,
+                    p.isSub ? n.breadcrumbLabels.slice(0, -1).join(" › ") : undefined,
+                    pillW - 32,
+                    zoom.k,
+                    n.hasViolation || n.hasPin
+                  );
+
+                  return p.isSub ? (
+                    <>
+                      <circle cx={-halfW + 16} cy={-4} r={4} fill={dotColorFor(st)} />
+                      <text
+                        x={4}
+                        y={-2}
+                        textAnchor="middle"
+                        fontSize={labelLayout.fontSize}
+                        fontWeight="600"
+                        fill="var(--ink)"
+                      >
+                        {labelLayout.displayText}
+                      </text>
+                      {labelLayout.showSubtext && (
+                        <text x={4} y={11} textAnchor="middle" className="sub-t" fontSize={labelLayout.subFontSize}>
+                          {labelLayout.displaySubtext}
+                        </text>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <circle cx={-halfW + 16} cy={0} r={4} fill={dotColorFor(st)} />
+                      <text
+                        x={4}
+                        y={4}
+                        textAnchor="middle"
+                        fontSize={labelLayout.fontSize}
+                        fontWeight="500"
+                        fill="var(--ink)"
+                      >
+                        {labelLayout.displayText}
+                      </text>
+                    </>
+                  );
+                })()}
 
                 {/* Mutual Dependency Badge */}
                 {p.side === "bidi" && (
@@ -1050,7 +1083,7 @@ export const ConstellationMap: React.FC<Props> = ({
 
                 {/* Pin Badge (Lucide Lock) */}
                 {n.hasPin && (
-                  <g transform={`translate(${halfW - 10}, ${-halfH + 2})`}>
+                  <g transform={`translate(${halfW - 10}, ${-halfH + 2}) scale(${badgeScale})`}>
                     <circle r={7} fill="var(--panel)" stroke="var(--ink)" strokeWidth="1.1" />
                     <SvgMiniLock stroke="var(--ink)" />
                   </g>
@@ -1058,7 +1091,7 @@ export const ConstellationMap: React.FC<Props> = ({
 
                 {/* Violation Badge (Lucide AlertTriangle) */}
                 {n.hasViolation && (
-                  <g transform={`translate(${-halfW + 10}, ${-halfH + 2})`}>
+                  <g transform={`translate(${-halfW + 10}, ${-halfH + 2}) scale(${badgeScale})`}>
                     <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
                   </g>
                 )}
@@ -1235,15 +1268,33 @@ export const ConstellationMap: React.FC<Props> = ({
       <div className="zctl">
         <button
           type="button"
+          className={isHandToolActive ? "active" : ""}
+          title="Hand tool (Hold Spacebar to pan)"
+          style={{
+            background: isHandToolActive ? "var(--ink)" : undefined,
+            color: isHandToolActive ? "var(--panel)" : undefined,
+          }}
+          onClick={() => setIsHandToolActive(!isHandToolActive)}
+        >
+          <Hand size={13} />
+        </button>
+        <button
+          type="button"
           title="Zoom in"
-          onClick={() => setZoom((z) => ({ ...z, k: Math.min(2.6, z.k * 1.18) }))}
+          onClick={() => {
+            const rect = stageRef.current?.getBoundingClientRect() || { width: 720, height: 540, left: 0, top: 0 };
+            setZoom((z) => computeStepZoom(z, "in", rect));
+          }}
         >
           <Plus size={14} />
         </button>
         <button
           type="button"
           title="Zoom out"
-          onClick={() => setZoom((z) => ({ ...z, k: Math.max(0.6, z.k / 1.18) }))}
+          onClick={() => {
+            const rect = stageRef.current?.getBoundingClientRect() || { width: 720, height: 540, left: 0, top: 0 };
+            setZoom((z) => computeStepZoom(z, "out", rect));
+          }}
         >
           <Minus size={14} />
         </button>

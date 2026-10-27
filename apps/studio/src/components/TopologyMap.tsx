@@ -9,6 +9,7 @@ import {
   Minus,
   RotateCcw,
   Move,
+  Hand,
 } from "lucide-react";
 import { useStore } from "../store";
 import { api } from "../api";
@@ -25,6 +26,13 @@ import {
   NodeState,
 } from "../lib/hierarchy";
 import { SvgDomainIcon, SvgMiniLock, SvgMiniAlertTriangle } from "../lib/lucideSvgPaths";
+import {
+  computeFocalZoom,
+  computeStepZoom,
+  computeAdaptiveLabel,
+  computeBadgeInverseScale,
+  useSpacebarPan,
+} from "../lib/semanticZoomEngine";
 
 export interface TopologyDiffMode {
   addedNodes?: Set<string>;
@@ -94,6 +102,9 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [hoveredEdgeIdx, setHoveredEdgeIdx] = useState<number | null>(null);
   const [tip, setTip] = useState<{ x: number; y: number; html: React.ReactNode } | null>(null);
+
+  const [isHandToolActive, setIsHandToolActive] = useState(false);
+  const { isPanMode, cursorStyle, setIsDraggingCanvas } = useSpacebarPan(isHandToolActive);
 
   // Drag-and-drop node offsets state
   const [customOffsets, setCustomOffsets] = useState<Record<string, { x: number; y: number }>>({});
@@ -186,16 +197,14 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
     });
   }, [activeEdges]);
 
-  // Non-passive wheel zoom listener
+  // Google Maps mouse-anchored focal zoom listener
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      setZoom((z) => ({
-        ...z,
-        k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
-      }));
+      const rect = el.getBoundingClientRect();
+      setZoom((z) => computeFocalZoom(z, e.deltaY, e.clientX, e.clientY, rect));
     };
     el.addEventListener("wheel", handleWheel, { passive: false });
     return () => el.removeEventListener("wheel", handleWheel);
@@ -279,6 +288,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
   // Node Drag Handlers
   const handleNodePointerDown = (ev: React.PointerEvent, key: string) => {
+    if (isPanMode) return;
     ev.stopPropagation();
     setDraggingKey(key);
     dragNodeStartRef.current = {
@@ -353,6 +363,9 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
       ? selectedEntity.node || findNodeById(root, selectedEntity.key || selectedEntity.id)
       : null;
 
+  const badgeScale = computeBadgeInverseScale(zoom.k);
+  const hasUpwardViolations = activeEdges.some((e) => (livePos[e.a]?.tier || 0) > (livePos[e.b]?.tier || 0));
+
   return (
     <div
       ref={stageRef}
@@ -362,10 +375,12 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
         minHeight: compact ? 340 : 460,
         userSelect: "none",
         position: "relative",
+        cursor: cursorStyle || (dragStart ? "grabbing" : "default"),
       }}
       onPointerDown={(e) => {
-        if ((e.target as HTMLElement).closest("button,.zctl,.ex")) return;
+        if (!isPanMode && (e.target as HTMLElement).closest("button,.zctl,.ex")) return;
         setDragStart({ x: e.clientX, y: e.clientY, zx: zoom.x, zy: zoom.y });
+        setIsDraggingCanvas(true);
       }}
       onPointerMove={(e) => {
         if (!dragStart) return;
@@ -375,7 +390,10 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
           y: dragStart.zy + (e.clientY - dragStart.y),
         }));
       }}
-      onPointerUp={() => setDragStart(null)}
+      onPointerUp={() => {
+        setDragStart(null);
+        setIsDraggingCanvas(false);
+      }}
     >
       {/* Top Overlay Context Banner & Selection Bar (#stageTop) */}
       {!compact && (
@@ -741,7 +759,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
                 {/* Pin Badge */}
                 {n.hasPin && (
-                  <g transform="translate(108, -28)">
+                  <g transform={`translate(108, -28) scale(${badgeScale})`}>
                     <circle r={7} fill="var(--panel)" stroke="var(--ink)" strokeWidth="1.1" />
                     <SvgMiniLock stroke="var(--ink)" />
                   </g>
@@ -749,7 +767,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
                 {/* Violation Badge */}
                 {n.hasViolation && (
-                  <g transform="translate(-108, -28)">
+                  <g transform={`translate(-108, -28) scale(${badgeScale})`}>
                     <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
                   </g>
                 )}
@@ -782,10 +800,12 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
             <span style={{ width: 16, height: 2, background: "var(--mute)", display: "inline-block" }} />
             Downward dependency
           </span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--red)" }}>
-            <span style={{ width: 16, height: 2, background: "var(--red)", borderTop: "1px dashed var(--red)", display: "inline-block" }} />
-            Forbidden upward violation
-          </span>
+          {hasUpwardViolations && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--red)" }}>
+              <span style={{ width: 16, height: 2, background: "var(--red)", borderTop: "1px dashed var(--red)", display: "inline-block" }} />
+              Forbidden upward violation
+            </span>
+          )}
         </div>
       )}
 
@@ -793,15 +813,33 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
       <div className="zctl">
         <button
           type="button"
+          className={isHandToolActive ? "active" : ""}
+          title="Hand tool (Hold Spacebar to pan)"
+          style={{
+            background: isHandToolActive ? "var(--ink)" : undefined,
+            color: isHandToolActive ? "var(--panel)" : undefined,
+          }}
+          onClick={() => setIsHandToolActive(!isHandToolActive)}
+        >
+          <Hand size={13} />
+        </button>
+        <button
+          type="button"
           title="Zoom in"
-          onClick={() => setZoom((z) => ({ ...z, k: Math.min(2.6, z.k * 1.18) }))}
+          onClick={() => {
+            const rect = stageRef.current?.getBoundingClientRect() || { width: 720, height: 540, left: 0, top: 0 };
+            setZoom((z) => computeStepZoom(z, "in", rect));
+          }}
         >
           <Plus size={14} />
         </button>
         <button
           type="button"
           title="Zoom out"
-          onClick={() => setZoom((z) => ({ ...z, k: Math.max(0.6, z.k / 1.18) }))}
+          onClick={() => {
+            const rect = stageRef.current?.getBoundingClientRect() || { width: 720, height: 540, left: 0, top: 0 };
+            setZoom((z) => computeStepZoom(z, "out", rect));
+          }}
         >
           <Minus size={14} />
         </button>

@@ -1,0 +1,63 @@
+{
+  "intents": [
+    {
+      "id": "semantic-zoom-engine",
+      "targets": ["studio-maps"],
+      "action": "refine",
+      "rationale": "Dedicated semantic zoom engine with focal mouse invariance, level-of-detail tiers, and dynamic space-aware text fit"
+    },
+    {
+      "id": "spacebar-hand-pan-tool",
+      "targets": ["studio-maps", "studio-shell"],
+      "action": "refine",
+      "rationale": "Spacebar hold and toolbar button hand pan mode with node pointer event suppression"
+    },
+    {
+      "id": "adaptive-legend-swatches",
+      "targets": ["studio-maps", "studio-shell", "studio-timeline"],
+      "action": "refine",
+      "rationale": "Adaptive legends that dynamically calculate feature counts and omit empty swatches"
+    },
+    {
+      "id": "timeline-3view-diff-constellation-default",
+      "targets": ["studio-timeline"],
+      "action": "refine",
+      "rationale": "Tri-lens diff split switcher in TimelinePage with Constellation as the default view"
+    },
+    {
+      "id": "radial-softness-restoration",
+      "targets": ["studio-maps"],
+      "action": "refine",
+      "rationale": "Restore editorial softness and stop pointer-down event propagation in RadialMap"
+    },
+    {
+      "id": "upgrade-demo-full-feature-coverage",
+      "targets": ["demo-project", "scripts"],
+      "action": "refine",
+      "rationale": "Guarantee at least 3 instances of all AFWE features in demo-project and multi-intent-funnel"
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "kind": "ast",
+      "scope": "apps/studio/src/lib/semanticZoomEngine.ts",
+      "description": "semanticZoomEngine exports computeFocalZoom",
+      "require_pattern": "export function computeFocalZoom"
+    },
+    {
+      "id": "c2",
+      "kind": "ast",
+      "scope": "apps/studio/src/components/TimelinePage.tsx",
+      "description": "TimelinePage diff view defaults to constellation",
+      "require_pattern": "constellation"
+    },
+    {
+      "id": "c3",
+      "kind": "ast",
+      "scope": "examples/demo-project/.afwe/blueprint/constraints.yaml",
+      "description": "demo-project constraints.yaml references valid 8-domain nodes",
+      "require_pattern": "Data\\.models"
+    }
+  ]
+}

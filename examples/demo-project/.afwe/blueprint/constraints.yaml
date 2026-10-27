@@ -1,29 +1,29 @@
 constraints:
-- id: c-workspace-no-billing
+- id: c-data-no-web
   rule: must_not_depend
-  from: workspace
+  from: Data/models
   to:
-  - billing
-  rationale: Workspace core productivity must remain decoupled from billing and credit card handling.
+  - Web/views
+  rationale: Database models tier must never depend upward on Web presentation views.
   severity: error
-- id: c-search-no-raw-db
+- id: c-core-no-backend
   rule: must_not_depend
-  from: workspace-search
+  from: Core/models
   to:
-  - db-client
-  rationale: Search must index memory objects and never query the primary database client directly.
+  - Backend/api
+  rationale: Core domain logic must not couple to external Backend HTTP API layer.
   severity: error
-- id: c-billing-no-auth-internals
+- id: c-infra-no-services
   rule: must_not_depend
-  from: billing-checkout
+  from: Infrastructure/deploy
   to:
-  - session-token
-  rationale: Checkout must receive authenticated claims from the HTTP context, not generate session tokens.
+  - Services/billing
+  rationale: Infrastructure deployment components must remain decoupled from business billing services.
   severity: error
-- id: c-realtime-read-only
+- id: c-web-no-direct-data
   rule: must_not_depend
-  from: realtime
+  from: Web/views
   to:
-  - billing
-  rationale: Realtime heartbeat workers must never mutate billing ledgers or invoices.
+  - Data/schema
+  rationale: Web views must consume Backend API endpoints, never direct Data storage schemas.
   severity: error

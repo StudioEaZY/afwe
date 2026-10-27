@@ -5,6 +5,7 @@ import {
   Plus,
   Minus,
   RotateCcw,
+  Hand,
 } from "lucide-react";
 import {
   HierarchyNode,
@@ -18,6 +19,12 @@ import {
 } from "../lib/hierarchy";
 import { SvgDomainIcon, SvgMiniLock, SvgMiniAlertTriangle } from "../lib/lucideSvgPaths";
 import { FilterMode } from "../store";
+import {
+  computeFocalZoom,
+  computeStepZoom,
+  computeBadgeInverseScale,
+  useSpacebarPan,
+} from "../lib/semanticZoomEngine";
 
 interface Props {
   root: HierarchyNode;
@@ -99,6 +106,8 @@ export const RadialMap: React.FC<Props> = ({
   const [dragStart, setDragStart] = useState<{ x: number; y: number; zx: number; zy: number } | null>(null);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [tip, setTip] = useState<{ x: number; y: number; html: React.ReactNode } | null>(null);
+  const [isHandToolActive, setIsHandToolActive] = useState(false);
+  const { isPanMode, cursorStyle, setIsDraggingCanvas } = useSpacebarPan(isHandToolActive);
 
   // Build partition layout up to `depth` rings
   const { levels, ringStep, mappedPct, totalFiles } = useMemo(() => {
@@ -200,16 +209,14 @@ export const RadialMap: React.FC<Props> = ({
     };
   }, [focusNode, depth, growth, denseL4, timelineT, root]);
 
-  // Non-passive wheel zoom listener to prevent passive event listener invocation errors
+  // Google Maps mouse-anchored focal zoom listener
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      setZoom((z) => ({
-        ...z,
-        k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
-      }));
+      const rect = el.getBoundingClientRect();
+      setZoom((z) => computeFocalZoom(z, e.deltaY, e.clientX, e.clientY, rect));
     };
     el.addEventListener("wheel", handleWheel, { passive: false });
     return () => el.removeEventListener("wheel", handleWheel);
@@ -264,15 +271,22 @@ export const RadialMap: React.FC<Props> = ({
       : null;
 
   const isRootFocus = focusNode.id === root.id || focusNode.depth === 0;
+  const badgeScale = computeBadgeInverseScale(zoom.k);
 
   return (
     <div
       ref={stageRef}
       className="stage-soft"
-      style={{ flex: 1, minHeight: 460, userSelect: "none" }}
+      style={{
+        flex: 1,
+        minHeight: 460,
+        userSelect: "none",
+        cursor: cursorStyle || (dragStart ? "grabbing" : "default"),
+      }}
       onPointerDown={(e) => {
-        if ((e.target as HTMLElement).closest("button,.zctl,.cell,.sect")) return;
+        if (!isPanMode && (e.target as HTMLElement).closest("button,.zctl,.cell,.sect")) return;
         setDragStart({ x: e.clientX, y: e.clientY, zx: zoom.x, zy: zoom.y });
+        setIsDraggingCanvas(true);
       }}
       onPointerMove={(e) => {
         if (!dragStart) return;
@@ -282,7 +296,10 @@ export const RadialMap: React.FC<Props> = ({
           y: dragStart.zy + (e.clientY - dragStart.y),
         }));
       }}
-      onPointerUp={() => setDragStart(null)}
+      onPointerUp={() => {
+        setDragStart(null);
+        setIsDraggingCanvas(false);
+      }}
     >
       {/* Top Overlay Context Banner & Selection Bar (#stageTop) */}
       <div className="stage-top">
@@ -335,6 +352,11 @@ export const RadialMap: React.FC<Props> = ({
         style={{ width: "100%", height: "100%", maxHeight: 540, display: "block", margin: "0 auto" }}
       >
         <defs>
+          <radialGradient id="radial-soft-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.08" />
+            <stop offset="55%" stopColor="var(--side)" stopOpacity="0.04" />
+            <stop offset="100%" stopColor="var(--bg)" stopOpacity="0" />
+          </radialGradient>
           <pattern
             id="hatch-radial"
             width="6"
@@ -348,6 +370,13 @@ export const RadialMap: React.FC<Props> = ({
         </defs>
 
         <g transform={`translate(${zoom.x},${zoom.y}) scale(${zoom.k})`}>
+          {/* Soft Luminescence Backdrop */}
+          <circle
+            r={R0 + ringStep * depth + 24}
+            fill="url(#radial-soft-glow)"
+            pointerEvents="none"
+          />
+
           {/* Outer Halo Ring */}
           <circle
             r={R0 + ringStep * depth + 10}
@@ -474,6 +503,9 @@ export const RadialMap: React.FC<Props> = ({
                         setHoveredKey(null);
                         setTip(null);
                       }}
+                      onPointerDown={(ev) => {
+                        ev.stopPropagation();
+                      }}
                       onClick={(ev) => {
                         ev.stopPropagation();
                         handleSelectNode(n);
@@ -497,7 +529,9 @@ export const RadialMap: React.FC<Props> = ({
                             ? "var(--ink)"
                             : "var(--bg)"
                         }
-                        strokeWidth={n.hasViolation || isSelected ? 1.8 : 1.2}
+                        strokeWidth={n.hasViolation || isSelected ? 1.8 : 1.4}
+                        strokeLinejoin="round"
+                        strokeLinecap="round"
                         strokeDasharray={n.state === "inferred" ? "4 2.5" : undefined}
                       />
 
@@ -559,7 +593,7 @@ export const RadialMap: React.FC<Props> = ({
                         <g
                           transform={`translate(${(Math.sin(p.a0 + 0.05) * markR).toFixed(1)},${(
                             -Math.cos(p.a0 + 0.05) * markR
-                          ).toFixed(1)})`}
+                          ).toFixed(1)}) scale(${badgeScale})`}
                           style={{ pointerEvents: "none" }}
                         >
                           <circle r={6.5} fill="var(--panel)" stroke="var(--ink)" strokeWidth="1.2" />
@@ -571,7 +605,7 @@ export const RadialMap: React.FC<Props> = ({
                         <g
                           transform={`translate(${(Math.sin(p.a1 - 0.05) * markR).toFixed(1)},${(
                             -Math.cos(p.a1 - 0.05) * markR
-                          ).toFixed(1)})`}
+                          ).toFixed(1)}) scale(${badgeScale})`}
                           style={{ pointerEvents: "none" }}
                         >
                           <circle r={6.5} fill="var(--amber)" stroke="var(--panel)" strokeWidth="1.2" />
@@ -592,7 +626,7 @@ export const RadialMap: React.FC<Props> = ({
                           transform={`translate(${(Math.sin(midAngle) * (r1 - 6)).toFixed(1)},${(
                             -Math.cos(midAngle) *
                             (r1 - 6)
-                          ).toFixed(1)})`}
+                          ).toFixed(1)}) scale(${badgeScale})`}
                           style={{ pointerEvents: "none" }}
                         >
                           <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
@@ -604,7 +638,7 @@ export const RadialMap: React.FC<Props> = ({
                           transform={`translate(${(Math.sin(midAngle) * (r0 + 10)).toFixed(1)},${(
                             -Math.cos(midAngle) *
                             (r0 + 10)
-                          ).toFixed(1)})`}
+                          ).toFixed(1)}) scale(${badgeScale})`}
                           style={{ pointerEvents: "none" }}
                         >
                           <circle r={6.5} fill="var(--panel)" stroke="var(--mute)" />
@@ -629,16 +663,26 @@ export const RadialMap: React.FC<Props> = ({
           {/* Center Hub Disc */}
           <g
             style={{ cursor: isRootFocus ? "default" : "pointer" }}
+            onPointerDown={(ev) => ev.stopPropagation()}
             onClick={(ev) => {
               ev.stopPropagation();
               if (!isRootFocus) onDrillUp();
             }}
           >
             <circle
-              r={R0 - 6}
+              r={R0 - 4}
+              fill="none"
+              stroke="var(--line)"
+              strokeWidth="1"
+              strokeDasharray="3 3"
+              opacity={0.65}
+            />
+            <circle
+              r={R0 - 7}
               fill="var(--disc)"
               stroke="var(--line)"
-              style={{ filter: "drop-shadow(0 6px 14px var(--shadow))" }}
+              strokeWidth="1.5"
+              style={{ filter: "drop-shadow(0 8px 20px var(--shadow))" }}
             />
             <text
               y={isRootFocus ? -6 : -10}
@@ -670,15 +714,33 @@ export const RadialMap: React.FC<Props> = ({
       <div className="zctl">
         <button
           type="button"
+          className={isHandToolActive ? "active" : ""}
+          title="Hand tool (Hold Spacebar to pan)"
+          style={{
+            background: isHandToolActive ? "var(--ink)" : undefined,
+            color: isHandToolActive ? "var(--panel)" : undefined,
+          }}
+          onClick={() => setIsHandToolActive(!isHandToolActive)}
+        >
+          <Hand size={13} />
+        </button>
+        <button
+          type="button"
           title="Zoom in"
-          onClick={() => setZoom((z) => ({ ...z, k: Math.min(2.6, z.k * 1.18) }))}
+          onClick={() => {
+            const rect = stageRef.current?.getBoundingClientRect() || { width: 720, height: 540, left: 0, top: 0 };
+            setZoom((z) => computeStepZoom(z, "in", rect));
+          }}
         >
           <Plus size={14} />
         </button>
         <button
           type="button"
           title="Zoom out"
-          onClick={() => setZoom((z) => ({ ...z, k: Math.max(0.6, z.k / 1.18) }))}
+          onClick={() => {
+            const rect = stageRef.current?.getBoundingClientRect() || { width: 720, height: 540, left: 0, top: 0 };
+            setZoom((z) => computeStepZoom(z, "out", rect));
+          }}
         >
           <Minus size={14} />
         </button>

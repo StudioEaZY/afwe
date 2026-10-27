@@ -1,0 +1,19 @@
+id: spacebar-hand-pan-tool
+title: spacebar-hand-pan-tool
+statement: Google Maps semantic zoom engine, spacebar pan hand tool, adaptive legends, timeline 3-view diff with constellation default, radial softness, and at least 3 instances of all AFWE features in demo data
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio-maps
+  - studio-shell
+from_turns:
+- t0034
+history:
+- turn: t0034
+  ts: 2026-10-27T10:32:15Z
+  statement: Google Maps semantic zoom engine, spacebar pan hand tool, adaptive legends, timeline 3-view diff with constellation default, radial softness, and at least 3 instances of all AFWE features in demo data
+  rationale: Spacebar hold and toolbar button hand pan mode with node pointer event suppression
+created: 2026-10-27T10:32:15Z
+updated: 2026-10-27T10:32:15Z
+task: task-t0034

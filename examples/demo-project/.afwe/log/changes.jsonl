@@ -80,3 +80,6 @@
 {"ts":"2026-10-27T09:03:02Z","origin":"human:sync","kind":"sync","summary":"Synced 371 files; applied 3, proposed 5, uncertain 3"}
 {"ts":"2026-10-27T09:28:42Z","origin":"human","kind":"verify","summary":"verify: failed (1 errors, 363 warnings)"}
 {"ts":"2026-10-27T09:32:12Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 26 warnings)"}
+{"ts":"2026-10-27T10:26:09Z","origin":"human","kind":"verify","summary":"verify: ok (0 errors, 26 warnings)"}
+{"ts":"2026-10-27T10:49:48Z","origin":"human","kind":"verify","summary":"verify: failed (4 errors, 18 warnings)"}
+{"ts":"2026-10-27T10:50:27Z","origin":"human","kind":"verify","summary":"verify: failed (4 errors, 0 warnings)"}

@@ -16,12 +16,18 @@ import {
   ChevronRight,
   X,
   FileCode,
+  Sparkles,
+  Disc,
+  Layers,
 } from "lucide-react";
 import { useStore } from "../store";
 import { api, SceneData } from "../api";
 import { TimelineDualScrubber, TimelineTurnItem } from "./TimelineDualScrubber";
 import { CodeDiffViewer } from "./CodeDiffViewer";
 import { TopologyMap, TopologyDiffMode } from "./TopologyMap";
+import { ConstellationMap } from "./ConstellationMap";
+import { RadialMap } from "./RadialMap";
+import { buildHierarchyTree, buildDirectedEdges, HierarchyNode } from "../lib/hierarchy";
 import { HarnessFixButton } from "./HarnessFixPrompt";
 
 export const TimelinePage: React.FC = () => {
@@ -45,6 +51,42 @@ export const TimelinePage: React.FC = () => {
   // Scenes for Before vs After live topology comparison
   const [beforeScene, setBeforeScene] = useState<SceneData | null>(null);
   const [afterScene, setAfterScene] = useState<SceneData | null>(null);
+
+  // Diff view mode selector supporting all 3 view types with Constellation as default
+  const [diffViewMode, setDiffViewMode] = useState<"constellation" | "radial" | "topology">("constellation");
+
+  // Reconstructed point-in-time graphs for Before & After 3-view comparison
+  const beforeEffectiveGraph = useMemo(() => {
+    if (!beforeScene) return graph;
+    const s = beforeScene as any;
+    return {
+      ...graph,
+      nodes: s.nodes || graph?.nodes || [],
+      code_edges: s.edges || s.code_edges || graph?.code_edges || [],
+    };
+  }, [beforeScene, graph]);
+
+  const afterEffectiveGraph = useMemo(() => {
+    if (!afterScene) return graph;
+    const s = afterScene as any;
+    return {
+      ...graph,
+      nodes: s.nodes || graph?.nodes || [],
+      code_edges: s.edges || s.code_edges || graph?.code_edges || [],
+    };
+  }, [afterScene, graph]);
+
+  const beforeRoot = useMemo(() => buildHierarchyTree(beforeEffectiveGraph), [beforeEffectiveGraph]);
+  const afterRoot = useMemo(() => buildHierarchyTree(afterEffectiveGraph), [afterEffectiveGraph]);
+
+  const { domainEdges: beforeDomainEdges, nodeEdges: beforeNodeEdges } = useMemo(
+    () => buildDirectedEdges(beforeEffectiveGraph, beforeRoot),
+    [beforeEffectiveGraph, beforeRoot]
+  );
+  const { domainEdges: afterDomainEdges, nodeEdges: afterNodeEdges } = useMemo(
+    () => buildDirectedEdges(afterEffectiveGraph, afterRoot),
+    [afterEffectiveGraph, afterRoot]
+  );
 
   const projectName = graph?.project?.name || "acme-platform";
 
@@ -302,13 +344,105 @@ export const TimelinePage: React.FC = () => {
           />
         </div>
 
-        {/* 3. Live Side-by-Side Topology Architecture Diff ('Before #id' vs 'After #id') */}
+        {/* Diff View Mode Switcher Header Bar (Constellation Default) */}
+        <div
+          style={{
+            padding: "8px 24px",
+            background: "var(--bg)",
+            borderBottom: "1px solid var(--line)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--mute)" }}>
+              Diff View:
+            </span>
+            <div
+              style={{
+                display: "inline-flex",
+                background: "var(--panel)",
+                border: "1px solid var(--line)",
+                borderRadius: "8px",
+                padding: "2px",
+                gap: "2px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setDiffViewMode("constellation")}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  fontSize: "12px",
+                  fontWeight: diffViewMode === "constellation" ? 600 : 500,
+                  padding: "4px 10px",
+                  borderRadius: "6px",
+                  border: "none",
+                  background: diffViewMode === "constellation" ? "var(--ink)" : "transparent",
+                  color: diffViewMode === "constellation" ? "var(--panel)" : "var(--mute)",
+                  cursor: "pointer",
+                }}
+              >
+                <Sparkles size={12} />
+                Constellation
+              </button>
+              <button
+                type="button"
+                onClick={() => setDiffViewMode("radial")}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  fontSize: "12px",
+                  fontWeight: diffViewMode === "radial" ? 600 : 500,
+                  padding: "4px 10px",
+                  borderRadius: "6px",
+                  border: "none",
+                  background: diffViewMode === "radial" ? "var(--ink)" : "transparent",
+                  color: diffViewMode === "radial" ? "var(--panel)" : "var(--mute)",
+                  cursor: "pointer",
+                }}
+              >
+                <Disc size={12} />
+                Radial
+              </button>
+              <button
+                type="button"
+                onClick={() => setDiffViewMode("topology")}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  fontSize: "12px",
+                  fontWeight: diffViewMode === "topology" ? 600 : 500,
+                  padding: "4px 10px",
+                  borderRadius: "6px",
+                  border: "none",
+                  background: diffViewMode === "topology" ? "var(--ink)" : "transparent",
+                  color: diffViewMode === "topology" ? "var(--panel)" : "var(--mute)",
+                  cursor: "pointer",
+                }}
+              >
+                <Layers size={12} />
+                Topology
+              </button>
+            </div>
+          </div>
+          <span style={{ fontSize: "11px", color: "var(--mute)" }}>
+            Comparing architecture across Turn #{selectedTurn?.id}
+          </span>
+        </div>
+
+        {/* 3. Live Side-by-Side Architecture Diff ('Before #id' vs 'After #id') */}
         <div
           style={{
             display: "flex",
             borderBottom: "1px solid var(--line)",
             background: "var(--bg)",
-            minHeight: "310px",
+            minHeight: "330px",
             overflow: "hidden",
             position: "relative",
           }}
@@ -344,12 +478,47 @@ export const TimelinePage: React.FC = () => {
               </span>
             </div>
 
-            <div style={{ flex: 1, background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "10px", overflow: "hidden" }}>
-              <TopologyMap
-                compact={true}
-                snapshotScene={beforeScene}
-                diffMode={diffData}
-              />
+            <div style={{ flex: 1, minHeight: "340px", background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "10px", overflow: "hidden", display: "flex" }}>
+              {diffViewMode === "constellation" ? (
+                <ConstellationMap
+                  root={beforeRoot}
+                  anchorKey={null}
+                  domainEdges={beforeDomainEdges}
+                  nodeEdges={beforeNodeEdges}
+                  scope="map"
+                  forceParentFallback={false}
+                  timelineT={1}
+                  compareT={1}
+                  neighborhoodExpanded={false}
+                  filterMode="all"
+                  selectedEntity={null}
+                  onSelectEntity={() => {}}
+                  onSetAnchor={() => {}}
+                  onSetForceParentFallback={() => {}}
+                  onOpenInRadial={() => {}}
+                />
+              ) : diffViewMode === "radial" ? (
+                <RadialMap
+                  root={beforeRoot}
+                  focusNode={beforeRoot}
+                  depth={3}
+                  growth={false}
+                  denseL4={false}
+                  timelineT={1}
+                  selectedEntity={null}
+                  filterMode="all"
+                  onSelectEntity={() => {}}
+                  onDrillDown={() => {}}
+                  onDrillUp={() => {}}
+                  onOpenConstellation={() => {}}
+                />
+              ) : (
+                <TopologyMap
+                  compact={true}
+                  snapshotScene={beforeScene}
+                  diffMode={diffData}
+                />
+              )}
             </div>
           </div>
 
@@ -404,12 +573,47 @@ export const TimelinePage: React.FC = () => {
               </span>
             </div>
 
-            <div style={{ flex: 1, background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "10px", overflow: "hidden" }}>
-              <TopologyMap
-                compact={true}
-                snapshotScene={afterScene}
-                diffMode={diffData}
-              />
+            <div style={{ flex: 1, minHeight: "340px", background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "10px", overflow: "hidden", display: "flex" }}>
+              {diffViewMode === "constellation" ? (
+                <ConstellationMap
+                  root={afterRoot}
+                  anchorKey={null}
+                  domainEdges={afterDomainEdges}
+                  nodeEdges={afterNodeEdges}
+                  scope="map"
+                  forceParentFallback={false}
+                  timelineT={1}
+                  compareT={1}
+                  neighborhoodExpanded={false}
+                  filterMode="all"
+                  selectedEntity={null}
+                  onSelectEntity={() => {}}
+                  onSetAnchor={() => {}}
+                  onSetForceParentFallback={() => {}}
+                  onOpenInRadial={() => {}}
+                />
+              ) : diffViewMode === "radial" ? (
+                <RadialMap
+                  root={afterRoot}
+                  focusNode={afterRoot}
+                  depth={3}
+                  growth={false}
+                  denseL4={false}
+                  timelineT={1}
+                  selectedEntity={null}
+                  filterMode="all"
+                  onSelectEntity={() => {}}
+                  onDrillDown={() => {}}
+                  onDrillUp={() => {}}
+                  onOpenConstellation={() => {}}
+                />
+              ) : (
+                <TopologyMap
+                  compact={true}
+                  snapshotScene={afterScene}
+                  diffMode={diffData}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -457,10 +661,12 @@ export const TimelinePage: React.FC = () => {
             <span style={{ width: 14, height: 2, background: "var(--red)", borderTop: "1px dashed var(--red)", display: "inline-block" }} />
             Removed dependency
           </span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--red)", fontWeight: 600 }}>
-            <span style={{ width: 14, height: 2, background: "var(--red)", borderTop: "2px dotted var(--red)", display: "inline-block" }} />
-            Rule violation
-          </span>
+          {(diffData.violatedNodes?.size || 0) > 0 && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--red)", fontWeight: 600 }}>
+              <span style={{ width: 14, height: 2, background: "var(--red)", borderTop: "2px dotted var(--red)", display: "inline-block" }} />
+              Rule violation ({diffData.violatedNodes?.size})
+            </span>
+          )}
         </div>
 
         {/* 4. Bottom Tabbed Diff Panel */}

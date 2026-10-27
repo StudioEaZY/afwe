@@ -1,0 +1,19 @@
+id: upgrade-demo-full-feature-coverage
+title: upgrade-demo-full-feature-coverage
+statement: Google Maps semantic zoom engine, spacebar pan hand tool, adaptive legends, timeline 3-view diff with constellation default, radial softness, and at least 3 instances of all AFWE features in demo data
+status: active
+origin: human
+attaches:
+  nodes:
+  - demo-project
+  - scripts
+from_turns:
+- t0034
+history:
+- turn: t0034
+  ts: 2026-10-27T10:32:15Z
+  statement: Google Maps semantic zoom engine, spacebar pan hand tool, adaptive legends, timeline 3-view diff with constellation default, radial softness, and at least 3 instances of all AFWE features in demo data
+  rationale: Guarantee at least 3 instances of all AFWE features in demo-project and multi-intent-funnel
+created: 2026-10-27T10:32:15Z
+updated: 2026-10-27T10:32:15Z
+task: task-t0034

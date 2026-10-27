@@ -1,0 +1,18 @@
+id: semantic-zoom-engine
+title: semantic-zoom-engine
+statement: Google Maps semantic zoom engine, spacebar pan hand tool, adaptive legends, timeline 3-view diff with constellation default, radial softness, and at least 3 instances of all AFWE features in demo data
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio-maps
+from_turns:
+- t0034
+history:
+- turn: t0034
+  ts: 2026-10-27T10:32:15Z
+  statement: Google Maps semantic zoom engine, spacebar pan hand tool, adaptive legends, timeline 3-view diff with constellation default, radial softness, and at least 3 instances of all AFWE features in demo data
+  rationale: Dedicated semantic zoom engine with focal mouse invariance, level-of-detail tiers, and dynamic space-aware text fit
+created: 2026-10-27T10:32:15Z
+updated: 2026-10-27T10:32:15Z
+task: task-t0034

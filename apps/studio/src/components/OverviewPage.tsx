@@ -134,6 +134,36 @@ export const OverviewPage: React.FC = () => {
     return trail;
   }, [rootHierarchy, focusNode]);
 
+  // Adaptive Legend Indicator Counts (pruning 0-count swatches)
+  const indicatorCounts = useMemo(() => {
+    let pinCount = 0;
+    let propCount = 0;
+    let violCount = 0;
+    let legacyCount = 0;
+
+    const countNode = (n: HierarchyNode) => {
+      if ((n.birth || 0) > overviewTimelineT) return;
+      if (n.hasPin) pinCount++;
+      if (n.hasProposal) propCount++;
+      if (n.hasViolation) violCount++;
+      if (n.state === "legacy") legacyCount++;
+      (n.children || []).forEach(countNode);
+    };
+    countNode(rootHierarchy);
+
+    const violEdgeCount = (domainEdges || []).filter(
+      (e) => e.bad && e.birth <= overviewTimelineT && (e.death === null || e.death > overviewTimelineT)
+    ).length;
+    violCount += violEdgeCount;
+
+    return {
+      pins: pinCount,
+      proposals: propCount,
+      violations: violCount,
+      legacy: legacyCount,
+    };
+  }, [rootHierarchy, domainEdges, overviewTimelineT]);
+
   const selectedNode =
     selectedEntity && selectedEntity.kind !== "edge"
       ? selectedEntity.node || findNodeById(rootHierarchy, selectedEntity.key || selectedEntity.id)
@@ -553,43 +583,51 @@ export const OverviewPage: React.FC = () => {
             />
             Unmapped (?)
           </span>
-          <span className="leg" title="Legacy subsystems maintained with quarantine boundaries">
-            <i className="sw" style={{ background: "var(--legacy)" }} />
-            Legacy
-          </span>
-          <span className="leg" title="Lock icon: Enforced invariant rule strictly checked before commit">
-            <Lock size={12} style={{ color: "var(--ink)" }} />
-            Pinned check
-          </span>
-          <span className="leg" title="Amber ! badge: Pending proposal awaiting review or confirmation">
-            <span
-              style={{
-                display: "inline-grid",
-                placeItems: "center",
-                width: 13,
-                height: 13,
-                borderRadius: "50%",
-                background: "var(--amber)",
-                color: "#fff",
-                fontSize: 9,
-                fontWeight: 700,
-              }}
-            >
-              !
+          {indicatorCounts.legacy > 0 && (
+            <span className="leg" title={`Legacy subsystems maintained with quarantine boundaries (${indicatorCounts.legacy})`}>
+              <i className="sw" style={{ background: "var(--legacy)" }} />
+              Legacy ({indicatorCounts.legacy})
             </span>
-            Pending proposal
-          </span>
-          <span className="leg" title="Red triangle: Boundary violation detected between architectural subsystems">
-            <i
-              style={{
-                width: 16,
-                borderTop: "2px dashed var(--red)",
-                display: "inline-block",
-              }}
-            />
-            <AlertTriangle size={12} style={{ color: "var(--red)" }} />
-            Rule violation
-          </span>
+          )}
+          {indicatorCounts.pins > 0 && (
+            <span className="leg" title={`Lock icon: Enforced invariant rule strictly checked before commit (${indicatorCounts.pins})`}>
+              <Lock size={12} style={{ color: "var(--ink)" }} />
+              Pinned check ({indicatorCounts.pins})
+            </span>
+          )}
+          {indicatorCounts.proposals > 0 && (
+            <span className="leg" title={`Amber ! badge: Pending proposal awaiting review or confirmation (${indicatorCounts.proposals})`}>
+              <span
+                style={{
+                  display: "inline-grid",
+                  placeItems: "center",
+                  width: 13,
+                  height: 13,
+                  borderRadius: "50%",
+                  background: "var(--amber)",
+                  color: "#fff",
+                  fontSize: 9,
+                  fontWeight: 700,
+                }}
+              >
+                !
+              </span>
+              Pending proposal ({indicatorCounts.proposals})
+            </span>
+          )}
+          {indicatorCounts.violations > 0 && (
+            <span className="leg" title={`Red triangle: Boundary violation detected between architectural subsystems (${indicatorCounts.violations})`}>
+              <i
+                style={{
+                  width: 16,
+                  borderTop: "2px dashed var(--red)",
+                  display: "inline-block",
+                }}
+              />
+              <AlertTriangle size={12} style={{ color: "var(--red)" }} />
+              Rule violation ({indicatorCounts.violations})
+            </span>
+          )}
 
           <div className="tl">
             {activeLens === "constellation" && constellationScope === "two" && (
