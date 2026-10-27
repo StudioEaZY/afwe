@@ -18,7 +18,10 @@
   "services/status_worker.py": {
     "language": "python",
     "hash": "9ffbcc6867d7fd08",
-    "nodes": [],
+    "node": "Services",
+    "nodes": [
+      "Services"
+    ],
     "symbols": [
       "services/status_worker.py::StatusWorker",
       "services/status_worker.py::StatusWorker.__init__",
@@ -34,9 +37,9 @@
   "src/auth/auth.ts": {
     "language": "typescript",
     "hash": "0737afd4d53d101d",
-    "node": "identity",
+    "node": "Backend/auth",
     "nodes": [
-      "identity"
+      "Backend/auth"
     ],
     "symbols": [
       "src/auth/auth.ts::store",
@@ -52,10 +55,9 @@
   "src/auth/jwtSigner.ts": {
     "language": "typescript",
     "hash": "c815fcec594c8d6f",
-    "node": "jwt-signer",
+    "node": "Backend/auth",
     "nodes": [
-      "jwt-signer",
-      "identity"
+      "Backend/auth"
     ],
     "symbols": [
       "src/auth/jwtSigner.ts::TokenPayload",
@@ -67,9 +69,9 @@
   "src/auth/oauth.ts": {
     "language": "typescript",
     "hash": "97b988614e0f4f94",
-    "node": "identity",
+    "node": "Backend/auth",
     "nodes": [
-      "identity"
+      "Backend/auth"
     ],
     "symbols": [
       "src/auth/oauth.ts::OAuthProfile",
@@ -84,10 +86,9 @@
   "src/auth/session.ts": {
     "language": "typescript",
     "hash": "1a7c4da991b77568",
-    "node": "session-token",
+    "node": "Backend/auth",
     "nodes": [
-      "session-token",
-      "identity"
+      "Backend/auth"
     ],
     "symbols": [
       "src/auth/session.ts::SESSION_TTL_MS",
@@ -105,9 +106,9 @@
   "src/auth/sessionStore.ts": {
     "language": "typescript",
     "hash": "86dc385aa2062882",
-    "node": "identity",
+    "node": "Backend/auth",
     "nodes": [
-      "identity"
+      "Backend/auth"
     ],
     "symbols": [
       "src/auth/sessionStore.ts::SessionStore",
@@ -120,13 +121,1924 @@
     ],
     "externals": []
   },
+  "src/backend/api/auth/index.ts": {
+    "language": "typescript",
+    "hash": "c2dadbf346c0e561",
+    "node": "Backend/api/auth",
+    "nodes": [
+      "Backend/api/auth",
+      "Backend/api",
+      "Backend",
+      "Backend/api/auth",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/auth/index.ts::Backend_api_auth_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/api/auth/mod_2.ts": {
+    "language": "typescript",
+    "hash": "0a4ed8a06abc5647",
+    "node": "Backend/api/auth",
+    "nodes": [
+      "Backend/api/auth",
+      "Backend/api",
+      "Backend",
+      "Backend/api/auth",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/auth/mod_2.ts::Backend_api_auth_op_2"
+    ],
+    "imports": [
+      "src/backend/api/auth/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/auth/mod_3.ts": {
+    "language": "typescript",
+    "hash": "7c6e356969af86f5",
+    "node": "Backend/api/auth",
+    "nodes": [
+      "Backend/api/auth",
+      "Backend/api",
+      "Backend",
+      "Backend/api/auth",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/auth/mod_3.ts::Backend_api_auth_op_3"
+    ],
+    "imports": [
+      "src/backend/api/auth/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/handlers/index.ts": {
+    "language": "typescript",
+    "hash": "01ba46b9e37f9cd7",
+    "node": "Backend/api/handlers",
+    "nodes": [
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/handlers/index.ts::Backend_api_handlers_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/handlers/mod_2.ts": {
+    "language": "typescript",
+    "hash": "7e52932dd6425aa5",
+    "node": "Backend/api/handlers",
+    "nodes": [
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/handlers/mod_2.ts::Backend_api_handlers_op_2"
+    ],
+    "imports": [
+      "src/backend/api/handlers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/handlers/mod_3.ts": {
+    "language": "typescript",
+    "hash": "7b35d853a2373da1",
+    "node": "Backend/api/handlers",
+    "nodes": [
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/handlers/mod_3.ts::Backend_api_handlers_op_3"
+    ],
+    "imports": [
+      "src/backend/api/handlers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/handlers/mod_4.ts": {
+    "language": "typescript",
+    "hash": "eae8d244105ec83a",
+    "node": "Backend/api/handlers",
+    "nodes": [
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/handlers/mod_4.ts::Backend_api_handlers_op_4"
+    ],
+    "imports": [
+      "src/backend/api/handlers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/handlers/order_ctrl/index.ts": {
+    "language": "typescript",
+    "hash": "4b5ec217aca3b6e1",
+    "node": "Backend/api/handlers/order_ctrl",
+    "nodes": [
+      "Backend/api/handlers/order_ctrl",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend",
+      "Backend/api/handlers/order_ctrl",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/handlers/order_ctrl/index.ts::Backend_api_handlers_order_ctrl_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/api/handlers/order_ctrl/mod_2.ts": {
+    "language": "typescript",
+    "hash": "d651aed6f199bc79",
+    "node": "Backend/api/handlers/order_ctrl",
+    "nodes": [
+      "Backend/api/handlers/order_ctrl",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend",
+      "Backend/api/handlers/order_ctrl",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/handlers/order_ctrl/mod_2.ts::Backend_api_handlers_order_ctrl_op_2"
+    ],
+    "imports": [
+      "src/backend/api/handlers/order_ctrl/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/handlers/user_ctrl/index.ts": {
+    "language": "typescript",
+    "hash": "0d478c78338a8b69",
+    "node": "Backend/api/handlers/user_ctrl",
+    "nodes": [
+      "Backend/api/handlers/user_ctrl",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend",
+      "Backend/api/handlers/user_ctrl",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/handlers/user_ctrl/index.ts::Backend_api_handlers_user_ctrl_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/api/handlers/user_ctrl/mod_2.ts": {
+    "language": "typescript",
+    "hash": "d8f9be20ce7d894b",
+    "node": "Backend/api/handlers/user_ctrl",
+    "nodes": [
+      "Backend/api/handlers/user_ctrl",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend",
+      "Backend/api/handlers/user_ctrl",
+      "Backend/api/handlers",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/handlers/user_ctrl/mod_2.ts::Backend_api_handlers_user_ctrl_op_2"
+    ],
+    "imports": [
+      "src/backend/api/handlers/user_ctrl/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/index.ts": {
+    "language": "typescript",
+    "hash": "165cef21c9cedc89",
+    "node": "Backend/api",
+    "nodes": [
+      "Backend/api",
+      "Backend",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/index.ts::Backend_api_entry"
+    ],
+    "imports": [
+      "src/backend/events/index.ts",
+      "src/backend/auth/index.ts",
+      "src/data/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/mod_2.ts": {
+    "language": "typescript",
+    "hash": "e228fc6db5968e08",
+    "node": "Backend/api",
+    "nodes": [
+      "Backend/api",
+      "Backend",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/mod_2.ts::Backend_api_op_2"
+    ],
+    "imports": [
+      "src/backend/api/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/mod_3.ts": {
+    "language": "typescript",
+    "hash": "5dc616e1570a2abe",
+    "node": "Backend/api",
+    "nodes": [
+      "Backend/api",
+      "Backend",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/mod_3.ts::Backend_api_op_3"
+    ],
+    "imports": [
+      "src/backend/api/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/routes/index.ts": {
+    "language": "typescript",
+    "hash": "160edc6013e53071",
+    "node": "Backend/api/routes",
+    "nodes": [
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/index.ts::Backend_api_routes_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/routes/mod_2.ts": {
+    "language": "typescript",
+    "hash": "80caba7b497bbbe5",
+    "node": "Backend/api/routes",
+    "nodes": [
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/mod_2.ts::Backend_api_routes_op_2"
+    ],
+    "imports": [
+      "src/backend/api/routes/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/routes/mod_3.ts": {
+    "language": "typescript",
+    "hash": "0c3b557462874c32",
+    "node": "Backend/api/routes",
+    "nodes": [
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/mod_3.ts::Backend_api_routes_op_3"
+    ],
+    "imports": [
+      "src/backend/api/routes/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/routes/mod_4.ts": {
+    "language": "typescript",
+    "hash": "af93e1a752a7dc53",
+    "node": "Backend/api/routes",
+    "nodes": [
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/mod_4.ts::Backend_api_routes_op_4"
+    ],
+    "imports": [
+      "src/backend/api/routes/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/routes/v2_billing/index.ts": {
+    "language": "typescript",
+    "hash": "d639333fa8720c38",
+    "node": "Backend/api/routes/v2_billing",
+    "nodes": [
+      "Backend/api/routes/v2_billing",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes/v2_billing",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/v2_billing/index.ts::Backend_api_routes_v2_billing_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/api/routes/v2_billing/mod_2.ts": {
+    "language": "typescript",
+    "hash": "8941a9fec08c19fb",
+    "node": "Backend/api/routes/v2_billing",
+    "nodes": [
+      "Backend/api/routes/v2_billing",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes/v2_billing",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/v2_billing/mod_2.ts::Backend_api_routes_v2_billing_op_2"
+    ],
+    "imports": [
+      "src/backend/api/routes/v2_billing/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/routes/v2_orders/index.ts": {
+    "language": "typescript",
+    "hash": "f2da80e3295474bd",
+    "node": "Backend/api/routes/v2_orders",
+    "nodes": [
+      "Backend/api/routes/v2_orders",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes/v2_orders",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/v2_orders/index.ts::Backend_api_routes_v2_orders_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/api/routes/v2_orders/mod_2.ts": {
+    "language": "typescript",
+    "hash": "89bca2cc1757e054",
+    "node": "Backend/api/routes/v2_orders",
+    "nodes": [
+      "Backend/api/routes/v2_orders",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes/v2_orders",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/v2_orders/mod_2.ts::Backend_api_routes_v2_orders_op_2"
+    ],
+    "imports": [
+      "src/backend/api/routes/v2_orders/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/routes/v2_orders/mod_3.ts": {
+    "language": "typescript",
+    "hash": "a8ab0a3edf91a8a6",
+    "node": "Backend/api/routes/v2_orders",
+    "nodes": [
+      "Backend/api/routes/v2_orders",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes/v2_orders",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/v2_orders/mod_3.ts::Backend_api_routes_v2_orders_op_3"
+    ],
+    "imports": [
+      "src/backend/api/routes/v2_orders/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/api/routes/v2_users/index.ts": {
+    "language": "typescript",
+    "hash": "6fce11c4f000f6ef",
+    "node": "Backend/api/routes/v2_users",
+    "nodes": [
+      "Backend/api/routes/v2_users",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes/v2_users",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/v2_users/index.ts::Backend_api_routes_v2_users_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/api/routes/v2_users/mod_2.ts": {
+    "language": "typescript",
+    "hash": "33b619eec506969e",
+    "node": "Backend/api/routes/v2_users",
+    "nodes": [
+      "Backend/api/routes/v2_users",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend",
+      "Backend/api/routes/v2_users",
+      "Backend/api/routes",
+      "Backend/api",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/api/routes/v2_users/mod_2.ts::Backend_api_routes_v2_users_op_2"
+    ],
+    "imports": [
+      "src/backend/api/routes/v2_users/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/index.ts": {
+    "language": "typescript",
+    "hash": "e228a9ba23687af1",
+    "node": "Backend/auth",
+    "nodes": [
+      "Backend/auth",
+      "Backend",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/index.ts::Backend_auth_entry"
+    ],
+    "imports": [
+      "src/data/models/index.ts",
+      "src/shared/config/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/legacy_sso/index.ts": {
+    "language": "typescript",
+    "hash": "8cf2e8f7e28a323a",
+    "node": "Backend/auth/legacy_sso",
+    "nodes": [
+      "Backend/auth/legacy_sso",
+      "Backend/auth",
+      "Backend",
+      "Backend/auth/legacy_sso",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/legacy_sso/index.ts::Backend_auth_legacy_sso_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/auth/legacy_sso/mod_2.ts": {
+    "language": "typescript",
+    "hash": "872324cdfb8f1d9b",
+    "node": "Backend/auth/legacy_sso",
+    "nodes": [
+      "Backend/auth/legacy_sso",
+      "Backend/auth",
+      "Backend",
+      "Backend/auth/legacy_sso",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/legacy_sso/mod_2.ts::Backend_auth_legacy_sso_op_2"
+    ],
+    "imports": [
+      "src/backend/auth/legacy_sso/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/legacy_sso/mod_3.ts": {
+    "language": "typescript",
+    "hash": "043004c8fcab4fa3",
+    "node": "Backend/auth/legacy_sso",
+    "nodes": [
+      "Backend/auth/legacy_sso",
+      "Backend/auth",
+      "Backend",
+      "Backend/auth/legacy_sso",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/legacy_sso/mod_3.ts::Backend_auth_legacy_sso_op_3"
+    ],
+    "imports": [
+      "src/backend/auth/legacy_sso/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/mod_2.ts": {
+    "language": "typescript",
+    "hash": "c7ac524d77d14dd3",
+    "node": "Backend/auth",
+    "nodes": [
+      "Backend/auth",
+      "Backend",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/mod_2.ts::Backend_auth_op_2"
+    ],
+    "imports": [
+      "src/backend/auth/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/mod_3.ts": {
+    "language": "typescript",
+    "hash": "e8729bc46a445d99",
+    "node": "Backend/auth",
+    "nodes": [
+      "Backend/auth",
+      "Backend",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/mod_3.ts::Backend_auth_op_3"
+    ],
+    "imports": [
+      "src/backend/auth/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/models/index.ts": {
+    "language": "typescript",
+    "hash": "c54382bd14ce778e",
+    "node": "Backend/auth/models",
+    "nodes": [
+      "Backend/auth/models",
+      "Backend/auth",
+      "Backend",
+      "Backend/auth/models",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/models/index.ts::Backend_auth_models_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/models/mod_2.ts": {
+    "language": "typescript",
+    "hash": "3fa2e36c34855197",
+    "node": "Backend/auth/models",
+    "nodes": [
+      "Backend/auth/models",
+      "Backend/auth",
+      "Backend",
+      "Backend/auth/models",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/models/mod_2.ts::Backend_auth_models_op_2"
+    ],
+    "imports": [
+      "src/backend/auth/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/models/mod_3.ts": {
+    "language": "typescript",
+    "hash": "76243d938bbd78d9",
+    "node": "Backend/auth/models",
+    "nodes": [
+      "Backend/auth/models",
+      "Backend/auth",
+      "Backend",
+      "Backend/auth/models",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/models/mod_3.ts::Backend_auth_models_op_3"
+    ],
+    "imports": [
+      "src/backend/auth/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/tokens/index.ts": {
+    "language": "typescript",
+    "hash": "abf6d64c3be9cc67",
+    "node": "Backend/auth/tokens",
+    "nodes": [
+      "Backend/auth/tokens",
+      "Backend/auth",
+      "Backend",
+      "Backend/auth/tokens",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/tokens/index.ts::Backend_auth_tokens_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/auth/tokens/mod_2.ts": {
+    "language": "typescript",
+    "hash": "387d5b5d70b194e0",
+    "node": "Backend/auth/tokens",
+    "nodes": [
+      "Backend/auth/tokens",
+      "Backend/auth",
+      "Backend",
+      "Backend/auth/tokens",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/tokens/mod_2.ts::Backend_auth_tokens_op_2"
+    ],
+    "imports": [
+      "src/backend/auth/tokens/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/auth/tokens/mod_3.ts": {
+    "language": "typescript",
+    "hash": "0b37e63eb68ee73d",
+    "node": "Backend/auth/tokens",
+    "nodes": [
+      "Backend/auth/tokens",
+      "Backend/auth",
+      "Backend",
+      "Backend/auth/tokens",
+      "Backend/auth",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/auth/tokens/mod_3.ts::Backend_auth_tokens_op_3"
+    ],
+    "imports": [
+      "src/backend/auth/tokens/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/billing/index.ts": {
+    "language": "typescript",
+    "hash": "301cbbd2b16ad347",
+    "node": "Backend/billing",
+    "nodes": [
+      "Backend/billing",
+      "Backend",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/index.ts::Backend_billing_entry"
+    ],
+    "imports": [
+      "src/data/models/index.ts",
+      "src/backend/events/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/billing/jobs/index.ts": {
+    "language": "typescript",
+    "hash": "2fcce049ddf0560d",
+    "node": "Backend/billing/jobs",
+    "nodes": [
+      "Backend/billing/jobs",
+      "Backend/billing",
+      "Backend",
+      "Backend/billing/jobs",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/jobs/index.ts::Backend_billing_jobs_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/billing/jobs/mod_2.ts": {
+    "language": "typescript",
+    "hash": "9fe3bc02e94035b8",
+    "node": "Backend/billing/jobs",
+    "nodes": [
+      "Backend/billing/jobs",
+      "Backend/billing",
+      "Backend",
+      "Backend/billing/jobs",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/jobs/mod_2.ts::Backend_billing_jobs_op_2"
+    ],
+    "imports": [
+      "src/backend/billing/jobs/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/billing/jobs/mod_3.ts": {
+    "language": "typescript",
+    "hash": "34779e48c6e7e953",
+    "node": "Backend/billing/jobs",
+    "nodes": [
+      "Backend/billing/jobs",
+      "Backend/billing",
+      "Backend",
+      "Backend/billing/jobs",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/jobs/mod_3.ts::Backend_billing_jobs_op_3"
+    ],
+    "imports": [
+      "src/backend/billing/jobs/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/billing/mod_2.ts": {
+    "language": "typescript",
+    "hash": "96594425c90b6d0b",
+    "node": "Backend/billing",
+    "nodes": [
+      "Backend/billing",
+      "Backend",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/mod_2.ts::Backend_billing_op_2"
+    ],
+    "imports": [
+      "src/backend/billing/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/billing/models/index.ts": {
+    "language": "typescript",
+    "hash": "0d14a213d0dc61b1",
+    "node": "Backend/billing/models",
+    "nodes": [
+      "Backend/billing/models",
+      "Backend/billing",
+      "Backend",
+      "Backend/billing/models",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/models/index.ts::Backend_billing_models_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/billing/models/mod_2.ts": {
+    "language": "typescript",
+    "hash": "b694754014b59e4c",
+    "node": "Backend/billing/models",
+    "nodes": [
+      "Backend/billing/models",
+      "Backend/billing",
+      "Backend",
+      "Backend/billing/models",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/models/mod_2.ts::Backend_billing_models_op_2"
+    ],
+    "imports": [
+      "src/backend/billing/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/billing/models/mod_3.ts": {
+    "language": "typescript",
+    "hash": "833082ea991dbcef",
+    "node": "Backend/billing/models",
+    "nodes": [
+      "Backend/billing/models",
+      "Backend/billing",
+      "Backend",
+      "Backend/billing/models",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/models/mod_3.ts::Backend_billing_models_op_3"
+    ],
+    "imports": [
+      "src/backend/billing/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/billing/webhooks/index.ts": {
+    "language": "typescript",
+    "hash": "4028c73ca2a272bf",
+    "node": "Backend/billing/webhooks",
+    "nodes": [
+      "Backend/billing/webhooks",
+      "Backend/billing",
+      "Backend",
+      "Backend/billing/webhooks",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/webhooks/index.ts::Backend_billing_webhooks_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/billing/webhooks/mod_2.ts": {
+    "language": "typescript",
+    "hash": "9bd7dfead0d7b8b0",
+    "node": "Backend/billing/webhooks",
+    "nodes": [
+      "Backend/billing/webhooks",
+      "Backend/billing",
+      "Backend",
+      "Backend/billing/webhooks",
+      "Backend/billing",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/billing/webhooks/mod_2.ts::Backend_billing_webhooks_op_2"
+    ],
+    "imports": [
+      "src/backend/billing/webhooks/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/cache/index.ts": {
+    "language": "typescript",
+    "hash": "22976e3b09560e4d",
+    "node": "Backend/cache",
+    "nodes": [
+      "Backend/cache",
+      "Backend",
+      "Backend/cache",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/cache/index.ts::Backend_cache_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/cache/mem/index.ts": {
+    "language": "typescript",
+    "hash": "141b459aa36124ab",
+    "node": "Backend/cache/mem",
+    "nodes": [
+      "Backend/cache/mem",
+      "Backend/cache",
+      "Backend",
+      "Backend/cache/mem",
+      "Backend/cache",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/cache/mem/index.ts::Backend_cache_mem_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/cache/mem/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f3e03168d99a2372",
+    "node": "Backend/cache/mem",
+    "nodes": [
+      "Backend/cache/mem",
+      "Backend/cache",
+      "Backend",
+      "Backend/cache/mem",
+      "Backend/cache",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/cache/mem/mod_2.ts::Backend_cache_mem_op_2"
+    ],
+    "imports": [
+      "src/backend/cache/mem/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/cache/mod_2.ts": {
+    "language": "typescript",
+    "hash": "1dd46cd14e005d37",
+    "node": "Backend/cache",
+    "nodes": [
+      "Backend/cache",
+      "Backend",
+      "Backend/cache",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/cache/mod_2.ts::Backend_cache_op_2"
+    ],
+    "imports": [
+      "src/backend/cache/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/cache/redis/index.ts": {
+    "language": "typescript",
+    "hash": "b5945419c6f1d028",
+    "node": "Backend/cache/redis",
+    "nodes": [
+      "Backend/cache/redis",
+      "Backend/cache",
+      "Backend",
+      "Backend/cache/redis",
+      "Backend/cache",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/cache/redis/index.ts::Backend_cache_redis_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/cache/redis/mod_2.ts": {
+    "language": "typescript",
+    "hash": "4798b48b54e8a2e5",
+    "node": "Backend/cache/redis",
+    "nodes": [
+      "Backend/cache/redis",
+      "Backend/cache",
+      "Backend",
+      "Backend/cache/redis",
+      "Backend/cache",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/cache/redis/mod_2.ts::Backend_cache_redis_op_2"
+    ],
+    "imports": [
+      "src/backend/cache/redis/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/cache/redis/mod_3.ts": {
+    "language": "typescript",
+    "hash": "33c794ce1bbd9fa3",
+    "node": "Backend/cache/redis",
+    "nodes": [
+      "Backend/cache/redis",
+      "Backend/cache",
+      "Backend",
+      "Backend/cache/redis",
+      "Backend/cache",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/cache/redis/mod_3.ts::Backend_cache_redis_op_3"
+    ],
+    "imports": [
+      "src/backend/cache/redis/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/adapters/index.ts": {
+    "language": "typescript",
+    "hash": "43dfaaf1c71c8e75",
+    "node": "Backend/events/adapters",
+    "nodes": [
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend",
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/adapters/index.ts::Backend_events_adapters_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/adapters/kafka_sink/index.ts": {
+    "language": "typescript",
+    "hash": "ebaf40950bccd9ab",
+    "node": "Backend/events/adapters/kafka_sink",
+    "nodes": [
+      "Backend/events/adapters/kafka_sink",
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend",
+      "Backend/events/adapters/kafka_sink",
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/adapters/kafka_sink/index.ts::Backend_events_adapters_kafka_sink_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/adapters/kafka_sink/mod_2.ts": {
+    "language": "typescript",
+    "hash": "cab50201b772ca8b",
+    "node": "Backend/events/adapters/kafka_sink",
+    "nodes": [
+      "Backend/events/adapters/kafka_sink",
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend",
+      "Backend/events/adapters/kafka_sink",
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/adapters/kafka_sink/mod_2.ts::Backend_events_adapters_kafka_sink_op_2"
+    ],
+    "imports": [
+      "src/backend/events/adapters/kafka_sink/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/adapters/mod_2.ts": {
+    "language": "typescript",
+    "hash": "8991b57d1516dddd",
+    "node": "Backend/events/adapters",
+    "nodes": [
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend",
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/adapters/mod_2.ts::Backend_events_adapters_op_2"
+    ],
+    "imports": [
+      "src/backend/events/adapters/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/adapters/outbox_relay/index.ts": {
+    "language": "typescript",
+    "hash": "dc85d284a2d4f666",
+    "node": "Backend/events/adapters/outbox_relay",
+    "nodes": [
+      "Backend/events/adapters/outbox_relay",
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend",
+      "Backend/events/adapters/outbox_relay",
+      "Backend/events/adapters",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/adapters/outbox_relay/index.ts::Backend_events_adapters_outbox_relay_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/handlers/index.ts": {
+    "language": "typescript",
+    "hash": "2834f0a8b688d077",
+    "node": "Backend/events/handlers",
+    "nodes": [
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/index.ts::Backend_events_handlers_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/handlers/invoice_paid/index.ts": {
+    "language": "typescript",
+    "hash": "b3fc85800a87e0e2",
+    "node": "Backend/events/handlers/invoice_paid",
+    "nodes": [
+      "Backend/events/handlers/invoice_paid",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers/invoice_paid",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/invoice_paid/index.ts::Backend_events_handlers_invoice_paid_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/handlers/invoice_paid/mod_2.ts": {
+    "language": "typescript",
+    "hash": "98892f53df136182",
+    "node": "Backend/events/handlers/invoice_paid",
+    "nodes": [
+      "Backend/events/handlers/invoice_paid",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers/invoice_paid",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/invoice_paid/mod_2.ts::Backend_events_handlers_invoice_paid_op_2"
+    ],
+    "imports": [
+      "src/backend/events/handlers/invoice_paid/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/handlers/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f42a35e53e3a5862",
+    "node": "Backend/events/handlers",
+    "nodes": [
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/mod_2.ts::Backend_events_handlers_op_2"
+    ],
+    "imports": [
+      "src/backend/events/handlers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/handlers/mod_3.ts": {
+    "language": "typescript",
+    "hash": "b6870df87573f533",
+    "node": "Backend/events/handlers",
+    "nodes": [
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/mod_3.ts::Backend_events_handlers_op_3"
+    ],
+    "imports": [
+      "src/backend/events/handlers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/handlers/mod_4.ts": {
+    "language": "typescript",
+    "hash": "8a4090a38e8f06cc",
+    "node": "Backend/events/handlers",
+    "nodes": [
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/mod_4.ts::Backend_events_handlers_op_4"
+    ],
+    "imports": [
+      "src/backend/events/handlers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/handlers/order_placed/index.ts": {
+    "language": "typescript",
+    "hash": "d689f9a427971f77",
+    "node": "Backend/events/handlers/order_placed",
+    "nodes": [
+      "Backend/events/handlers/order_placed",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers/order_placed",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/order_placed/index.ts::Backend_events_handlers_order_placed_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/handlers/order_placed/mod_2.ts": {
+    "language": "typescript",
+    "hash": "c277569b756be9ab",
+    "node": "Backend/events/handlers/order_placed",
+    "nodes": [
+      "Backend/events/handlers/order_placed",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers/order_placed",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/order_placed/mod_2.ts::Backend_events_handlers_order_placed_op_2"
+    ],
+    "imports": [
+      "src/backend/events/handlers/order_placed/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/handlers/user_signup/index.ts": {
+    "language": "typescript",
+    "hash": "2d855a488639bbe8",
+    "node": "Backend/events/handlers/user_signup",
+    "nodes": [
+      "Backend/events/handlers/user_signup",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers/user_signup",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/user_signup/index.ts::Backend_events_handlers_user_signup_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/handlers/user_signup/mod_2.ts": {
+    "language": "typescript",
+    "hash": "7bb297bdc4d86a62",
+    "node": "Backend/events/handlers/user_signup",
+    "nodes": [
+      "Backend/events/handlers/user_signup",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend",
+      "Backend/events/handlers/user_signup",
+      "Backend/events/handlers",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/handlers/user_signup/mod_2.ts::Backend_events_handlers_user_signup_op_2"
+    ],
+    "imports": [
+      "src/backend/events/handlers/user_signup/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/index.ts": {
+    "language": "typescript",
+    "hash": "d6fbbc776f9dacf3",
+    "node": "Backend/events",
+    "nodes": [
+      "Backend/events",
+      "Backend",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/index.ts::Backend_events_entry"
+    ],
+    "imports": [
+      "src/data/schema/index.ts",
+      "src/core/events/index.ts",
+      "src/shared/utils/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/mod_2.ts": {
+    "language": "typescript",
+    "hash": "1b10fee034760197",
+    "node": "Backend/events",
+    "nodes": [
+      "Backend/events",
+      "Backend",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/mod_2.ts::Backend_events_op_2"
+    ],
+    "imports": [
+      "src/backend/events/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/mod_3.ts": {
+    "language": "typescript",
+    "hash": "9cd85a57540e20dc",
+    "node": "Backend/events",
+    "nodes": [
+      "Backend/events",
+      "Backend",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/mod_3.ts::Backend_events_op_3"
+    ],
+    "imports": [
+      "src/backend/events/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/envelope/index.ts": {
+    "language": "typescript",
+    "hash": "4495d9d7fb8c6e04",
+    "node": "Backend/events/models/envelope",
+    "nodes": [
+      "Backend/events/models/envelope",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/envelope",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/envelope/index.ts::Backend_events_models_envelope_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/models/envelope/mod_2.ts": {
+    "language": "typescript",
+    "hash": "eb3ac2f5bc74544b",
+    "node": "Backend/events/models/envelope",
+    "nodes": [
+      "Backend/events/models/envelope",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/envelope",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/envelope/mod_2.ts::Backend_events_models_envelope_op_2"
+    ],
+    "imports": [
+      "src/backend/events/models/envelope/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/envelope/mod_3.ts": {
+    "language": "typescript",
+    "hash": "67a0a3d9111470f3",
+    "node": "Backend/events/models/envelope",
+    "nodes": [
+      "Backend/events/models/envelope",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/envelope",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/envelope/mod_3.ts::Backend_events_models_envelope_op_3"
+    ],
+    "imports": [
+      "src/backend/events/models/envelope/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/index.ts": {
+    "language": "typescript",
+    "hash": "cd8ecdba3c3f221d",
+    "node": "Backend/events/models",
+    "nodes": [
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/index.ts::Backend_events_models_entry"
+    ],
+    "imports": [
+      "src/backend/events/schema/index.ts",
+      "src/data/schema/index.ts",
+      "src/core/models/index.ts",
+      "src/shared/types/index.ts",
+      "src/shared/utils/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/mod_2.ts": {
+    "language": "typescript",
+    "hash": "e6bd0984cff2b8d8",
+    "node": "Backend/events/models",
+    "nodes": [
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/mod_2.ts::Backend_events_models_op_2"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/mod_3.ts": {
+    "language": "typescript",
+    "hash": "471c7db9531ccda0",
+    "node": "Backend/events/models",
+    "nodes": [
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/mod_3.ts::Backend_events_models_op_3"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/mod_4.ts": {
+    "language": "typescript",
+    "hash": "7859c397bb921c01",
+    "node": "Backend/events/models",
+    "nodes": [
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/mod_4.ts::Backend_events_models_op_4"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/payloads/index.ts": {
+    "language": "typescript",
+    "hash": "5e11a77d3cf0f5e2",
+    "node": "Backend/events/models/payloads",
+    "nodes": [
+      "Backend/events/models/payloads",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/payloads",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/payloads/index.ts::Backend_events_models_payloads_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/models/payloads/mod_2.ts": {
+    "language": "typescript",
+    "hash": "31d48ea614ffdd24",
+    "node": "Backend/events/models/payloads",
+    "nodes": [
+      "Backend/events/models/payloads",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/payloads",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/payloads/mod_2.ts::Backend_events_models_payloads_op_2"
+    ],
+    "imports": [
+      "src/backend/events/models/payloads/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/payloads/mod_3.ts": {
+    "language": "typescript",
+    "hash": "f06247f5196633bb",
+    "node": "Backend/events/models/payloads",
+    "nodes": [
+      "Backend/events/models/payloads",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/payloads",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/payloads/mod_3.ts::Backend_events_models_payloads_op_3"
+    ],
+    "imports": [
+      "src/backend/events/models/payloads/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/serializers/index.ts": {
+    "language": "typescript",
+    "hash": "1e198d3699c31d0d",
+    "node": "Backend/events/models/serializers",
+    "nodes": [
+      "Backend/events/models/serializers",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/serializers",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/serializers/index.ts::Backend_events_models_serializers_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/models/serializers/mod_2.ts": {
+    "language": "typescript",
+    "hash": "3cbeee570f736cf6",
+    "node": "Backend/events/models/serializers",
+    "nodes": [
+      "Backend/events/models/serializers",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/serializers",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/serializers/mod_2.ts::Backend_events_models_serializers_op_2"
+    ],
+    "imports": [
+      "src/backend/events/models/serializers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/models/versioning/index.ts": {
+    "language": "typescript",
+    "hash": "2711a55a7aeae91b",
+    "node": "Backend/events/models/versioning",
+    "nodes": [
+      "Backend/events/models/versioning",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/versioning",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/versioning/index.ts::Backend_events_models_versioning_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/models/versioning/mod_2.ts": {
+    "language": "typescript",
+    "hash": "a28a474a4aba228f",
+    "node": "Backend/events/models/versioning",
+    "nodes": [
+      "Backend/events/models/versioning",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend",
+      "Backend/events/models/versioning",
+      "Backend/events/models",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/models/versioning/mod_2.ts::Backend_events_models_versioning_op_2"
+    ],
+    "imports": [
+      "src/backend/events/models/versioning/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/schema/index.ts": {
+    "language": "typescript",
+    "hash": "6b64520b678256b5",
+    "node": "Backend/events/schema",
+    "nodes": [
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/schema/index.ts::Backend_events_schema_entry"
+    ],
+    "imports": [
+      "src/shared/types/index.ts",
+      "src/shared/config/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/schema/mod_2.ts": {
+    "language": "typescript",
+    "hash": "32f14f78e97503dd",
+    "node": "Backend/events/schema",
+    "nodes": [
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/schema/mod_2.ts::Backend_events_schema_op_2"
+    ],
+    "imports": [
+      "src/backend/events/schema/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/schema/mod_3.ts": {
+    "language": "typescript",
+    "hash": "c991797628f915af",
+    "node": "Backend/events/schema",
+    "nodes": [
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/schema/mod_3.ts::Backend_events_schema_op_3"
+    ],
+    "imports": [
+      "src/backend/events/schema/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/schema/registry/index.ts": {
+    "language": "typescript",
+    "hash": "b0bf2025a4a771c5",
+    "node": "Backend/events/schema/registry",
+    "nodes": [
+      "Backend/events/schema/registry",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend",
+      "Backend/events/schema/registry",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/schema/registry/index.ts::Backend_events_schema_registry_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/schema/registry/mod_2.ts": {
+    "language": "typescript",
+    "hash": "1b4b89f188481d37",
+    "node": "Backend/events/schema/registry",
+    "nodes": [
+      "Backend/events/schema/registry",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend",
+      "Backend/events/schema/registry",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/schema/registry/mod_2.ts::Backend_events_schema_registry_op_2"
+    ],
+    "imports": [
+      "src/backend/events/schema/registry/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/events/schema/validators/index.ts": {
+    "language": "typescript",
+    "hash": "a36c4729d909144f",
+    "node": "Backend/events/schema/validators",
+    "nodes": [
+      "Backend/events/schema/validators",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend",
+      "Backend/events/schema/validators",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/schema/validators/index.ts::Backend_events_schema_validators_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/backend/events/schema/validators/mod_2.ts": {
+    "language": "typescript",
+    "hash": "93b703d893290b75",
+    "node": "Backend/events/schema/validators",
+    "nodes": [
+      "Backend/events/schema/validators",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend",
+      "Backend/events/schema/validators",
+      "Backend/events/schema",
+      "Backend/events",
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/events/schema/validators/mod_2.ts::Backend_events_schema_validators_op_2"
+    ],
+    "imports": [
+      "src/backend/events/schema/validators/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/index.ts": {
+    "language": "typescript",
+    "hash": "04d186d0bf49be9f",
+    "node": "Backend",
+    "nodes": [
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/index.ts::Backend_entry"
+    ],
+    "imports": [
+      "src/data/index.ts",
+      "src/shared/index.ts",
+      "src/core/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/mod_2.ts": {
+    "language": "typescript",
+    "hash": "b09730102b462afb",
+    "node": "Backend",
+    "nodes": [
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/mod_2.ts::Backend_op_2"
+    ],
+    "imports": [
+      "src/backend/index.ts"
+    ],
+    "externals": []
+  },
+  "src/backend/mod_3.ts": {
+    "language": "typescript",
+    "hash": "ba16160ebbf5da44",
+    "node": "Backend",
+    "nodes": [
+      "Backend"
+    ],
+    "symbols": [
+      "src/backend/mod_3.ts::Backend_op_3"
+    ],
+    "imports": [
+      "src/backend/index.ts"
+    ],
+    "externals": []
+  },
   "src/billing/checkout/CheckoutController.ts": {
     "language": "typescript",
     "hash": "6c913ac856a9e470",
-    "node": "billing-checkout",
+    "node": "Services/billing",
     "nodes": [
-      "billing-checkout",
-      "billing"
+      "Services/billing"
     ],
     "symbols": [
       "src/billing/checkout/CheckoutController.ts::CheckoutController",
@@ -141,10 +2053,9 @@
   "src/billing/proration.ts": {
     "language": "typescript",
     "hash": "babfb17923da0492",
-    "node": "proration-calculator",
+    "node": "Services/billing",
     "nodes": [
-      "proration-calculator",
-      "billing"
+      "Services/billing"
     ],
     "symbols": [
       "src/billing/proration.ts::calculateProration",
@@ -156,9 +2067,9 @@
   "src/canvas/CanvasRenderer.tsx": {
     "language": "tsx",
     "hash": "c2a08211e1a1a6e9",
-    "node": "workspace",
+    "node": "Web/views",
     "nodes": [
-      "workspace"
+      "Web/views"
     ],
     "symbols": [
       "src/canvas/CanvasRenderer.tsx::RenderInput",
@@ -172,19 +2083,827 @@
   "src/cli-tools/seedRunner.ts": {
     "language": "typescript",
     "hash": "0888dfc2cf2f83ed",
-    "nodes": [],
+    "node": "Data/legacy_etl",
+    "nodes": [
+      "Data/legacy_etl"
+    ],
     "symbols": [
       "src/cli-tools/seedRunner.ts::seedWorkspaceDefaults"
     ],
     "imports": [],
     "externals": []
   },
+  "src/core/events/contracts/index.ts": {
+    "language": "typescript",
+    "hash": "4370faded03b3b7b",
+    "node": "Core/events/contracts",
+    "nodes": [
+      "Core/events/contracts",
+      "Core/events",
+      "Core",
+      "Core/events/contracts",
+      "Core/events",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/events/contracts/index.ts::Core_events_contracts_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/events/contracts/mod_2.ts": {
+    "language": "typescript",
+    "hash": "5a8139e12138d631",
+    "node": "Core/events/contracts",
+    "nodes": [
+      "Core/events/contracts",
+      "Core/events",
+      "Core",
+      "Core/events/contracts",
+      "Core/events",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/events/contracts/mod_2.ts::Core_events_contracts_op_2"
+    ],
+    "imports": [
+      "src/core/events/contracts/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/events/contracts/mod_3.ts": {
+    "language": "typescript",
+    "hash": "6f373c1a6279cbb6",
+    "node": "Core/events/contracts",
+    "nodes": [
+      "Core/events/contracts",
+      "Core/events",
+      "Core",
+      "Core/events/contracts",
+      "Core/events",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/events/contracts/mod_3.ts::Core_events_contracts_op_3"
+    ],
+    "imports": [
+      "src/core/events/contracts/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/events/dispatcher/index.ts": {
+    "language": "typescript",
+    "hash": "f22629a6ada8b0fa",
+    "node": "Core/events/dispatcher",
+    "nodes": [
+      "Core/events/dispatcher",
+      "Core/events",
+      "Core",
+      "Core/events/dispatcher",
+      "Core/events",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/events/dispatcher/index.ts::Core_events_dispatcher_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/events/dispatcher/mod_2.ts": {
+    "language": "typescript",
+    "hash": "31e98e67e5482e79",
+    "node": "Core/events/dispatcher",
+    "nodes": [
+      "Core/events/dispatcher",
+      "Core/events",
+      "Core",
+      "Core/events/dispatcher",
+      "Core/events",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/events/dispatcher/mod_2.ts::Core_events_dispatcher_op_2"
+    ],
+    "imports": [
+      "src/core/events/dispatcher/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/events/dispatcher/mod_3.ts": {
+    "language": "typescript",
+    "hash": "3358ee03e406bbd5",
+    "node": "Core/events/dispatcher",
+    "nodes": [
+      "Core/events/dispatcher",
+      "Core/events",
+      "Core",
+      "Core/events/dispatcher",
+      "Core/events",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/events/dispatcher/mod_3.ts::Core_events_dispatcher_op_3"
+    ],
+    "imports": [
+      "src/core/events/dispatcher/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/events/index.ts": {
+    "language": "typescript",
+    "hash": "6dd528d11ef97f8e",
+    "node": "Core/events",
+    "nodes": [
+      "Core/events",
+      "Core",
+      "Core/events",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/events/index.ts::Core_events_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/events/mod_2.ts": {
+    "language": "typescript",
+    "hash": "0d14d33989367dfa",
+    "node": "Core/events",
+    "nodes": [
+      "Core/events",
+      "Core",
+      "Core/events",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/events/mod_2.ts::Core_events_op_2"
+    ],
+    "imports": [
+      "src/core/events/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/events/mod_3.ts": {
+    "language": "typescript",
+    "hash": "0018387f6bd977f1",
+    "node": "Core/events",
+    "nodes": [
+      "Core/events",
+      "Core",
+      "Core/events",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/events/mod_3.ts::Core_events_op_3"
+    ],
+    "imports": [
+      "src/core/events/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/index.ts": {
+    "language": "typescript",
+    "hash": "4d38375041f39eff",
+    "node": "Core",
+    "nodes": [
+      "Core"
+    ],
+    "symbols": [
+      "src/core/index.ts::Core_entry"
+    ],
+    "imports": [
+      "src/shared/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/mod_2.ts": {
+    "language": "typescript",
+    "hash": "cfaebc9424a4969e",
+    "node": "Core",
+    "nodes": [
+      "Core"
+    ],
+    "symbols": [
+      "src/core/mod_2.ts::Core_op_2"
+    ],
+    "imports": [
+      "src/core/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/aggregates/index.ts": {
+    "language": "typescript",
+    "hash": "1c20224aa26e2042",
+    "node": "Core/models/aggregates",
+    "nodes": [
+      "Core/models/aggregates",
+      "Core/models",
+      "Core",
+      "Core/models/aggregates",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/aggregates/index.ts::Core_models_aggregates_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/models/aggregates/mod_2.ts": {
+    "language": "typescript",
+    "hash": "77709993ea9ef9ef",
+    "node": "Core/models/aggregates",
+    "nodes": [
+      "Core/models/aggregates",
+      "Core/models",
+      "Core",
+      "Core/models/aggregates",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/aggregates/mod_2.ts::Core_models_aggregates_op_2"
+    ],
+    "imports": [
+      "src/core/models/aggregates/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/aggregates/mod_3.ts": {
+    "language": "typescript",
+    "hash": "ccabbef4a398b2cc",
+    "node": "Core/models/aggregates",
+    "nodes": [
+      "Core/models/aggregates",
+      "Core/models",
+      "Core",
+      "Core/models/aggregates",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/aggregates/mod_3.ts::Core_models_aggregates_op_3"
+    ],
+    "imports": [
+      "src/core/models/aggregates/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/entities/index.ts": {
+    "language": "typescript",
+    "hash": "43a2bd893b6221c8",
+    "node": "Core/models/entities",
+    "nodes": [
+      "Core/models/entities",
+      "Core/models",
+      "Core",
+      "Core/models/entities",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/entities/index.ts::Core_models_entities_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/models/entities/mod_2.ts": {
+    "language": "typescript",
+    "hash": "75ddd15890fc0b12",
+    "node": "Core/models/entities",
+    "nodes": [
+      "Core/models/entities",
+      "Core/models",
+      "Core",
+      "Core/models/entities",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/entities/mod_2.ts::Core_models_entities_op_2"
+    ],
+    "imports": [
+      "src/core/models/entities/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/entities/mod_3.ts": {
+    "language": "typescript",
+    "hash": "404ca817a4347181",
+    "node": "Core/models/entities",
+    "nodes": [
+      "Core/models/entities",
+      "Core/models",
+      "Core",
+      "Core/models/entities",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/entities/mod_3.ts::Core_models_entities_op_3"
+    ],
+    "imports": [
+      "src/core/models/entities/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/entities/mod_4.ts": {
+    "language": "typescript",
+    "hash": "cbe2e6fe93a9858a",
+    "node": "Core/models/entities",
+    "nodes": [
+      "Core/models/entities",
+      "Core/models",
+      "Core",
+      "Core/models/entities",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/entities/mod_4.ts::Core_models_entities_op_4"
+    ],
+    "imports": [
+      "src/core/models/entities/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/index.ts": {
+    "language": "typescript",
+    "hash": "b94814f28396d7a1",
+    "node": "Core/models",
+    "nodes": [
+      "Core/models",
+      "Core",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/index.ts::Core_models_entry"
+    ],
+    "imports": [
+      "src/core/rules/index.ts",
+      "src/shared/utils/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/mod_2.ts": {
+    "language": "typescript",
+    "hash": "09fbc85c651c3d2c",
+    "node": "Core/models",
+    "nodes": [
+      "Core/models",
+      "Core",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/mod_2.ts::Core_models_op_2"
+    ],
+    "imports": [
+      "src/core/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/mod_3.ts": {
+    "language": "typescript",
+    "hash": "856e8915ccfd22fc",
+    "node": "Core/models",
+    "nodes": [
+      "Core/models",
+      "Core",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/mod_3.ts::Core_models_op_3"
+    ],
+    "imports": [
+      "src/core/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/mod_4.ts": {
+    "language": "typescript",
+    "hash": "b96c6ff3d6b8e3dd",
+    "node": "Core/models",
+    "nodes": [
+      "Core/models",
+      "Core",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/mod_4.ts::Core_models_op_4"
+    ],
+    "imports": [
+      "src/core/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/value_objects/index.ts": {
+    "language": "typescript",
+    "hash": "5603381f3798cc5f",
+    "node": "Core/models/value_objects",
+    "nodes": [
+      "Core/models/value_objects",
+      "Core/models",
+      "Core",
+      "Core/models/value_objects",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/value_objects/index.ts::Core_models_value_objects_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/models/value_objects/mod_2.ts": {
+    "language": "typescript",
+    "hash": "6d2da7e2adcca893",
+    "node": "Core/models/value_objects",
+    "nodes": [
+      "Core/models/value_objects",
+      "Core/models",
+      "Core",
+      "Core/models/value_objects",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/value_objects/mod_2.ts::Core_models_value_objects_op_2"
+    ],
+    "imports": [
+      "src/core/models/value_objects/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/models/value_objects/mod_3.ts": {
+    "language": "typescript",
+    "hash": "93ae892763ca6aec",
+    "node": "Core/models/value_objects",
+    "nodes": [
+      "Core/models/value_objects",
+      "Core/models",
+      "Core",
+      "Core/models/value_objects",
+      "Core/models",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/models/value_objects/mod_3.ts::Core_models_value_objects_op_3"
+    ],
+    "imports": [
+      "src/core/models/value_objects/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/rules/index.ts": {
+    "language": "typescript",
+    "hash": "f615578a0b0de4fd",
+    "node": "Core/rules",
+    "nodes": [
+      "Core/rules",
+      "Core",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/index.ts::Core_rules_entry"
+    ],
+    "imports": [
+      "src/shared/config/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/rules/mod_2.ts": {
+    "language": "typescript",
+    "hash": "431a0e8caa55e646",
+    "node": "Core/rules",
+    "nodes": [
+      "Core/rules",
+      "Core",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/mod_2.ts::Core_rules_op_2"
+    ],
+    "imports": [
+      "src/core/rules/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/rules/mod_3.ts": {
+    "language": "typescript",
+    "hash": "5e0601027a3887e8",
+    "node": "Core/rules",
+    "nodes": [
+      "Core/rules",
+      "Core",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/mod_3.ts::Core_rules_op_3"
+    ],
+    "imports": [
+      "src/core/rules/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/rules/permissions/index.ts": {
+    "language": "typescript",
+    "hash": "b9fcd9f00fb7209a",
+    "node": "Core/rules/permissions",
+    "nodes": [
+      "Core/rules/permissions",
+      "Core/rules",
+      "Core",
+      "Core/rules/permissions",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/permissions/index.ts::Core_rules_permissions_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/rules/permissions/mod_2.ts": {
+    "language": "typescript",
+    "hash": "b0741f401544b85c",
+    "node": "Core/rules/permissions",
+    "nodes": [
+      "Core/rules/permissions",
+      "Core/rules",
+      "Core",
+      "Core/rules/permissions",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/permissions/mod_2.ts::Core_rules_permissions_op_2"
+    ],
+    "imports": [
+      "src/core/rules/permissions/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/rules/permissions/mod_3.ts": {
+    "language": "typescript",
+    "hash": "281cff18032bbcf3",
+    "node": "Core/rules/permissions",
+    "nodes": [
+      "Core/rules/permissions",
+      "Core/rules",
+      "Core",
+      "Core/rules/permissions",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/permissions/mod_3.ts::Core_rules_permissions_op_3"
+    ],
+    "imports": [
+      "src/core/rules/permissions/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/rules/pricing/index.ts": {
+    "language": "typescript",
+    "hash": "954dd2225bd5ddb5",
+    "node": "Core/rules/pricing",
+    "nodes": [
+      "Core/rules/pricing",
+      "Core/rules",
+      "Core",
+      "Core/rules/pricing",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/pricing/index.ts::Core_rules_pricing_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/rules/pricing/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f3c15161da2d89cf",
+    "node": "Core/rules/pricing",
+    "nodes": [
+      "Core/rules/pricing",
+      "Core/rules",
+      "Core",
+      "Core/rules/pricing",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/pricing/mod_2.ts::Core_rules_pricing_op_2"
+    ],
+    "imports": [
+      "src/core/rules/pricing/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/rules/pricing/mod_3.ts": {
+    "language": "typescript",
+    "hash": "c354605d664db202",
+    "node": "Core/rules/pricing",
+    "nodes": [
+      "Core/rules/pricing",
+      "Core/rules",
+      "Core",
+      "Core/rules/pricing",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/pricing/mod_3.ts::Core_rules_pricing_op_3"
+    ],
+    "imports": [
+      "src/core/rules/pricing/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/rules/quotas/index.ts": {
+    "language": "typescript",
+    "hash": "f3d0da68a35c3b09",
+    "node": "Core/rules/quotas",
+    "nodes": [
+      "Core/rules/quotas",
+      "Core/rules",
+      "Core",
+      "Core/rules/quotas",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/quotas/index.ts::Core_rules_quotas_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/rules/quotas/mod_2.ts": {
+    "language": "typescript",
+    "hash": "d29b9d90e884b691",
+    "node": "Core/rules/quotas",
+    "nodes": [
+      "Core/rules/quotas",
+      "Core/rules",
+      "Core",
+      "Core/rules/quotas",
+      "Core/rules",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/rules/quotas/mod_2.ts::Core_rules_quotas_op_2"
+    ],
+    "imports": [
+      "src/core/rules/quotas/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/utils/dates/index.ts": {
+    "language": "typescript",
+    "hash": "0f1bb2361d514928",
+    "node": "Core/utils/dates",
+    "nodes": [
+      "Core/utils/dates",
+      "Core/utils",
+      "Core",
+      "Core/utils/dates",
+      "Core/utils",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/utils/dates/index.ts::Core_utils_dates_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/utils/dates/mod_2.ts": {
+    "language": "typescript",
+    "hash": "a176fc23ac8608b2",
+    "node": "Core/utils/dates",
+    "nodes": [
+      "Core/utils/dates",
+      "Core/utils",
+      "Core",
+      "Core/utils/dates",
+      "Core/utils",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/utils/dates/mod_2.ts::Core_utils_dates_op_2"
+    ],
+    "imports": [
+      "src/core/utils/dates/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/utils/index.ts": {
+    "language": "typescript",
+    "hash": "3ea327bb0e3ddf7c",
+    "node": "Core/utils",
+    "nodes": [
+      "Core/utils",
+      "Core",
+      "Core/utils",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/utils/index.ts::Core_utils_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/utils/mod_2.ts": {
+    "language": "typescript",
+    "hash": "111567e50fa68828",
+    "node": "Core/utils",
+    "nodes": [
+      "Core/utils",
+      "Core",
+      "Core/utils",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/utils/mod_2.ts::Core_utils_op_2"
+    ],
+    "imports": [
+      "src/core/utils/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/utils/money/index.ts": {
+    "language": "typescript",
+    "hash": "b0c6dd9f76b82407",
+    "node": "Core/utils/money",
+    "nodes": [
+      "Core/utils/money",
+      "Core/utils",
+      "Core",
+      "Core/utils/money",
+      "Core/utils",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/utils/money/index.ts::Core_utils_money_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/core/utils/money/mod_2.ts": {
+    "language": "typescript",
+    "hash": "4e9552e9d11eec9a",
+    "node": "Core/utils/money",
+    "nodes": [
+      "Core/utils/money",
+      "Core/utils",
+      "Core",
+      "Core/utils/money",
+      "Core/utils",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/utils/money/mod_2.ts::Core_utils_money_op_2"
+    ],
+    "imports": [
+      "src/core/utils/money/index.ts"
+    ],
+    "externals": []
+  },
+  "src/core/utils/money/mod_3.ts": {
+    "language": "typescript",
+    "hash": "0671c93d201b3d18",
+    "node": "Core/utils/money",
+    "nodes": [
+      "Core/utils/money",
+      "Core/utils",
+      "Core",
+      "Core/utils/money",
+      "Core/utils",
+      "Core"
+    ],
+    "symbols": [
+      "src/core/utils/money/mod_3.ts::Core_utils_money_op_3"
+    ],
+    "imports": [
+      "src/core/utils/money/index.ts"
+    ],
+    "externals": []
+  },
   "src/dashboard/Dashboard.tsx": {
     "language": "tsx",
     "hash": "7e73896d48109069",
-    "node": "workspace-library",
+    "node": "Web/views",
     "nodes": [
-      "workspace-library"
+      "Web/views"
     ],
     "symbols": [
       "src/dashboard/Dashboard.tsx::Dashboard"
@@ -199,9 +2918,9 @@
   "src/dashboard/Widget.tsx": {
     "language": "tsx",
     "hash": "ef7fb304ee48b520",
-    "node": "workspace-library",
+    "node": "Web/views",
     "nodes": [
-      "workspace-library"
+      "Web/views"
     ],
     "symbols": [
       "src/dashboard/Widget.tsx::renderer",
@@ -215,9 +2934,10 @@
   "src/data/db.ts": {
     "language": "typescript",
     "hash": "f45ac6af51bcf4df",
-    "node": "identity",
+    "node": "Data/models",
     "nodes": [
-      "identity"
+      "Data/models",
+      "Data"
     ],
     "symbols": [
       "src/data/db.ts::Db",
@@ -229,12 +2949,389 @@
     "imports": [],
     "externals": []
   },
+  "src/data/index.ts": {
+    "language": "typescript",
+    "hash": "0d304c5b3fb67a1c",
+    "node": "Data/models",
+    "nodes": [
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/index.ts::Data_entry"
+    ],
+    "imports": [
+      "src/shared/index.ts",
+      "src/web/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/legacy_etl/csv_import/index.ts": {
+    "language": "typescript",
+    "hash": "4008ad859106330b",
+    "node": "Data/legacy_etl/csv_import",
+    "nodes": [
+      "Data/legacy_etl/csv_import",
+      "Data/legacy_etl",
+      "Data/models",
+      "Data",
+      "Data/legacy_etl/csv_import",
+      "Data/legacy_etl",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/legacy_etl/csv_import/index.ts::Data_legacy_etl_csv_import_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/legacy_etl/index.ts": {
+    "language": "typescript",
+    "hash": "f78a34620ee9c714",
+    "node": "Data/legacy_etl",
+    "nodes": [
+      "Data/legacy_etl",
+      "Data/models",
+      "Data",
+      "Data/legacy_etl",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/legacy_etl/index.ts::Data_legacy_etl_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/legacy_etl/mod_2.ts": {
+    "language": "typescript",
+    "hash": "cadcfbfc4f6dddfe",
+    "node": "Data/legacy_etl",
+    "nodes": [
+      "Data/legacy_etl",
+      "Data/models",
+      "Data",
+      "Data/legacy_etl",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/legacy_etl/mod_2.ts::Data_legacy_etl_op_2"
+    ],
+    "imports": [
+      "src/data/legacy_etl/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/legacy_etl/xml_dump/index.ts": {
+    "language": "typescript",
+    "hash": "c0ff848a0d1ada1e",
+    "node": "Data/legacy_etl/xml_dump",
+    "nodes": [
+      "Data/legacy_etl/xml_dump",
+      "Data/legacy_etl",
+      "Data/models",
+      "Data",
+      "Data/legacy_etl/xml_dump",
+      "Data/legacy_etl",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/legacy_etl/xml_dump/index.ts::Data_legacy_etl_xml_dump_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/migrations/history/index.ts": {
+    "language": "typescript",
+    "hash": "f20429644e584e0c",
+    "node": "Data/migrations/history",
+    "nodes": [
+      "Data/migrations/history",
+      "Data/migrations",
+      "Data/models",
+      "Data",
+      "Data/migrations/history",
+      "Data/migrations",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/migrations/history/index.ts::Data_migrations_history_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/migrations/history/mod_2.ts": {
+    "language": "typescript",
+    "hash": "a0b6f1cb3a3c4c89",
+    "node": "Data/migrations/history",
+    "nodes": [
+      "Data/migrations/history",
+      "Data/migrations",
+      "Data/models",
+      "Data",
+      "Data/migrations/history",
+      "Data/migrations",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/migrations/history/mod_2.ts::Data_migrations_history_op_2"
+    ],
+    "imports": [
+      "src/data/migrations/history/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/migrations/index.ts": {
+    "language": "typescript",
+    "hash": "c567b76566c0c370",
+    "node": "Data/migrations",
+    "nodes": [
+      "Data/migrations",
+      "Data/models",
+      "Data",
+      "Data/migrations",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/migrations/index.ts::Data_migrations_entry"
+    ],
+    "imports": [
+      "src/infrastructure/deploy/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/migrations/mod_2.ts": {
+    "language": "typescript",
+    "hash": "3da32abe81d669b1",
+    "node": "Data/migrations",
+    "nodes": [
+      "Data/migrations",
+      "Data/models",
+      "Data",
+      "Data/migrations",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/migrations/mod_2.ts::Data_migrations_op_2"
+    ],
+    "imports": [
+      "src/data/migrations/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/migrations/runner/index.ts": {
+    "language": "typescript",
+    "hash": "6a68897e9002e369",
+    "node": "Data/migrations/runner",
+    "nodes": [
+      "Data/migrations/runner",
+      "Data/migrations",
+      "Data/models",
+      "Data",
+      "Data/migrations/runner",
+      "Data/migrations",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/migrations/runner/index.ts::Data_migrations_runner_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/migrations/runner/mod_2.ts": {
+    "language": "typescript",
+    "hash": "883429532d78c53e",
+    "node": "Data/migrations/runner",
+    "nodes": [
+      "Data/migrations/runner",
+      "Data/migrations",
+      "Data/models",
+      "Data",
+      "Data/migrations/runner",
+      "Data/migrations",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/migrations/runner/mod_2.ts::Data_migrations_runner_op_2"
+    ],
+    "imports": [
+      "src/data/migrations/runner/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/mod_2.ts": {
+    "language": "typescript",
+    "hash": "4260656d926c30df",
+    "node": "Data/models",
+    "nodes": [
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/mod_2.ts::Data_op_2"
+    ],
+    "imports": [
+      "src/data/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/models/index.ts": {
+    "language": "typescript",
+    "hash": "82aae482c6a9757b",
+    "node": "Data/models",
+    "nodes": [
+      "Data/models",
+      "Data",
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/models/index.ts::Data_models_entry"
+    ],
+    "imports": [
+      "src/data/schema/index.ts",
+      "src/shared/types/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/models/mod_2.ts": {
+    "language": "typescript",
+    "hash": "d5d5fd4e4d4f9290",
+    "node": "Data/models",
+    "nodes": [
+      "Data/models",
+      "Data",
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/models/mod_2.ts::Data_models_op_2"
+    ],
+    "imports": [
+      "src/data/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/models/mod_3.ts": {
+    "language": "typescript",
+    "hash": "d809e3165a1ab852",
+    "node": "Data/models",
+    "nodes": [
+      "Data/models",
+      "Data",
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/models/mod_3.ts::Data_models_op_3"
+    ],
+    "imports": [
+      "src/data/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/models/queries/index.ts": {
+    "language": "typescript",
+    "hash": "19728da24fe29a57",
+    "node": "Data/models/queries",
+    "nodes": [
+      "Data/models/queries",
+      "Data/models",
+      "Data",
+      "Data/models/queries",
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/models/queries/index.ts::Data_models_queries_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/models/queries/mod_2.ts": {
+    "language": "typescript",
+    "hash": "98f0e9e1548b2ed9",
+    "node": "Data/models/queries",
+    "nodes": [
+      "Data/models/queries",
+      "Data/models",
+      "Data",
+      "Data/models/queries",
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/models/queries/mod_2.ts::Data_models_queries_op_2"
+    ],
+    "imports": [
+      "src/data/models/queries/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/models/repositories/index.ts": {
+    "language": "typescript",
+    "hash": "7f5b46e5dbcbfa53",
+    "node": "Data/models/repositories",
+    "nodes": [
+      "Data/models/repositories",
+      "Data/models",
+      "Data",
+      "Data/models/repositories",
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/models/repositories/index.ts::Data_models_repositories_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/models/repositories/mod_2.ts": {
+    "language": "typescript",
+    "hash": "8d5849ddeec03dba",
+    "node": "Data/models/repositories",
+    "nodes": [
+      "Data/models/repositories",
+      "Data/models",
+      "Data",
+      "Data/models/repositories",
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/models/repositories/mod_2.ts::Data_models_repositories_op_2"
+    ],
+    "imports": [
+      "src/data/models/repositories/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/models/repositories/mod_3.ts": {
+    "language": "typescript",
+    "hash": "cc58ee2a09527563",
+    "node": "Data/models/repositories",
+    "nodes": [
+      "Data/models/repositories",
+      "Data/models",
+      "Data",
+      "Data/models/repositories",
+      "Data/models",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/models/repositories/mod_3.ts::Data_models_repositories_op_3"
+    ],
+    "imports": [
+      "src/data/models/repositories/index.ts"
+    ],
+    "externals": []
+  },
   "src/data/replica.ts": {
     "language": "typescript",
     "hash": "9929c71f3880bc56",
-    "node": "identity",
+    "node": "Data/models",
     "nodes": [
-      "identity"
+      "Data/models",
+      "Data"
     ],
     "symbols": [
       "src/data/replica.ts::replicaDb"
@@ -244,10 +3341,301 @@
     ],
     "externals": []
   },
+  "src/data/schema/index.ts": {
+    "language": "typescript",
+    "hash": "8a65eee02cdcff28",
+    "node": "Data/models",
+    "nodes": [
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/index.ts::Data_schema_entry"
+    ],
+    "imports": [
+      "src/data/migrations/index.ts",
+      "src/shared/config/index.ts",
+      "src/web/views/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/schema/indexes/index.ts": {
+    "language": "typescript",
+    "hash": "e94502d5aa701563",
+    "node": "Data/schema/indexes",
+    "nodes": [
+      "Data/schema/indexes",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/indexes",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/indexes/index.ts::Data_schema_indexes_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/schema/indexes/mod_2.ts": {
+    "language": "typescript",
+    "hash": "4703fec54d2f6570",
+    "node": "Data/schema/indexes",
+    "nodes": [
+      "Data/schema/indexes",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/indexes",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/indexes/mod_2.ts::Data_schema_indexes_op_2"
+    ],
+    "imports": [
+      "src/data/schema/indexes/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/schema/mod_2.ts": {
+    "language": "typescript",
+    "hash": "281c265ac42cb744",
+    "node": "Data/models",
+    "nodes": [
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/mod_2.ts::Data_schema_op_2"
+    ],
+    "imports": [
+      "src/data/schema/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/schema/mod_3.ts": {
+    "language": "typescript",
+    "hash": "6a34a89824ea69ea",
+    "node": "Data/models",
+    "nodes": [
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/mod_3.ts::Data_schema_op_3"
+    ],
+    "imports": [
+      "src/data/schema/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/schema/tables/accounts/index.ts": {
+    "language": "typescript",
+    "hash": "4bc66599f0a0dfc4",
+    "node": "Data/schema/tables/accounts",
+    "nodes": [
+      "Data/schema/tables/accounts",
+      "Data/schema/tables",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/tables/accounts",
+      "Data/schema/tables",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/tables/accounts/index.ts::Data_schema_tables_accounts_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/schema/tables/accounts/mod_2.ts": {
+    "language": "typescript",
+    "hash": "4a4d9f6f811b8136",
+    "node": "Data/schema/tables/accounts",
+    "nodes": [
+      "Data/schema/tables/accounts",
+      "Data/schema/tables",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/tables/accounts",
+      "Data/schema/tables",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/tables/accounts/mod_2.ts::Data_schema_tables_accounts_op_2"
+    ],
+    "imports": [
+      "src/data/schema/tables/accounts/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/schema/tables/index.ts": {
+    "language": "typescript",
+    "hash": "b85d4606539ac198",
+    "node": "Data/schema/tables",
+    "nodes": [
+      "Data/schema/tables",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/tables",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/tables/index.ts::Data_schema_tables_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/schema/tables/ledger/index.ts": {
+    "language": "typescript",
+    "hash": "1ca7ac178dcc3617",
+    "node": "Data/schema/tables/ledger",
+    "nodes": [
+      "Data/schema/tables/ledger",
+      "Data/schema/tables",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/tables/ledger",
+      "Data/schema/tables",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/tables/ledger/index.ts::Data_schema_tables_ledger_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/schema/tables/ledger/mod_2.ts": {
+    "language": "typescript",
+    "hash": "e0465e7b9a8edff6",
+    "node": "Data/schema/tables/ledger",
+    "nodes": [
+      "Data/schema/tables/ledger",
+      "Data/schema/tables",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/tables/ledger",
+      "Data/schema/tables",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/tables/ledger/mod_2.ts::Data_schema_tables_ledger_op_2"
+    ],
+    "imports": [
+      "src/data/schema/tables/ledger/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/schema/tables/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f70210820bb38152",
+    "node": "Data/schema/tables",
+    "nodes": [
+      "Data/schema/tables",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/tables",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/tables/mod_2.ts::Data_schema_tables_op_2"
+    ],
+    "imports": [
+      "src/data/schema/tables/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/schema/tables/mod_3.ts": {
+    "language": "typescript",
+    "hash": "fdeef386affe7989",
+    "node": "Data/schema/tables",
+    "nodes": [
+      "Data/schema/tables",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/tables",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/tables/mod_3.ts::Data_schema_tables_op_3"
+    ],
+    "imports": [
+      "src/data/schema/tables/index.ts"
+    ],
+    "externals": []
+  },
+  "src/data/schema/views/index.ts": {
+    "language": "typescript",
+    "hash": "e8b87e44c4da920b",
+    "node": "Data/schema/views",
+    "nodes": [
+      "Data/schema/views",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/views",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/views/index.ts::Data_schema_views_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/data/schema/views/mod_2.ts": {
+    "language": "typescript",
+    "hash": "76cfd8c9272b823b",
+    "node": "Data/schema/views",
+    "nodes": [
+      "Data/schema/views",
+      "Data/models",
+      "Data/schema",
+      "Data",
+      "Data/schema/views",
+      "Data/schema",
+      "Data"
+    ],
+    "symbols": [
+      "src/data/schema/views/mod_2.ts::Data_schema_views_op_2"
+    ],
+    "imports": [
+      "src/data/schema/views/index.ts"
+    ],
+    "externals": []
+  },
   "src/experiments/aiSuggest.ts": {
     "language": "typescript",
     "hash": "2d13424591139613",
-    "nodes": [],
+    "node": "Data/legacy_etl",
+    "nodes": [
+      "Data/legacy_etl"
+    ],
     "symbols": [
       "src/experiments/aiSuggest.ts::suggestWorkspaceTags"
     ],
@@ -257,9 +3645,9 @@
   "src/identity/user.ts": {
     "language": "typescript",
     "hash": "0a3bec137aadd0ad",
-    "node": "identity",
+    "node": "Backend/auth",
     "nodes": [
-      "identity"
+      "Backend/auth"
     ],
     "symbols": [
       "src/identity/user.ts::User",
@@ -269,20 +3657,816 @@
     "imports": [],
     "externals": []
   },
+  "src/infrastructure/deploy/containers/index.ts": {
+    "language": "typescript",
+    "hash": "f51b3b6e3f77433d",
+    "node": "Infrastructure/deploy/containers",
+    "nodes": [
+      "Infrastructure/deploy/containers",
+      "Infrastructure/deploy",
+      "Infrastructure",
+      "Infrastructure/deploy/containers",
+      "Infrastructure/deploy",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/deploy/containers/index.ts::Infrastructure_deploy_containers_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/infrastructure/deploy/containers/mod_2.ts": {
+    "language": "typescript",
+    "hash": "193d45a5b72f3a4e",
+    "node": "Infrastructure/deploy/containers",
+    "nodes": [
+      "Infrastructure/deploy/containers",
+      "Infrastructure/deploy",
+      "Infrastructure",
+      "Infrastructure/deploy/containers",
+      "Infrastructure/deploy",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/deploy/containers/mod_2.ts::Infrastructure_deploy_containers_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/deploy/containers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/deploy/index.ts": {
+    "language": "typescript",
+    "hash": "7829a46078f2fc68",
+    "node": "Infrastructure/deploy",
+    "nodes": [
+      "Infrastructure/deploy",
+      "Infrastructure",
+      "Infrastructure/deploy",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/deploy/index.ts::Infrastructure_deploy_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/infrastructure/deploy/mod_2.ts": {
+    "language": "typescript",
+    "hash": "fdd3f7e8c0fde8c7",
+    "node": "Infrastructure/deploy",
+    "nodes": [
+      "Infrastructure/deploy",
+      "Infrastructure",
+      "Infrastructure/deploy",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/deploy/mod_2.ts::Infrastructure_deploy_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/deploy/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/deploy/terraform/index.ts": {
+    "language": "typescript",
+    "hash": "81cab757f2abce71",
+    "node": "Infrastructure/deploy/terraform",
+    "nodes": [
+      "Infrastructure/deploy/terraform",
+      "Infrastructure/deploy",
+      "Infrastructure",
+      "Infrastructure/deploy/terraform",
+      "Infrastructure/deploy",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/deploy/terraform/index.ts::Infrastructure_deploy_terraform_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/infrastructure/deploy/terraform/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f7378fb62a5049eb",
+    "node": "Infrastructure/deploy/terraform",
+    "nodes": [
+      "Infrastructure/deploy/terraform",
+      "Infrastructure/deploy",
+      "Infrastructure",
+      "Infrastructure/deploy/terraform",
+      "Infrastructure/deploy",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/deploy/terraform/mod_2.ts::Infrastructure_deploy_terraform_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/deploy/terraform/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/index.ts": {
+    "language": "typescript",
+    "hash": "7f6ee0679518c540",
+    "node": "Infrastructure",
+    "nodes": [
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/index.ts::Infrastructure_entry"
+    ],
+    "imports": [
+      "src/core/index.ts",
+      "src/shared/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f4900091a8df840b",
+    "node": "Infrastructure",
+    "nodes": [
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/mod_2.ts::Infrastructure_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/queues/broker/index.ts": {
+    "language": "typescript",
+    "hash": "6e85140477690eb4",
+    "node": "Infrastructure/queues/broker",
+    "nodes": [
+      "Infrastructure/queues/broker",
+      "Infrastructure/queues",
+      "Infrastructure",
+      "Infrastructure/queues/broker",
+      "Infrastructure/queues",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/queues/broker/index.ts::Infrastructure_queues_broker_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/infrastructure/queues/broker/mod_2.ts": {
+    "language": "typescript",
+    "hash": "318e5b7d417a36b5",
+    "node": "Infrastructure/queues/broker",
+    "nodes": [
+      "Infrastructure/queues/broker",
+      "Infrastructure/queues",
+      "Infrastructure",
+      "Infrastructure/queues/broker",
+      "Infrastructure/queues",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/queues/broker/mod_2.ts::Infrastructure_queues_broker_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/queues/broker/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/queues/dlq/index.ts": {
+    "language": "typescript",
+    "hash": "1e7cee9305442aef",
+    "node": "Infrastructure/queues/dlq",
+    "nodes": [
+      "Infrastructure/queues/dlq",
+      "Infrastructure/queues",
+      "Infrastructure",
+      "Infrastructure/queues/dlq",
+      "Infrastructure/queues",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/queues/dlq/index.ts::Infrastructure_queues_dlq_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/infrastructure/queues/dlq/mod_2.ts": {
+    "language": "typescript",
+    "hash": "1bdebb7e692e2b78",
+    "node": "Infrastructure/queues/dlq",
+    "nodes": [
+      "Infrastructure/queues/dlq",
+      "Infrastructure/queues",
+      "Infrastructure",
+      "Infrastructure/queues/dlq",
+      "Infrastructure/queues",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/queues/dlq/mod_2.ts::Infrastructure_queues_dlq_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/queues/dlq/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/queues/index.ts": {
+    "language": "typescript",
+    "hash": "16e6dce658f05cea",
+    "node": "Infrastructure/queues",
+    "nodes": [
+      "Infrastructure/queues",
+      "Infrastructure",
+      "Infrastructure/queues",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/queues/index.ts::Infrastructure_queues_entry"
+    ],
+    "imports": [
+      "src/backend/events/adapters/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/queues/mod_2.ts": {
+    "language": "typescript",
+    "hash": "ed9b98ef2d3a04fd",
+    "node": "Infrastructure/queues",
+    "nodes": [
+      "Infrastructure/queues",
+      "Infrastructure",
+      "Infrastructure/queues",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/queues/mod_2.ts::Infrastructure_queues_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/queues/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/telemetry/index.ts": {
+    "language": "typescript",
+    "hash": "e88fa92b504ae191",
+    "node": "Infrastructure/telemetry",
+    "nodes": [
+      "Infrastructure/telemetry",
+      "Infrastructure",
+      "Infrastructure/telemetry",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/telemetry/index.ts::Infrastructure_telemetry_entry"
+    ],
+    "imports": [
+      "src/services/analytics/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/telemetry/metrics/index.ts": {
+    "language": "typescript",
+    "hash": "0032e39b4e76ae61",
+    "node": "Infrastructure/telemetry/metrics",
+    "nodes": [
+      "Infrastructure/telemetry/metrics",
+      "Infrastructure/telemetry",
+      "Infrastructure",
+      "Infrastructure/telemetry/metrics",
+      "Infrastructure/telemetry",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/telemetry/metrics/index.ts::Infrastructure_telemetry_metrics_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/infrastructure/telemetry/metrics/mod_2.ts": {
+    "language": "typescript",
+    "hash": "b743fe472c43f86c",
+    "node": "Infrastructure/telemetry/metrics",
+    "nodes": [
+      "Infrastructure/telemetry/metrics",
+      "Infrastructure/telemetry",
+      "Infrastructure",
+      "Infrastructure/telemetry/metrics",
+      "Infrastructure/telemetry",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/telemetry/metrics/mod_2.ts::Infrastructure_telemetry_metrics_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/telemetry/metrics/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/telemetry/mod_2.ts": {
+    "language": "typescript",
+    "hash": "dde9ce5d26a09ff1",
+    "node": "Infrastructure/telemetry",
+    "nodes": [
+      "Infrastructure/telemetry",
+      "Infrastructure",
+      "Infrastructure/telemetry",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/telemetry/mod_2.ts::Infrastructure_telemetry_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/telemetry/index.ts"
+    ],
+    "externals": []
+  },
+  "src/infrastructure/telemetry/traces/index.ts": {
+    "language": "typescript",
+    "hash": "793591a1f1224396",
+    "node": "Infrastructure/telemetry/traces",
+    "nodes": [
+      "Infrastructure/telemetry/traces",
+      "Infrastructure/telemetry",
+      "Infrastructure",
+      "Infrastructure/telemetry/traces",
+      "Infrastructure/telemetry",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/telemetry/traces/index.ts::Infrastructure_telemetry_traces_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/infrastructure/telemetry/traces/mod_2.ts": {
+    "language": "typescript",
+    "hash": "390c0590ca0e6c8a",
+    "node": "Infrastructure/telemetry/traces",
+    "nodes": [
+      "Infrastructure/telemetry/traces",
+      "Infrastructure/telemetry",
+      "Infrastructure",
+      "Infrastructure/telemetry/traces",
+      "Infrastructure/telemetry",
+      "Infrastructure"
+    ],
+    "symbols": [
+      "src/infrastructure/telemetry/traces/mod_2.ts::Infrastructure_telemetry_traces_op_2"
+    ],
+    "imports": [
+      "src/infrastructure/telemetry/traces/index.ts"
+    ],
+    "externals": []
+  },
   "src/legacy-sync/xmlImporter.ts": {
     "language": "typescript",
     "hash": "d074eb3b1a3e07b1",
-    "nodes": [],
+    "node": "Data/legacy_etl",
+    "nodes": [
+      "Data/legacy_etl"
+    ],
     "symbols": [
       "src/legacy-sync/xmlImporter.ts::parseLegacyXmlBatch"
     ],
     "imports": [],
     "externals": []
   },
+  "src/mobile/adapters/biometrics/index.ts": {
+    "language": "typescript",
+    "hash": "7114ea8a40f471ba",
+    "node": "Mobile/adapters/biometrics",
+    "nodes": [
+      "Mobile/adapters/biometrics",
+      "Mobile/adapters",
+      "Mobile",
+      "Mobile/adapters/biometrics",
+      "Mobile/adapters",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/adapters/biometrics/index.ts::Mobile_adapters_biometrics_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/mobile/adapters/biometrics/mod_2.ts": {
+    "language": "typescript",
+    "hash": "3d7d46ab355262a1",
+    "node": "Mobile/adapters/biometrics",
+    "nodes": [
+      "Mobile/adapters/biometrics",
+      "Mobile/adapters",
+      "Mobile",
+      "Mobile/adapters/biometrics",
+      "Mobile/adapters",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/adapters/biometrics/mod_2.ts::Mobile_adapters_biometrics_op_2"
+    ],
+    "imports": [
+      "src/mobile/adapters/biometrics/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/adapters/index.ts": {
+    "language": "typescript",
+    "hash": "6b33a0bb55d2a784",
+    "node": "Mobile/adapters",
+    "nodes": [
+      "Mobile/adapters",
+      "Mobile",
+      "Mobile/adapters",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/adapters/index.ts::Mobile_adapters_entry"
+    ],
+    "imports": [
+      "src/backend/api/handlers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/adapters/mod_2.ts": {
+    "language": "typescript",
+    "hash": "2697625ede71c881",
+    "node": "Mobile/adapters",
+    "nodes": [
+      "Mobile/adapters",
+      "Mobile",
+      "Mobile/adapters",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/adapters/mod_2.ts::Mobile_adapters_op_2"
+    ],
+    "imports": [
+      "src/mobile/adapters/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/adapters/storage/index.ts": {
+    "language": "typescript",
+    "hash": "e62684c4afb09faa",
+    "node": "Mobile/adapters/storage",
+    "nodes": [
+      "Mobile/adapters/storage",
+      "Mobile/adapters",
+      "Mobile",
+      "Mobile/adapters/storage",
+      "Mobile/adapters",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/adapters/storage/index.ts::Mobile_adapters_storage_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/mobile/adapters/storage/mod_2.ts": {
+    "language": "typescript",
+    "hash": "904ce598fb54e1fb",
+    "node": "Mobile/adapters/storage",
+    "nodes": [
+      "Mobile/adapters/storage",
+      "Mobile/adapters",
+      "Mobile",
+      "Mobile/adapters/storage",
+      "Mobile/adapters",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/adapters/storage/mod_2.ts::Mobile_adapters_storage_op_2"
+    ],
+    "imports": [
+      "src/mobile/adapters/storage/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/hooks/gestures/index.ts": {
+    "language": "typescript",
+    "hash": "64234eb92ab5af91",
+    "node": "Mobile/hooks/gestures",
+    "nodes": [
+      "Mobile/hooks/gestures",
+      "Mobile/hooks",
+      "Mobile",
+      "Mobile/hooks/gestures",
+      "Mobile/hooks",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/hooks/gestures/index.ts::Mobile_hooks_gestures_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/mobile/hooks/gestures/mod_2.ts": {
+    "language": "typescript",
+    "hash": "25a141d7e3447eb7",
+    "node": "Mobile/hooks/gestures",
+    "nodes": [
+      "Mobile/hooks/gestures",
+      "Mobile/hooks",
+      "Mobile",
+      "Mobile/hooks/gestures",
+      "Mobile/hooks",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/hooks/gestures/mod_2.ts::Mobile_hooks_gestures_op_2"
+    ],
+    "imports": [
+      "src/mobile/hooks/gestures/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/hooks/index.ts": {
+    "language": "typescript",
+    "hash": "753ebb8d0c18afd2",
+    "node": "Mobile/hooks",
+    "nodes": [
+      "Mobile/hooks",
+      "Mobile",
+      "Mobile/hooks",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/hooks/index.ts::Mobile_hooks_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/mobile/hooks/mod_2.ts": {
+    "language": "typescript",
+    "hash": "477aa78510e47de2",
+    "node": "Mobile/hooks",
+    "nodes": [
+      "Mobile/hooks",
+      "Mobile",
+      "Mobile/hooks",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/hooks/mod_2.ts::Mobile_hooks_op_2"
+    ],
+    "imports": [
+      "src/mobile/hooks/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/hooks/sync/index.ts": {
+    "language": "typescript",
+    "hash": "45dbf7b1a9919333",
+    "node": "Mobile/hooks/sync",
+    "nodes": [
+      "Mobile/hooks/sync",
+      "Mobile/hooks",
+      "Mobile",
+      "Mobile/hooks/sync",
+      "Mobile/hooks",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/hooks/sync/index.ts::Mobile_hooks_sync_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/mobile/hooks/sync/mod_2.ts": {
+    "language": "typescript",
+    "hash": "c5a76e04cd481706",
+    "node": "Mobile/hooks/sync",
+    "nodes": [
+      "Mobile/hooks/sync",
+      "Mobile/hooks",
+      "Mobile",
+      "Mobile/hooks/sync",
+      "Mobile/hooks",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/hooks/sync/mod_2.ts::Mobile_hooks_sync_op_2"
+    ],
+    "imports": [
+      "src/mobile/hooks/sync/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/index.ts": {
+    "language": "typescript",
+    "hash": "ee3bb219f702591f",
+    "node": "Mobile",
+    "nodes": [
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/index.ts::Mobile_entry"
+    ],
+    "imports": [
+      "src/backend/index.ts",
+      "src/shared/index.ts",
+      "src/core/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/mod_2.ts": {
+    "language": "typescript",
+    "hash": "fd0d038263fbcb82",
+    "node": "Mobile",
+    "nodes": [
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/mod_2.ts::Mobile_op_2"
+    ],
+    "imports": [
+      "src/mobile/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/views/index.ts": {
+    "language": "typescript",
+    "hash": "bb6747ebc8f3d62b",
+    "node": "Mobile/views",
+    "nodes": [
+      "Mobile/views",
+      "Mobile",
+      "Mobile/views",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/views/index.ts::Mobile_views_entry"
+    ],
+    "imports": [
+      "src/backend/api/routes/index.ts",
+      "src/backend/api/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/views/mod_2.ts": {
+    "language": "typescript",
+    "hash": "4f30ecb0a9814bb0",
+    "node": "Mobile/views",
+    "nodes": [
+      "Mobile/views",
+      "Mobile",
+      "Mobile/views",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/views/mod_2.ts::Mobile_views_op_2"
+    ],
+    "imports": [
+      "src/mobile/views/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/views/navigation/index.ts": {
+    "language": "typescript",
+    "hash": "0f454f4f58f9c649",
+    "node": "Mobile/views/navigation",
+    "nodes": [
+      "Mobile/views/navigation",
+      "Mobile/views",
+      "Mobile",
+      "Mobile/views/navigation",
+      "Mobile/views",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/views/navigation/index.ts::Mobile_views_navigation_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/mobile/views/navigation/mod_2.ts": {
+    "language": "typescript",
+    "hash": "635d1fb9962e2e9c",
+    "node": "Mobile/views/navigation",
+    "nodes": [
+      "Mobile/views/navigation",
+      "Mobile/views",
+      "Mobile",
+      "Mobile/views/navigation",
+      "Mobile/views",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/views/navigation/mod_2.ts::Mobile_views_navigation_op_2"
+    ],
+    "imports": [
+      "src/mobile/views/navigation/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/views/screens/index.ts": {
+    "language": "typescript",
+    "hash": "3e068be727197d68",
+    "node": "Mobile/views/screens",
+    "nodes": [
+      "Mobile/views/screens",
+      "Mobile/views",
+      "Mobile",
+      "Mobile/views/screens",
+      "Mobile/views",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/views/screens/index.ts::Mobile_views_screens_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/mobile/views/screens/mod_2.ts": {
+    "language": "typescript",
+    "hash": "7f8f9fe01e1b903a",
+    "node": "Mobile/views/screens",
+    "nodes": [
+      "Mobile/views/screens",
+      "Mobile/views",
+      "Mobile",
+      "Mobile/views/screens",
+      "Mobile/views",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/views/screens/mod_2.ts::Mobile_views_screens_op_2"
+    ],
+    "imports": [
+      "src/mobile/views/screens/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/views/screens/mod_3.ts": {
+    "language": "typescript",
+    "hash": "c1f57a379918b0f7",
+    "node": "Mobile/views/screens",
+    "nodes": [
+      "Mobile/views/screens",
+      "Mobile/views",
+      "Mobile",
+      "Mobile/views/screens",
+      "Mobile/views",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/views/screens/mod_3.ts::Mobile_views_screens_op_3"
+    ],
+    "imports": [
+      "src/mobile/views/screens/index.ts"
+    ],
+    "externals": []
+  },
+  "src/mobile/views/widgets/index.ts": {
+    "language": "typescript",
+    "hash": "61ac4ffe25f99593",
+    "node": "Mobile/views/widgets",
+    "nodes": [
+      "Mobile/views/widgets",
+      "Mobile/views",
+      "Mobile",
+      "Mobile/views/widgets",
+      "Mobile/views",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/views/widgets/index.ts::Mobile_views_widgets_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/mobile/views/widgets/mod_2.ts": {
+    "language": "typescript",
+    "hash": "3373a312389c6727",
+    "node": "Mobile/views/widgets",
+    "nodes": [
+      "Mobile/views/widgets",
+      "Mobile/views",
+      "Mobile",
+      "Mobile/views/widgets",
+      "Mobile/views",
+      "Mobile"
+    ],
+    "symbols": [
+      "src/mobile/views/widgets/mod_2.ts::Mobile_views_widgets_op_2"
+    ],
+    "imports": [
+      "src/mobile/views/widgets/index.ts"
+    ],
+    "externals": []
+  },
   "src/notifications/mailer.ts": {
     "language": "typescript",
     "hash": "d7fcce405ee3508d",
-    "nodes": [],
+    "node": "Services/notifications",
+    "nodes": [
+      "Services/notifications"
+    ],
     "symbols": [
       "src/notifications/mailer.ts::EmailPayload",
       "src/notifications/mailer.ts::sendTransactionalEmail"
@@ -293,9 +4477,9 @@
   "src/payments/checkout.ts": {
     "language": "typescript",
     "hash": "207781679da20270",
-    "node": "identity",
+    "node": "Services/billing",
     "nodes": [
-      "identity"
+      "Services/billing"
     ],
     "symbols": [
       "src/payments/checkout.ts::Cart",
@@ -311,9 +4495,9 @@
   "src/payments/stripe.ts": {
     "language": "typescript",
     "hash": "3cc5316aaef514cc",
-    "node": "identity",
+    "node": "Services/billing",
     "nodes": [
-      "identity"
+      "Services/billing"
     ],
     "symbols": [
       "src/payments/stripe.ts::charge"
@@ -321,12 +4505,1643 @@
     "imports": [],
     "externals": []
   },
+  "src/services/analytics/export/index.ts": {
+    "language": "typescript",
+    "hash": "484ec68c9902a74c",
+    "node": "Services/analytics/export",
+    "nodes": [
+      "Services/analytics/export",
+      "Services/analytics",
+      "Services",
+      "Services/analytics/export",
+      "Services/analytics",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/analytics/export/index.ts::Services_analytics_export_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/analytics/export/mod_2.ts": {
+    "language": "typescript",
+    "hash": "b7d64b618352e293",
+    "node": "Services/analytics/export",
+    "nodes": [
+      "Services/analytics/export",
+      "Services/analytics",
+      "Services",
+      "Services/analytics/export",
+      "Services/analytics",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/analytics/export/mod_2.ts::Services_analytics_export_op_2"
+    ],
+    "imports": [
+      "src/services/analytics/export/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/analytics/funnels/index.ts": {
+    "language": "typescript",
+    "hash": "336d2cc0f41416df",
+    "node": "Services/analytics/funnels",
+    "nodes": [
+      "Services/analytics/funnels",
+      "Services/analytics",
+      "Services",
+      "Services/analytics/funnels",
+      "Services/analytics",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/analytics/funnels/index.ts::Services_analytics_funnels_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/analytics/funnels/mod_2.ts": {
+    "language": "typescript",
+    "hash": "34c5779326bbc497",
+    "node": "Services/analytics/funnels",
+    "nodes": [
+      "Services/analytics/funnels",
+      "Services/analytics",
+      "Services",
+      "Services/analytics/funnels",
+      "Services/analytics",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/analytics/funnels/mod_2.ts::Services_analytics_funnels_op_2"
+    ],
+    "imports": [
+      "src/services/analytics/funnels/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/analytics/index.ts": {
+    "language": "typescript",
+    "hash": "8a85f1fbe8cc02b5",
+    "node": "Services/analytics",
+    "nodes": [
+      "Services/analytics",
+      "Services",
+      "Services/analytics",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/analytics/index.ts::Services_analytics_entry"
+    ],
+    "imports": [
+      "src/backend/events/handlers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/analytics/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f5287fa447d0d246",
+    "node": "Services/analytics",
+    "nodes": [
+      "Services/analytics",
+      "Services",
+      "Services/analytics",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/analytics/mod_2.ts::Services_analytics_op_2"
+    ],
+    "imports": [
+      "src/services/analytics/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/analytics/mod_3.ts": {
+    "language": "typescript",
+    "hash": "f5ab1f99d3e4eb71",
+    "node": "Services/analytics",
+    "nodes": [
+      "Services/analytics",
+      "Services",
+      "Services/analytics",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/analytics/mod_3.ts::Services_analytics_op_3"
+    ],
+    "imports": [
+      "src/services/analytics/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/billing/dunning/index.ts": {
+    "language": "typescript",
+    "hash": "bf1462904247d4e8",
+    "node": "Services/billing/dunning",
+    "nodes": [
+      "Services/billing/dunning",
+      "Services/billing",
+      "Services",
+      "Services/billing/dunning",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/dunning/index.ts::Services_billing_dunning_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/billing/dunning/mod_2.ts": {
+    "language": "typescript",
+    "hash": "8febd693c38c995e",
+    "node": "Services/billing/dunning",
+    "nodes": [
+      "Services/billing/dunning",
+      "Services/billing",
+      "Services",
+      "Services/billing/dunning",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/dunning/mod_2.ts::Services_billing_dunning_op_2"
+    ],
+    "imports": [
+      "src/services/billing/dunning/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/billing/index.ts": {
+    "language": "typescript",
+    "hash": "8ab0c83fbbffcb41",
+    "node": "Services/billing",
+    "nodes": [
+      "Services/billing",
+      "Services",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/index.ts::Services_billing_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts",
+      "src/backend/billing/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/billing/invoices/index.ts": {
+    "language": "typescript",
+    "hash": "a2a5aff8acd08f6e",
+    "node": "Services/billing/invoices",
+    "nodes": [
+      "Services/billing/invoices",
+      "Services/billing",
+      "Services",
+      "Services/billing/invoices",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/invoices/index.ts::Services_billing_invoices_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/billing/invoices/mod_2.ts": {
+    "language": "typescript",
+    "hash": "4c7521d66cf466e2",
+    "node": "Services/billing/invoices",
+    "nodes": [
+      "Services/billing/invoices",
+      "Services/billing",
+      "Services",
+      "Services/billing/invoices",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/invoices/mod_2.ts::Services_billing_invoices_op_2"
+    ],
+    "imports": [
+      "src/services/billing/invoices/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/billing/invoices/mod_3.ts": {
+    "language": "typescript",
+    "hash": "18f19e771eab5c14",
+    "node": "Services/billing/invoices",
+    "nodes": [
+      "Services/billing/invoices",
+      "Services/billing",
+      "Services",
+      "Services/billing/invoices",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/invoices/mod_3.ts::Services_billing_invoices_op_3"
+    ],
+    "imports": [
+      "src/services/billing/invoices/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/billing/mod_2.ts": {
+    "language": "typescript",
+    "hash": "88f9fda38b227e72",
+    "node": "Services/billing",
+    "nodes": [
+      "Services/billing",
+      "Services",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/mod_2.ts::Services_billing_op_2"
+    ],
+    "imports": [
+      "src/services/billing/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/billing/mod_3.ts": {
+    "language": "typescript",
+    "hash": "3d032942363d9e47",
+    "node": "Services/billing",
+    "nodes": [
+      "Services/billing",
+      "Services",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/mod_3.ts::Services_billing_op_3"
+    ],
+    "imports": [
+      "src/services/billing/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/billing/subscriptions/index.ts": {
+    "language": "typescript",
+    "hash": "924ae5d2793867b0",
+    "node": "Services/billing/subscriptions",
+    "nodes": [
+      "Services/billing/subscriptions",
+      "Services/billing",
+      "Services",
+      "Services/billing/subscriptions",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/subscriptions/index.ts::Services_billing_subscriptions_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/billing/subscriptions/mod_2.ts": {
+    "language": "typescript",
+    "hash": "aa2c9179a4bf2a4c",
+    "node": "Services/billing/subscriptions",
+    "nodes": [
+      "Services/billing/subscriptions",
+      "Services/billing",
+      "Services",
+      "Services/billing/subscriptions",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/subscriptions/mod_2.ts::Services_billing_subscriptions_op_2"
+    ],
+    "imports": [
+      "src/services/billing/subscriptions/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/billing/subscriptions/mod_3.ts": {
+    "language": "typescript",
+    "hash": "ee115a6169f61273",
+    "node": "Services/billing/subscriptions",
+    "nodes": [
+      "Services/billing/subscriptions",
+      "Services/billing",
+      "Services",
+      "Services/billing/subscriptions",
+      "Services/billing",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/billing/subscriptions/mod_3.ts::Services_billing_subscriptions_op_3"
+    ],
+    "imports": [
+      "src/services/billing/subscriptions/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/index.ts": {
+    "language": "typescript",
+    "hash": "38cd7554f527ad2d",
+    "node": "Services",
+    "nodes": [
+      "Services"
+    ],
+    "symbols": [
+      "src/services/index.ts::Services_entry"
+    ],
+    "imports": [
+      "src/backend/index.ts",
+      "src/core/index.ts",
+      "src/data/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/auth/index.ts": {
+    "language": "typescript",
+    "hash": "6f4874ee1ca1ae46",
+    "node": "Services/jobs/auth",
+    "nodes": [
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/index.ts::Services_jobs_auth_entry"
+    ],
+    "imports": [
+      "src/backend/auth/tokens/index.ts",
+      "src/backend/events/models/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/auth/key_sync/index.ts": {
+    "language": "typescript",
+    "hash": "a2648ec6c9bba112",
+    "node": "Services/jobs/auth/key_sync",
+    "nodes": [
+      "Services/jobs/auth/key_sync",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth/key_sync",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/key_sync/index.ts::Services_jobs_auth_key_sync_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/jobs/auth/key_sync/mod_2.ts": {
+    "language": "typescript",
+    "hash": "dcb6ea9ece3f4bf7",
+    "node": "Services/jobs/auth/key_sync",
+    "nodes": [
+      "Services/jobs/auth/key_sync",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth/key_sync",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/key_sync/mod_2.ts::Services_jobs_auth_key_sync_op_2"
+    ],
+    "imports": [
+      "src/services/jobs/auth/key_sync/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/auth/mod_2.ts": {
+    "language": "typescript",
+    "hash": "040cd1fb6cb39876",
+    "node": "Services/jobs/auth",
+    "nodes": [
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/mod_2.ts::Services_jobs_auth_op_2"
+    ],
+    "imports": [
+      "src/services/jobs/auth/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/auth/mod_3.ts": {
+    "language": "typescript",
+    "hash": "1121e0e405dd167f",
+    "node": "Services/jobs/auth",
+    "nodes": [
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/mod_3.ts::Services_jobs_auth_op_3"
+    ],
+    "imports": [
+      "src/services/jobs/auth/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/auth/mod_4.ts": {
+    "language": "typescript",
+    "hash": "4975cd853a6bfdca",
+    "node": "Services/jobs/auth",
+    "nodes": [
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/mod_4.ts::Services_jobs_auth_op_4"
+    ],
+    "imports": [
+      "src/services/jobs/auth/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/auth/mod_5.ts": {
+    "language": "typescript",
+    "hash": "fb31003cef7b2849",
+    "node": "Services/jobs/auth",
+    "nodes": [
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/mod_5.ts::Services_jobs_auth_op_5"
+    ],
+    "imports": [
+      "src/services/jobs/auth/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/auth/session_pruner/index.ts": {
+    "language": "typescript",
+    "hash": "06ad9d3582589d7b",
+    "node": "Services/jobs/auth/session_pruner",
+    "nodes": [
+      "Services/jobs/auth/session_pruner",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth/session_pruner",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/session_pruner/index.ts::Services_jobs_auth_session_pruner_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/jobs/auth/session_pruner/mod_2.ts": {
+    "language": "typescript",
+    "hash": "50a28d10ceea606a",
+    "node": "Services/jobs/auth/session_pruner",
+    "nodes": [
+      "Services/jobs/auth/session_pruner",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth/session_pruner",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/session_pruner/mod_2.ts::Services_jobs_auth_session_pruner_op_2"
+    ],
+    "imports": [
+      "src/services/jobs/auth/session_pruner/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/auth/token_rotator/index.ts": {
+    "language": "typescript",
+    "hash": "b6ff28a7f895a82c",
+    "node": "Services/jobs/auth/token_rotator",
+    "nodes": [
+      "Services/jobs/auth/token_rotator",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth/token_rotator",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/token_rotator/index.ts::Services_jobs_auth_token_rotator_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/jobs/auth/token_rotator/mod_2.ts": {
+    "language": "typescript",
+    "hash": "74e8f402fffb0b22",
+    "node": "Services/jobs/auth/token_rotator",
+    "nodes": [
+      "Services/jobs/auth/token_rotator",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth/token_rotator",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/token_rotator/mod_2.ts::Services_jobs_auth_token_rotator_op_2"
+    ],
+    "imports": [
+      "src/services/jobs/auth/token_rotator/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/auth/token_rotator/mod_3.ts": {
+    "language": "typescript",
+    "hash": "3157454f4f7408bb",
+    "node": "Services/jobs/auth/token_rotator",
+    "nodes": [
+      "Services/jobs/auth/token_rotator",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/auth/token_rotator",
+      "Services/jobs/auth",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/auth/token_rotator/mod_3.ts::Services_jobs_auth_token_rotator_op_3"
+    ],
+    "imports": [
+      "src/services/jobs/auth/token_rotator/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/index.ts": {
+    "language": "typescript",
+    "hash": "be3b4e429641653f",
+    "node": "Services/jobs",
+    "nodes": [
+      "Services/jobs",
+      "Services",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/index.ts::Services_jobs_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts",
+      "src/backend/events/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/mod_2.ts": {
+    "language": "typescript",
+    "hash": "7fc9b47e726ca730",
+    "node": "Services/jobs",
+    "nodes": [
+      "Services/jobs",
+      "Services",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/mod_2.ts::Services_jobs_op_2"
+    ],
+    "imports": [
+      "src/services/jobs/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/mod_3.ts": {
+    "language": "typescript",
+    "hash": "7e564efb0a977884",
+    "node": "Services/jobs",
+    "nodes": [
+      "Services/jobs",
+      "Services",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/mod_3.ts::Services_jobs_op_3"
+    ],
+    "imports": [
+      "src/services/jobs/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/scheduler/cron_runner/index.ts": {
+    "language": "typescript",
+    "hash": "6a713826471c5c81",
+    "node": "Services/jobs/scheduler/cron_runner",
+    "nodes": [
+      "Services/jobs/scheduler/cron_runner",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/scheduler/cron_runner",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/scheduler/cron_runner/index.ts::Services_jobs_scheduler_cron_runner_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/jobs/scheduler/cron_runner/mod_2.ts": {
+    "language": "typescript",
+    "hash": "78add3fc8f14eb6b",
+    "node": "Services/jobs/scheduler/cron_runner",
+    "nodes": [
+      "Services/jobs/scheduler/cron_runner",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/scheduler/cron_runner",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/scheduler/cron_runner/mod_2.ts::Services_jobs_scheduler_cron_runner_op_2"
+    ],
+    "imports": [
+      "src/services/jobs/scheduler/cron_runner/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/scheduler/index.ts": {
+    "language": "typescript",
+    "hash": "84f7050638a329b5",
+    "node": "Services/jobs/scheduler",
+    "nodes": [
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/scheduler/index.ts::Services_jobs_scheduler_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/jobs/scheduler/lease_lock/index.ts": {
+    "language": "typescript",
+    "hash": "18e16e4bcd06ed0f",
+    "node": "Services/jobs/scheduler/lease_lock",
+    "nodes": [
+      "Services/jobs/scheduler/lease_lock",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/scheduler/lease_lock",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/scheduler/lease_lock/index.ts::Services_jobs_scheduler_lease_lock_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/jobs/scheduler/lease_lock/mod_2.ts": {
+    "language": "typescript",
+    "hash": "b29a29a855d6d835",
+    "node": "Services/jobs/scheduler/lease_lock",
+    "nodes": [
+      "Services/jobs/scheduler/lease_lock",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/scheduler/lease_lock",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/scheduler/lease_lock/mod_2.ts::Services_jobs_scheduler_lease_lock_op_2"
+    ],
+    "imports": [
+      "src/services/jobs/scheduler/lease_lock/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/scheduler/mod_2.ts": {
+    "language": "typescript",
+    "hash": "576326f8b889d803",
+    "node": "Services/jobs/scheduler",
+    "nodes": [
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/scheduler/mod_2.ts::Services_jobs_scheduler_op_2"
+    ],
+    "imports": [
+      "src/services/jobs/scheduler/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/scheduler/mod_3.ts": {
+    "language": "typescript",
+    "hash": "68e0498f61dcd1cb",
+    "node": "Services/jobs/scheduler",
+    "nodes": [
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/scheduler",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/scheduler/mod_3.ts::Services_jobs_scheduler_op_3"
+    ],
+    "imports": [
+      "src/services/jobs/scheduler/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/workers/index.ts": {
+    "language": "typescript",
+    "hash": "4fc4ec9b5139e3bc",
+    "node": "Services/jobs/workers",
+    "nodes": [
+      "Services/jobs/workers",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/workers",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/workers/index.ts::Services_jobs_workers_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/jobs/workers/mod_2.ts": {
+    "language": "typescript",
+    "hash": "0797e9fc8e94a3e3",
+    "node": "Services/jobs/workers",
+    "nodes": [
+      "Services/jobs/workers",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/workers",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/workers/mod_2.ts::Services_jobs_workers_op_2"
+    ],
+    "imports": [
+      "src/services/jobs/workers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/jobs/workers/mod_3.ts": {
+    "language": "typescript",
+    "hash": "a0d604429c7ffe20",
+    "node": "Services/jobs/workers",
+    "nodes": [
+      "Services/jobs/workers",
+      "Services/jobs",
+      "Services",
+      "Services/jobs/workers",
+      "Services/jobs",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/jobs/workers/mod_3.ts::Services_jobs_workers_op_3"
+    ],
+    "imports": [
+      "src/services/jobs/workers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/mod_2.ts": {
+    "language": "typescript",
+    "hash": "b61d091af9af0755",
+    "node": "Services",
+    "nodes": [
+      "Services"
+    ],
+    "symbols": [
+      "src/services/mod_2.ts::Services_op_2"
+    ],
+    "imports": [
+      "src/services/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/notifications/digests/index.ts": {
+    "language": "typescript",
+    "hash": "79513f45db5744e5",
+    "node": "Services/notifications/digests",
+    "nodes": [
+      "Services/notifications/digests",
+      "Services/notifications",
+      "Services",
+      "Services/notifications/digests",
+      "Services/notifications",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/notifications/digests/index.ts::Services_notifications_digests_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/notifications/digests/mod_2.ts": {
+    "language": "typescript",
+    "hash": "db4a5e7ca3da1bdd",
+    "node": "Services/notifications/digests",
+    "nodes": [
+      "Services/notifications/digests",
+      "Services/notifications",
+      "Services",
+      "Services/notifications/digests",
+      "Services/notifications",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/notifications/digests/mod_2.ts::Services_notifications_digests_op_2"
+    ],
+    "imports": [
+      "src/services/notifications/digests/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/notifications/email/index.ts": {
+    "language": "typescript",
+    "hash": "d856d01e44e7a10c",
+    "node": "Services/notifications/email",
+    "nodes": [
+      "Services/notifications/email",
+      "Services/notifications",
+      "Services",
+      "Services/notifications/email",
+      "Services/notifications",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/notifications/email/index.ts::Services_notifications_email_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/notifications/email/mod_2.ts": {
+    "language": "typescript",
+    "hash": "cd3f3e38f661ea59",
+    "node": "Services/notifications/email",
+    "nodes": [
+      "Services/notifications/email",
+      "Services/notifications",
+      "Services",
+      "Services/notifications/email",
+      "Services/notifications",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/notifications/email/mod_2.ts::Services_notifications_email_op_2"
+    ],
+    "imports": [
+      "src/services/notifications/email/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/notifications/email/mod_3.ts": {
+    "language": "typescript",
+    "hash": "31817b8f6e47ee69",
+    "node": "Services/notifications/email",
+    "nodes": [
+      "Services/notifications/email",
+      "Services/notifications",
+      "Services",
+      "Services/notifications/email",
+      "Services/notifications",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/notifications/email/mod_3.ts::Services_notifications_email_op_3"
+    ],
+    "imports": [
+      "src/services/notifications/email/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/notifications/index.ts": {
+    "language": "typescript",
+    "hash": "c67c9143f49e9c26",
+    "node": "Services/notifications",
+    "nodes": [
+      "Services/notifications",
+      "Services",
+      "Services/notifications",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/notifications/index.ts::Services_notifications_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts",
+      "src/backend/events/handlers/index.ts",
+      "src/backend/events/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/notifications/mod_2.ts": {
+    "language": "typescript",
+    "hash": "94b2156709e2fb18",
+    "node": "Services/notifications",
+    "nodes": [
+      "Services/notifications",
+      "Services",
+      "Services/notifications",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/notifications/mod_2.ts::Services_notifications_op_2"
+    ],
+    "imports": [
+      "src/services/notifications/index.ts"
+    ],
+    "externals": []
+  },
+  "src/services/notifications/push/index.ts": {
+    "language": "typescript",
+    "hash": "5b498f707a792f74",
+    "node": "Services/notifications/push",
+    "nodes": [
+      "Services/notifications/push",
+      "Services/notifications",
+      "Services",
+      "Services/notifications/push",
+      "Services/notifications",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/notifications/push/index.ts::Services_notifications_push_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/services/notifications/push/mod_2.ts": {
+    "language": "typescript",
+    "hash": "b91c2ae9c62cc628",
+    "node": "Services/notifications/push",
+    "nodes": [
+      "Services/notifications/push",
+      "Services/notifications",
+      "Services",
+      "Services/notifications/push",
+      "Services/notifications",
+      "Services"
+    ],
+    "symbols": [
+      "src/services/notifications/push/mod_2.ts::Services_notifications_push_op_2"
+    ],
+    "imports": [
+      "src/services/notifications/push/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/config/env/index.ts": {
+    "language": "typescript",
+    "hash": "e648e288480b11d4",
+    "node": "Shared/config/env",
+    "nodes": [
+      "Shared/config/env",
+      "Shared/config",
+      "Shared",
+      "Shared/config/env",
+      "Shared/config",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/config/env/index.ts::Shared_config_env_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/config/env/mod_2.ts": {
+    "language": "typescript",
+    "hash": "36963e1f2e5c4005",
+    "node": "Shared/config/env",
+    "nodes": [
+      "Shared/config/env",
+      "Shared/config",
+      "Shared",
+      "Shared/config/env",
+      "Shared/config",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/config/env/mod_2.ts::Shared_config_env_op_2"
+    ],
+    "imports": [
+      "src/shared/config/env/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/config/flags/index.ts": {
+    "language": "typescript",
+    "hash": "c5148183a90d8c72",
+    "node": "Shared/config/flags",
+    "nodes": [
+      "Shared/config/flags",
+      "Shared/config",
+      "Shared",
+      "Shared/config/flags",
+      "Shared/config",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/config/flags/index.ts::Shared_config_flags_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/config/flags/mod_2.ts": {
+    "language": "typescript",
+    "hash": "be46112a39b5fec9",
+    "node": "Shared/config/flags",
+    "nodes": [
+      "Shared/config/flags",
+      "Shared/config",
+      "Shared",
+      "Shared/config/flags",
+      "Shared/config",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/config/flags/mod_2.ts::Shared_config_flags_op_2"
+    ],
+    "imports": [
+      "src/shared/config/flags/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/config/index.ts": {
+    "language": "typescript",
+    "hash": "492f944a873183ba",
+    "node": "Shared/config",
+    "nodes": [
+      "Shared/config",
+      "Shared",
+      "Shared/config",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/config/index.ts::Shared_config_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/config/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f2b128bfbe787ece",
+    "node": "Shared/config",
+    "nodes": [
+      "Shared/config",
+      "Shared",
+      "Shared/config",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/config/mod_2.ts::Shared_config_op_2"
+    ],
+    "imports": [
+      "src/shared/config/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/config/mod_3.ts": {
+    "language": "typescript",
+    "hash": "51708aaac9c35038",
+    "node": "Shared/config",
+    "nodes": [
+      "Shared/config",
+      "Shared",
+      "Shared/config",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/config/mod_3.ts::Shared_config_op_3"
+    ],
+    "imports": [
+      "src/shared/config/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/index.ts": {
+    "language": "typescript",
+    "hash": "c47b5489757c4661",
+    "node": "Shared",
+    "nodes": [
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/index.ts::Shared_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/logging/index.ts": {
+    "language": "typescript",
+    "hash": "fe64c0cdacd98f16",
+    "node": "Shared/logging",
+    "nodes": [
+      "Shared/logging",
+      "Shared",
+      "Shared/logging",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/logging/index.ts::Shared_logging_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/logging/mod_2.ts": {
+    "language": "typescript",
+    "hash": "a2a881a95c636c4c",
+    "node": "Shared/logging",
+    "nodes": [
+      "Shared/logging",
+      "Shared",
+      "Shared/logging",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/logging/mod_2.ts::Shared_logging_op_2"
+    ],
+    "imports": [
+      "src/shared/logging/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/logging/redaction/index.ts": {
+    "language": "typescript",
+    "hash": "881ca7ccc53657cc",
+    "node": "Shared/logging/redaction",
+    "nodes": [
+      "Shared/logging/redaction",
+      "Shared/logging",
+      "Shared",
+      "Shared/logging/redaction",
+      "Shared/logging",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/logging/redaction/index.ts::Shared_logging_redaction_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/logging/redaction/mod_2.ts": {
+    "language": "typescript",
+    "hash": "acf203c2e4445b63",
+    "node": "Shared/logging/redaction",
+    "nodes": [
+      "Shared/logging/redaction",
+      "Shared/logging",
+      "Shared",
+      "Shared/logging/redaction",
+      "Shared/logging",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/logging/redaction/mod_2.ts::Shared_logging_redaction_op_2"
+    ],
+    "imports": [
+      "src/shared/logging/redaction/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/logging/structured/index.ts": {
+    "language": "typescript",
+    "hash": "f677e0e9d4bb7381",
+    "node": "Shared/logging/structured",
+    "nodes": [
+      "Shared/logging/structured",
+      "Shared/logging",
+      "Shared",
+      "Shared/logging/structured",
+      "Shared/logging",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/logging/structured/index.ts::Shared_logging_structured_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/logging/structured/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f35e9257d970c68e",
+    "node": "Shared/logging/structured",
+    "nodes": [
+      "Shared/logging/structured",
+      "Shared/logging",
+      "Shared",
+      "Shared/logging/structured",
+      "Shared/logging",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/logging/structured/mod_2.ts::Shared_logging_structured_op_2"
+    ],
+    "imports": [
+      "src/shared/logging/structured/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/mod_2.ts": {
+    "language": "typescript",
+    "hash": "a31259035a747bf0",
+    "node": "Shared",
+    "nodes": [
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/mod_2.ts::Shared_op_2"
+    ],
+    "imports": [
+      "src/shared/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/types/api/index.ts": {
+    "language": "typescript",
+    "hash": "46df976527807358",
+    "node": "Shared/types/api",
+    "nodes": [
+      "Shared/types/api",
+      "Shared/types",
+      "Shared",
+      "Shared/types/api",
+      "Shared/types",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/types/api/index.ts::Shared_types_api_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/types/api/mod_2.ts": {
+    "language": "typescript",
+    "hash": "61586ee7b6ee81b9",
+    "node": "Shared/types/api",
+    "nodes": [
+      "Shared/types/api",
+      "Shared/types",
+      "Shared",
+      "Shared/types/api",
+      "Shared/types",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/types/api/mod_2.ts::Shared_types_api_op_2"
+    ],
+    "imports": [
+      "src/shared/types/api/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/types/domain/index.ts": {
+    "language": "typescript",
+    "hash": "7f2d3358bc6b3f7b",
+    "node": "Shared/types/domain",
+    "nodes": [
+      "Shared/types/domain",
+      "Shared/types",
+      "Shared",
+      "Shared/types/domain",
+      "Shared/types",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/types/domain/index.ts::Shared_types_domain_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/types/domain/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f2e194ec8a50a4b2",
+    "node": "Shared/types/domain",
+    "nodes": [
+      "Shared/types/domain",
+      "Shared/types",
+      "Shared",
+      "Shared/types/domain",
+      "Shared/types",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/types/domain/mod_2.ts::Shared_types_domain_op_2"
+    ],
+    "imports": [
+      "src/shared/types/domain/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/types/index.ts": {
+    "language": "typescript",
+    "hash": "96b22b0bbe958d06",
+    "node": "Shared/types",
+    "nodes": [
+      "Shared/types",
+      "Shared",
+      "Shared/types",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/types/index.ts::Shared_types_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/types/mod_2.ts": {
+    "language": "typescript",
+    "hash": "d76fa6c763e2cdb1",
+    "node": "Shared/types",
+    "nodes": [
+      "Shared/types",
+      "Shared",
+      "Shared/types",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/types/mod_2.ts::Shared_types_op_2"
+    ],
+    "imports": [
+      "src/shared/types/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/utils/crypto/index.ts": {
+    "language": "typescript",
+    "hash": "e6c599c23cf23963",
+    "node": "Shared/utils/crypto",
+    "nodes": [
+      "Shared/utils/crypto",
+      "Shared/utils",
+      "Shared",
+      "Shared/utils/crypto",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/crypto/index.ts::Shared_utils_crypto_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/utils/crypto/mod_2.ts": {
+    "language": "typescript",
+    "hash": "448e134cca21a47d",
+    "node": "Shared/utils/crypto",
+    "nodes": [
+      "Shared/utils/crypto",
+      "Shared/utils",
+      "Shared",
+      "Shared/utils/crypto",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/crypto/mod_2.ts::Shared_utils_crypto_op_2"
+    ],
+    "imports": [
+      "src/shared/utils/crypto/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/utils/crypto/mod_3.ts": {
+    "language": "typescript",
+    "hash": "59ab20738e8165eb",
+    "node": "Shared/utils/crypto",
+    "nodes": [
+      "Shared/utils/crypto",
+      "Shared/utils",
+      "Shared",
+      "Shared/utils/crypto",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/crypto/mod_3.ts::Shared_utils_crypto_op_3"
+    ],
+    "imports": [
+      "src/shared/utils/crypto/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/utils/index.ts": {
+    "language": "typescript",
+    "hash": "4f36ca1681ff224a",
+    "node": "Shared/utils",
+    "nodes": [
+      "Shared/utils",
+      "Shared",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/index.ts::Shared_utils_entry"
+    ],
+    "imports": [
+      "src/shared/logging/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/utils/mod_2.ts": {
+    "language": "typescript",
+    "hash": "8a86ae2c9d708505",
+    "node": "Shared/utils",
+    "nodes": [
+      "Shared/utils",
+      "Shared",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/mod_2.ts::Shared_utils_op_2"
+    ],
+    "imports": [
+      "src/shared/utils/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/utils/mod_3.ts": {
+    "language": "typescript",
+    "hash": "d2c041600c265190",
+    "node": "Shared/utils",
+    "nodes": [
+      "Shared/utils",
+      "Shared",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/mod_3.ts::Shared_utils_op_3"
+    ],
+    "imports": [
+      "src/shared/utils/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/utils/retry/index.ts": {
+    "language": "typescript",
+    "hash": "d74454f17f1bd77b",
+    "node": "Shared/utils/retry",
+    "nodes": [
+      "Shared/utils/retry",
+      "Shared/utils",
+      "Shared",
+      "Shared/utils/retry",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/retry/index.ts::Shared_utils_retry_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/utils/retry/mod_2.ts": {
+    "language": "typescript",
+    "hash": "333b52b2fee0e700",
+    "node": "Shared/utils/retry",
+    "nodes": [
+      "Shared/utils/retry",
+      "Shared/utils",
+      "Shared",
+      "Shared/utils/retry",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/retry/mod_2.ts::Shared_utils_retry_op_2"
+    ],
+    "imports": [
+      "src/shared/utils/retry/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/utils/strings/index.ts": {
+    "language": "typescript",
+    "hash": "0d58fd64ef1a63a0",
+    "node": "Shared/utils/strings",
+    "nodes": [
+      "Shared/utils/strings",
+      "Shared/utils",
+      "Shared",
+      "Shared/utils/strings",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/strings/index.ts::Shared_utils_strings_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/shared/utils/strings/mod_2.ts": {
+    "language": "typescript",
+    "hash": "3c5805364a16a1a6",
+    "node": "Shared/utils/strings",
+    "nodes": [
+      "Shared/utils/strings",
+      "Shared/utils",
+      "Shared",
+      "Shared/utils/strings",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/strings/mod_2.ts::Shared_utils_strings_op_2"
+    ],
+    "imports": [
+      "src/shared/utils/strings/index.ts"
+    ],
+    "externals": []
+  },
+  "src/shared/utils/strings/mod_3.ts": {
+    "language": "typescript",
+    "hash": "a27d083ea25fae46",
+    "node": "Shared/utils/strings",
+    "nodes": [
+      "Shared/utils/strings",
+      "Shared/utils",
+      "Shared",
+      "Shared/utils/strings",
+      "Shared/utils",
+      "Shared"
+    ],
+    "symbols": [
+      "src/shared/utils/strings/mod_3.ts::Shared_utils_strings_op_3"
+    ],
+    "imports": [
+      "src/shared/utils/strings/index.ts"
+    ],
+    "externals": []
+  },
   "src/ui/Button.tsx": {
     "language": "tsx",
     "hash": "4e86978e99907acc",
-    "node": "workspace-library",
+    "node": "Web/views",
     "nodes": [
-      "workspace-library"
+      "Web/views"
     ],
     "symbols": [
       "src/ui/Button.tsx::Button"
@@ -337,9 +6152,9 @@
   "src/ui/Layout.tsx": {
     "language": "tsx",
     "hash": "5102f58f2fdb1d4f",
-    "node": "workspace-library",
+    "node": "Web/views",
     "nodes": [
-      "workspace-library"
+      "Web/views"
     ],
     "symbols": [
       "src/ui/Layout.tsx::Layout"
@@ -349,13 +6164,771 @@
     ],
     "externals": []
   },
+  "src/web/api/client/index.ts": {
+    "language": "typescript",
+    "hash": "5533e832d6f21a4a",
+    "node": "Web/api/client",
+    "nodes": [
+      "Web/api/client",
+      "Web/api",
+      "Web",
+      "Web/api/client",
+      "Web/api",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/api/client/index.ts::Web_api_client_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/api/client/mod_2.ts": {
+    "language": "typescript",
+    "hash": "f3f3758eb2f1bf05",
+    "node": "Web/api/client",
+    "nodes": [
+      "Web/api/client",
+      "Web/api",
+      "Web",
+      "Web/api/client",
+      "Web/api",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/api/client/mod_2.ts::Web_api_client_op_2"
+    ],
+    "imports": [
+      "src/web/api/client/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/api/index.ts": {
+    "language": "typescript",
+    "hash": "09bf7f50e1de0208",
+    "node": "Web/api",
+    "nodes": [
+      "Web/api",
+      "Web",
+      "Web/api",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/api/index.ts::Web_api_entry"
+    ],
+    "imports": [
+      "src/backend/api/handlers/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/api/interceptors/index.ts": {
+    "language": "typescript",
+    "hash": "7a26523f2d580893",
+    "node": "Web/api/interceptors",
+    "nodes": [
+      "Web/api/interceptors",
+      "Web/api",
+      "Web",
+      "Web/api/interceptors",
+      "Web/api",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/api/interceptors/index.ts::Web_api_interceptors_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/api/interceptors/mod_2.ts": {
+    "language": "typescript",
+    "hash": "1f199d69bce7437c",
+    "node": "Web/api/interceptors",
+    "nodes": [
+      "Web/api/interceptors",
+      "Web/api",
+      "Web",
+      "Web/api/interceptors",
+      "Web/api",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/api/interceptors/mod_2.ts::Web_api_interceptors_op_2"
+    ],
+    "imports": [
+      "src/web/api/interceptors/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/api/mod_2.ts": {
+    "language": "typescript",
+    "hash": "6461fe5b649ec4b2",
+    "node": "Web/api",
+    "nodes": [
+      "Web/api",
+      "Web",
+      "Web/api",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/api/mod_2.ts::Web_api_op_2"
+    ],
+    "imports": [
+      "src/web/api/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/hooks/cart/index.ts": {
+    "language": "typescript",
+    "hash": "87fcd785a80ca684",
+    "node": "Web/hooks/cart",
+    "nodes": [
+      "Web/hooks/cart",
+      "Web/hooks",
+      "Web",
+      "Web/hooks/cart",
+      "Web/hooks",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/hooks/cart/index.ts::Web_hooks_cart_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/hooks/cart/mod_2.ts": {
+    "language": "typescript",
+    "hash": "04fa6c89fbe4cd1f",
+    "node": "Web/hooks/cart",
+    "nodes": [
+      "Web/hooks/cart",
+      "Web/hooks",
+      "Web",
+      "Web/hooks/cart",
+      "Web/hooks",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/hooks/cart/mod_2.ts::Web_hooks_cart_op_2"
+    ],
+    "imports": [
+      "src/web/hooks/cart/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/hooks/index.ts": {
+    "language": "typescript",
+    "hash": "ca3fdc55a52f8d30",
+    "node": "Web/hooks",
+    "nodes": [
+      "Web/hooks",
+      "Web",
+      "Web/hooks",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/hooks/index.ts::Web_hooks_entry"
+    ],
+    "imports": [
+      "src/backend/api/routes/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/hooks/mod_2.ts": {
+    "language": "typescript",
+    "hash": "2183b76e93f3397d",
+    "node": "Web/hooks",
+    "nodes": [
+      "Web/hooks",
+      "Web",
+      "Web/hooks",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/hooks/mod_2.ts::Web_hooks_op_2"
+    ],
+    "imports": [
+      "src/web/hooks/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/hooks/query/index.ts": {
+    "language": "typescript",
+    "hash": "fd9dd8115b7c1553",
+    "node": "Web/hooks/query",
+    "nodes": [
+      "Web/hooks/query",
+      "Web/hooks",
+      "Web",
+      "Web/hooks/query",
+      "Web/hooks",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/hooks/query/index.ts::Web_hooks_query_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/hooks/query/mod_2.ts": {
+    "language": "typescript",
+    "hash": "85e5f26a255bb3aa",
+    "node": "Web/hooks/query",
+    "nodes": [
+      "Web/hooks/query",
+      "Web/hooks",
+      "Web",
+      "Web/hooks/query",
+      "Web/hooks",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/hooks/query/mod_2.ts::Web_hooks_query_op_2"
+    ],
+    "imports": [
+      "src/web/hooks/query/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/hooks/session/index.ts": {
+    "language": "typescript",
+    "hash": "200d07af58e13990",
+    "node": "Web/hooks/session",
+    "nodes": [
+      "Web/hooks/session",
+      "Web/hooks",
+      "Web",
+      "Web/hooks/session",
+      "Web/hooks",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/hooks/session/index.ts::Web_hooks_session_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/hooks/session/mod_2.ts": {
+    "language": "typescript",
+    "hash": "22a8a3009925b4fa",
+    "node": "Web/hooks/session",
+    "nodes": [
+      "Web/hooks/session",
+      "Web/hooks",
+      "Web",
+      "Web/hooks/session",
+      "Web/hooks",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/hooks/session/mod_2.ts::Web_hooks_session_op_2"
+    ],
+    "imports": [
+      "src/web/hooks/session/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/index.ts": {
+    "language": "typescript",
+    "hash": "5860cd0fc4a4dd74",
+    "node": "Web",
+    "nodes": [
+      "Web"
+    ],
+    "symbols": [
+      "src/web/index.ts::Web_entry"
+    ],
+    "imports": [
+      "src/backend/index.ts",
+      "src/shared/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/legacy_ui/forms/index.ts": {
+    "language": "typescript",
+    "hash": "e0b8d75aa9e132bd",
+    "node": "Web/legacy_ui/forms",
+    "nodes": [
+      "Web/legacy_ui/forms",
+      "Web/legacy_ui",
+      "Web",
+      "Web/legacy_ui/forms",
+      "Web/legacy_ui",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/legacy_ui/forms/index.ts::Web_legacy_ui_forms_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/legacy_ui/forms/mod_2.ts": {
+    "language": "typescript",
+    "hash": "bb82908982f2f8f6",
+    "node": "Web/legacy_ui/forms",
+    "nodes": [
+      "Web/legacy_ui/forms",
+      "Web/legacy_ui",
+      "Web",
+      "Web/legacy_ui/forms",
+      "Web/legacy_ui",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/legacy_ui/forms/mod_2.ts::Web_legacy_ui_forms_op_2"
+    ],
+    "imports": [
+      "src/web/legacy_ui/forms/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/legacy_ui/index.ts": {
+    "language": "typescript",
+    "hash": "29d177ae8d3f93bc",
+    "node": "Web/legacy_ui",
+    "nodes": [
+      "Web/legacy_ui",
+      "Web",
+      "Web/legacy_ui",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/legacy_ui/index.ts::Web_legacy_ui_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/legacy_ui/mod_2.ts": {
+    "language": "typescript",
+    "hash": "afac5a2ea3b8b13b",
+    "node": "Web/legacy_ui",
+    "nodes": [
+      "Web/legacy_ui",
+      "Web",
+      "Web/legacy_ui",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/legacy_ui/mod_2.ts::Web_legacy_ui_op_2"
+    ],
+    "imports": [
+      "src/web/legacy_ui/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/legacy_ui/tables/index.ts": {
+    "language": "typescript",
+    "hash": "bed281b32a245915",
+    "node": "Web/legacy_ui/tables",
+    "nodes": [
+      "Web/legacy_ui/tables",
+      "Web/legacy_ui",
+      "Web",
+      "Web/legacy_ui/tables",
+      "Web/legacy_ui",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/legacy_ui/tables/index.ts::Web_legacy_ui_tables_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/mod_2.ts": {
+    "language": "typescript",
+    "hash": "16e09716782a44ff",
+    "node": "Web",
+    "nodes": [
+      "Web"
+    ],
+    "symbols": [
+      "src/web/mod_2.ts::Web_op_2"
+    ],
+    "imports": [
+      "src/web/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/catalog/index.ts": {
+    "language": "typescript",
+    "hash": "91cd93d858a270ed",
+    "node": "Web/views/catalog",
+    "nodes": [
+      "Web/views/catalog",
+      "Web/views",
+      "Web",
+      "Web/views/catalog",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/catalog/index.ts::Web_views_catalog_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/views/catalog/mod_2.ts": {
+    "language": "typescript",
+    "hash": "03a848114bd0a4f9",
+    "node": "Web/views/catalog",
+    "nodes": [
+      "Web/views/catalog",
+      "Web/views",
+      "Web",
+      "Web/views/catalog",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/catalog/mod_2.ts::Web_views_catalog_op_2"
+    ],
+    "imports": [
+      "src/web/views/catalog/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/checkout/cart_summary/index.ts": {
+    "language": "typescript",
+    "hash": "1dc98c6c4177c339",
+    "node": "Web/views/checkout/cart_summary",
+    "nodes": [
+      "Web/views/checkout/cart_summary",
+      "Web/views/checkout",
+      "Web/views",
+      "Web",
+      "Web/views/checkout/cart_summary",
+      "Web/views/checkout",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/checkout/cart_summary/index.ts::Web_views_checkout_cart_summary_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/views/checkout/cart_summary/mod_2.ts": {
+    "language": "typescript",
+    "hash": "139f267b26a00182",
+    "node": "Web/views/checkout/cart_summary",
+    "nodes": [
+      "Web/views/checkout/cart_summary",
+      "Web/views/checkout",
+      "Web/views",
+      "Web",
+      "Web/views/checkout/cart_summary",
+      "Web/views/checkout",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/checkout/cart_summary/mod_2.ts::Web_views_checkout_cart_summary_op_2"
+    ],
+    "imports": [
+      "src/web/views/checkout/cart_summary/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/checkout/index.ts": {
+    "language": "typescript",
+    "hash": "04360f735077989c",
+    "node": "Web/views/checkout",
+    "nodes": [
+      "Web/views/checkout",
+      "Web/views",
+      "Web",
+      "Web/views/checkout",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/checkout/index.ts::Web_views_checkout_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/views/checkout/mod_2.ts": {
+    "language": "typescript",
+    "hash": "a6fbb10d5ea9f37f",
+    "node": "Web/views/checkout",
+    "nodes": [
+      "Web/views/checkout",
+      "Web/views",
+      "Web",
+      "Web/views/checkout",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/checkout/mod_2.ts::Web_views_checkout_op_2"
+    ],
+    "imports": [
+      "src/web/views/checkout/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/checkout/mod_3.ts": {
+    "language": "typescript",
+    "hash": "235c6f4e1dfe86af",
+    "node": "Web/views/checkout",
+    "nodes": [
+      "Web/views/checkout",
+      "Web/views",
+      "Web",
+      "Web/views/checkout",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/checkout/mod_3.ts::Web_views_checkout_op_3"
+    ],
+    "imports": [
+      "src/web/views/checkout/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/checkout/payment_form/index.ts": {
+    "language": "typescript",
+    "hash": "31c822106266fd0a",
+    "node": "Web/views/checkout/payment_form",
+    "nodes": [
+      "Web/views/checkout/payment_form",
+      "Web/views/checkout",
+      "Web/views",
+      "Web",
+      "Web/views/checkout/payment_form",
+      "Web/views/checkout",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/checkout/payment_form/index.ts::Web_views_checkout_payment_form_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/views/checkout/payment_form/mod_2.ts": {
+    "language": "typescript",
+    "hash": "15edf0dcd1863c30",
+    "node": "Web/views/checkout/payment_form",
+    "nodes": [
+      "Web/views/checkout/payment_form",
+      "Web/views/checkout",
+      "Web/views",
+      "Web",
+      "Web/views/checkout/payment_form",
+      "Web/views/checkout",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/checkout/payment_form/mod_2.ts::Web_views_checkout_payment_form_op_2"
+    ],
+    "imports": [
+      "src/web/views/checkout/payment_form/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/checkout/receipt_view/index.ts": {
+    "language": "typescript",
+    "hash": "1684beb36231aad2",
+    "node": "Web/views/checkout/receipt_view",
+    "nodes": [
+      "Web/views/checkout/receipt_view",
+      "Web/views/checkout",
+      "Web/views",
+      "Web",
+      "Web/views/checkout/receipt_view",
+      "Web/views/checkout",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/checkout/receipt_view/index.ts::Web_views_checkout_receipt_view_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/views/dashboard/activity_feed/index.ts": {
+    "language": "typescript",
+    "hash": "42a7a5cc70c84538",
+    "node": "Web/views/dashboard/activity_feed",
+    "nodes": [
+      "Web/views/dashboard/activity_feed",
+      "Web/views/dashboard",
+      "Web/views",
+      "Web",
+      "Web/views/dashboard/activity_feed",
+      "Web/views/dashboard",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/dashboard/activity_feed/index.ts::Web_views_dashboard_activity_feed_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/views/dashboard/index.ts": {
+    "language": "typescript",
+    "hash": "4baaeffa7fb55fb0",
+    "node": "Web/views/dashboard",
+    "nodes": [
+      "Web/views/dashboard",
+      "Web/views",
+      "Web",
+      "Web/views/dashboard",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/dashboard/index.ts::Web_views_dashboard_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/views/dashboard/metrics_grid/index.ts": {
+    "language": "typescript",
+    "hash": "3dfd93fb2be9843d",
+    "node": "Web/views/dashboard/metrics_grid",
+    "nodes": [
+      "Web/views/dashboard/metrics_grid",
+      "Web/views/dashboard",
+      "Web/views",
+      "Web",
+      "Web/views/dashboard/metrics_grid",
+      "Web/views/dashboard",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/dashboard/metrics_grid/index.ts::Web_views_dashboard_metrics_grid_entry"
+    ],
+    "imports": [],
+    "externals": []
+  },
+  "src/web/views/dashboard/metrics_grid/mod_2.ts": {
+    "language": "typescript",
+    "hash": "acf77e630b793747",
+    "node": "Web/views/dashboard/metrics_grid",
+    "nodes": [
+      "Web/views/dashboard/metrics_grid",
+      "Web/views/dashboard",
+      "Web/views",
+      "Web",
+      "Web/views/dashboard/metrics_grid",
+      "Web/views/dashboard",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/dashboard/metrics_grid/mod_2.ts::Web_views_dashboard_metrics_grid_op_2"
+    ],
+    "imports": [
+      "src/web/views/dashboard/metrics_grid/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/dashboard/mod_2.ts": {
+    "language": "typescript",
+    "hash": "bc019f5d95ed1d91",
+    "node": "Web/views/dashboard",
+    "nodes": [
+      "Web/views/dashboard",
+      "Web/views",
+      "Web",
+      "Web/views/dashboard",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/dashboard/mod_2.ts::Web_views_dashboard_op_2"
+    ],
+    "imports": [
+      "src/web/views/dashboard/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/dashboard/mod_3.ts": {
+    "language": "typescript",
+    "hash": "508d523e652dc9a7",
+    "node": "Web/views/dashboard",
+    "nodes": [
+      "Web/views/dashboard",
+      "Web/views",
+      "Web",
+      "Web/views/dashboard",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/dashboard/mod_3.ts::Web_views_dashboard_op_3"
+    ],
+    "imports": [
+      "src/web/views/dashboard/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/index.ts": {
+    "language": "typescript",
+    "hash": "9d01aba1bf112189",
+    "node": "Web/views",
+    "nodes": [
+      "Web/views",
+      "Web",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/index.ts::Web_views_entry"
+    ],
+    "imports": [
+      "src/backend/events/models/index.ts",
+      "src/backend/api/routes/index.ts",
+      "src/backend/api/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/mod_2.ts": {
+    "language": "typescript",
+    "hash": "81cf91d7bb5bfb07",
+    "node": "Web/views",
+    "nodes": [
+      "Web/views",
+      "Web",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/mod_2.ts::Web_views_op_2"
+    ],
+    "imports": [
+      "src/web/views/index.ts"
+    ],
+    "externals": []
+  },
+  "src/web/views/mod_3.ts": {
+    "language": "typescript",
+    "hash": "e116eefbcdf84fb3",
+    "node": "Web/views",
+    "nodes": [
+      "Web/views",
+      "Web",
+      "Web/views",
+      "Web"
+    ],
+    "symbols": [
+      "src/web/views/mod_3.ts::Web_views_op_3"
+    ],
+    "imports": [
+      "src/web/views/index.ts"
+    ],
+    "externals": []
+  },
   "src/workspace/library/Library.ts": {
     "language": "typescript",
     "hash": "4a0a214d02ee6089",
-    "node": "workspace-library",
+    "node": "Core/models",
     "nodes": [
-      "workspace-library",
-      "workspace"
+      "Core/models"
     ],
     "symbols": [
       "src/workspace/library/Library.ts::Library",
@@ -373,9 +6946,9 @@
   "src/workspace/preview/Preview.ts": {
     "language": "typescript",
     "hash": "c7de6edf7199fe0c",
-    "node": "workspace",
+    "node": "Core/models",
     "nodes": [
-      "workspace"
+      "Core/models"
     ],
     "symbols": [
       "src/workspace/preview/Preview.ts::renderer",
@@ -390,10 +6963,9 @@
   "src/workspace/search/Search.ts": {
     "language": "typescript",
     "hash": "28f17cea9d1d22e9",
-    "node": "workspace-search",
+    "node": "Core/models",
     "nodes": [
-      "workspace-search",
-      "workspace"
+      "Core/models"
     ],
     "symbols": [
       "src/workspace/search/Search.ts::SearchIndex",
@@ -406,11 +6978,9 @@
   "src/workspace/tagging/ColorWheel.ts": {
     "language": "typescript",
     "hash": "956b2e1713c1e4d6",
-    "node": "tag-color-wheel",
+    "node": "Core/models",
     "nodes": [
-      "tag-color-wheel",
-      "workspace-tagging",
-      "workspace"
+      "Core/models"
     ],
     "symbols": [
       "src/workspace/tagging/ColorWheel.ts::TAG_PALETTE",
@@ -423,10 +6993,9 @@
   "src/workspace/tagging/Tags.ts": {
     "language": "typescript",
     "hash": "4a67463ab97ca657",
-    "node": "workspace-tagging",
+    "node": "Core/models",
     "nodes": [
-      "workspace-tagging",
-      "workspace"
+      "Core/models"
     ],
     "symbols": [
       "src/workspace/tagging/Tags.ts::Tag",

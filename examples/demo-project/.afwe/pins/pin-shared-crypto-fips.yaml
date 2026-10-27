@@ -1,0 +1,15 @@
+{
+  "id": "pin-shared-crypto-fips",
+  "statement": "Shared/utils/crypto must only use WebCrypto / FIPS-approved algorithms.",
+  "kind": "constraint",
+  "attaches": {
+    "nodes": [
+      "Shared/utils/crypto"
+    ]
+  },
+  "severity": "block",
+  "status": "active",
+  "origin": "human:secops",
+  "created": "2026-09-18T16:00:00Z",
+  "reason": "compliance-audit"
+}

@@ -1,24 +1,26 @@
 // apps/studio/src/lib/prefs.ts
 // Local persistence for Studio user preferences (default start view, bookmarks, lens preference, color palettes, and quarantine grace timer).
 
+export type MapLens = "radial" | "constellation" | "topology";
+
 export interface StudioBookmark {
   id: string;
   label: string;
   path: string;
-  lens: "radial" | "topology";
+  lens: MapLens;
 }
 
 export interface StudioPrefs {
   defaultStartNodeId: string | null;
-  defaultLens: "radial" | "topology";
+  defaultLens: MapLens;
   bookmarks: StudioBookmark[];
   radialPalette: string;
   topologyPalette: string;
-  graceSeconds: number; // Tier 1 quarantine countdown (default 10)
+  graceSeconds: number;
   theme: "system" | "light" | "dark";
 }
 
-const PREFS_STORAGE_KEY = "afwe.studio.prefs.v2.6";
+const PREFS_STORAGE_KEY = "afwe.studio.prefs.v2.7";
 
 const DEFAULT_PREFS: StudioPrefs = {
   defaultStartNodeId: null,
@@ -37,7 +39,10 @@ export function getStudioPrefs(): StudioPrefs {
     const parsed = JSON.parse(raw);
     return {
       defaultStartNodeId: parsed.defaultStartNodeId || null,
-      defaultLens: parsed.defaultLens === "topology" ? "topology" : "radial",
+      defaultLens:
+        parsed.defaultLens === "topology" || parsed.defaultLens === "constellation"
+          ? parsed.defaultLens
+          : "radial",
       bookmarks: Array.isArray(parsed.bookmarks) ? parsed.bookmarks : [],
       radialPalette: parsed.radialPalette || "editorial",
       topologyPalette: parsed.topologyPalette || "cartographic",
@@ -63,7 +68,7 @@ export function saveStudioPrefs(prefs: Partial<StudioPrefs>): StudioPrefs {
   }
 }
 
-export function setStartView(nodeId: string | null, lens: "radial" | "topology"): StudioPrefs {
+export function setStartView(nodeId: string | null, lens: MapLens): StudioPrefs {
   return saveStudioPrefs({
     defaultStartNodeId: nodeId,
     defaultLens: lens,
@@ -73,7 +78,7 @@ export function setStartView(nodeId: string | null, lens: "radial" | "topology")
 export function addBookmark(bookmark: StudioBookmark): StudioPrefs {
   const current = getStudioPrefs();
   const filtered = current.bookmarks.filter((b) => b.id !== bookmark.id);
-  const updated = [bookmark, ...filtered].slice(0, 8); // Keep up to 8 bookmarks
+  const updated = [bookmark, ...filtered].slice(0, 8);
   return saveStudioPrefs({ bookmarks: updated });
 }
 

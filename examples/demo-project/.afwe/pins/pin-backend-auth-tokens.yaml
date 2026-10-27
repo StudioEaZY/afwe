@@ -1,0 +1,16 @@
+{
+  "id": "pin-backend-auth-tokens",
+  "statement": "Backend/auth must hash all session and refresh tokens before storage; plaintext tokens are forbidden.",
+  "kind": "constraint",
+  "attaches": {
+    "nodes": [
+      "Backend/auth",
+      "Backend/auth/tokens"
+    ]
+  },
+  "severity": "block",
+  "status": "active",
+  "origin": "human:secops",
+  "created": "2026-08-15T09:00:00Z",
+  "reason": "owasp-token-security"
+}

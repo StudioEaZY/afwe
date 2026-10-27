@@ -1,12 +1,25 @@
 // apps/studio/src/components/TopBar.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import {
+  Sun,
+  Moon,
+  Undo2,
+  Redo2,
+  X,
+  Search,
+  RefreshCw,
+  FolderOpen,
+} from "lucide-react";
 import { useStore } from "../store";
 import { api, isTauri, openProjectDialog } from "../api";
 import { getStudioPrefs, setTheme, applyTheme } from "../lib/prefs";
+import { buildHierarchyTree, HierarchyNode } from "../lib/hierarchy";
 
 export const TopBar: React.FC = () => {
   const {
     graph,
+    view,
+    activeLens,
     activeTurn,
     scrubToTurn,
     setDrawer,
@@ -18,10 +31,17 @@ export const TopBar: React.FC = () => {
     redoStack,
     undo,
     redo,
+    setView,
+    selectEntity,
+    drillDown,
+    setConstellationAnchor,
   } = useStore();
 
   const [syncing, setSyncing] = useState(false);
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchWrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prefs = getStudioPrefs();
@@ -33,11 +53,48 @@ export const TopBar: React.FC = () => {
     applyTheme(prefs.theme);
   }, []);
 
+  // Close instant search dropdown when clicking outside
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      if (searchWrapRef.current && !searchWrapRef.current.contains(e.target as Node)) {
+        setSearchOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", onDocClick);
+    return () => document.removeEventListener("pointerdown", onDocClick);
+  }, []);
+
   const toggleTheme = () => {
     const next = currentTheme === "dark" ? "light" : "dark";
     setCurrentTheme(next);
     setTheme(next);
   };
+
+  // Build flat list of hierarchy nodes for instant search autocomplete
+  const allHierarchyNodes = useMemo(() => {
+    if (!graph) return [];
+    const root = buildHierarchyTree(graph);
+    const out: HierarchyNode[] = [];
+    const walk = (n: HierarchyNode) => {
+      if (n.id !== "root") out.push(n);
+      for (const c of n.children || []) walk(c);
+    };
+    walk(root);
+    return out;
+  }, [graph]);
+
+  const searchHits = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return allHierarchyNodes
+      .filter(
+        (n) =>
+          n.label.toLowerCase().includes(q) ||
+          n.path.toLowerCase().includes(q) ||
+          n.key.toLowerCase().includes(q)
+      )
+      .slice(0, 12);
+  }, [allHierarchyNodes, searchQuery]);
 
   if (!graph) return null;
 
@@ -50,7 +107,38 @@ export const TopBar: React.FC = () => {
     const r: any = await run("Syncing", () => api.sync());
     setSyncing(false);
     if (r) {
-      notify(`Synced ${r.files} files — applied ${r.applied.length}, proposed ${r.proposed.length}`);
+      notify(
+        `Synced ${r.files} files — applied ${r.applied.length}, proposed ${r.proposed.length}`
+      );
+    }
+  };
+
+  const handleSelectSearchResult = (n: HierarchyNode) => {
+    setSearchOpen(false);
+    setSearchQuery("");
+    if (view !== "overview") {
+      setView("overview");
+    }
+    selectEntity({
+      id: n.id,
+      key: n.key,
+      kind: n.kind,
+      label: n.label,
+      path: n.path,
+      status: n.hasViolation ? "violation" : "mapped",
+      state: n.state,
+      fileCount: n.fileCount,
+      mappedCount: n.mappedCount,
+      node: n,
+    });
+    if (activeLens === "constellation") {
+      setConstellationAnchor(n.key);
+    } else if (activeLens === "radial") {
+      if (n.children && n.children.length > 0) {
+        drillDown(n.id);
+      } else if (n.parentId && n.parentId !== "root") {
+        drillDown(n.parentId);
+      }
     }
   };
 
@@ -58,15 +146,16 @@ export const TopBar: React.FC = () => {
     <header
       className="studio-topbar"
       style={{
-        height: "52px",
+        height: "56px",
         background: "var(--panel)",
         borderBottom: "1px solid var(--line)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 24px",
+        padding: "0 22px",
         flexShrink: 0,
         userSelect: "none",
+        gap: 16,
       }}
     >
       {/* Left: Project title & 4D time badge */}
@@ -74,7 +163,9 @@ export const TopBar: React.FC = () => {
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span style={{ fontSize: "13px", color: "var(--mute)" }}>Projects</span>
           <span style={{ color: "var(--mute)" }}>›</span>
-          <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--ink)" }}>{graph.project.name}</span>
+          <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--ink)" }}>
+            {graph.project.name}
+          </span>
         </div>
 
         {activeTurn && (
@@ -94,16 +185,26 @@ export const TopBar: React.FC = () => {
           >
             4D Time-Travel: #{activeTurn}
             <button
+              type="button"
               onClick={() => scrubToTurn(null)}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--amber)", fontSize: "14px", lineHeight: "1" }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--amber)",
+                display: "inline-flex",
+                alignItems: "center",
+                padding: 0,
+              }}
             >
-              ×
+              <X size={12} />
             </button>
           </span>
         )}
 
         {isTauri() && (
           <button
+            type="button"
             onClick={async () => {
               const p = await openProjectDialog();
               if (p) {
@@ -111,29 +212,106 @@ export const TopBar: React.FC = () => {
                 await refresh();
               }
             }}
-            style={{
-              background: "var(--panel)",
-              border: "1px solid var(--line)",
-              padding: "3px 8px",
-              borderRadius: "4px",
-              fontSize: "11px",
-              color: "var(--ink)",
-              cursor: "pointer",
-            }}
+            className="btn-soft"
+            style={{ display: "inline-flex", alignItems: "center", gap: 5 }}
           >
-            Open folder…
+            <FolderOpen size={13} />
+            Open folder
           </button>
         )}
       </div>
 
-      {/* Center: System Status Pill & Session Undo/Redo Controls */}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "var(--mute)" }}>
-          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: violationsCount > 0 ? "var(--red)" : "var(--accent)", display: "inline-block" }} />
+      {/* Center: Instant Search Autocomplete (.search-wrap + .sdrop) */}
+      <div ref={searchWrapRef} className="search-wrap">
+        <label className="search" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Search size={14} style={{ color: "var(--mute)", flexShrink: 0 }} />
+          <input
+            type="text"
+            value={searchQuery}
+            placeholder="Search modules, paths, or subnodes (e.g. models, auth, schema)…"
+            aria-label="Search"
+            onFocus={() => setSearchOpen(true)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSearchOpen(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchHits.length > 0) {
+                handleSelectSearchResult(searchHits[0]);
+              } else if (e.key === "Escape") {
+                setSearchOpen(false);
+              }
+            }}
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery("");
+                setSearchOpen(false);
+              }}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                color: "var(--mute)",
+                display: "inline-flex",
+              }}
+            >
+              <X size={13} />
+            </button>
+          )}
+        </label>
+
+        <div className={`sdrop ${searchOpen && searchQuery.trim().length > 0 ? "on" : ""}`}>
+          {searchHits.length > 0 ? (
+            searchHits.map((n) => (
+              <div
+                key={n.key}
+                className="sitem"
+                onClick={() => handleSelectSearchResult(n)}
+              >
+                <span>
+                  <b>{n.label}</b>{" "}
+                  <small>· {n.breadcrumbLabels.join(" › ")}</small>
+                </span>
+                <small>
+                  {n.state} · {n.fileCount}f
+                </small>
+              </div>
+            ))
+          ) : (
+            <div className="sitem" style={{ color: "var(--mute)", cursor: "default" }}>
+              <span>No matching modules or subnodes</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right: Status Pill, Session Undo/Redo, Sync, Theme Toggle */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "7px",
+            fontSize: "12px",
+            color: "var(--mute)",
+          }}
+        >
+          <span
+            style={{
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              background: violationsCount > 0 ? "var(--red)" : "var(--accent)",
+              display: "inline-block",
+            }}
+          />
           <span>
             {violationsCount > 0
-              ? `${violationsCount} rule violation(s) need attention`
-              : `Everything balances. ${pinsCount} pin(s) · ${proposalsCount} proposal(s) waiting`}
+              ? `${violationsCount} violation(s)`
+              : `${pinsCount} pin(s) · ${proposalsCount} proposal(s)`}
           </span>
         </div>
 
@@ -146,11 +324,12 @@ export const TopBar: React.FC = () => {
               gap: "4px",
               background: "var(--side)",
               border: "1px solid var(--line)",
-              borderRadius: "6px",
-              padding: "2px 6px",
+              borderRadius: "8px",
+              padding: "3px 6px",
             }}
           >
             <button
+              type="button"
               onClick={() => undo()}
               title="Undo (Ctrl+Z)"
               style={{
@@ -159,14 +338,19 @@ export const TopBar: React.FC = () => {
                 fontSize: "12px",
                 cursor: "pointer",
                 color: "var(--ink)",
-                padding: "2px 4px",
-                borderRadius: "3px",
+                padding: "2px 5px",
+                borderRadius: "4px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
               }}
             >
-              ↶ Undo
+              <Undo2 size={13} />
+              Undo
             </button>
             {redoStack.length > 0 && (
               <button
+                type="button"
                 onClick={() => redo()}
                 title="Redo (Ctrl+Y)"
                 style={{
@@ -175,14 +359,19 @@ export const TopBar: React.FC = () => {
                   fontSize: "12px",
                   cursor: "pointer",
                   color: "var(--ink)",
-                  padding: "2px 4px",
-                  borderRadius: "3px",
+                  padding: "2px 5px",
+                  borderRadius: "4px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
                 }}
               >
-                ↷ Redo
+                <Redo2 size={13} />
+                Redo
               </button>
             )}
             <button
+              type="button"
               onClick={() => setDrawer(drawer === "history" ? null : "history")}
               style={{
                 background: "var(--line)",
@@ -199,63 +388,36 @@ export const TopBar: React.FC = () => {
             </button>
           </div>
         )}
-      </div>
-
-      {/* Right: Search, Sync, Theme Toggle */}
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <button
-          onClick={() => setDrawer("search")}
-          style={{
-            background: "var(--side)",
-            border: "1px solid var(--line)",
-            padding: "5px 12px",
-            borderRadius: "6px",
-            fontSize: "12px",
-            color: "var(--mute)",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-          }}
-        >
-          <span>Search code, features, decisions…</span>
-          <kbd style={{ background: "var(--line)", color: "var(--ink)", padding: "1px 5px", borderRadius: "4px", fontSize: "10px" }}>⌘K</kbd>
-        </button>
 
         <button
+          type="button"
           onClick={doSync}
           disabled={syncing}
-          style={{
-            background: "var(--side)",
-            border: "1px solid var(--line)",
-            padding: "5px 10px",
-            borderRadius: "6px",
-            fontSize: "12px",
-            color: "var(--ink)",
-            cursor: "pointer",
-          }}
+          className="btn-soft"
+          style={{ display: "inline-flex", alignItems: "center", gap: 5 }}
         >
+          <RefreshCw size={12} />
           {syncing ? "Syncing…" : "Sync"}
         </button>
 
         <button
+          type="button"
           onClick={toggleTheme}
           title={`Switch to ${currentTheme === "dark" ? "light" : "dark"} theme`}
           style={{
-            width: "32px",
-            height: "32px",
+            width: "34px",
+            height: "34px",
             borderRadius: "50%",
             border: "1px solid var(--line)",
-            background: "var(--side)",
+            background: "var(--panel)",
             color: "var(--ink)",
             display: "grid",
             placeItems: "center",
             cursor: "pointer",
-            fontSize: "14px",
             padding: 0,
           }}
         >
-          {currentTheme === "dark" ? "☀" : "☾"}
+          {currentTheme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
         </button>
       </div>
     </header>

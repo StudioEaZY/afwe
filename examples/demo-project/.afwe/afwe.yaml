@@ -1,6 +1,6 @@
 format: afwe/2
 project:
-  name: Demo Product
+  name: "Acme App"
   description: Tiny multi-language app used to demonstrate AFWE
   root: .
 analyzer:

@@ -1,6 +1,8 @@
 // apps/studio/src/components/TimelineDualScrubber.tsx
 // Interactive dual timeline scrubber with mouse-wheel zoom/pan, draggable handles, and upper wave curve
 import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
+import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2 } from "lucide-react";
+import { SvgMiniLock, SvgMiniAlertTriangle } from "../lib/lucideSvgPaths";
 
 export interface TimelineTurnItem {
   id: string;
@@ -227,67 +229,69 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
           {/* Step Back / Step Forward Buttons */}
           <button
             onClick={() => handleStep(-1)}
-            title="Step to previous turn (<)"
+            title="Step to previous turn"
             style={{
               background: "var(--side)",
               border: "1px solid var(--line)",
               color: "var(--ink)",
               borderRadius: "6px",
-              padding: "2px 8px",
-              fontSize: "12px",
-              fontWeight: 600,
+              padding: "3px 6px",
+              display: "inline-flex",
+              alignItems: "center",
               cursor: "pointer",
             }}
           >
-            ‹
+            <ChevronLeft size={14} />
           </button>
           <button
             onClick={() => handleStep(1)}
-            title="Step to next turn (>)"
+            title="Step to next turn"
             style={{
               background: "var(--side)",
               border: "1px solid var(--line)",
               color: "var(--ink)",
               borderRadius: "6px",
-              padding: "2px 8px",
-              fontSize: "12px",
-              fontWeight: 600,
+              padding: "3px 6px",
+              display: "inline-flex",
+              alignItems: "center",
               cursor: "pointer",
             }}
           >
-            ›
+            <ChevronRight size={14} />
           </button>
 
           {/* Zoom controls */}
           <button
             onClick={handleZoomIn}
-            title="Zoom In (+)"
+            title="Zoom In"
             style={{
               background: "var(--side)",
               border: "1px solid var(--line)",
               color: "var(--ink)",
               borderRadius: "6px",
-              padding: "2px 8px",
-              fontSize: "12px",
+              padding: "3px 6px",
+              display: "inline-flex",
+              alignItems: "center",
               cursor: "pointer",
             }}
           >
-            +
+            <Plus size={14} />
           </button>
           <button
             onClick={handleZoomOut}
-            title="Zoom Out (−)"
+            title="Zoom Out"
             style={{
               background: "var(--side)",
               border: "1px solid var(--line)",
               color: "var(--ink)",
               borderRadius: "6px",
-              padding: "2px 8px",
-              fontSize: "12px",
+              padding: "3px 6px",
+              display: "inline-flex",
+              alignItems: "center",
               cursor: "pointer",
             }}
           >
-            −
+            <Minus size={14} />
           </button>
           <button
             onClick={handleFit}
@@ -297,12 +301,16 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
               border: "1px solid var(--line)",
               color: "var(--ink)",
               borderRadius: "6px",
-              padding: "2px 8px",
+              padding: "3px 8px",
               fontSize: "11px",
               fontWeight: 600,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
               cursor: "pointer",
             }}
           >
+            <Maximize2 size={11} />
             Fit
           </button>
         </div>
@@ -392,22 +400,17 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
                     fontSize={11}
                     fontWeight={700}
                   >
-                    ⭐ #{turn.id}
+                    #{turn.id}
                   </text>
                 </g>
               ) : turn.hasViolation ? (
                 <g transform={`translate(${x}, ${y - 18})`}>
-                  <circle r={7} fill="var(--red)" />
-                  <text textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize={9} fontWeight="bold">
-                    !
-                  </text>
+                  <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
                 </g>
               ) : turn.hasPin ? (
                 <g transform={`translate(${x}, ${y - 18})`}>
-                  <circle r={6} fill="var(--amber)" />
-                  <text textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize={8}>
-                    📌
-                  </text>
+                  <circle r={6.5} fill="var(--panel)" stroke="var(--ink)" strokeWidth={1.1} />
+                  <SvgMiniLock stroke="var(--ink)" />
                 </g>
               ) : null}
 

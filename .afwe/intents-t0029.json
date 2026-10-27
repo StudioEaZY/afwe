@@ -1,0 +1,22 @@
+{
+  "intents": [
+    {
+      "id": "populate-demos-reborn",
+      "action": "update",
+      "targets": ["examples", "studio"],
+      "title": "Overhaul Radial and Constellation maps, enforce 100% Lucide icons, and reformat examples/demo-project for genuine 4-layer architecture",
+      "statement": "Enforce 100% Lucide icons across Studio. Fix root wrapper collapse, canonical hierarchical keys, hover lineage, power-law sector weighting, and rich tooltips in RadialMap. Build dedicated ConstellationMap with node-level vs parent-level fallback, directional 3-hop BFS, bidirectional cycle detection, progressive disclosure badges, and clickable edges. Reformat examples/demo-project so the backend serves all 8 domains, 4 layers, 4 states, node-level edges, and violations natively."
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ]
+}

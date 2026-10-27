@@ -1,331 +1,59 @@
 {
   "proposals": [
     {
-      "id": "unmapped:aff22d1faf",
+      "id": "prop-chart-analytics",
       "created": "2026-10-25T16:52:15Z",
       "finding": {
-        "id": "unmapped:aff22d1faf",
+        "id": "prop-chart-analytics",
         "kind": "unmapped_file",
         "severity": "warn",
-        "confidence": 0.35,
-        "summary": "`src/notifications/mailer.ts` has no blueprint home; propose new module `notifications`",
+        "confidence": 0.42,
+        "summary": "`src/services/analytics/` has 7 uncharted files; propose promoting `Services/analytics` to mapped module",
         "evidence": [
-          "mailer.ts located outside declared subsystem scopes"
+          "Imported by Infrastructure/telemetry and consumes Backend/events/handlers"
         ],
         "change": {
           "op": "create_node",
-          "parent": "demo-product",
-          "name": "notifications",
+          "parent": "Services",
+          "name": "analytics",
           "files": [
-            "src/notifications/**"
+            "src/services/analytics/**"
           ]
         },
+        "nodes": [
+          "Services/analytics"
+        ],
         "files": [
-          "src/notifications/mailer.ts"
+          "src/services/analytics/index.ts"
         ]
       },
       "status": "pending"
     },
     {
-      "id": "unmapped:a4e74bb8d5",
+      "id": "prop-chart-webhooks",
       "created": "2026-10-26T11:16:38Z",
       "finding": {
-        "id": "unmapped:a4e74bb8d5",
+        "id": "prop-chart-webhooks",
         "kind": "unmapped_file",
         "severity": "warn",
-        "confidence": 0.3,
-        "summary": "`services/status_worker.py` has no blueprint home; maybe a new node `services`",
+        "confidence": 0.38,
+        "summary": "`src/backend/billing/webhooks/` has unverified webhook receivers; propose charting under `Backend/billing`",
         "evidence": [
-          "no sibling, import or name evidence"
+          "Receives external Stripe payloads without blueprint contract"
         ],
         "change": {
           "op": "create_node",
-          "parent": "demo-product",
-          "name": "services",
+          "parent": "Backend/billing",
+          "name": "webhooks",
           "files": [
-            "services/**"
+            "src/backend/billing/webhooks/**"
           ]
         },
-        "files": [
-          "services/status_worker.py"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "unmapped:1908630580",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "unmapped:1908630580",
-        "kind": "unmapped_file",
-        "severity": "warn",
-        "confidence": 0.3,
-        "summary": "`src/cli-tools/seedRunner.ts` has no blueprint home; maybe a new node `cli-tools`",
-        "evidence": [
-          "no sibling, import or name evidence"
-        ],
-        "change": {
-          "op": "create_node",
-          "parent": "demo-product",
-          "name": "cli-tools",
-          "files": [
-            "src/cli-tools/**"
-          ]
-        },
-        "files": [
-          "src/cli-tools/seedRunner.ts"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "unmapped:9d612cb247",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "unmapped:9d612cb247",
-        "kind": "unmapped_file",
-        "severity": "warn",
-        "confidence": 0.3,
-        "summary": "`src/experiments/aiSuggest.ts` has no blueprint home; maybe a new node `experiments`",
-        "evidence": [
-          "no sibling, import or name evidence"
-        ],
-        "change": {
-          "op": "create_node",
-          "parent": "demo-product",
-          "name": "experiments",
-          "files": [
-            "src/experiments/**"
-          ]
-        },
-        "files": [
-          "src/experiments/aiSuggest.ts"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "unmapped:1fcb9f16b0",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "unmapped:1fcb9f16b0",
-        "kind": "unmapped_file",
-        "severity": "warn",
-        "confidence": 0.3,
-        "summary": "`src/legacy-sync/xmlImporter.ts` has no blueprint home; maybe a new node `legacy-sync`",
-        "evidence": [
-          "no sibling, import or name evidence"
-        ],
-        "change": {
-          "op": "create_node",
-          "parent": "demo-product",
-          "name": "legacy-sync",
-          "files": [
-            "src/legacy-sync/**"
-          ]
-        },
-        "files": [
-          "src/legacy-sync/xmlImporter.ts"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "missing:5d2258fcb4",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "missing:5d2258fcb4",
-        "kind": "missing_file",
-        "severity": "warn",
-        "confidence": 0.4,
-        "summary": "`src/auth/api.ts` (mapped to Pulse SaaS Product.Identity Subsystem.Auth API) no longer exists",
-        "evidence": [
-          "no rename candidate found"
-        ],
-        "change": {
-          "op": "unmap_file",
-          "node": "auth-api",
-          "file": "src/auth/api.ts"
-        },
         "nodes": [
-          "auth-api"
+          "Backend/billing/webhooks"
         ],
         "files": [
-          "src/auth/api.ts"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "missing:e3d1766863",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "missing:e3d1766863",
-        "kind": "missing_file",
-        "severity": "warn",
-        "confidence": 0.4,
-        "summary": "`src/auth/users.ts` (mapped to Pulse SaaS Product.Identity Subsystem.User Store) no longer exists",
-        "evidence": [
-          "no rename candidate found"
-        ],
-        "change": {
-          "op": "unmap_file",
-          "node": "user-store",
-          "file": "src/auth/users.ts"
-        },
-        "nodes": [
-          "user-store"
-        ],
-        "files": [
-          "src/auth/users.ts"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "missing:53d1dea7f2",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "missing:53d1dea7f2",
-        "kind": "missing_file",
-        "severity": "warn",
-        "confidence": 0.4,
-        "summary": "`src/realtime/presence.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Presence) no longer exists",
-        "evidence": [
-          "no rename candidate found"
-        ],
-        "change": {
-          "op": "unmap_file",
-          "node": "realtime-presence",
-          "file": "src/realtime/presence.ts"
-        },
-        "nodes": [
-          "realtime-presence"
-        ],
-        "files": [
-          "src/realtime/presence.ts"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "missing:a6c0e482ec",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "missing:a6c0e482ec",
-        "kind": "missing_file",
-        "severity": "warn",
-        "confidence": 0.4,
-        "summary": "`src/realtime/worker.ts` (mapped to Pulse SaaS Product.Realtime Subsystem.Realtime Status Worker) no longer exists",
-        "evidence": [
-          "no rename candidate found"
-        ],
-        "change": {
-          "op": "unmap_file",
-          "node": "realtime-status-worker",
-          "file": "src/realtime/worker.ts"
-        },
-        "nodes": [
-          "realtime-status-worker"
-        ],
-        "files": [
-          "src/realtime/worker.ts"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "missing:fa2c3a54f3",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "missing:fa2c3a54f3",
-        "kind": "missing_file",
-        "severity": "warn",
-        "confidence": 0.4,
-        "summary": "`src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure) no longer exists",
-        "evidence": [
-          "no rename candidate found"
-        ],
-        "change": {
-          "op": "unmap_file",
-          "node": "platform",
-          "file": "src/server.ts"
-        },
-        "nodes": [
-          "platform"
-        ],
-        "files": [
-          "src/server.ts"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "missing:00a7e1498a",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "missing:00a7e1498a",
-        "kind": "missing_file",
-        "severity": "warn",
-        "confidence": 0.4,
-        "summary": "`src/server.ts` (mapped to Pulse SaaS Product.Platform Infrastructure.HTTP Server) no longer exists",
-        "evidence": [
-          "no rename candidate found"
-        ],
-        "change": {
-          "op": "unmap_file",
-          "node": "http-server",
-          "file": "src/server.ts"
-        },
-        "nodes": [
-          "http-server"
-        ],
-        "files": [
-          "src/server.ts"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "unsupported:98eb85d196",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "unsupported:98eb85d196",
-        "kind": "unsupported_relation",
-        "severity": "info",
-        "confidence": 0.3,
-        "summary": "blueprint declares Pulse SaaS Product.Identity Subsystem.Auth API → Pulse SaaS Product.Identity Subsystem.Session Token but no import edge supports it (planned, or stale?)",
-        "evidence": [],
-        "change": {
-          "op": "remove_relation",
-          "from": "auth-api",
-          "to": "session-token"
-        },
-        "nodes": [
-          "auth-api",
-          "session-token"
-        ]
-      },
-      "status": "pending"
-    },
-    {
-      "id": "unsupported:82291996b5",
-      "created": "2026-10-26T11:16:38Z",
-      "finding": {
-        "id": "unsupported:82291996b5",
-        "kind": "unsupported_relation",
-        "severity": "info",
-        "confidence": 0.3,
-        "summary": "blueprint declares Pulse SaaS Product.Billing Subsystem.Billing Checkout → Pulse SaaS Product.Billing Subsystem.Stripe Gateway but no import edge supports it (planned, or stale?)",
-        "evidence": [],
-        "change": {
-          "op": "remove_relation",
-          "from": "billing-checkout",
-          "to": "stripe-gateway"
-        },
-        "nodes": [
-          "billing-checkout",
-          "stripe-gateway"
+          "src/backend/billing/webhooks/index.ts"
         ]
       },
       "status": "pending"

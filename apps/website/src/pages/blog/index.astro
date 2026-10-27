@@ -5,12 +5,12 @@ import MarketingLayout from '../../layouts/MarketingLayout.astro';
 const posts = [
   {
     slug: 'the-sponsored-seat-pool',
-    title: "The Sponsored Seat Pool: Why AFWE Ties Free Access to Community Capacity",
+    title: "The Sponsored Seat Pool: Funding AFWE Without Feature Gates",
     date: 'October 26, 2026',
     author: 'AFWE Core Architecture Team',
     category: 'Economics & Open Source',
     readTime: '7 min read',
-    summary: 'Instead of feature gatekeeping or restrictive dual licenses, AFWE introduces the Community Seat Pool: sustainers sponsor verified seats so every developer gets full access to the complete toolchain, local customization, and 57 MCP tools.'
+    summary: 'How sponsored distribution, paid recognition and community points can sustain an open-source product without splitting its core capabilities into paid tiers.'
   },
   {
     slug: 'why-graphrag-isnt-enough',
@@ -47,7 +47,7 @@ const posts = [
   description="Technical deep-dives into double-entry bookkeeping, AST scene graphs, deterministic tripwires, and autonomous coding governance."
   activeNav="blog"
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-16">
     <!-- Header -->
     <header class="space-y-4 border-b border-stone-300 dark:border-obsidian-800 pb-8">
       <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
@@ -64,7 +64,7 @@ const posts = [
     <!-- Articles List -->
     <div class="space-y-10">
       {posts.map(post => (
-        <article class="rounded-2xl border border-stone-400/70 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 sm:p-8 space-y-4 hover:border-graphite/50 transition-all shadow-xs group">
+        <article class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 sm:p-8 space-y-4 hover:border-graphite/50 transition-all shadow-xs group">
           <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-graphite/60 dark:text-stone-400">
             <span class="px-2.5 py-0.5 rounded-full bg-stone-200/80 dark:bg-obsidian-800 text-graphite dark:text-stone-300 font-semibold text-[10px]">
               {post.category}

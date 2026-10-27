@@ -1,5 +1,6 @@
 // apps/studio/src/components/DecisionsPage.tsx
 import React, { useEffect, useState } from "react";
+import { HelpCircle, Scale } from "lucide-react";
 import { useStore } from "../store";
 import { api } from "../api";
 import { formatAttachment } from "../lib/hierarchy";
@@ -114,7 +115,7 @@ export const DecisionsPage: React.FC = () => {
           {/* Ambiguity Questions Card */}
           <div style={{ background: "#FFFFFF", border: "1px solid #E5E0D5", borderRadius: "10px", padding: "20px" }}>
             <div style={{ fontWeight: 600, fontSize: "15px", color: "#1D1C1A", marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ color: "#C98A3C" }}>?</span> Ambiguity Questions ({questions.filter((q) => q.status === "open").length})
+              <HelpCircle size={15} style={{ color: "var(--amber)" }} /> Ambiguity Questions ({questions.filter((q) => q.status === "open").length})
             </div>
             {questions.filter((q) => q.status === "open").length === 0 ? (
               <div style={{ fontSize: "12px", color: "#8E8878" }}>All ambiguity questions resolved. Confidence is high.</div>
@@ -188,7 +189,7 @@ export const DecisionsPage: React.FC = () => {
           {/* Probing Guides Ready to Graduate */}
           <div style={{ background: "#FFFFFF", border: "1px solid #E5E0D5", borderRadius: "10px", padding: "20px" }}>
             <div style={{ fontWeight: 600, fontSize: "15px", color: "#1D1C1A", marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <span>⚖</span> Probing Guides Ready to Graduate ({guides.filter((g) => g.status === "ready_to_graduate").length})
+              <Scale size={15} style={{ color: "var(--accent)" }} /> Probing Guides Ready to Graduate ({guides.filter((g) => g.status === "ready_to_graduate").length})
             </div>
             {guides.filter((g) => g.status === "ready_to_graduate").length === 0 ? (
               <div style={{ fontSize: "12px", color: "#8E8878" }}>No probing guides awaiting graduation confirmation.</div>

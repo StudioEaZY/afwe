@@ -3,10 +3,7 @@
     "kind": "constraint",
     "title": "Mandatory idempotency keys on payment operations",
     "path": "memory/constraints/con-idempotency-key-mandatory.md",
-    "nodes": [
-      "billing-checkout",
-      "stripe-gateway"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -16,9 +13,7 @@
     "kind": "constraint",
     "title": "32-byte secret entropy requirement",
     "path": "memory/constraints/con-secret-entropy.md",
-    "nodes": [
-      "jwt-signer"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -28,9 +23,32 @@
     "kind": "constraint",
     "title": "Decoupling workspace from billing",
     "path": "memory/constraints/con-workspace-billing-boundary.md",
+    "nodes": [],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-container-health-checks": {
+    "kind": "decision",
+    "title": "Standardize container health checks",
+    "path": "memory/decisions/dec-container-health-checks.md",
     "nodes": [
-      "workspace",
-      "billing"
+      "Infrastructure",
+      "Infrastructure/deploy"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-dlq-three-retries": {
+    "kind": "decision",
+    "title": "Dead-letter queue after 3 failed deliveries",
+    "path": "memory/decisions/dec-dlq-three-retries.md",
+    "nodes": [
+      "Backend/events/handlers",
+      "Infrastructure/queues"
     ],
     "files": [],
     "symbols": [],
@@ -41,8 +59,20 @@
     "kind": "decision",
     "title": "Flat tags without taxonomy",
     "path": "memory/decisions/dec-flat-tags.md",
+    "nodes": [],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-freeze-v2-event-envelope": {
+    "kind": "decision",
+    "title": "Freeze v2 event envelope schema",
+    "path": "memory/decisions/dec-freeze-v2-event-envelope.md",
     "nodes": [
-      "workspace-tagging"
+      "Backend/events/models",
+      "Backend/events",
+      "Backend/events/schema"
     ],
     "files": [],
     "symbols": [],
@@ -53,9 +83,33 @@
     "kind": "decision",
     "title": "Stateless JWT access tokens",
     "path": "memory/decisions/dec-jwt-stateless.md",
+    "nodes": [],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-openapi-from-routes": {
+    "kind": "decision",
+    "title": "OpenAPI schema generation from route types",
+    "path": "memory/decisions/dec-openapi-from-routes.md",
     "nodes": [
-      "jwt-signer",
-      "session-token"
+      "Backend/api",
+      "Backend/api/routes"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-postgres-relational": {
+    "kind": "decision",
+    "title": "Use PostgreSQL for relational data",
+    "path": "memory/decisions/dec-postgres-relational.md",
+    "nodes": [
+      "Backend",
+      "Data",
+      "Data/models"
     ],
     "files": [],
     "symbols": [],
@@ -66,8 +120,46 @@
     "kind": "decision",
     "title": "Eventual consistency for status widgets",
     "path": "memory/decisions/dec-replica-reads.md",
+    "nodes": [],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-static-checkout-shell": {
+    "kind": "decision",
+    "title": "Adopt incremental static shell for checkout",
+    "path": "memory/decisions/dec-static-checkout-shell.md",
     "nodes": [
-      "realtime-status-worker"
+      "Web",
+      "Web/views",
+      "Web/views/checkout"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-strict-fk-billing": {
+    "kind": "decision",
+    "title": "Strict foreign-key enforcement on billing tables",
+    "path": "memory/decisions/dec-strict-fk-billing.md",
+    "nodes": [
+      "Data/schema",
+      "Services/billing"
+    ],
+    "files": [],
+    "symbols": [],
+    "tags": [],
+    "status": "accepted"
+  },
+  "dec-unify-token-refresh": {
+    "kind": "decision",
+    "title": "Unify token refresh in Shared/auth",
+    "path": "memory/decisions/dec-unify-token-refresh.md",
+    "nodes": [
+      "Mobile",
+      "Backend/auth"
     ],
     "files": [],
     "symbols": [],
@@ -78,9 +170,7 @@
     "kind": "exception",
     "title": "Exception: Local sandbox bypass for stripe webhook signature",
     "path": "memory/exceptions/exc-billing-test-bypass.md",
-    "nodes": [
-      "stripe-gateway"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -90,9 +180,7 @@
     "kind": "exception",
     "title": "Exception: Manual cluster health check ping directly to primary DB",
     "path": "memory/exceptions/exc-realtime-admin-override.md",
-    "nodes": [
-      "realtime-status-worker"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -102,9 +190,7 @@
     "kind": "exception",
     "title": "Exception: Search index raw SQL read permitted during initial bulk load",
     "path": "memory/exceptions/exc-search-direct-query.md",
-    "nodes": [
-      "workspace-search"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -114,9 +200,7 @@
     "kind": "problem",
     "title": "Sub-cent rounding discrepancies across multiple mid-month seat changes",
     "path": "memory/problems/prob-proration-rounding-drift.md",
-    "nodes": [
-      "proration-calculator"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -126,9 +210,7 @@
     "kind": "problem",
     "title": "Hash collision on 5-color palette",
     "path": "memory/problems/prob-tag-color-collision.md",
-    "nodes": [
-      "tag-color-wheel"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -138,9 +220,7 @@
     "kind": "problem",
     "title": "Mobile clients dropping connections without TCP FIN",
     "path": "memory/problems/prob-zombie-websockets.md",
-    "nodes": [
-      "realtime-presence"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -150,10 +230,7 @@
     "kind": "terminolog",
     "title": "Presence Heartbeat vs Status Ping",
     "path": "memory/terminology/term-presence-heartbeat.md",
-    "nodes": [
-      "realtime-presence",
-      "realtime-status-worker"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -163,9 +240,7 @@
     "kind": "terminolog",
     "title": "Proration arithmetic",
     "path": "memory/terminology/term-proration.md",
-    "nodes": [
-      "proration-calculator"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],
@@ -175,9 +250,7 @@
     "kind": "terminolog",
     "title": "Item vs Document",
     "path": "memory/terminology/term-workspace-item.md",
-    "nodes": [
-      "workspace-library"
-    ],
+    "nodes": [],
     "files": [],
     "symbols": [],
     "tags": [],

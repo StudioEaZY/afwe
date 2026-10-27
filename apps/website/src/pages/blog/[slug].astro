@@ -4,64 +4,96 @@ import MarketingLayout from '../../layouts/MarketingLayout.astro';
 
 export function getStaticPaths() {
   const sponsoredSeatPoolArticle = {
-    title: "The Sponsored Seat Pool: Why AFWE Ties Free Access to Community Capacity",
+    title: "The Sponsored Seat Pool: Funding AFWE Without Feature Gates",
+    subtitle: "How sponsored distribution, paid recognition and community points can sustain an open-source product without splitting its core capabilities into paid tiers.",
     date: 'October 26, 2026',
     author: 'AFWE Core Architecture Team',
     category: 'Economics & Open Source',
     readTime: '7 min read',
     content: `
-      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
-        Commercial developer tools face a difficult choice when sustaining open source software. Teams like React Flow have built a durable, reputable business around a Pro tier offering specialized components, layout templates, and dedicated enterprise support. That model works well for visual canvas frameworks where hobbyists need basic nodes while enterprise designers need advanced layouts.
-      </p>
-      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
-        In architectural governance, however, feature gating introduces a dangerous paradox. If you place tree-sitter AST validation, guardrail tripwires, or the Codebase Radar behind a subscription paywall, individual developers and smaller teams simply run without them. When critical guardrails are missing, architectural drift accelerates. For AFWE to fulfill its mission, every engineer, hobbyist, and enterprise contributor needs identical access to the core engine, all 57 Model Context Protocol tools, and full local UI customization.
+      <p class="text-base sm:text-lg leading-relaxed text-graphite/90 dark:text-stone-200 font-sans">
+        Open-source developer tools face an essential challenge: software requires sustained maintenance, but separating developer ergonomics into paid tiers often fragments the community. Today, two legitimate approaches have emerged to solve this dilemma.
       </p>
 
-      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">The Real Economics of Open Tooling</h2>
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">1. The Principle: Two Approaches to Open-Source Sustainability</h2>
       <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
-        Zero feature gatekeeping does not mean zero operating cost. Building and distributing a cross-platform Rust binary requires continuous integration, code-signing certificates, documentation hosting, tree-sitter parser grammar maintenance, and issue triage.
+        The first model is <strong>paid extensions and support</strong>. Respected projects like React Flow sustain an open-source core under the MIT license while offering Pro subscriptions that include production-ready application templates, specialized examples, prioritized issue handling, and direct technical support. For UI canvas libraries and component ecosystems, this provides clear value to enterprises while keeping the baseline library open for everyone.
       </p>
       <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
-        When we calculated the actual cost to maintain and distribute AFWE per active developer, the figure settled between $0.40 and $0.60 per user per month. Rather than asking individual developers to pay a toll, we built the Community-Sponsored Seat Pool. Sustainers fund verified capacity in discrete bundles:
+        The second model is <strong>AFWE's proposed recognition-led model</strong>. In this design, AFWE keeps its entire capability set completely identical for every user, funding official packaged distribution through sponsored-seat allocations while offering commercial tiers focused on supporter recognition, brand customization, and community roadmap prioritization.
       </p>
-      <ul class="list-disc list-inside space-y-2 mt-4 text-sm font-mono text-graphite/80 dark:text-stone-300">
-        <li><strong>Builder Sustainer ($29/mo)</strong>: Funds 50 community seats ($0.58/seat).</li>
-        <li><strong>Studio Sustainer ($79/mo)</strong>: Funds 150 community seats ($0.52/seat).</li>
-        <li><strong>Patron Sustainer ($199/mo)</strong>: Funds 500 community seats ($0.40/seat).</li>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        We chose this recognition-led approach because of the specific problem AFWE solves: architectural governance. When AI agents write code, the guardrails, tree-sitter AST validation checks, and boundary rules that keep software from deteriorating must be uniform across every developer on a team. If verification checks or visual radar tools were restricted to high-tier subscriptions, individual contributors and open-source collaborators would work without them, accelerating architectural drift. For an architectural tool to succeed, everyone must run the exact same verification engine.
+      </p>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">2. The Distribution Model: Capacity Without Restrictions</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        In our proposed distribution model, official precompiled binaries hosted on our website are backed by a <strong>Community-Sponsored Seat Pool</strong>. Here is what a sponsored seat operationalizes:
+      </p>
+      <ul class="list-disc list-inside space-y-2 mt-4 text-sm font-sans text-graphite/80 dark:text-stone-300">
+        <li><strong>Operational Definition</strong>: One seat represents one funded allocation for an active installation or user utilizing our official packaged distribution.</li>
+        <li><strong>Target Funding Model</strong>: Providing signed cross-platform releases, automated multi-platform builds, fast download CDN hosting, tree-sitter grammar updates, and community triage incurs real operational expenses. We calculated targeted monthly contributions per funded seat across three supporter tiers:
+          <ul class="list-disc list-inside ml-6 mt-2 space-y-1 text-xs font-mono">
+            <li>Presence ($29/month): Funds 50 community seats (~$0.58 per seat).</li>
+            <li>Palette ($79/month): Funds 150 community seats (~$0.53 per seat).</li>
+            <li>Motion ($199/month): Funds 500 community seats (~$0.40 per seat).</li>
+          </ul>
+        </li>
+      </ul>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        When open capacity exists in the pool, any developer can download the official precompiled binary with one click. If the open seat pool ever reaches zero, direct packaged downloads from the website will temporarily pause until new capacity is sponsored.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        Crucially, this is a limit on our official packaged distribution, not on the software itself. AFWE is 100% open source under the MIT License. Anyone can clone the repository and compile the binaries locally using <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-obsidian-800 font-mono text-xs">cargo build</code> at any time, with zero limits.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        Regarding telemetry, seat allocations count discrete seat claims without gathering behavioral analytics. AFWE does not track user behavior, does not scan codebases, and does not upload proprietary source files.
+      </p>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">3. The Recognition Model: The Sustainer Gate</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        The Sustainer Gate is AFWE's community recognition mechanism. On first launch, an installation displays a recognition card attributing the release to an active sustainer, accompanied by a subtle update to AFWE default styling that highlights the supporter.
+      </p>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        The system separates two clear choices:
+      </p>
+      <ul class="list-disc list-inside space-y-2 mt-4 text-sm font-sans text-graphite/80 dark:text-stone-300">
+        <li><strong>The Sustainer's Choice</strong>: Supporters choose whether their branding is eligible to appear, and what visual styling they unlock across our four tiers:
+          <ul class="list-disc list-inside ml-6 mt-2 space-y-1 text-xs font-mono">
+            <li>Community (Free): Full product access, baseline monthly points, and local UI customization.</li>
+            <li>Presence (Tier 01): Custom name, brand identity, and verified logo.</li>
+            <li>Palette (Tier 02): Custom brand color palettes, rim styling, and badge design.</li>
+            <li>Motion (Tier 03): Subtle micro-animations and advanced visual treatments.</li>
+          </ul>
+          When sustainers launch their own copy of AFWE, they see their own attribution card, replacing default branding.
+        </li>
+        <li><strong>The Installation Owner's Choice</strong>: The recognition experience is enabled by default to thank community sponsors, but any developer can disable it in settings with two clicks to return to the plain default interface.</li>
+      </ul>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
+        Reliable fallback is built into the specification: if the network is offline or the routing service is temporarily unreachable, AFWE continues running with zero disruption and respects the user's saved preferences.
+      </p>
+
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">4. The Community Model: Points and Engineering Support</h2>
+      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
+        To guide project priorities transparently, AFWE introduces a monthly points allocation:
+      </p>
+      <ul class="list-disc list-inside space-y-2 mt-4 text-sm font-sans text-graphite/80 dark:text-stone-300">
+        <li><strong>Baseline Allocation</strong>: Every developer with a claimed community account receives baseline monthly points.</li>
+        <li><strong>3:1 Sustainer Ratio</strong>: Active sustainers receive a 3x multiplier on their monthly allocation. AFWE documents these rules publicly and may adjust multipliers under published guidelines.</li>
+        <li><strong>Roadmap Support</strong>: Points can be applied to upvote roadmap proposals and signal community interest. Points inform our focus but do not guarantee immediate implementation; AFWE retains final technical responsibility for its architecture and release roadmap.</li>
+        <li><strong>Open Support Knowledge</strong>: When our core team assists an organization with a complex architectural boundary or custom guardrail, that solution is sanitized of confidential details and published as an open blueprint for the entire community, subject to that organization's explicit permission.</li>
       </ul>
 
-      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">Transparent Seat Pool Telemetry</h2>
+      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-10 mb-4">5. Current Status and Next Steps</h2>
       <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
-        On our website, the community pool is displayed in real time: total seats funded, total seats claimed by active installations, and remaining open seats. When open seats exist, any developer can download the packaged binary with one click.
+        We believe in transparency about what is live versus what is planned:
       </p>
-      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
-        If the open seat pool ever drops to zero, direct binary downloads from the website pause until new sustainer capacity is added. Importantly, AFWE remains 100% open source under the MIT license. Even if packaged website downloads pause, any developer can clone the repository and compile the binary with cargo build. Gating precompiled binary downloads protects our distribution infrastructure while honoring open source principles.
-      </p>
-
-      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">The First-Launch Sustainer Gate</h2>
-      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
-        How do sustainers receive recognition without invasive ad tracking? When a new developer runs AFWE Studio for the first time, the client displays a thank-you splash screen attributing the installation to an active sustainer.
-      </p>
-      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
-        This is a local routing mechanism, not an ad network. There are no tracking pixels, no behavioral telemetry, and no cookies. Even sustainers see another sustainer's attribution card on their initial run. If a sustainer cancels their subscription, the client automatically reroutes to an active sustainer the next time it connects online.
-      </p>
-
-      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">Visual Tiers: Recognition Across the Community</h2>
-      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
-        Every developer can customize their own local AFWE Studio with themes, typography, and layout presets for free. Higher sustainer tiers do not gate local features; instead, they grant creative control over how your attribution card appears to the developers you support:
-      </p>
-      <ul class="list-disc list-inside space-y-2 mt-4 text-sm font-mono text-graphite/80 dark:text-stone-300">
-        <li><strong>Builder Tier</strong>: Opt-in attribution, chosen organization or personal name, and verified logo.</li>
-        <li><strong>Studio Tier</strong>: Custom brand color palette, rim styling, and badge design.</li>
-        <li><strong>Patron Tier</strong>: Bespoke micro-animations, glowing border aura, and interactive flair.</li>
+      <ul class="list-disc list-inside space-y-2 mt-4 text-sm font-sans text-graphite/80 dark:text-stone-300">
+        <li><strong>Live Today</strong>: The core Rust engine, CLI, 57 Model Context Protocol tools, Tree-sitter AST validation, interactive Studio, and local UI customization are fully operational under the MIT license.</li>
+        <li><strong>Planned (Phase 4 Community)</strong>: The automated Sustainer Gate routing mechanism, real-time website allocation limits, and the monthly points governance system are actively in development as proposed systems.</li>
       </ul>
-
-      <h2 class="text-2xl font-bold text-graphite dark:text-white mt-8 mb-4">Unreal Engine-Style Support and 3:1 Monthly Points</h2>
-      <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200">
-        Our support model takes inspiration from Epic Games and Unreal Engine: when our engineering team helps an organization solve a complex architectural boundary or create a custom AST guardrail, that solution is documented, sanitized, and published as an open blueprint for all developers.
-      </p>
       <p class="text-base leading-relaxed text-graphite/90 dark:text-stone-200 mt-4">
-        To prioritize engineering attention openly, every user receives governance points each month. When sustainers renew, they receive points at a 3:1 ratio (and up to 30:1 for Patrons). Points can be pooled to upvote community roadmap items or escalate architectural questions. Free users always retain an authentic voice, while sustainers gain amplified momentum to direct the future of AFWE.
+        By connecting sustainability to voluntary recognition and community capacity rather than restrictive paywalls, we can ensure AFWE remains a dependable foundation for autonomous coding agents and human engineers alike.
       </p>
     `
   };
@@ -79,6 +111,7 @@ export function getStaticPaths() {
       params: { slug: 'why-graphrag-isnt-enough' },
       props: {
         title: "Why GraphRAG Isn't Enough: Double-Entry Bookkeeping for Codebases",
+        subtitle: "Vector databases and dependency graphs show what code is. They cannot tell what code was supposed to be.",
         date: 'October 24, 2026',
         author: 'AFWE Core Architecture Team',
         category: 'Architecture & Foundations',
@@ -114,6 +147,7 @@ export function getStaticPaths() {
       params: { slug: 'constraints-as-geometry' },
       props: {
         title: 'Constraints as Geometry: Active Gating vs Prose Suggestions',
+        subtitle: "Why geometric graph constraints stop agent hallucinations at the pre-commit gate.",
         date: 'October 18, 2026',
         author: 'AFWE Core Architecture Team',
         category: 'Formal Verification',
@@ -146,6 +180,7 @@ constraints:
       params: { slug: 'blake3-tripwire-protocol' },
       props: {
         title: 'The BLAKE3 Tripwire: Tamper-Proof Guardrails in CI',
+        subtitle: "Inside the cryptographic manifest that secures .afwe/ against silent tampering in pull requests.",
         date: 'October 12, 2026',
         author: 'AFWE Core Architecture Team',
         category: 'Security & CI',
@@ -168,11 +203,11 @@ constraints:
   ];
 }
 
-const { title, date, author, category, readTime, content } = Astro.props;
+const { title, subtitle, date, author, category, readTime, content } = Astro.props;
 ---
 
 <MarketingLayout title={`${title} · AFWE Blog`} activeNav="blog">
-  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-10">
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10">
     <div class="space-y-4 border-b border-stone-300 dark:border-obsidian-800 pb-8">
       <div class="flex items-center gap-2 text-xs font-mono text-graphite/60 dark:text-stone-400">
         <a href="/blog" class="hover:underline">← Blog</a>
@@ -182,6 +217,11 @@ const { title, date, author, category, readTime, content } = Astro.props;
       <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-graphite dark:text-white leading-[1.15] tracking-tight">
         {title}
       </h1>
+      {subtitle && (
+        <p class="text-base sm:text-lg text-graphite/75 dark:text-stone-300 font-sans leading-relaxed">
+          {subtitle}
+        </p>
+      )}
       <div class="flex items-center gap-4 text-xs font-mono text-graphite/70 dark:text-stone-400 pt-2">
         <span>{author}</span>
         <span>•</span>

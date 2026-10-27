@@ -1,0 +1,15 @@
+{
+  "id": "pin-data-schema-compat",
+  "statement": "Data/schema migrations must never drop columns in the same release they are deprecated.",
+  "kind": "decision",
+  "attaches": {
+    "nodes": [
+      "Data/schema"
+    ]
+  },
+  "severity": "block",
+  "status": "active",
+  "origin": "human:dba",
+  "created": "2026-09-01T14:00:00Z",
+  "reason": "zero-downtime-migrations"
+}

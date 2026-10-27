@@ -1,0 +1,15 @@
+{
+  "id": "pin-event-models-immutable",
+  "statement": "Backend/events/models payload definitions are immutable once published; use new versioned types for breaking changes.",
+  "kind": "constraint",
+  "attaches": {
+    "nodes": [
+      "Backend/events/models"
+    ]
+  },
+  "severity": "block",
+  "status": "active",
+  "origin": "human:architect",
+  "created": "2026-08-11T12:00:00Z",
+  "reason": "event-sourcing-compatibility"
+}

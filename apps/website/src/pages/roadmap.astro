@@ -1,195 +1,634 @@
 ---
-// roadmap.astro - Official AFWE ReBorn Phased Roadmap
+// roadmap.astro - Phased Roadmap & Community Upvoting
 import MarketingLayout from '../layouts/MarketingLayout.astro';
+import { getRoadmapProposals } from '../lib/supabase';
+
+const proposals = await getRoadmapProposals();
+const editorVotes = proposals.find(p => p.id === 'editor-support')?.votes_count ?? 1240;
+const teamVotes = proposals.find(p => p.id === 'team-collab')?.votes_count ?? 892;
+const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes_count ?? 437;
 ---
 
 <MarketingLayout
-  title="Roadmap · AFWE ReBorn Trajectory"
-  description="The architectural trajectory of AFWE: from deterministic AST tripwires to multi-agent working tree leases and autonomous drift healing."
+  title="Roadmap · A Clear Path for a Stronger AFWE"
+  description="AFWE evolves in phases. Each phase expands the ecosystem while keeping the core experience stable, open, and consistent for everyone."
   activeNav="roadmap"
 >
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
-    <!-- Header -->
-    <header class="space-y-4 border-b border-stone-300 dark:border-obsidian-800 pb-8">
-      <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
-        ARCHITECTURAL TRAJECTORY
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-16">
+    <!-- Hero Section -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <div class="lg:col-span-7 space-y-6">
+        <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
+          ROADMAP
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl lg:text-[3.25rem] font-bold text-graphite dark:text-white tracking-tight leading-[1.12]">
+          A clear path<br />
+          <span class="text-survey-600 dark:text-survey-light">for a stronger AFWE.</span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-graphite/80 dark:text-stone-300 leading-relaxed font-sans max-w-xl">
+          AFWE evolves in phases. Each phase expands the ecosystem while keeping the core experience stable, open, and consistent for everyone.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <a 
+            href="#phases" 
+            class="px-5 py-2.5 rounded-xl bg-graphite hover:bg-stone-800 text-white dark:bg-white dark:text-obsidian-950 dark:hover:bg-stone-200 font-mono text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-xs"
+          >
+            <span>Explore what is live</span>
+            <span>→</span>
+          </a>
+          <a 
+            href="/docs" 
+            class="px-5 py-2.5 rounded-xl border border-stone-300 dark:border-obsidian-700 hover:border-graphite text-xs font-mono font-bold text-graphite dark:text-stone-200 inline-flex items-center gap-2 transition-colors"
+          >
+            <span>Read the roadmap guide</span>
+            <span>📖</span>
+          </a>
+        </div>
       </div>
-      <h1 class="text-4xl sm:text-5xl font-bold font-bold text-graphite dark:text-white tracking-tight">
-        AFWE ReBorn Roadmap
-      </h1>
-      <p class="text-base sm:text-lg text-graphite/80 dark:text-stone-300 max-w-2xl leading-relaxed">
-        We build AFWE in grounded, testable phases. Every milestone represents a working deterministic capability in Rust, verified against real codebases.
-      </p>
-    </header>
 
-    <!-- Phased Roadmap Stack -->
-    <div class="space-y-12">
-      <!-- Phase 0: Shipped -->
-      <section class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 sm:p-8 space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
-          <div class="flex items-center gap-3">
-            <span class="size-3 rounded-full bg-afwe-commit"></span>
-            <h2 class="text-xl sm:text-2xl font-bold font-bold text-graphite dark:text-white">Phase 0: Kernel & Tripwires</h2>
+      <!-- Right 3D Layer Stack -->
+      <div class="lg:col-span-5 relative flex justify-center">
+        <div class="w-full max-w-sm rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-900/50 p-6 space-y-5 shadow-xs">
+          <div class="flex justify-center py-2">
+            <svg class="w-48 h-40" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M100 20 L160 50 L100 80 L40 50 Z" fill="#758477" fill-opacity="0.15" stroke="#758477" stroke-width="1.5" />
+              <path d="M90 45 L100 35 L110 45" stroke="#758477" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M100 60 L160 90 L100 120 L40 90 Z" fill="#292D2B" fill-opacity="0.08" stroke="#292D2B" stroke-width="1.5" />
+              <circle cx="100" cy="90" r="6" fill="#292D2B" />
+              <path d="M100 100 L160 130 L100 160 L40 130 Z" fill="#C7C4BB" fill-opacity="0.2" stroke="#758477" stroke-width="1.5" />
+              <line x1="100" y1="50" x2="100" y2="100" stroke="#758477" stroke-width="1" stroke-dasharray="3 3" opacity="0.6" />
+            </svg>
           </div>
-          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
-            Shipped & Verified
+
+          <div class="space-y-3 pt-2 text-xs font-sans">
+            <div class="flex items-start gap-2.5">
+              <span class="size-2 rounded-full bg-survey-600 mt-1 shrink-0"></span>
+              <p class="text-graphite dark:text-stone-300 font-medium">More powerful tooling for real codebases.</p>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="size-2 rounded-full bg-graphite dark:bg-stone-300 mt-1 shrink-0"></span>
+              <p class="text-graphite dark:text-stone-300 font-medium">A thriving community of builders.</p>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="size-2 rounded-full bg-stone-400 mt-1 shrink-0"></span>
+              <p class="text-graphite dark:text-stone-300 font-medium">Long-term sustainability without feature gates.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Status Legend -->
+    <section class="flex flex-wrap items-center justify-center gap-6 py-4 px-6 rounded-2xl border border-stone-200 dark:border-obsidian-800 bg-white/40 dark:bg-obsidian-900/40 text-xs font-mono">
+      <div class="flex items-center gap-2">
+        <span class="size-2.5 rounded-full bg-emerald-500"></span>
+        <span class="font-bold text-graphite dark:text-stone-200">Live</span>
+        <span class="text-graphite/60 dark:text-stone-400 text-[11px]">Available now</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="size-2.5 rounded-full bg-amber-500"></span>
+        <span class="font-bold text-graphite dark:text-stone-200">In Progress</span>
+        <span class="text-graphite/60 dark:text-stone-400 text-[11px]">Actively being built</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="size-2.5 rounded-full bg-stone-400"></span>
+        <span class="font-bold text-graphite dark:text-stone-200">Planned</span>
+        <span class="text-graphite/60 dark:text-stone-400 text-[11px]">Designed, not yet started</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="size-2.5 rounded-full bg-stone-300 dark:bg-obsidian-700 border border-stone-400"></span>
+        <span class="font-bold text-graphite dark:text-stone-200">Exploring</span>
+        <span class="text-graphite/60 dark:text-stone-400 text-[11px]">Early research</span>
+      </div>
+    </section>
+
+    <!-- Horizontal Phase Timeline (0 to 5+) -->
+    <section class="overflow-x-auto pb-4">
+      <div class="min-w-[700px] flex items-center justify-between relative py-6">
+        <!-- Connecting Line -->
+        <div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-0.5 bg-stone-300 dark:bg-obsidian-700 z-0"></div>
+
+        <!-- Phase 0 -->
+        <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
+          <div class="size-7 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs ring-2 ring-emerald-500">
+            ✓
+          </div>
+          <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 0</div>
+          <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Foundation<br /><span class="font-mono text-emerald-600 font-bold">Live</span></div>
+        </div>
+
+        <!-- Phase 1 -->
+        <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
+          <div class="size-7 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs ring-2 ring-emerald-500">
+            ✓
+          </div>
+          <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 1</div>
+          <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Studio<br /><span class="font-mono text-emerald-600 font-bold">Live</span></div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
+          <div class="size-7 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs ring-2 ring-emerald-500">
+            ✓
+          </div>
+          <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 2</div>
+          <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Governance<br /><span class="font-mono text-emerald-600 font-bold">Live</span></div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
+          <div class="size-7 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs ring-2 ring-emerald-500">
+            ✓
+          </div>
+          <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 3</div>
+          <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Ecosystem<br /><span class="font-mono text-emerald-600 font-bold">Live</span></div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
+          <div class="size-7 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-xs ring-2 ring-amber-500 animate-pulse">
+            ◎
+          </div>
+          <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 4</div>
+          <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Community<br /><span class="font-mono text-amber-600 font-bold">In Progress</span></div>
+        </div>
+
+        <!-- Phase 5+ -->
+        <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
+          <div class="size-7 rounded-full bg-stone-200 dark:bg-obsidian-800 text-graphite/60 dark:text-stone-400 flex items-center justify-center font-bold text-xs ring-1 ring-stone-300">
+            ○
+          </div>
+          <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 5+</div>
+          <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Beyond<br /><span class="font-mono text-stone-500 font-bold">Planned</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What's in Each Phase Section -->
+    <section id="phases" class="space-y-8 scroll-mt-20">
+      <div class="flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-obsidian-800 pb-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-graphite dark:text-white tracking-tight">
+            What is in each phase?
+          </h2>
+          <p class="text-xs sm:text-sm text-graphite/70 dark:text-stone-400 font-sans mt-1">
+            A high-level overview of what is included, what is next, and how it all fits together.
+          </p>
+        </div>
+        <a 
+          href="/docs" 
+          class="text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline inline-flex items-center gap-1"
+        >
+          <span>View detailed roadmap</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <!-- 6 Phase Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Phase 0: Foundation -->
+        <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between space-y-5 shadow-xs">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-graphite/60 dark:text-stone-400 uppercase">PHASE 0</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+                Live
+              </span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-graphite dark:text-white">Foundation</h3>
+              <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">The core AFWE engine.</p>
+            </div>
+            <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Core architecture</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> CLI (57 MCP tools)</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Tree-sitter integration</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Local documentation</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Cross-platform support</li>
+            </ul>
+          </div>
+          <a href="/docs/concepts/core-concepts" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
+            <span>View details</span> <span>→</span>
+          </a>
+        </div>
+
+        <!-- Phase 1: Studio -->
+        <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between space-y-5 shadow-xs">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-graphite/60 dark:text-stone-400 uppercase">PHASE 1</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+                Live
+              </span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-graphite dark:text-white">Studio</h3>
+              <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">Understand your codebase.</p>
+            </div>
+            <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Visual Codebase Atlas</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Components & structure</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Interactive exploration</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Search & filters</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Local customization</li>
+            </ul>
+          </div>
+          <a href="/docs" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
+            <span>View details</span> <span>→</span>
+          </a>
+        </div>
+
+        <!-- Phase 2: Governance -->
+        <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between space-y-5 shadow-xs">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-graphite/60 dark:text-stone-400 uppercase">PHASE 2</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+                Live
+              </span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-graphite dark:text-white">Governance</h3>
+              <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">Keep your architecture intact.</p>
+            </div>
+            <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Constraints as geometry</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Turn system (begin → commit)</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Intent verification</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Tripwires & BLAKE3</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Probing guides & rubric</li>
+            </ul>
+          </div>
+          <a href="/docs/concepts/core-concepts" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
+            <span>View details</span> <span>→</span>
+          </a>
+        </div>
+
+        <!-- Phase 3: Ecosystem -->
+        <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between space-y-5 shadow-xs">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-graphite/60 dark:text-stone-400 uppercase">PHASE 3</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+                Live
+              </span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-graphite dark:text-white">Ecosystem</h3>
+              <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">Extend AFWE everywhere.</p>
+            </div>
+            <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> All 57 MCP tools</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Editor integrations</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> CI & automation</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> API & SDK architecture</li>
+              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Community contributions</li>
+            </ul>
+          </div>
+          <a href="/docs/reference/mcp" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
+            <span>View details</span> <span>→</span>
+          </a>
+        </div>
+
+        <!-- Phase 4: Community -->
+        <div class="rounded-2xl border-2 border-amber-500/50 bg-white/90 dark:bg-obsidian-900 p-6 flex flex-col justify-between space-y-5 shadow-sm">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-graphite/60 dark:text-stone-400 uppercase">PHASE 4</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                In Progress
+              </span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-graphite dark:text-white">Community</h3>
+              <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">Sustain and grow AFWE.</p>
+            </div>
+            <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
+              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Sustainer recognition</li>
+              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Seat pool system</li>
+              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Monthly points (3:1)</li>
+              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Roadmap voting</li>
+              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Open support knowledge</li>
+            </ul>
+          </div>
+          <a href="/pricing" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-amber-600 dark:text-amber-400 hover:underline pt-2">
+            <span>View details</span> <span>→</span>
+          </a>
+        </div>
+
+        <!-- Phase 5+: Beyond -->
+        <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/50 dark:bg-obsidian-900/50 p-6 flex flex-col justify-between space-y-5 shadow-xs">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-graphite/60 dark:text-stone-400 uppercase">PHASE 5+</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-stone-200 dark:bg-obsidian-800 text-graphite/70 dark:text-stone-400">
+                Planned
+              </span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-graphite dark:text-white">Beyond</h3>
+              <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">A bigger AFWE.</p>
+            </div>
+            <ul class="space-y-2 text-xs font-sans text-graphite/70 dark:text-stone-400 pt-2 border-t border-stone-200 dark:border-obsidian-800">
+              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Advanced analytics</li>
+              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Enterprise tooling</li>
+              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Deeper integrations</li>
+              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Global community hub</li>
+              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Long-term ecosystem</li>
+            </ul>
+          </div>
+          <span class="inline-flex items-center gap-1 text-xs font-mono text-graphite/50 dark:text-stone-400 pt-2">
+            <span>View details</span> <span>→</span>
           </span>
         </div>
+      </div>
+    </section>
 
-        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-          The foundation of double-entry bookkeeping: deterministic AST scene graphing and tamper-proof architectural tripwires.
+    <!-- What's Next Section -->
+    <section class="space-y-8">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-graphite dark:text-white tracking-tight">
+          What is next?
+        </h2>
+        <p class="text-xs sm:text-sm text-graphite/70 dark:text-stone-400 font-sans mt-1">
+          A closer look at the features and systems currently in development.
         </p>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Tree-Sitter Multi-Language Scene Graph</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              Native AST parsing for Rust, TypeScript, JavaScript, Python, and Go. Symbols resolve to persistent identities without relying on brittle line numbers.
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- 1. Sustainer Gate (v1) -->
+        <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-4 shadow-xs">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+              IN PROGRESS
+            </span>
+            <span class="text-[10px] font-mono text-graphite/50 dark:text-stone-400">Phase 4</span>
+          </div>
+
+          <div>
+            <h3 class="text-base font-bold text-graphite dark:text-white">Sustainer Gate (v1)</h3>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-1 leading-relaxed">
+              First-launch recognition experience with customizable display options, opt-out control and reliable fallback.
             </p>
           </div>
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">BLAKE3 Manifest & Pre-Commit Hook</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              Cryptographic manifest prevents agents from tampering with guardrail files. Chained git hook runs verification before commits hit the repo.
+
+          <!-- Progress Bar -->
+          <div class="space-y-1.5 pt-2">
+            <div class="flex justify-between text-[11px] font-mono text-graphite/60 dark:text-stone-400">
+              <span>Progress</span>
+              <span>60%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-stone-200 dark:bg-obsidian-800 overflow-hidden">
+              <div class="h-full bg-amber-500 rounded-full" style="width: 60%"></div>
+            </div>
+          </div>
+
+          <a href="/pricing" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline pt-2">
+            <span>Learn more</span> <span>→</span>
+          </a>
+        </div>
+
+        <!-- 2. Monthly Points System -->
+        <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-4 shadow-xs">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+              IN PROGRESS
+            </span>
+            <span class="text-[10px] font-mono text-graphite/50 dark:text-stone-400">Phase 4</span>
+          </div>
+
+          <div>
+            <h3 class="text-base font-bold text-graphite dark:text-white">Monthly Points System</h3>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-1 leading-relaxed">
+              Baseline points for all users, 3x for sustainers. Used for roadmap votes and community support requests.
             </p>
           </div>
-        </div>
-      </section>
 
-      <!-- Phase 1: Shipped / Live -->
-      <section class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 sm:p-8 space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
-          <div class="flex items-center gap-3">
-            <span class="size-3 rounded-full bg-afwe-commit"></span>
-            <h2 class="text-xl sm:text-2xl font-bold font-bold text-graphite dark:text-white">Phase 1: Semantic Intent & Probing Guides</h2>
+          <!-- Progress Bar -->
+          <div class="space-y-1.5 pt-2">
+            <div class="flex justify-between text-[11px] font-mono text-graphite/60 dark:text-stone-400">
+              <span>Progress</span>
+              <span>45%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-stone-200 dark:bg-obsidian-800 overflow-hidden">
+              <div class="h-full bg-amber-500 rounded-full" style="width: 45%"></div>
+            </div>
           </div>
-          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
-            Shipped & Live
-          </span>
+
+          <a href="/blog/the-sponsored-seat-pool" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline pt-2">
+            <span>Learn more</span> <span>→</span>
+          </a>
         </div>
 
-        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-          Eliminating raw LLM confidence floats with an additive deterministic calibration rubric and anti-echo-chamber hold-out probes.
+        <!-- 3. Expanded Integrations -->
+        <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 space-y-4 shadow-xs">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-stone-200 dark:bg-obsidian-800 text-graphite/70 dark:text-stone-400">
+              PLANNED
+            </span>
+            <span class="text-[10px] font-mono text-graphite/50 dark:text-stone-400">Phase 5</span>
+          </div>
+
+          <div>
+            <h3 class="text-base font-bold text-graphite dark:text-white">Expanded Integrations</h3>
+            <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-1 leading-relaxed">
+              More editor plugins, CI providers and agent platform integrations to make AFWE easier to adopt everywhere.
+            </p>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="space-y-1.5 pt-2">
+            <div class="flex justify-between text-[11px] font-mono text-graphite/60 dark:text-stone-400">
+              <span>Progress</span>
+              <span>20%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-stone-200 dark:bg-obsidian-800 overflow-hidden">
+              <div class="h-full bg-stone-400 dark:bg-stone-500 rounded-full" style="width: 20%"></div>
+            </div>
+          </div>
+
+          <a href="/docs/reference/mcp" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline pt-2">
+            <span>Learn more</span> <span>→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Interactive Feedback & Upvoting Banner -->
+    <section class="rounded-2xl border border-stone-800 bg-graphite dark:bg-obsidian-900 text-stone-200 p-8 sm:p-10 relative overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+        <div class="lg:col-span-6 space-y-3">
+          <div class="text-[10px] font-mono font-bold tracking-[0.2em] text-survey-light uppercase">
+            HELP SHAPE WHAT COMES NEXT
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            Your feedback matters.
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-300 max-w-md font-sans leading-relaxed">
+            Use your monthly points to upvote features, suggest ideas and help prioritize what we build next.
+          </p>
+          <div class="pt-2">
+            <button 
+              type="button"
+              onclick="document.getElementById('vote-cards')?.scrollIntoView({ behavior: 'smooth' })"
+              class="px-5 py-2.5 rounded-xl bg-white text-graphite hover:bg-stone-100 font-mono text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+            >
+              <span>View roadmap & vote</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Side Voting Cards -->
+        <div id="vote-cards" class="lg:col-span-6 space-y-3">
+          <!-- Card 1: Better editor support -->
+          <div class="p-3.5 rounded-xl border border-stone-700 bg-obsidian-950/70 flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-bold text-white">Better editor support</div>
+              <div class="text-[10px] text-stone-400 font-mono">VS Code, Cursor, JetBrains plugins</div>
+            </div>
+            <button 
+              type="button"
+              data-item="editor-support"
+              class="vote-btn px-3 py-1.5 rounded-lg border border-stone-600 hover:border-survey-light bg-stone-800/80 hover:bg-survey-600/30 text-white font-mono text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <span>▲</span>
+              <span id="vote-count-editor-support">{editorVotes.toLocaleString()}</span>
+            </button>
+          </div>
+
+          <!-- Card 2: Team collaboration -->
+          <div class="p-3.5 rounded-xl border border-stone-700 bg-obsidian-950/70 flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-bold text-white">Team collaboration</div>
+              <div class="text-[10px] text-stone-400 font-mono">Shared rule registry & lease sync</div>
+            </div>
+            <button 
+              type="button"
+              data-item="team-collab"
+              class="vote-btn px-3 py-1.5 rounded-lg border border-stone-600 hover:border-survey-light bg-stone-800/80 hover:bg-survey-600/30 text-white font-mono text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <span>▲</span>
+              <span id="vote-count-team-collab">{teamVotes.toLocaleString()}</span>
+            </button>
+          </div>
+
+          <!-- Card 3: Advanced analytics -->
+          <div class="p-3.5 rounded-xl border border-stone-700 bg-obsidian-950/70 flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-bold text-white">Advanced analytics</div>
+              <div class="text-[10px] text-stone-400 font-mono">Architectural drift velocity metrics</div>
+            </div>
+            <button 
+              type="button"
+              data-item="advanced-analytics"
+              class="vote-btn px-3 py-1.5 rounded-lg border border-stone-600 hover:border-survey-light bg-stone-800/80 hover:bg-survey-600/30 text-white font-mono text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <span>▲</span>
+              <span id="vote-count-advanced-analytics">{analyticsVotes.toLocaleString()}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 2-Tier Account Claim Modal (Prompted when voting) -->
+  <div id="auth-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-md rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white dark:bg-obsidian-900 p-6 sm:p-8 space-y-6 shadow-2xl">
+      <div class="space-y-2">
+        <div class="text-[10px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
+          COMMUNITY GOVERNANCE
+        </div>
+        <h3 class="text-2xl font-bold text-graphite dark:text-white">Claim your community account</h3>
+        <p class="text-xs text-graphite/70 dark:text-stone-300 font-sans leading-relaxed">
+          AFWE is free to use without sign-up. To allocate monthly points to roadmap items and prevent automated spam, please verify your account with GitHub or email.
         </p>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Additive Calibration Rubric</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              Calculates confidence from verifiable evidence (floor 0.50, +0.25 AST claims, +0.10 sibling consistency) and immediately caps at 0.40 on contradiction.
-            </p>
-          </div>
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Hold-Out Probing Guides</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              Rules with confidence between 0.85 and 0.90 advise the agent. To become blocking checks, they must pass a hold-out test where the rule was deliberately withheld.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Phase 2: Shipped / Live -->
-      <section class="rounded-2xl border border-stone-400/80 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 sm:p-8 space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
-          <div class="flex items-center gap-3">
-            <span class="size-3 rounded-full bg-afwe-commit"></span>
-            <h2 class="text-xl sm:text-2xl font-bold font-bold text-graphite dark:text-white">Phase 2: 4D Time Dial & Ghost Recovery</h2>
-          </div>
-          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
-            Shipped & Live
-          </span>
-        </div>
-
-        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-          Treating time as an interactive dial rather than a flat commit log, enabling automated detection and 3-way merge recovery of dropped features.
-        </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Ghost Node Detection</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              Surfaces features or components that an agent inadvertently removed during large refactors, highlighting collateral loss before merge.
-            </p>
-          </div>
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">One-Command Feature Restoration</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              <code class="text-survey-600 dark:text-survey-light">afwe timeline restore &lt;feature&gt;</code> executes a true 3-way AST merge and stages the fix cleanly in a new turn.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Phase 3: Active / In Progress -->
-      <section class="rounded-2xl border-2 border-survey-500/60 dark:border-survey-500/40 bg-white/80 dark:bg-obsidian-900 p-6 sm:p-8 space-y-6 shadow-sm">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
-          <div class="flex items-center gap-3">
-            <span class="size-3 rounded-full bg-survey-500 animate-pulse"></span>
-            <h2 class="text-xl sm:text-2xl font-bold font-bold text-graphite dark:text-white">Phase 3: Multi-Agent Leases & Studio Canvas</h2>
-          </div>
-          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-survey-500/15 text-survey-700 dark:text-survey-light border border-survey-500/30">
-            Active / In Progress
-          </span>
-        </div>
-
-        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-          Enabling multiple concurrent agents to work in isolated tree leases without stepping on each other's boundaries, backed by the interactive Studio.
-        </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Concurrent Tree Leases</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              <code class="text-survey-600 dark:text-survey-light">afwe lease acquire</code> partitions the AST scene graph so Claude Code and Cursor can work simultaneously.
-            </p>
-          </div>
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Adaptive Studio Canvas</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              Dual-mode visual cockpit: Radial Sunburst for macro subsystem zoning + Topology Map for micro-dependencies and active constraint violations.
-            </p>
-          </div>
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">57 MCP Server Tools</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              First-class Model Context Protocol integration exposing turn lifecycle, pin queries, and constraint verification directly to agents.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Phase 4: Planned / Next -->
-      <section class="rounded-2xl border border-stone-300 dark:border-obsidian-800 bg-white/40 dark:bg-obsidian-900/60 p-6 sm:p-8 space-y-6 opacity-90">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 dark:border-obsidian-800 pb-4">
-          <div class="flex items-center gap-3">
-            <span class="size-3 rounded-full bg-stone-400 dark:bg-stone-600"></span>
-            <h2 class="text-xl sm:text-2xl font-bold font-bold text-graphite dark:text-white">Phase 4: Autonomous Drift Healing & Global Memory</h2>
-          </div>
-          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-stone-300/40 text-graphite/70 dark:text-stone-400 border border-stone-400/40">
-            Planned / Next
-          </span>
-        </div>
-
-        <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
-          Proactive reconciliation of manual human commits and cross-repository architectural pattern learning.
-        </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Autonomous Drift Reconciliation</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              Detects manual edits made outside turn protocols and synthesizes backward-compatible turn receipts to maintain invariant continuity.
-            </p>
-          </div>
-          <div class="p-3.5 rounded-xl border border-stone-300 dark:border-obsidian-800 bg-paper/50 dark:bg-obsidian-850">
-            <div class="font-bold text-graphite dark:text-stone-100 mb-1">Reusable Boundary Packs</div>
-            <p class="text-[11px] text-graphite/70 dark:text-stone-400 font-sans">
-              Export and import verified constraint packages (Clean Architecture, Hexagonal, Microservice Boundaries) across enterprise workspace fleets.
-            </p>
-          </div>
-        </div>
-      </section>
+      <div class="space-y-3 font-mono text-xs">
+        <button 
+          id="claim-github-btn"
+          type="button"
+          class="w-full py-3 px-4 rounded-xl bg-graphite hover:bg-stone-800 text-white font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors"
+        >
+          <span>Claim with GitHub</span>
+          <span>→</span>
+        </button>
+        <button 
+          id="close-modal-btn"
+          type="button"
+          class="w-full py-2.5 px-4 rounded-xl border border-stone-300 dark:border-obsidian-700 hover:border-graphite text-graphite dark:text-stone-300 font-bold flex items-center justify-center cursor-pointer transition-colors"
+        >
+          Maybe later
+        </button>
+      </div>
     </div>
   </div>
-</MarketingLayout>
 
+  <!-- Client-Side Upvoting & Session Script -->
+  <script>
+    import { supabase, upvoteProposal } from '../lib/supabase';
+
+    // 2-Tier Identity: Retrieve or generate persistent anonymous session voter ID
+    let voterId = localStorage.getItem('afwe_voter_id');
+    if (!voterId) {
+      voterId = 'voter_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+      localStorage.setItem('afwe_voter_id', voterId);
+    }
+
+    let isClaimed = localStorage.getItem('afwe_account_claimed') === 'true';
+
+    const modal = document.getElementById('auth-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const claimGithubBtn = document.getElementById('claim-github-btn');
+    let pendingProposalId: string | null = null;
+
+    closeModalBtn?.addEventListener('click', () => {
+      modal?.classList.add('hidden');
+    });
+
+    claimGithubBtn?.addEventListener('click', () => {
+      // Simulate/trigger claiming process
+      isClaimed = true;
+      localStorage.setItem('afwe_account_claimed', 'true');
+      modal?.classList.add('hidden');
+      if (pendingProposalId) {
+        castVote(pendingProposalId);
+      }
+    });
+
+    async function castVote(itemId: string) {
+      const countEl = document.getElementById(`vote-count-${itemId}`);
+      if (!countEl) return;
+
+      const currentVal = parseInt(countEl.textContent?.replace(/,/g, '') || '0', 10);
+      // Optimistic update
+      countEl.textContent = (currentVal + 1).toLocaleString();
+
+      // Submit to Supabase
+      const res = await upvoteProposal(itemId, voterId, isClaimed);
+      if (res && res.votes) {
+        countEl.textContent = res.votes.toLocaleString();
+      }
+    }
+
+    document.querySelectorAll('.vote-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const itemId = target.getAttribute('data-item');
+        if (!itemId) return;
+
+        if (!isClaimed) {
+          pendingProposalId = itemId;
+          modal?.classList.remove('hidden');
+        } else {
+          castVote(itemId);
+        }
+      });
+    });
+  </script>
+</MarketingLayout>

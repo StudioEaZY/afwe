@@ -1,5 +1,6 @@
 // apps/studio/src/components/ChecksPage.tsx
 import React, { useEffect, useState } from "react";
+import { FileCode, Box, ArrowUpRight, Lock, ShieldCheck, Clock } from "lucide-react";
 import { useStore } from "../store";
 import { api } from "../api";
 import { extractAttachmentItems, formatAttachment } from "../lib/hierarchy";
@@ -144,9 +145,9 @@ export const ChecksPage: React.FC = () => {
               }}
               title={isFile ? `Open source code preview: ${item}` : `Jump to node on map: ${item}`}
             >
-              <span>{isFile ? "📄" : "▣"}</span>
+              {isFile ? <FileCode size={11} /> : <Box size={11} />}
               <span>{item}</span>
-              <span style={{ color: "#8E8878", fontSize: "9px" }}>↗</span>
+              <ArrowUpRight size={10} style={{ color: "var(--mute)" }} />
             </button>
           );
         })}
@@ -205,8 +206,8 @@ export const ChecksPage: React.FC = () => {
         {/* Active Pins Card */}
         <div style={{ background: "#FFFFFF", border: "1px solid #E5E0D5", borderRadius: "10px", padding: "18px 20px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-            <div style={{ fontWeight: 600, fontSize: "15px", color: "#1D1C1A", display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ color: "#C89D54" }}>✦</span> Active Pins ({pins.filter((p) => p.status === "active").length})
+            <div style={{ fontWeight: 600, fontSize: "15px", color: "var(--ink)", display: "flex", alignItems: "center", gap: "6px" }}>
+              <Lock size={15} style={{ color: "var(--amber)" }} /> Active Pins ({pins.filter((p) => p.status === "active").length})
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -241,17 +242,20 @@ export const ChecksPage: React.FC = () => {
                           <button
                             onClick={() => jumpToTurn(pin.created_from)}
                             style={{
-                              background: "#ECE7D9",
-                              border: "none",
-                              padding: "1px 6px",
+                              background: "var(--side)",
+                              border: "1px solid var(--line)",
+                              padding: "2px 6px",
                               borderRadius: "4px",
                               fontSize: "10px",
                               fontWeight: 600,
-                              color: "#4A463E",
+                              color: "var(--ink)",
                               cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4,
                             }}
                           >
-                            ⏱ Created in #{pin.created_from} ↗
+                            <Clock size={10} /> Created in #{pin.created_from} <ArrowUpRight size={10} />
                           </button>
                         </div>
                       )}
@@ -281,8 +285,8 @@ export const ChecksPage: React.FC = () => {
         {/* Materialized Tripwires (CheckSpecs) */}
         <div style={{ background: "#FFFFFF", border: "1px solid #E5E0D5", borderRadius: "10px", padding: "18px 20px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-            <div style={{ fontWeight: 600, fontSize: "15px", color: "#1D1C1A", display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ color: "#2E7A57" }}>✓</span> Standing Tripwire Checks ({checks.filter((c) => c.status === "active").length})
+            <div style={{ fontWeight: 600, fontSize: "15px", color: "var(--ink)", display: "flex", alignItems: "center", gap: "6px" }}>
+              <ShieldCheck size={15} style={{ color: "var(--accent)" }} /> Standing Tripwire Checks ({checks.filter((c) => c.status === "active").length})
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -319,17 +323,20 @@ export const ChecksPage: React.FC = () => {
                               key={fIdx}
                               onClick={() => openCodePreview({ filePath: f, title: `Guarded: ${f}` })}
                               style={{
-                                background: "#FFFFFF",
-                                border: "1px solid #DCD9D0",
-                                padding: "1px 6px",
+                                background: "var(--panel)",
+                                border: "1px solid var(--line)",
+                                padding: "2px 6px",
                                 borderRadius: "4px",
                                 fontSize: "10px",
-                                fontFamily: "'IBM Plex Mono', monospace",
+                                fontFamily: "var(--mono)",
                                 cursor: "pointer",
-                                color: "#1D1C1A",
+                                color: "var(--ink)",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 4,
                               }}
                             >
-                              📄 {f} ↗
+                              <FileCode size={10} /> {f} <ArrowUpRight size={10} />
                             </button>
                           ))}
                         </div>
@@ -339,17 +346,20 @@ export const ChecksPage: React.FC = () => {
                           <button
                             onClick={() => jumpToTurn(chk.created_from)}
                             style={{
-                              background: "#ECE7D9",
-                              border: "none",
-                              padding: "1px 6px",
+                              background: "var(--side)",
+                              border: "1px solid var(--line)",
+                              padding: "2px 6px",
                               borderRadius: "4px",
                               fontSize: "10px",
                               fontWeight: 600,
-                              color: "#4A463E",
+                              color: "var(--ink)",
                               cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4,
                             }}
                           >
-                            ⏱ Created in #{chk.created_from} ↗
+                            <Clock size={10} /> Created in #{chk.created_from} <ArrowUpRight size={10} />
                           </button>
                         </div>
                       )}
@@ -397,18 +407,18 @@ export const ChecksPage: React.FC = () => {
                 <div style={{ fontSize: "11.5px", color: "#6E685F", marginTop: "4px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                   <button
                     onClick={() => jumpToNodeOnMap(c.from)}
-                    style={{ background: "#FFFFFF", border: "1px solid #DCD9D0", padding: "1px 6px", borderRadius: "4px", fontSize: "10.5px", cursor: "pointer" }}
+                    style={{ background: "var(--panel)", border: "1px solid var(--line)", padding: "2px 6px", borderRadius: "4px", fontSize: "10.5px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
                   >
-                    ▣ {c.from} ↗
+                    <Box size={11} /> {c.from} <ArrowUpRight size={10} />
                   </button>
-                  <span style={{ fontWeight: 600, color: "#C94A38" }}>{c.rule || c.kind || "cannot_depend_on"}</span>
+                  <span style={{ fontWeight: 600, color: "var(--red)" }}>{c.rule || c.kind || "cannot_depend_on"}</span>
                   {(Array.isArray(c.to) ? c.to : [c.to]).map((target: string, tIdx: number) => (
                     <button
                       key={tIdx}
                       onClick={() => jumpToNodeOnMap(target)}
-                      style={{ background: "#FFFFFF", border: "1px solid #DCD9D0", padding: "1px 6px", borderRadius: "4px", fontSize: "10.5px", cursor: "pointer" }}
+                      style={{ background: "var(--panel)", border: "1px solid var(--line)", padding: "2px 6px", borderRadius: "4px", fontSize: "10.5px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
                     >
-                      ▣ {target} ↗
+                      <Box size={11} /> {target} <ArrowUpRight size={10} />
                     </button>
                   ))}
                 </div>

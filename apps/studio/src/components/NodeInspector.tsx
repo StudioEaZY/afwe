@@ -1,466 +1,584 @@
-// apps/studio/src/components/NodeInspector.tsx
-import React, { useState } from "react";
+import React, { useMemo } from "react";
+import {
+  Globe,
+  Smartphone,
+  Settings,
+  Server,
+  Layers,
+  Database,
+  Share2,
+  Cloud,
+  AlertTriangle,
+  ArrowRight,
+  Lock,
+  FileCode,
+} from "lucide-react";
 import { useStore } from "../store";
-import { SelectedEntity } from "../lib/hierarchy";
-import { api } from "../api";
+import {
+  buildHierarchyTree,
+  buildDirectedEdges,
+  findNodeById,
+  getDomainNode,
+  computeNodeFlags,
+  hasBlueprintLinks,
+  stateDescription,
+  shortLabel,
+  HierarchyNode,
+} from "../lib/hierarchy";
+
+function renderDomainLucideIcon(iconKey?: string) {
+  switch (iconKey) {
+    case "web":
+      return <Globe size={18} />;
+    case "phone":
+      return <Smartphone size={18} />;
+    case "gear":
+      return <Settings size={18} />;
+    case "srv":
+      return <Server size={18} />;
+    case "db":
+      return <Database size={18} />;
+    case "link":
+      return <Share2 size={18} />;
+    case "cloud":
+      return <Cloud size={18} />;
+    case "layers":
+    default:
+      return <Layers size={18} />;
+  }
+}
 
 export const NodeInspector: React.FC = () => {
   const {
     graph,
+    activeLens,
+    currentScopeId,
+    constellationAnchorKey,
+    forceParentFallback,
+    overviewTimelineT,
     selectedEntity,
     selectEntity,
-    setActiveLens,
     drillDown,
-    notify,
-    run,
-    scrubToTurn,
+    drillUp,
+    setActiveLens,
+    setConstellationAnchor,
+    openConstellationFor,
+    openCodePreview,
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<"overview" | "files" | "deps" | "rules" | "history">("overview");
+  const root = useMemo(() => buildHierarchyTree(graph), [graph]);
+  const { domainEdges, nodeEdges } = useMemo(
+    () => buildDirectedEdges(graph, root),
+    [graph, root]
+  );
 
-  // Fallback state when nothing is selected
-  if (!selectedEntity) {
-    const totalFiles = graph?.files?.length || 0;
-    const unmappedFiles = graph?.unmapped?.length || 0;
-    const mappedFiles = Math.max(0, totalFiles - unmappedFiles);
-    const mappedPct = totalFiles > 0 ? Math.round((mappedFiles / totalFiles) * 100) : 0;
-    const proposalsCount = graph?.proposals?.length || 0;
-    const codeEdgesCount = graph?.code_edges?.length || 0;
+  const focusNode = useMemo(() => {
+    if (!currentScopeId) return root;
+    return findNodeById(root, currentScopeId) || root;
+  }, [root, currentScopeId]);
 
-    // Top uncharted areas by top-level folder
-    const folderCounts = new Map<string, number>();
-    for (const f of graph?.unmapped || []) {
-      const top = (f as string).split("/")[0] || "(root)";
-      folderCounts.set(top, (folderCounts.get(top) || 0) + 1);
-    }
-    const topUncharted = Array.from(folderCounts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+  // 1. Edge Inspection Mode (when selectedEntity.kind === "edge")
+  if (selectedEntity && selectedEntity.kind === "edge" && selectedEntity.edgeData) {
+    const e = selectedEntity.edgeData;
+    const nFrom = findNodeById(root, e.a);
+    const nTo = findNodeById(root, e.b);
+    const isNodeEdge = e.a.includes("/") || e.b.includes("/");
+
+    const inspectEndpoint = (n: HierarchyNode | null, fallbackKey: string) => {
+      if (!n) return;
+      selectEntity({
+        id: n.id,
+        key: n.key,
+        kind: n.kind,
+        label: n.label,
+        path: n.path,
+        status: n.hasViolation ? "violation" : "mapped",
+        state: n.state,
+        fileCount: n.fileCount,
+        node: n,
+      });
+    };
 
     return (
-      <aside className="node-inspector-pane" style={{ width: "340px", height: "100%", overflowY: "auto", background: "#FFFFFF", borderLeft: "1px solid #E5E0D5", padding: "20px" }}>
-        <h3 style={{ fontFamily: "Newsreader, serif", fontSize: "18px", color: "#1D1C1A", marginTop: 0, marginBottom: "16px" }}>
-          Repository Health
-        </h3>
-
-        {/* Donut Metric Card */}
-        <div style={{ background: "#FAF8F3", border: "1px solid #E5E0D5", borderRadius: "10px", padding: "16px", marginBottom: "20px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <div style={{ position: "relative", width: "64px", height: "64px" }}>
-              <svg viewBox="0 0 36 36" style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }}>
-                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#E5E0D5" strokeWidth="4" />
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="#2E7A57"
-                  strokeWidth="4"
-                  strokeDasharray={`${mappedPct}, 100`}
-                />
-              </svg>
-              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: "bold", color: "#1D1C1A" }}>
-                {mappedPct}%
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: "13px", fontWeight: 600, color: "#1D1C1A" }}>{mappedFiles.toLocaleString()} Mapped files</div>
-              <div style={{ fontSize: "12px", color: "#6B675D", marginTop: "2px" }}>{unmappedFiles.toLocaleString()} Uncharted files</div>
-              <div style={{ fontSize: "11px", color: "#8E8878", marginTop: "2px" }}>{codeEdgesCount} Detected dependencies</div>
-            </div>
+      <aside className="side-inspector" aria-label="Inspector">
+        <div className="sh">
+          <div
+            className="ic"
+            style={
+              e.bad
+                ? { borderColor: "var(--red)", color: "var(--red)" }
+                : undefined
+            }
+          >
+            {e.bad ? <AlertTriangle size={18} /> : <ArrowRight size={18} />}
+          </div>
+          <div>
+            <h2 className="serif">
+              {shortLabel(e.a)} → {shortLabel(e.b)}{" "}
+              <span className={`st ${e.bad ? "s-violation" : "s-mapped"}`}>
+                {e.bad ? "violation" : "allowed"}
+              </span>
+            </h2>
+            <p>
+              {isNodeEdge ? "Node-level" : "Domain-level"} directed dependency · Introduced at{" "}
+              {Math.round((e.birth || 0.1) * 100)}% of timeline
+            </p>
           </div>
         </div>
 
-        {/* Top Uncharted Areas */}
-        <div style={{ marginBottom: "24px" }}>
-          <div style={{ fontSize: "12px", fontWeight: 600, color: "#6B675D", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-            Top Uncharted Folders
+        <div className="sec">
+          <h3>Direction &amp; Meaning</h3>
+          <div className="row">
+            <span>From (Consumer)</span>
+            <b>{e.a}</b>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {topUncharted.map(([folder, count]) => (
-              <div
-                key={folder}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "8px 10px",
-                  borderRadius: "6px",
-                  background: "#FAF8F3",
-                  border: "1px solid #ECE7D9",
-                  fontSize: "12px",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span>📁</span>
-                  <span style={{ fontWeight: 500, color: "#1D1C1A" }}>{folder}</span>
-                </div>
-                <div style={{ color: "#6B675D" }}>{count} files</div>
-              </div>
-            ))}
+          <div className="row">
+            <span>To (Dependency)</span>
+            <b>{e.b}</b>
           </div>
+          <p style={{ margin: "6px 0 0", fontSize: 12.5, color: "var(--mute)" }}>
+            <b>{e.a}</b> imports or calls interfaces exposed by <b>{e.b}</b>.
+          </p>
         </div>
 
-        {/* Next Steps Onboarding */}
-        <div>
-          <div style={{ fontSize: "12px", fontWeight: 600, color: "#6B675D", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-            Next Steps
+        {e.bad && (
+          <div className="warn">
+            <b>Rule violation</b>
+            <br />
+            {e.a} must not depend on {e.b}.<br />
+            <span style={{ opacity: 0.85 }}>
+              Suggested fix: invert dependency via an event or move shared types into Shared.
+            </span>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ padding: "10px", borderRadius: "6px", background: "#FAF8F3", border: "1px solid #ECE7D9", fontSize: "12px" }}>
-              <div style={{ fontWeight: 600, color: "#1D1C1A" }}>1. Review proposed structure</div>
-              <div style={{ fontSize: "11px", color: "#6B675D", marginTop: "2px" }}>{proposalsCount} proposals waiting for human review.</div>
+        )}
+
+        <div className="sec">
+          <h3>Inspect Endpoints</h3>
+          {nFrom && (
+            <div
+              className="row click"
+              onClick={() => inspectEndpoint(nFrom, e.a)}
+            >
+              <span>Inspect {e.a}</span>
+              <span style={{ color: "var(--mute)" }}>
+                {nFrom.fileCount} files · {nFrom.state}
+              </span>
             </div>
-            <div style={{ padding: "10px", borderRadius: "6px", background: "#FAF8F3", border: "1px solid #ECE7D9", fontSize: "12px" }}>
-              <div style={{ fontWeight: 600, color: "#1D1C1A" }}>2. Chart key domains</div>
-              <div style={{ fontSize: "11px", color: "#6B675D", marginTop: "2px" }}>Select any uncharted folder and promote to blueprint.</div>
+          )}
+          {nTo && (
+            <div
+              className="row click"
+              onClick={() => inspectEndpoint(nTo, e.b)}
+            >
+              <span>Inspect {e.b}</span>
+              <span style={{ color: "var(--mute)" }}>
+                {nTo.fileCount} files · {nTo.state}
+              </span>
             </div>
+          )}
+        </div>
+
+        <div className="sec">
+          <h3>Constellation Focus</h3>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+            <button
+              type="button"
+              className="btn-soft primary"
+              onClick={() => openConstellationFor(e.a)}
+            >
+              Centre on {shortLabel(e.a)}
+            </button>
+            <button
+              type="button"
+              className="btn-soft"
+              onClick={() => openConstellationFor(e.b)}
+            >
+              Centre on {shortLabel(e.b)}
+            </button>
           </div>
         </div>
       </aside>
     );
   }
 
-  // Active Entity Details
-  const isViolation = selectedEntity.status === "violation";
-  const isPinned = selectedEntity.status === "pinned";
-  const isMapped = selectedEntity.status === "mapped";
+  // 2. Node Inspection Mode
+  const activeNode: HierarchyNode = useMemo(() => {
+    if (selectedEntity) {
+      const found =
+        selectedEntity.node ||
+        findNodeById(root, selectedEntity.key || selectedEntity.id);
+      if (found && found.id !== "root") return found;
+    }
+    if (activeLens === "constellation" && constellationAnchorKey) {
+      const anchor = findNodeById(root, constellationAnchorKey);
+      if (anchor && anchor.id !== "root") return anchor;
+    }
+    if (focusNode && focusNode.id !== "root") {
+      return focusNode;
+    }
+    return root.children[0] || root;
+  }, [selectedEntity, activeLens, constellationAnchorKey, focusNode, root]);
 
-  // Check matching rules
-  const matchingConstraints = (graph?.constraints || []).filter(
-    (c: any) => c.from === selectedEntity.id || (c.to || []).includes(selectedEntity.id)
-  );
+  const dom = useMemo(() => getDomainNode(root, activeNode), [root, activeNode]);
+  const flags = useMemo(() => computeNodeFlags(activeNode), [activeNode]);
 
-  // Check matching edges
-  const matchingEdges = (graph?.code_edges || []).filter(
-    (e: any) => e.from === selectedEntity.id || e.to === selectedEntity.id
-  );
+  // Determine layer & depth context string
+  const layerInfo = useMemo(() => {
+    const globalD = activeNode.depth;
+    if (activeLens === "radial") {
+      if (focusNode.depth > 0 && activeNode.id === focusNode.id) {
+        return `Current map root (Global depth ${globalD})`;
+      }
+      const relD = globalD - focusNode.depth;
+      if (relD > 0) {
+        return `Layer ${relD} in this map${
+          focusNode.depth > 0 ? ` (global depth ${globalD})` : ""
+        }`;
+      }
+    }
+    return `Global depth ${globalD}`;
+  }, [activeLens, focusNode, activeNode]);
 
-  const handleCopyPrompt = () => {
-    const prompt = `Please review and fix the architectural boundary issue in ${selectedEntity.label} (${selectedEntity.path}). Enforce the constraint rules without altering the public API.`;
-    navigator.clipboard.writeText(prompt);
-    notify("Copied agent prompt to clipboard");
-  };
+  // Determine relationships (Node-level vs Domain-level fallback)
+  const relContext = useMemo(() => {
+    const isDom = activeNode.depth <= 1;
+    const hasDirect = isDom
+      ? true
+      : nodeEdges.some((e) => e.a === activeNode.key || e.b === activeNode.key);
+    const isFallback = !isDom && (!hasDirect || forceParentFallback);
 
-  const handleAcceptPin = async () => {
-    await run("Accepting Pin", async () => {
-      await api.pin.propose({
-        statement: `Protect critical behaviors in ${selectedEntity.label}`,
-        kind: "decision",
-        severity: "block",
-        nodes: [selectedEntity.id],
-      });
-      notify(`Pinned ${selectedEntity.label}`);
+    const useNodeRel = !isDom && hasDirect && !forceParentFallback;
+    const relKey = useNodeRel ? activeNode.key : dom.key;
+    const relPool = useNodeRel ? nodeEdges : domainEdges;
+
+    const aliveEdges = relPool.filter(
+      (e) =>
+        e.birth <= overviewTimelineT &&
+        (e.death === null || e.death > overviewTimelineT)
+    );
+
+    const deps = aliveEdges.filter((e) => e.a === relKey);
+    const used = aliveEdges.filter((e) => e.b === relKey);
+    const bads = aliveEdges.filter(
+      (e) => e.bad && (e.a === relKey || e.b === relKey)
+    );
+
+    const relScopeLabel = useNodeRel
+      ? "Node-level"
+      : isDom
+      ? "Domain-level"
+      : `Module-level (${dom.label})`;
+
+    return { isDom, hasDirect, isFallback, useNodeRel, deps, used, bads, relScopeLabel };
+  }, [activeNode, dom, nodeEdges, domainEdges, forceParentFallback, overviewTimelineT]);
+
+  const { isFallback, deps, used, bads, relScopeLabel } = relContext;
+
+  const nodeLinked = hasBlueprintLinks(activeNode);
+  const constraintsToShow =
+    activeNode.constraints && activeNode.constraints.length > 0
+      ? activeNode.constraints
+      : activeNode.state === "mapped" && dom.constraints && dom.constraints.length > 0
+      ? dom.constraints
+      : [];
+  const decisionsToShow =
+    activeNode.decisions && activeNode.decisions.length > 0
+      ? activeNode.decisions
+      : activeNode.state === "mapped" && dom.decisions && dom.decisions.length > 0
+      ? dom.decisions
+      : [];
+
+  const handleSelectChildOrTarget = (targetKeyOrId: string) => {
+    const found = findNodeById(root, targetKeyOrId);
+    if (!found) return;
+    selectEntity({
+      id: found.id,
+      key: found.key,
+      kind: found.kind,
+      label: found.label,
+      path: found.path,
+      status: found.hasViolation ? "violation" : "mapped",
+      state: found.state,
+      fileCount: found.fileCount,
+      node: found,
     });
+    if (activeLens === "constellation") {
+      setConstellationAnchor(found.key);
+    }
   };
 
   return (
-    <aside className="node-inspector-pane" style={{ width: "350px", height: "100%", overflowY: "auto", background: "#FFFFFF", borderLeft: "1px solid #E5E0D5", display: "flex", flexDirection: "column" }}>
-      {/* Header with Object Kind Badge */}
-      <div style={{ padding: "16px 20px 12px 20px", borderBottom: "1px solid #E5E0D5" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-          <span
-            style={{
-              fontSize: "10px",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.6px",
-              background: "#ECE7D9",
-              color: "#4A463E",
-              padding: "2px 6px",
-              borderRadius: "4px",
-            }}
-          >
-            {selectedEntity.kind}
-          </span>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span
-              style={{
-                fontSize: "11px",
-                fontWeight: 600,
-                color: isViolation ? "#B23A2B" : isMapped ? "#2E7A57" : "#8E8878",
-                background: isViolation ? "#FDECE9" : isMapped ? "#E8F3ED" : "#FAF8F3",
-                padding: "2px 8px",
-                borderRadius: "12px",
-              }}
-            >
-              ● {isViolation ? "Rule violation" : isMapped ? "Mapped" : "Uncharted"}
-            </span>
-            <button
-              onClick={() => selectEntity(null)}
-              style={{ background: "none", border: "none", fontSize: "16px", cursor: "pointer", color: "#8E8878" }}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-
-        <h3 style={{ fontFamily: "Newsreader, serif", fontSize: "20px", fontWeight: 600, color: "#1D1C1A", margin: "0 0 2px 0" }}>
-          {selectedEntity.label}
-        </h3>
-        <div style={{ fontSize: "12px", color: "#6B675D", fontFamily: "'IBM Plex Mono', monospace" }}>
-          {selectedEntity.path}
+    <aside className="side-inspector" aria-label="Inspector">
+      {/* Header (.sh) */}
+      <div className="sh">
+        <div className="ic">{renderDomainLucideIcon(dom.icon)}</div>
+        <div style={{ minWidth: 0 }}>
+          <h2 className="serif">
+            {activeNode.label}{" "}
+            <span className={`st s-${activeNode.state}`}>{activeNode.state}</span>
+          </h2>
+          <p>
+            {activeNode.path}/ · {activeNode.fileCount} files
+          </p>
+          <p style={{ marginTop: 2 }}>{layerInfo}</p>
         </div>
       </div>
 
-      {/* Progressive Tab Bar */}
-      <div style={{ display: "flex", borderBottom: "1px solid #E5E0D5", background: "#FAF8F3", padding: "0 12px" }}>
-        {[
-          { key: "overview", label: "Overview" },
-          { key: "files", label: `Files ${selectedEntity.fileCount || 0}` },
-          { key: "deps", label: `Deps ${matchingEdges.length}` },
-          { key: "rules", label: "Rules" },
-          { key: "history", label: "History" },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key as any)}
-            style={{
-              background: "none",
-              border: "none",
-              borderBottom: activeTab === tab.key ? "2px solid #1D1C1A" : "2px solid transparent",
-              padding: "8px 10px",
-              fontSize: "12px",
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              color: activeTab === tab.key ? "#1D1C1A" : "#6B675D",
-              cursor: "pointer",
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Honest Blueprint Link Status Box (.bp-status) */}
+      <div className={`bp-status ${nodeLinked ? "linked" : ""}`}>
+        {stateDescription(activeNode.state, activeNode)}
       </div>
 
-      {/* Tab Content */}
-      <div style={{ flex: 1, padding: "16px 20px", overflowY: "auto" }}>
-        {activeTab === "overview" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {/* Priority Alert Slot: Violation Card */}
-            {isViolation && (
-              <div style={{ background: "#FDECE9", border: "1px solid #F3C6BE", borderRadius: "8px", padding: "12px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#B23A2B", fontWeight: 600, fontSize: "12.5px" }}>
-                  <span>▲</span> Rule violation detected
-                </div>
-                <div style={{ fontSize: "12px", color: "#682017", marginTop: "4px", lineHeight: "1.4" }}>
-                  Forbidden dependency crossing established architectural boundary.
-                </div>
-                <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
-                  <button
-                    onClick={() => setActiveLens("topology")}
-                    style={{
-                      background: "#FFFFFF",
-                      border: "1px solid #DCD9D0",
-                      padding: "5px 10px",
-                      borderRadius: "5px",
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
-                  >
-                    View in Topology
-                  </button>
-                  <button
-                    onClick={handleCopyPrompt}
-                    style={{
-                      background: "#B23A2B",
-                      color: "#FFFFFF",
-                      border: "none",
-                      padding: "5px 10px",
-                      borderRadius: "5px",
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Copy Agent Prompt
-                  </button>
-                </div>
-              </div>
-            )}
+      {/* Rule Violation Warning (.warn) */}
+      {(bads.length > 0 || flags.viol > 0) && (
+        <div className="warn">
+          <b>Rule violation</b>
+          <br />
+          {bads[0]
+            ? `${bads[0].a} depends on ${bads[0].b}, which is forbidden.`
+            : activeNode.violationDetails?.[0] ||
+              `${activeNode.label} contains a boundary violation.`}
+        </div>
+      )}
 
-            {/* Priority Slot: Pin Recommendation */}
-            {!isViolation && !isPinned && isMapped && (
-              <div style={{ background: "#FAF3DB", border: "1px solid #EEDEA8", borderRadius: "8px", padding: "12px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#87661A", fontWeight: 600, fontSize: "12px" }}>
-                  <span>✦</span> Intent pin recommendation
-                </div>
-                <div style={{ fontSize: "11.5px", color: "#6A4E11", marginTop: "4px" }}>
-                  Protect critical interface and behavior in {selectedEntity.label} from silent alteration.
-                </div>
+      {/* Honest Parent-Level Fallback Info Box (.info-box) */}
+      {activeLens === "constellation" && isFallback && (
+        <div className="info-box">
+          <b>Parent-level fallback active:</b> AFWE only has module-level dependency data for{" "}
+          <b>{dom.label}</b> right now, not specifically for{" "}
+          <b>{activeNode.breadcrumbLabels.join(" › ")}</b>. Showing <b>{dom.label}</b>{" "}
+          relationships on the canvas.
+        </div>
+      )}
+
+      {/* Contextual Action Buttons */}
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        {activeLens === "radial" && (
+          <>
+            {activeNode.children &&
+              activeNode.children.length > 0 &&
+              activeNode.id !== focusNode.id && (
                 <button
-                  onClick={handleAcceptPin}
-                  style={{
-                    background: "#87661A",
-                    color: "#FFFFFF",
-                    border: "none",
-                    padding: "5px 10px",
-                    borderRadius: "5px",
-                    fontSize: "11px",
-                    fontWeight: 600,
-                    marginTop: "8px",
-                    cursor: "pointer",
-                  }}
+                  type="button"
+                  className="btn-soft primary"
+                  onClick={() => drillDown(activeNode.id)}
                 >
-                  Accept & Pin
+                  Open map
                 </button>
-              </div>
+              )}
+            {focusNode.depth > 0 && activeNode.id === focusNode.id && (
+              <button type="button" className="btn-soft" onClick={drillUp}>
+                ‹ Up one level
+              </button>
             )}
-
-            {/* Description */}
-            <div>
-              <div style={{ fontSize: "11px", fontWeight: 600, color: "#6B675D", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
-                Purpose / Description
-              </div>
-              <div style={{ fontSize: "13px", color: "#1D1C1A", lineHeight: "1.4" }}>
-                {selectedEntity.description || selectedEntity.purpose || "No architectural description recorded yet. Click to define purpose."}
-              </div>
-            </div>
-
-            {/* Quick 2x2 Stats Grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-              <div style={{ background: "#FAF8F3", padding: "10px", borderRadius: "6px", border: "1px solid #ECE7D9" }}>
-                <div style={{ fontSize: "11px", color: "#6B675D" }}>Total Files</div>
-                <div style={{ fontSize: "15px", fontWeight: 600, color: "#1D1C1A" }}>{selectedEntity.fileCount || 0}</div>
-              </div>
-              <div style={{ background: "#FAF8F3", padding: "10px", borderRadius: "6px", border: "1px solid #ECE7D9" }}>
-                <div style={{ fontSize: "11px", color: "#6B675D" }}>Active Rules</div>
-                <div style={{ fontSize: "15px", fontWeight: 600, color: "#1D1C1A" }}>{matchingConstraints.length}</div>
-              </div>
-            </div>
-
-            {/* Drill-down Action Button */}
             <button
-              onClick={() => drillDown(selectedEntity.id)}
-              style={{
-                background: "#FAF8F3",
-                border: "1px solid #DCD9D0",
-                padding: "8px 12px",
-                borderRadius: "6px",
-                fontSize: "12px",
-                fontWeight: 600,
-                color: "#1D1C1A",
-                cursor: "pointer",
-                textAlign: "center",
+              type="button"
+              className="btn-soft"
+              onClick={() => openConstellationFor(activeNode.key)}
+            >
+              Constellation
+            </button>
+          </>
+        )}
+
+        {activeLens === "constellation" && (
+          <>
+            {activeNode.key !== constellationAnchorKey && (
+              <button
+                type="button"
+                className="btn-soft primary"
+                onClick={() => setConstellationAnchor(activeNode.key)}
+              >
+                Centre here
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-soft"
+              onClick={() => {
+                setActiveLens("radial");
+                if (activeNode.children && activeNode.children.length > 0) {
+                  drillDown(activeNode.id);
+                } else if (activeNode.parentId && activeNode.parentId !== "root") {
+                  drillDown(activeNode.parentId);
+                }
               }}
             >
-              Dive deeper inside {selectedEntity.label} →
+              Open map in Atlas
             </button>
-          </div>
+          </>
         )}
 
-        {activeTab === "files" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <div style={{ fontSize: "12px", color: "#6B675D", marginBottom: "6px" }}>
-              Showing files associated with {selectedEntity.label}:
+        {activeLens === "topology" && (
+          <>
+            <button
+              type="button"
+              className="btn-soft primary"
+              onClick={() => {
+                setActiveLens("radial");
+                drillDown(activeNode.id);
+              }}
+            >
+              Open map in Atlas
+            </button>
+            <button
+              type="button"
+              className="btn-soft"
+              onClick={() => openConstellationFor(activeNode.key)}
+            >
+              Constellation
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Inside <Node> Section */}
+      <div className="sec">
+        <h3>Inside {activeNode.label}</h3>
+        {activeNode.children && activeNode.children.length > 0 ? (
+          activeNode.children.slice(0, 8).map((c) => (
+            <div
+              key={c.key}
+              className="row click"
+              onClick={() => handleSelectChildOrTarget(c.key)}
+            >
+              <span>{c.label}</span>
+              <span style={{ color: "var(--mute)" }}>
+                {c.fileCount} files · {c.state}
+              </span>
             </div>
-            {((selectedEntity.raw?.file_list || []) as string[]).slice(0, 30).map((file) => (
+          ))
+        ) : (
+          <>
+            <div className="row" style={{ color: "var(--mute)" }}>
+              <span>Leaf module ({activeNode.fileCount} files)</span>
+            </div>
+            {(activeNode.filesList || []).slice(0, 4).map((f) => (
               <div
-                key={file}
-                style={{
-                  padding: "6px 8px",
-                  borderRadius: "4px",
-                  background: "#FAF8F3",
-                  fontSize: "11.5px",
-                  fontFamily: "'IBM Plex Mono', monospace",
-                  color: "#1D1C1A",
-                }}
+                key={f}
+                className="row click"
+                onClick={() =>
+                  openCodePreview({
+                    filePath: f,
+                    title: `${activeNode.label} — ${f.split("/").pop()}`,
+                  })
+                }
               >
-                {file}
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                  <FileCode size={12} style={{ color: "var(--mute)" }} />
+                  {f.split("/").pop()}
+                </span>
+                <span style={{ color: "var(--mute)", fontSize: 11 }}>preview</span>
               </div>
             ))}
-          </div>
+          </>
         )}
+      </div>
 
-        {activeTab === "deps" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ fontSize: "12px", color: "#6B675D", marginBottom: "4px" }}>
-              Relationships for {selectedEntity.label}:
-            </div>
-            {matchingEdges.map((edge: any, i: number) => (
+      {/* Relationships Section */}
+      <div className="sec">
+        <h3>Relationships ({relScopeLabel})</h3>
+        <div className="row">
+          <span>Depends on ({deps.length})</span>
+          <span>
+            {deps.length > 0
+              ? deps
+                  .slice(0, 4)
+                  .map((e) => shortLabel(e.b))
+                  .join(", ")
+              : "None"}
+          </span>
+        </div>
+        <div className="row">
+          <span>Used by ({used.length})</span>
+          <span>
+            {used.length > 0
+              ? used
+                  .slice(0, 4)
+                  .map((e) => shortLabel(e.a))
+                  .join(", ")
+              : "None"}
+          </span>
+        </div>
+
+        {/* Clickable direct neighbors */}
+        {(deps.length > 0 || used.length > 0) && (
+          <div style={{ marginTop: 6 }}>
+            {deps.slice(0, 3).map((e) => (
               <div
-                key={i}
-                style={{
-                  padding: "8px",
-                  borderRadius: "6px",
-                  background: edge.violation ? "#FDECE9" : "#FAF8F3",
-                  border: `1px solid ${edge.violation ? "#F3C6BE" : "#ECE7D9"}`,
-                  fontSize: "12px",
-                }}
+                key={`dep-${e.b}`}
+                className="row click"
+                onClick={() => handleSelectChildOrTarget(e.b)}
               >
-                <div style={{ fontWeight: 600, color: edge.violation ? "#B23A2B" : "#1D1C1A" }}>
-                  {edge.from} → {edge.to}
-                </div>
-                <div style={{ fontSize: "11px", color: "#6B675D", marginTop: "2px" }}>
-                  {edge.count} file import(s) · {edge.violation ? "Violation" : "Permitted"}
-                </div>
+                <span>→ {shortLabel(e.b)}</span>
+                <span style={{ color: e.bad ? "var(--red)" : "var(--mute)", fontSize: 11.5 }}>
+                  {e.bad ? "violation" : "dependency"}
+                </span>
               </div>
             ))}
-          </div>
-        )}
-
-        {activeTab === "rules" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ fontSize: "12px", color: "#6B675D", marginBottom: "4px" }}>
-              Constraints & Rules ({matchingConstraints.length}):
-            </div>
-            {matchingConstraints.map((c: any, i: number) => (
+            {used.slice(0, 3).map((e) => (
               <div
-                key={i}
-                style={{
-                  padding: "10px",
-                  borderRadius: "6px",
-                  background: "#FAF8F3",
-                  border: "1px solid #ECE7D9",
-                  fontSize: "12px",
-                }}
+                key={`con-${e.a}`}
+                className="row click"
+                onClick={() => handleSelectChildOrTarget(e.a)}
               >
-                <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{c.id}</div>
-                <div style={{ fontSize: "11.5px", color: "#6B675D", marginTop: "4px" }}>
-                  {c.rule || c.kind}: {c.from} → {Array.isArray(c.to) ? c.to.join(", ") : String(c.to || "")}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === "history" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ fontSize: "12px", color: "#6B675D", marginBottom: "4px" }}>
-              Turns that modified this node:
-            </div>
-            {(graph?.turns || []).slice(0, 5).map((turn: any) => (
-              <div
-                key={turn.id}
-                style={{
-                  padding: "10px",
-                  borderRadius: "6px",
-                  background: "#FAF8F3",
-                  border: "1px solid #ECE7D9",
-                  fontSize: "12px",
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontWeight: 600, color: "#1D1C1A" }}>#{turn.id}</span>
-                  <button
-                    onClick={() => scrubToTurn(turn.id)}
-                    style={{
-                      background: "#FFFFFF",
-                      border: "1px solid #DCD9D0",
-                      padding: "2px 6px",
-                      borderRadius: "4px",
-                      fontSize: "10.5px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Time-travel map
-                  </button>
-                </div>
-                <div style={{ fontSize: "11.5px", color: "#4A463E", marginTop: "4px" }}>
-                  {turn.summary || turn.prompt}
-                </div>
+                <span>← {shortLabel(e.a)}</span>
+                <span style={{ color: e.bad ? "var(--red)" : "var(--mute)", fontSize: 11.5 }}>
+                  {e.bad ? "violation" : "consumer"}
+                </span>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Constraints Section */}
+      <div className="sec">
+        <h3>Constraints</h3>
+        {constraintsToShow.length > 0 ? (
+          constraintsToShow.map((c, idx) => (
+            <div key={idx} className="row">
+              <span>• {c}</span>
+            </div>
+          ))
+        ) : (
+          <div className="row" style={{ color: "var(--mute)" }}>
+            <span>No explicit constraints linked to this node.</span>
+          </div>
+        )}
+      </div>
+
+      {/* Decisions Section */}
+      <div className="sec">
+        <h3>Decisions</h3>
+        {decisionsToShow.length > 0 ? (
+          decisionsToShow.map(([dTitle, dStatus], idx) => (
+            <div key={idx} className="row">
+              <span>{dTitle}</span>
+              <span style={{ color: "var(--mute)" }}>{dStatus}</span>
+            </div>
+          ))
+        ) : (
+          <div className="row" style={{ color: "var(--mute)" }}>
+            <span>No architectural decisions linked to this node.</span>
+          </div>
+        )}
+      </div>
+
+      {/* Active Pins Section (if present) */}
+      {activeNode.pinDetails && activeNode.pinDetails.length > 0 && (
+        <div className="sec">
+          <h3>Pinned Checks ({activeNode.pinDetails.length})</h3>
+          {activeNode.pinDetails.map((pStmt, idx) => (
+            <div key={idx} className="row">
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                <Lock size={12} style={{ color: "var(--accent)", flexShrink: 0 }} />
+                {pStmt}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </aside>
   );
 };

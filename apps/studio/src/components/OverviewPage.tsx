@@ -1,430 +1,610 @@
-// apps/studio/src/components/OverviewPage.tsx
-// Soft, tactile Overview with Codebase Atlas aesthetics, dual lens switcher, rewind timeline, and inspector
-import React, { useMemo, useState, useRef } from "react";
-import { useStore } from "../store";
+import React, { useMemo, useState } from "react";
+import { Lock, AlertTriangle } from "lucide-react";
+import { useStore, FilterMode, ConstellationScope } from "../store";
+import {
+  buildHierarchyTree,
+  buildDirectedEdges,
+  findNodeById,
+  getDomainNode,
+  HierarchyNode,
+} from "../lib/hierarchy";
 import { RadialMap } from "./RadialMap";
+import { ConstellationMap } from "./ConstellationMap";
 import { TopologyMap } from "./TopologyMap";
 import { NodeInspector } from "./NodeInspector";
-import { buildHierarchyTree, findNodeById } from "../lib/hierarchy";
+
+const CURATED_ANCHOR_OPTIONS: { group: string; items: { value: string; label: string }[] }[] = [
+  {
+    group: "Subnodes (Direct Node-Level Links)",
+    items: [
+      { value: "Backend/events/models", label: "Backend › events › models (Rich hub)" },
+      { value: "Services/jobs/auth", label: "Services › jobs › auth" },
+      { value: "Data/schema", label: "Data › schema (Cycle + Violation)" },
+      { value: "Web/views", label: "Web › views (Violation)" },
+      { value: "Web/views/checkout", label: "Web › views › checkout" },
+      { value: "Backend/api/routes", label: "Backend › api › routes" },
+      { value: "Backend/auth", label: "Backend › auth" },
+    ],
+  },
+  {
+    group: "Subnodes (Parent-Level Fallback)",
+    items: [
+      { value: "Backend/billing/webhooks", label: "Backend › billing › webhooks (Fallback demo)" },
+      { value: "Data/legacy_etl", label: "Data › legacy_etl (Unmapped fallback)" },
+    ],
+  },
+  {
+    group: "Top-Level Domains",
+    items: [
+      { value: "Backend", label: "Backend (Domain)" },
+      { value: "Services", label: "Services (Domain)" },
+      { value: "Data", label: "Data (Domain)" },
+      { value: "Core", label: "Core (Domain)" },
+      { value: "Web", label: "Web (Domain)" },
+      { value: "Mobile", label: "Mobile (Domain)" },
+      { value: "Shared", label: "Shared (Domain)" },
+      { value: "Infrastructure", label: "Infrastructure (Domain)" },
+    ],
+  },
+];
 
 export const OverviewPage: React.FC = () => {
   const {
     graph,
     activeLens,
-    setActiveLens,
     currentScopeId,
-    currentDepth,
+    constellationAnchorKey,
+    constellationScope,
+    forceParentFallback,
+    overviewTimelineT,
+    selectedEntity,
+    filterMode,
+    setActiveLens,
+    setConstellationAnchor,
+    openConstellationFor,
+    setConstellationScope,
+    setForceParentFallback,
+    setOverviewTimelineT,
+    drillDown,
+    drillUp,
     setScope,
-    pinStartView,
-    addBookmark,
-    prefs,
-    scrubToTurn,
-    activeTurn,
+    selectEntity,
+    setFilterMode,
   } = useStore();
 
-  const [timelineT, setTimelineT] = useState<number>(1);
-  const [isDraggingTl, setIsDraggingTl] = useState<boolean>(false);
-  const tlSvgRef = useRef<SVGSVGElement>(null);
+  // Radial-specific view controls matching AFWE Codebase Atlas
+  const [radialDepth, setRadialDepth] = useState<number>(3);
+  const [growth, setGrowth] = useState<boolean>(false);
+  const [denseL4, setDenseL4] = useState<boolean>(false);
 
+  // Constellation-specific controls
+  const [compareT, setCompareT] = useState<number>(0.35);
+  const [neighborhoodExpanded, setNeighborhoodExpanded] = useState<boolean>(false);
+
+  // Build full hierarchy tree & directed edge sets from backend graph
   const rootHierarchy = useMemo(() => buildHierarchyTree(graph), [graph]);
+  const { domainEdges, nodeEdges } = useMemo(
+    () => buildDirectedEdges(graph, rootHierarchy),
+    [graph, rootHierarchy]
+  );
 
-  const focusNode = useMemo(() => {
+  // Resolve current Radial focus node
+  const focusNode: HierarchyNode = useMemo(() => {
     if (!currentScopeId) return rootHierarchy;
     return findNodeById(rootHierarchy, currentScopeId) || rootHierarchy;
   }, [rootHierarchy, currentScopeId]);
 
-  // Compute Breadcrumb trail
+  // Resolve current Constellation anchor node & fallback status for header/breadcrumbs
+  const constellationHeaderCtx = useMemo(() => {
+    const req =
+      findNodeById(rootHierarchy, constellationAnchorKey) ||
+      findNodeById(rootHierarchy, "Backend/events/models") ||
+      rootHierarchy.children[0] ||
+      rootHierarchy;
+    const isDom = req.depth <= 1;
+    const hasDirect = isDom
+      ? true
+      : nodeEdges.some((e) => e.a === req.key || e.b === req.key);
+    const isFallback = !isDom && (!hasDirect || forceParentFallback);
+    const eff = isDom || isFallback ? getDomainNode(rootHierarchy, req) : req;
+    return { req, eff, isDom, isFallback };
+  }, [rootHierarchy, constellationAnchorKey, nodeEdges, forceParentFallback]);
+
+  // Breadcrumb trail for Radial drill-down
   const breadcrumbs = useMemo(() => {
-    const trail = [{ id: "root", label: "Atlas" }];
-    if (currentScopeId && currentScopeId !== "root") {
-      let cur = findNodeById(rootHierarchy, currentScopeId);
-      const stack = [];
-      while (cur && cur.id !== "root") {
-        stack.unshift({ id: cur.id, label: cur.label });
-        cur = cur.parentId ? findNodeById(rootHierarchy, cur.parentId) : null;
-      }
-      trail.push(...stack);
+    const trail: HierarchyNode[] = [];
+    let curr: HierarchyNode | null = focusNode;
+    while (curr && curr.id !== "root") {
+      trail.unshift(curr);
+      curr = curr.parentId ? findNodeById(rootHierarchy, curr.parentId) : null;
     }
     return trail;
-  }, [currentScopeId, rootHierarchy]);
+  }, [rootHierarchy, focusNode]);
 
-  // KPI Calculations
-  const totalFiles = graph?.files?.length || 0;
-  const unmappedFiles = graph?.unmapped?.length || 0;
-  const mappedFiles = Math.max(0, totalFiles - unmappedFiles);
-  const mappedPct = totalFiles > 0 ? Math.round((mappedFiles / totalFiles) * 100) : 0;
-  const proposalsCount = graph?.proposals?.length || 0;
-  const violationsCount = (graph?.code_edges || []).filter((e: any) => e.violation).length;
+  const selectedNode =
+    selectedEntity && selectedEntity.kind !== "edge"
+      ? selectedEntity.node || findNodeById(rootHierarchy, selectedEntity.key || selectedEntity.id)
+      : null;
 
-  const isCurrentStartView = prefs.defaultStartNodeId === currentScopeId && prefs.defaultLens === activeLens;
+  // Dynamic guiding question pill (#viewQuestion)
+  const viewQuestion =
+    activeLens === "radial"
+      ? "What's inside this part of the codebase?"
+      : activeLens === "constellation"
+      ? "What does this part depend on, and what depends on it?"
+      : "How does the architecture flow, and where are the forbidden paths?";
 
-  const handleToggleStartView = () => {
-    if (isCurrentStartView) {
-      pinStartView(null, activeLens);
-    } else {
-      pinStartView(currentScopeId, activeLens);
-    }
-  };
-
-  const handleAddBookmark = () => {
-    addBookmark({
-      id: focusNode.id,
-      label: focusNode.label,
-      path: focusNode.path,
-      lens: activeLens,
-    });
-  };
-
-  // Timeline Scrubbing
-  const turns = graph?.turns || [];
-  const handleTimelineMove = (clientX: number) => {
-    if (!tlSvgRef.current) return;
-    const rect = tlSvgRef.current.getBoundingClientRect();
-    const t = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    setTimelineT(t);
-
-    if (turns.length > 0) {
-      if (t >= 0.98) {
-        scrubToTurn(null);
-      } else {
-        const turnIdx = Math.min(turns.length - 1, Math.floor(t * turns.length));
-        scrubToTurn(turns[turnIdx].id);
+  // Dynamic subtitle (#sub)
+  const subtitle = useMemo(() => {
+    if (activeLens === "radial") {
+      if (focusNode.depth > 0) {
+        return `Viewing inside ${focusNode.path}/ (global depth ${focusNode.depth}). Rings show layers inside this sub-map. Click the centre disc or "Up one level" to zoom out.`;
       }
+      return "A calm map of your codebase. Each ring shows depth inside the current map, and slice size reflects file count. Click any slice to inspect, or click Open map to zoom in.";
+    }
+    if (activeLens === "constellation") {
+      const { req, eff, isDom, isFallback } = constellationHeaderCtx;
+      if (isFallback) {
+        return `Dependency field for ${req.breadcrumbLabels.join(
+          " › "
+        )} — showing parent module ${
+          eff.label
+        } because node-level links aren't charted for this subnode yet.`;
+      }
+      if (!isDom) {
+        return `Dependency field for ${req.breadcrumbLabels.join(" › ")}. Left = what ${
+          req.label
+        } depends on; Right = what depends on ${
+          req.label
+        }. Click any node to inspect, or double-click to centre on it.`;
+      }
+      return `Domain-level dependency field for ${eff.label}. Left = dependencies; Right = consumers. Click any node to inspect or double-click to centre here.`;
+    }
+    return "Layered architectural flow from Presentation (top) down to Foundation (bottom). Red upward arrows highlight forbidden dependencies that violate tier boundaries.";
+  }, [activeLens, focusNode, constellationHeaderCtx]);
+
+  // Check if current constellation anchor is in CURATED_ANCHOR_OPTIONS
+  const isAnchorInPresetList = useMemo(() => {
+    const key = constellationHeaderCtx.req.key;
+    return CURATED_ANCHOR_OPTIONS.some((g) => g.items.some((item) => item.value === key));
+  }, [constellationHeaderCtx]);
+
+  const handleToggleLayer4Splits = () => {
+    const next = !denseL4;
+    setDenseL4(next);
+    if (next && radialDepth < 4) {
+      setRadialDepth(4);
     }
   };
 
-  const currentScrubbedTurn = useMemo(() => {
-    if (timelineT >= 0.98 || turns.length === 0) return null;
-    const turnIdx = Math.min(turns.length - 1, Math.floor(timelineT * turns.length));
-    return turns[turnIdx];
-  }, [timelineT, turns]);
-
-  // Simulated activity bars for timeline
-  const bars = useMemo(() => {
-    const heights = [9, 11, 6, 22, 13, 20, 19, 14, 18, 13, 23, 6, 7, 20, 17, 9, 14, 8, 19, 17, 5, 6, 21, 22, 14, 14, 15, 23, 19, 22, 18, 6, 6, 12, 19, 6, 5, 13, 24, 22, 18, 13, 16, 15, 4, 18, 15, 9, 23, 7, 19, 5, 10, 13, 8, 11, 16, 16, 19, 6, 9, 18, 16, 21, 12, 8, 17, 21, 12, 17];
-    return heights.map((h, i) => ({
-      x: 24 + i * 15,
-      h,
-    }));
-  }, []);
+  // Timeline label formatting matching AFWE Codebase Atlas
+  const timelineLabel = useMemo(() => {
+    if (activeLens === "constellation" && constellationScope === "two") {
+      return `${Math.round(compareT * 100)}% → ${Math.round(overviewTimelineT * 100)}%`;
+    }
+    return overviewTimelineT >= 0.99
+      ? "Now"
+      : `-${Math.round((1 - overviewTimelineT) * 90)}d`;
+  }, [activeLens, constellationScope, compareT, overviewTimelineT]);
 
   return (
-    <div
-      className="overview-page"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        width: "100%",
-        background: "var(--bg)",
-        overflowY: "auto",
-      }}
-    >
-      {/* 1. Header with Breadcrumbs, Title Row, Subtitle & Lens Switcher */}
-      <div style={{ padding: "16px 24px 6px 24px" }}>
-        {/* Breadcrumb Trail */}
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--mute)", minHeight: "18px" }}>
-          {breadcrumbs.map((crumb, idx) => (
-            <React.Fragment key={crumb.id}>
-              {idx > 0 && <span>›</span>}
-              <button
-                onClick={() => setScope(crumb.id === "root" ? null : crumb.id)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: idx === breadcrumbs.length - 1 ? "var(--ink)" : "var(--mute)",
-                  fontWeight: idx === breadcrumbs.length - 1 ? 600 : 400,
-                  cursor: "pointer",
-                  padding: 0,
-                  fontSize: "12px",
-                }}
-              >
-                {crumb.label}
-              </button>
-            </React.Fragment>
-          ))}
-          <span style={{ marginLeft: "8px", background: "var(--side)", color: "var(--ink)", fontSize: "11px", padding: "1px 7px", borderRadius: "10px", fontWeight: 600 }}>
-            L{currentDepth}
-          </span>
-        </div>
+    <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
+      {/* Main Center Stage Column */}
+      <main style={{ flex: 1, padding: "20px 24px", minWidth: 0, overflowY: "auto" }}>
+        {/* Breadcrumbs (#crumbs) */}
+        <div className="crumbs">
+          {activeLens === "radial" && breadcrumbs.length > 0 && (
+            <>
+              <b onClick={() => setScope(null)}>Codebase</b>
+              {breadcrumbs.map((crumb, idx) => (
+                <React.Fragment key={crumb.id}>
+                  {" › "}
+                  {idx < breadcrumbs.length - 1 ? (
+                    <b onClick={() => setScope(crumb.id)}>{crumb.label}</b>
+                  ) : (
+                    <span>{crumb.label}</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </>
+          )}
 
-        {/* Title Row & Quick Pills */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginTop: "4px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-            <h1 className="serif" style={{ margin: 0, fontSize: "28px", color: "var(--ink)", fontWeight: 600 }}>
-              {focusNode.id === "root" ? "Codebase Atlas" : focusNode.label}
-            </h1>
-            <span className="pill" style={{ background: "var(--side)", color: "var(--mute)", border: "1px solid var(--line)" }}>
-              {mappedPct}% mapped
+          {activeLens === "constellation" && (
+            <span>
+              Constellation · Anchor:{" "}
+              <b onClick={() => selectEntity({
+                id: constellationHeaderCtx.req.id,
+                key: constellationHeaderCtx.req.key,
+                kind: constellationHeaderCtx.req.kind,
+                label: constellationHeaderCtx.req.label,
+                path: constellationHeaderCtx.req.path,
+                status: "mapped",
+                state: constellationHeaderCtx.req.state,
+                fileCount: constellationHeaderCtx.req.fileCount,
+                node: constellationHeaderCtx.req,
+              })}>
+                {constellationHeaderCtx.req.breadcrumbLabels.join(" › ")}
+              </b>
+              {constellationHeaderCtx.isFallback && (
+                <>
+                  {" · Fallback: "}
+                  <b>{constellationHeaderCtx.eff.label}</b>
+                </>
+              )}
             </span>
-            {violationsCount > 0 && (
-              <span className="pill" style={{ background: "var(--redbg)", color: "var(--red)", border: "1px solid var(--red)" }}>
-                {violationsCount} issue(s)
-              </span>
-            )}
-          </div>
+          )}
 
-          {/* Right Controls: Start view, Bookmark, Dual Lens Switcher */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <button
-              onClick={handleToggleStartView}
-              style={{
-                background: isCurrentStartView ? "var(--side)" : "var(--panel)",
-                border: `1px solid ${isCurrentStartView ? "var(--accent)" : "var(--line)"}`,
-                color: isCurrentStartView ? "var(--accent)" : "var(--ink)",
-                padding: "4px 10px",
-                borderRadius: "8px",
-                fontSize: "12px",
-                fontWeight: 500,
-                cursor: "pointer",
-              }}
-            >
-              {isCurrentStartView ? "✓ Start View" : "📌 Set Start View"}
-            </button>
-
-            <button
-              onClick={handleAddBookmark}
-              style={{
-                background: "var(--panel)",
-                border: "1px solid var(--line)",
-                color: "var(--ink)",
-                padding: "4px 10px",
-                borderRadius: "8px",
-                fontSize: "12px",
-                fontWeight: 500,
-                cursor: "pointer",
-              }}
-            >
-              + Bookmark
-            </button>
-
-            {/* Dual Lens Switcher: Radial vs Topology */}
-            <div style={{ display: "flex", background: "var(--side)", padding: "2px", borderRadius: "8px", border: "1px solid var(--line)" }}>
-              <button
-                onClick={() => setActiveLens("radial")}
-                style={{
-                  background: activeLens === "radial" ? "var(--panel)" : "transparent",
-                  color: activeLens === "radial" ? "var(--ink)" : "var(--mute)",
-                  border: "none",
-                  padding: "4px 12px",
-                  borderRadius: "6px",
-                  fontSize: "12px",
-                  fontWeight: activeLens === "radial" ? 600 : 500,
-                  cursor: "pointer",
-                  boxShadow: activeLens === "radial" ? "0 2px 6px var(--shadow)" : "none",
-                }}
-              >
-                Radial
-              </button>
-              <button
-                onClick={() => setActiveLens("topology")}
-                style={{
-                  background: activeLens === "topology" ? "var(--panel)" : "transparent",
-                  color: activeLens === "topology" ? "var(--ink)" : "var(--mute)",
-                  border: "none",
-                  padding: "4px 12px",
-                  borderRadius: "6px",
-                  fontSize: "12px",
-                  fontWeight: activeLens === "topology" ? 600 : 500,
-                  cursor: "pointer",
-                  boxShadow: activeLens === "topology" ? "0 2px 6px var(--shadow)" : "none",
-                }}
-              >
-                Topology
-              </button>
-            </div>
-          </div>
+          {activeLens === "topology" && (
+            <span>Architectural Topology · 4-Tier Layered View</span>
+          )}
         </div>
 
-        {/* Subtitle */}
-        <p style={{ margin: "4px 0 10px 0", color: "var(--mute)", fontSize: "13px" }}>
-          {focusNode.id === "root"
-            ? "Explore your codebase structure. Double-click any section to open its own map."
-            : `${focusNode.label} up close. Orbiting satellites are external modules it depends on (left) or that depend on it (right).`}
-        </p>
-      </div>
+        {/* Headline Row + 3-Mode Segmented Switcher */}
+        <div className="headline">
+          <div className="title-block">
+            <h1 className="serif">Codebase Overview</h1>
+            <span className="view-question">{viewQuestion}</span>
+          </div>
 
-      {/* 2. Main Center Split: Map Canvas (Left) + Contextual Inspector (Right) */}
-      <div style={{ flex: 1, display: "flex", minHeight: "460px", position: "relative" }}>
-        <div style={{ flex: 1, height: "100%", overflow: "hidden" }}>
-          {activeLens === "radial" ? <RadialMap /> : <TopologyMap />}
-        </div>
-        <NodeInspector />
-      </div>
-
-      {/* 3. Homepage Rewind Timeline Card (#tl) directly from AFWE Codebase Atlas */}
-      <div style={{ padding: "10px 24px 20px 24px" }}>
-        <div
-          className="card-soft"
-          style={{
-            position: "relative",
-            padding: "10px 14px",
-            background: "var(--panel)",
-            borderRadius: "16px",
-            border: "1px solid var(--line)",
-          }}
-        >
-          {timelineT < 0.98 && (
+          <div className="seg" role="tablist" aria-label="View mode">
             <button
+              type="button"
+              className={activeLens === "radial" ? "on" : ""}
+              onClick={() => setActiveLens("radial")}
+            >
+              Atlas (Radial)
+            </button>
+            <button
+              type="button"
+              className={activeLens === "constellation" ? "on" : ""}
               onClick={() => {
-                setTimelineT(1);
-                scrubToTurn(null);
-              }}
-              style={{
-                position: "absolute",
-                right: "16px",
-                top: "10px",
-                fontSize: "11px",
-                padding: "2px 10px",
-                background: "var(--accent)",
-                color: "var(--accent-ink)",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-                fontWeight: 600,
-                zIndex: 10,
+                if (selectedNode) {
+                  setConstellationAnchor(selectedNode.key);
+                }
+                setActiveLens("constellation");
               }}
             >
-              Jump to now
+              Constellation
+            </button>
+            <button
+              type="button"
+              className={activeLens === "topology" ? "on" : ""}
+              onClick={() => setActiveLens("topology")}
+            >
+              Topology
+            </button>
+          </div>
+        </div>
+
+        {/* Dynamic Subtitle (#sub) */}
+        <p className="sub">{subtitle}</p>
+
+        {/* Unified Filter & Mode Controls Bar (.bar) */}
+        <div className="bar">
+          {(
+            [
+              { id: "all", label: "All" },
+              { id: "mapped", label: "Mapped" },
+              { id: "inferred", label: "Inferred" },
+              { id: "unmapped", label: "Unmapped" },
+              { id: "legacy", label: "Legacy" },
+            ] as { id: FilterMode; label: string }[]
+          ).map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              className={`chip ${
+                filterMode === f.id || (f.id === "unmapped" && filterMode === "uncharted")
+                  ? "on"
+                  : ""
+              }`}
+              onClick={() => setFilterMode(f.id)}
+            >
+              {f.label}
+            </button>
+          ))}
+
+          {/* Up One Level button when zoomed into Radial */}
+          {activeLens === "radial" && focusNode.depth > 0 && (
+            <button type="button" className="chip" onClick={drillUp}>
+              ‹ Up one level
             </button>
           )}
 
-          <svg
-            ref={tlSvgRef}
-            viewBox="0 0 1096 76"
-            style={{ width: "100%", height: "auto", display: "block", touchAction: "none", userSelect: "none", cursor: "ew-resize" }}
-            onPointerDown={(e) => {
-              setIsDraggingTl(true);
-              e.currentTarget.setPointerCapture(e.pointerId);
-              handleTimelineMove(e.clientX);
-            }}
-            onPointerMove={(e) => {
-              if (isDraggingTl) handleTimelineMove(e.clientX);
-            }}
-            onPointerUp={() => setIsDraggingTl(false)}
-          >
-            {/* Activity Bars */}
-            {bars.map((b, i) => {
-              const headX = 24 + timelineT * 1044;
-              const isFuture = b.x > headX;
-              return (
-                <rect
-                  key={i}
-                  x={b.x}
-                  y={40 - b.h}
-                  width={9}
-                  height={b.h}
-                  rx={2}
-                  className={`bar-t${isFuture ? " fut" : ""}`}
-                />
-              );
-            })}
-
-            {/* Base timeline dashed guide line */}
-            <line
-              x1={24}
-              y1={50}
-              x2={1072}
-              y2={50}
-              strokeWidth={4}
-              strokeLinecap="round"
-              strokeDasharray="0 14"
-              style={{ stroke: "var(--mute)" }}
-            />
-
-            {/* Markers: Pin added (amber) and violation (red) */}
-            <circle cx={300} cy={50} r={5} fill="var(--amber)" />
-            <circle cx={820} cy={50} r={5} fill="var(--amber)" />
-            {violationsCount > 0 && <circle cx={594} cy={50} r={6} fill="var(--red)" />}
-
-            {/* Date month ticks */}
-            <text x={24} y={70} fontSize={11} fill="var(--mute)">Jul</text>
-            <text x={301} y={70} fontSize={11} fill="var(--mute)">Aug</text>
-            <text x={578} y={70} fontSize={11} fill="var(--mute)">Sep</text>
-            <text x={846} y={70} fontSize={11} fill="var(--mute)">Oct</text>
-
-            <text x={24} y={12} fontSize={11} fill="var(--mute)">
-              Drag to rewind the whole map
-            </text>
-
-            {/* Playhead text label */}
-            <text
-              x={24 + timelineT * 1044 > 980 ? 24 + timelineT * 1044 - 30 : 1046}
-              y={70}
-              fontSize={12}
-              fontWeight={600}
-              textAnchor={24 + timelineT * 1044 > 980 ? "end" : "end"}
-              fill="var(--ink)"
-            >
-              {timelineT >= 0.98
-                ? "Now · Present"
-                : currentScrubbedTurn
-                ? `Turn #${currentScrubbedTurn.id} · ${currentScrubbedTurn.prompt?.slice(0, 24)}…`
-                : `Turn ${Math.round(timelineT * 214)}`}
-            </text>
-
-            {/* Playhead Scrubber Disc */}
-            <circle
-              cx={24 + timelineT * 1044}
-              cy={50}
-              r={9}
-              fill="var(--ink)"
-              stroke="var(--panel)"
-              strokeWidth={3}
-              style={{ cursor: "grab" }}
-            />
-          </svg>
-        </div>
-
-        {/* 4. Recent Turn Cards directly below timeline */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "12px",
-            marginTop: "12px",
-          }}
-        >
-          {(turns.length > 0 ? turns.slice(0, 3) : [
-            { id: "t0027", status: "committed", prompt: "Checkout flow improvement", ts: "Today · 3 files" },
-            { id: "t0026", status: "ready", prompt: "Add analytics events", ts: "Yesterday · 2 files" },
-            { id: "t0025", status: "failed", prompt: "Fix mobile layout", ts: "2 days ago · 5 files" },
-          ]).map((t: any) => {
-            const isCommitted = t.status === "committed";
-            const isStage = t.status === "ready" || t.status === "staged";
-            const isRedo = t.status === "failed";
-            const tagClass = isCommitted ? "" : isStage ? "s" : "r";
-
-            return (
-              <div
-                key={t.id}
-                onClick={() => scrubToTurn(t.id)}
-                className="turn card-soft"
-                style={{
-                  padding: "11px 14px",
-                  fontSize: "13px",
-                  cursor: "pointer",
-                  border: activeTurn === t.id ? "1.5px solid var(--accent)" : "1px solid var(--line)",
-                  background: activeTurn === t.id ? "var(--side)" : "var(--panel)",
-                }}
+          {/* Primary Open Map button in Radial when a parent node is selected */}
+          {activeLens === "radial" &&
+            selectedNode &&
+            selectedNode.children &&
+            selectedNode.children.length > 0 &&
+            selectedNode.id !== focusNode.id && (
+              <button
+                type="button"
+                className="btn-soft primary"
+                onClick={() => drillDown(selectedNode.id)}
+                title="Make the selected slice the new centre of the radial map"
               >
-                <span className={`tag ${tagClass}`}>
-                  {isCommitted ? "COMMIT" : isStage ? "STAGE" : "REDO"}
-                </span>
-                <small style={{ color: "var(--mute)" }}>#{t.id}</small>
-                <br />
-                <b style={{ color: "var(--ink)", display: "inline-block", marginTop: "3px" }}>
-                  {t.summary || t.prompt?.slice(0, 38) || "Turn update"}
-                </b>
-                <br />
-                <small style={{ color: "var(--mute)" }}>
-                  {t.ts || "Recent update"}
-                </small>
+                Open map
+              </button>
+            )}
+
+          <div className="sp" style={{ flex: 1 }} />
+
+          {/* Radial-Only Controls (#radCtl) */}
+          {activeLens === "radial" && (
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <span
+                className="ctl"
+                title="How many nested rings to show inside the current map"
+              >
+                Depth in this map
+                <button
+                  type="button"
+                  onClick={() => setRadialDepth((d) => Math.max(1, d - 1))}
+                >
+                  −
+                </button>
+                <b>{radialDepth}</b>
+                <button
+                  type="button"
+                  onClick={() => setRadialDepth((d) => Math.min(4, d + 1))}
+                >
+                  +
+                </button>
+              </span>
+
+              <button
+                type="button"
+                className={`ctl toggle ${growth ? "on" : ""}`}
+                onClick={() => setGrowth((g) => !g)}
+                title="Scale outer rings with the timeline slider"
+              >
+                Growth: <b>{growth ? "On" : "Off"}</b>
+              </button>
+
+              <button
+                type="button"
+                className={`ctl toggle ${denseL4 ? "on" : ""}`}
+                onClick={handleToggleLayer4Splits}
+                title="Split Layer 3 modules into finer Layer 4 sub-slices"
+              >
+                Layer 4 splits: <b>{denseL4 ? "On" : "Off"}</b>
+              </button>
+            </div>
+          )}
+
+          {/* Constellation-Only Controls (#conCtl) */}
+          {activeLens === "constellation" && (
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <div className="seg" title="Relationship scope">
+                {(
+                  [
+                    { id: "node", label: "This node" },
+                    { id: "map", label: "Whole map" },
+                    { id: "two", label: "Two moments" },
+                  ] as { id: ConstellationScope; label: string }[]
+                ).map((sc) => (
+                  <button
+                    key={sc.id}
+                    type="button"
+                    className={constellationScope === sc.id ? "on" : ""}
+                    onClick={() => setConstellationScope(sc.id)}
+                  >
+                    {sc.label}
+                  </button>
+                ))}
               </div>
-            );
-          })}
+
+              <label className="ctl">
+                Anchor
+                <select
+                  value={constellationHeaderCtx.req.key}
+                  onChange={(e) => {
+                    const key = e.target.value;
+                    setConstellationAnchor(key);
+                    const n = findNodeById(rootHierarchy, key);
+                    if (n) {
+                      selectEntity({
+                        id: n.id,
+                        key: n.key,
+                        kind: n.kind,
+                        label: n.label,
+                        path: n.path,
+                        status: n.hasViolation ? "violation" : "mapped",
+                        state: n.state,
+                        fileCount: n.fileCount,
+                        node: n,
+                      });
+                    }
+                  }}
+                >
+                  {!isAnchorInPresetList && (
+                    <optgroup label="Selected Node">
+                      <option value={constellationHeaderCtx.req.key}>
+                        {constellationHeaderCtx.req.breadcrumbLabels.join(" › ")}
+                      </option>
+                    </optgroup>
+                  )}
+                  {CURATED_ANCHOR_OPTIONS.map((grp) => (
+                    <optgroup key={grp.group} label={grp.group}>
+                      {grp.items.map((it) => (
+                        <option key={it.value} value={it.value}>
+                          {it.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+
+              <button
+                type="button"
+                className={`ctl toggle ${forceParentFallback ? "on" : ""}`}
+                onClick={() => setForceParentFallback(!forceParentFallback)}
+                title="Simulate missing node-level dependency data to inspect the honest parent-level fallback behavior"
+              >
+                Granularity:{" "}
+                <b>{forceParentFallback ? "Parent fallback" : "Actual node links"}</b>
+              </button>
+
+              <button
+                type="button"
+                className={`ctl toggle ${neighborhoodExpanded ? "on" : ""}`}
+                onClick={() => setNeighborhoodExpanded((v) => !v)}
+                title="Toggle between direct neighbors only (1 hop) and indirect neighbors (2 hops)"
+              >
+                Neighborhood:{" "}
+                <b>{neighborhoodExpanded ? "Expand next step" : "Direct only"}</b>
+              </button>
+            </div>
+          )}
         </div>
-      </div>
+
+        {/* Active Map Stage */}
+        {activeLens === "radial" && (
+          <RadialMap
+            root={rootHierarchy}
+            focusNode={focusNode}
+            depth={radialDepth}
+            growth={growth}
+            denseL4={denseL4}
+            timelineT={overviewTimelineT}
+            selectedEntity={selectedEntity}
+            filterMode={filterMode}
+            onSelectEntity={selectEntity}
+            onDrillDown={drillDown}
+            onDrillUp={drillUp}
+            onOpenConstellation={(nodeKey) => openConstellationFor(nodeKey)}
+          />
+        )}
+
+        {activeLens === "constellation" && (
+          <ConstellationMap
+            root={rootHierarchy}
+            anchorKey={constellationAnchorKey}
+            domainEdges={domainEdges}
+            nodeEdges={nodeEdges}
+            scope={constellationScope}
+            forceParentFallback={forceParentFallback}
+            timelineT={overviewTimelineT}
+            compareT={compareT}
+            neighborhoodExpanded={neighborhoodExpanded}
+            filterMode={filterMode}
+            selectedEntity={selectedEntity}
+            onSelectEntity={selectEntity}
+            onSetAnchor={(nodeKey) => setConstellationAnchor(nodeKey)}
+            onSetForceParentFallback={setForceParentFallback}
+            onOpenInRadial={(nodeId) => {
+              setActiveLens("radial");
+              drillDown(nodeId);
+            }}
+          />
+        )}
+
+        {activeLens === "topology" && (
+          <TopologyMap
+            timelineT={overviewTimelineT}
+            onSelectEntity={selectEntity}
+            onDrillDown={(nodeId) => {
+              setActiveLens("radial");
+              drillDown(nodeId);
+            }}
+            onOpenConstellation={(nodeKey) => openConstellationFor(nodeKey)}
+          />
+        )}
+
+        {/* Bottom Legend & Rewind Timeline Scrubber (.foot) */}
+        <div className="foot">
+          <span className="leg">
+            <i className="sw" style={{ background: "var(--mapped)" }} />
+            Mapped
+          </span>
+          <span className="leg">
+            <i
+              className="sw"
+              style={{
+                background: "var(--inferred)",
+                borderStyle: "dashed",
+                borderColor: "var(--amber)",
+              }}
+            />
+            Inferred
+          </span>
+          <span className="leg">
+            <i
+              className="sw"
+              style={{
+                background:
+                  "repeating-linear-gradient(45deg,var(--unm) 0 3px,var(--hatch) 3px 5px)",
+              }}
+            />
+            Unmapped
+          </span>
+          <span className="leg">
+            <i className="sw" style={{ background: "var(--legacy)" }} />
+            Legacy
+          </span>
+          <span className="leg">
+            <Lock size={12} style={{ color: "var(--ink)" }} />
+            Pinned check
+          </span>
+          <span className="leg">
+            <span
+              style={{
+                display: "inline-grid",
+                placeItems: "center",
+                width: 13,
+                height: 13,
+                borderRadius: "50%",
+                background: "var(--amber)",
+                color: "#fff",
+                fontSize: 9,
+                fontWeight: 700,
+              }}
+            >
+              !
+            </span>
+            Pending proposal
+          </span>
+          <span className="leg">
+            <i
+              style={{
+                width: 16,
+                borderTop: "2px dashed var(--red)",
+                display: "inline-block",
+              }}
+            />
+            <AlertTriangle size={12} style={{ color: "var(--red)" }} />
+            Rule violation
+          </span>
+
+          <div className="tl">
+            {activeLens === "constellation" && constellationScope === "two" && (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                Compare from
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={Math.round(compareT * 100)}
+                  onChange={(e) => setCompareT(Number(e.target.value) / 100)}
+                />
+              </span>
+            )}
+            <span>Rewind</span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={Math.round(overviewTimelineT * 100)}
+              onChange={(e) => setOverviewTimelineT(Number(e.target.value) / 100)}
+            />
+            <b style={{ minWidth: 38, color: "var(--ink)" }}>{timelineLabel}</b>
+          </div>
+        </div>
+      </main>
+
+      {/* Right Context Inspector (.side-inspector) */}
+      <NodeInspector />
     </div>
   );
 };

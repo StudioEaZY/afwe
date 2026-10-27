@@ -1,265 +1,1438 @@
 nodes:
-- id: demo-product
-  name: Pulse SaaS Product
-  kind: product
-  purpose: Multi-tenant SaaS workspace platform with collaboration, billing, and real-time sync.
+- id: "Web"
+  name: "Web"
+  kind: domain
+  purpose: "Customer-facing web application shell, views, hooks, and API client."
   status: active
   origin: human
+  tags:
+  - "icon:web"
+  - "tier:0"
+  implements:
+    files:
+    - "src/web/*.ts"
+    - "src/web/**"
   children:
-  - id: identity
-    name: Identity Subsystem
-    kind: subsystem
-    purpose: Authentication, session management, and role-based access control.
-    implements:
-      files:
-      - src/auth/**
-      - src/data/db.ts
-      - src/identity/user.ts
-      - src/data/replica.ts
-      - src/payments/checkout.ts
-      - src/payments/stripe.ts
+  - id: "Web/views"
+    name: "views"
+    kind: module
+    purpose: "Interactive page views and checkout presentation flows."
     status: active
     origin: human
+    implements:
+      files:
+      - "src/web/views/*.ts"
+      - "src/web/views/**"
+      - "src/ui/**"
+      - "src/dashboard/**"
+      - "src/canvas/**"
     children:
-    - id: auth-api
-      name: Auth API
-      kind: module
-      purpose: Login, OAuth callbacks, and token refresh endpoints.
+    - id: "Web/views/checkout"
+      name: "checkout"
+      kind: feature
+      purpose: "Checkout flow, cart summary, and payment confirmation."
+      status: active
+      origin: human
       implements:
         files:
-        - src/auth/api.ts
-      status: active
+        - "src/web/views/checkout/*.ts"
+        - "src/web/views/checkout/**"
       children:
-      - id: oauth-callback
-        name: OAuth Callback
+      - id: "Web/views/checkout/cart_summary"
+        name: "cart_summary"
         kind: component
-        purpose: Third-party identity provider response validation.
         status: active
-      - id: jwt-signer
-        name: JWT Signer
-        kind: component
-        purpose: Cryptographic token generation and signature verification.
+        origin: human
         implements:
           files:
-          - src/auth/jwtSigner.ts
-        status: active
-        children:
-        - id: token-entropy-guard
-          name: Token Entropy Guard
-          kind: widget
-          purpose: Enforces cryptographic salt minimum length and random seed requirements.
-          status: active
-    - id: session-token
-      name: Session Token
-      kind: module
-      purpose: In-memory session tracking and expiry handling.
-      implements:
-        files:
-        - src/auth/session.ts
-      status: active
-    - id: user-store
-      name: User Store
-      kind: module
-      purpose: User profile persistence and credentials.
-      implements:
-        files:
-        - src/auth/users.ts
-      status: active
-  - id: workspace
-    name: Workspace Subsystem
-    kind: subsystem
-    purpose: Core productivity workspace, library items, search, and categorization.
-    implements:
-      files:
-      - src/workspace/**
-      - src/canvas/CanvasRenderer.tsx
-    status: active
-    origin: human
-    children:
-    - id: workspace-library
-      name: Workspace Library
-      kind: module
-      purpose: Document and folder tree persistence.
-      implements:
-        files:
-        - src/workspace/library/**
-        - src/dashboard/Dashboard.tsx
-        - src/dashboard/Widget.tsx
-        - src/ui/Layout.tsx
-        - src/ui/Button.tsx
-      status: active
-    - id: workspace-search
-      name: Workspace Search
-      kind: module
-      purpose: In-memory inverted index for fast keyword matching.
-      implements:
-        files:
-        - src/workspace/search/**
-      status: active
-    - id: workspace-tagging
-      name: Workspace Tagging
-      kind: module
-      purpose: Flat tags and colored badges for item categorization.
-      implements:
-        files:
-        - src/workspace/tagging/**
-      status: active
-      children:
-      - id: tag-normaliser
-        name: Tag Normaliser
+          - "src/web/views/checkout/cart_summary/*.ts"
+          - "src/web/views/checkout/cart_summary/**"
+      - id: "Web/views/checkout/payment_form"
+        name: "payment_form"
         kind: component
-        purpose: Case-folding and special character stripping for tag slugs.
         status: active
-      - id: tag-color-wheel
-        name: Tag Color Wheel
-        kind: component
-        purpose: Deterministic hash-based hex color generator for tag badges.
+        origin: human
         implements:
           files:
-          - src/workspace/tagging/ColorWheel.ts
-        status: active
-        children:
-        - id: tag-pill-renderer
-          name: Tag Pill Renderer
-          kind: widget
-          purpose: Visual DOM pill badge formatting with contrast calculation.
-          status: active
-    - id: workspace-bulk-export
-      name: Workspace Bulk Export
-      kind: module
-      purpose: Zip archive creation for full workspace export.
-      status: active
-  - id: billing
-    name: Billing Subsystem
-    kind: subsystem
-    purpose: Subscription management, Stripe integration, invoices, and proration.
-    implements:
-      files:
-      - src/billing/**
-    status: active
-    origin: human
-    children:
-    - id: billing-plans
-      name: Billing Plans
-      kind: module
-      purpose: Pricing tiers and feature flag entitlement rules.
-      implements:
-        files:
-        - src/billing/plans/**
-      status: active
-    - id: billing-checkout
-      name: Billing Checkout
-      kind: module
-      purpose: Checkout controller and payment intent workflows.
-      implements:
-        files:
-        - src/billing/checkout/**
-      status: active
-    - id: stripe-gateway
-      name: Stripe Gateway
-      kind: module
-      purpose: Direct Stripe API interaction for customer cards and subscriptions.
-      implements:
-        files:
-        - src/billing/stripe/**
-      status: active
-      children:
-      - id: stripe-webhook-verifier
-        name: Stripe Webhook Verifier
+          - "src/web/views/checkout/payment_form/*.ts"
+          - "src/web/views/checkout/payment_form/**"
+      - id: "Web/views/checkout/receipt_view"
+        name: "receipt_view"
         kind: component
-        purpose: HMAC SHA256 webhook payload integrity verification.
-        status: active
-      - id: proration-calculator
-        name: Proration Calculator
-        kind: component
-        purpose: Mid-cycle seat upgrade credit and debit arithmetic.
+        status: inferred
+        origin: afwe:inferred
         implements:
           files:
-          - src/billing/proration.ts
+          - "src/web/views/checkout/receipt_view/*.ts"
+          - "src/web/views/checkout/receipt_view/**"
+    - id: "Web/views/dashboard"
+      name: "dashboard"
+      kind: feature
+      purpose: "Workspace analytics and usage overview."
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/web/views/dashboard/*.ts"
+        - "src/web/views/dashboard/**"
+      children:
+      - id: "Web/views/dashboard/metrics_grid"
+        name: "metrics_grid"
+        kind: component
         status: active
-        children:
-        - id: idempotency-key-hasher
-          name: Idempotency Key Hasher
-          kind: widget
-          purpose: Unique transaction key hashing to avoid double charges.
-          status: active
-    - id: invoice-store
-      name: Invoice Store
-      kind: module
-      purpose: Historical invoice and PDF generation metadata.
+        origin: human
+        implements:
+          files:
+          - "src/web/views/dashboard/metrics_grid/*.ts"
+          - "src/web/views/dashboard/metrics_grid/**"
+      - id: "Web/views/dashboard/activity_feed"
+        name: "activity_feed"
+        kind: component
+        status: inferred
+        origin: afwe:inferred
+        implements:
+          files:
+          - "src/web/views/dashboard/activity_feed/*.ts"
+          - "src/web/views/dashboard/activity_feed/**"
+    - id: "Web/views/catalog"
+      name: "catalog"
+      kind: feature
+      purpose: "Product and plan catalog browsing views."
+      status: inferred
+      origin: afwe:inferred
       implements:
         files:
-        - src/billing/invoices/**
-      status: active
-    - id: invoice-pdf-watermark
-      name: Invoice PDF Watermark
-      kind: module
-      purpose: Enterprise compliance watermark stamping on generated PDF receipts.
-      status: active
-  - id: realtime
-    name: Realtime Subsystem
-    kind: subsystem
-    purpose: Presence broadcast and background status monitoring workers.
-    implements:
-      files:
-      - src/realtime/**
+        - "src/web/views/catalog/*.ts"
+        - "src/web/views/catalog/**"
+  - id: "Web/hooks"
+    name: "hooks"
+    kind: module
+    purpose: "Reusable React state and data-fetching hooks."
     status: active
     origin: human
-    children:
-    - id: realtime-presence
-      name: Realtime Presence
-      kind: module
-      purpose: WebSocket heartbeats for connected team members.
-      implements:
-        files:
-        - src/realtime/presence.ts
-      status: active
-    - id: realtime-status-worker
-      name: Realtime Status Worker
-      kind: module
-      purpose: Background heartbeat consumer checking cluster health.
-      implements:
-        files:
-        - src/realtime/worker.ts
-      status: active
-    - id: legacy-webhook-retry
-      name: Legacy Webhook Retry
-      kind: module
-      purpose: Exponential backoff dispatcher for third-party webhook sinks.
-      status: active
-  - id: platform
-    name: Platform Infrastructure
-    kind: subsystem
-    purpose: Foundational database client, pub/sub event bus, and HTTP server.
     implements:
       files:
-      - src/db/**
-      - src/events/**
-      - src/server.ts
+      - "src/web/hooks/*.ts"
+      - "src/web/hooks/**"
+    children:
+    - id: "Web/hooks/session"
+      name: "session"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/web/hooks/session/*.ts"
+        - "src/web/hooks/session/**"
+    - id: "Web/hooks/query"
+      name: "query"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/web/hooks/query/*.ts"
+        - "src/web/hooks/query/**"
+    - id: "Web/hooks/cart"
+      name: "cart"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/web/hooks/cart/*.ts"
+        - "src/web/hooks/cart/**"
+  - id: "Web/api"
+    name: "api"
+    kind: module
+    purpose: "Browser HTTP client and request interceptors."
+    status: inferred
+    origin: afwe:inferred
+    implements:
+      files:
+      - "src/web/api/*.ts"
+      - "src/web/api/**"
+    children:
+    - id: "Web/api/client"
+      name: "client"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/web/api/client/*.ts"
+        - "src/web/api/client/**"
+    - id: "Web/api/interceptors"
+      name: "interceptors"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/web/api/interceptors/*.ts"
+        - "src/web/api/interceptors/**"
+  - id: "Web/legacy_ui"
+    name: "legacy_ui"
+    kind: module
+    purpose: "Deprecated v1 class-based UI widgets kept for backward compatibility."
+    status: legacy
+    origin: human
+    implements:
+      files:
+      - "src/web/legacy_ui/*.ts"
+      - "src/web/legacy_ui/**"
+    children:
+    - id: "Web/legacy_ui/forms"
+      name: "forms"
+      kind: feature
+      status: legacy
+      origin: human
+      implements:
+        files:
+        - "src/web/legacy_ui/forms/*.ts"
+        - "src/web/legacy_ui/forms/**"
+    - id: "Web/legacy_ui/tables"
+      name: "tables"
+      kind: feature
+      status: legacy
+      origin: human
+      implements:
+        files:
+        - "src/web/legacy_ui/tables/*.ts"
+        - "src/web/legacy_ui/tables/**"
+- id: "Mobile"
+  name: "Mobile"
+  kind: domain
+  purpose: "iOS and Android client views, offline sync hooks, and native adapters."
+  status: active
+  origin: human
+  tags:
+  - "icon:phone"
+  - "tier:0"
+  implements:
+    files:
+    - "src/mobile/*.ts"
+    - "src/mobile/**"
+  children:
+  - id: "Mobile/views"
+    name: "views"
+    kind: module
+    purpose: "Mobile screen layouts and navigation stacks."
     status: active
     origin: human
+    implements:
+      files:
+      - "src/mobile/views/*.ts"
+      - "src/mobile/views/**"
     children:
-    - id: db-client
-      name: Database Client
-      kind: module
-      purpose: Connection pool and SQL query runner.
+    - id: "Mobile/views/screens"
+      name: "screens"
+      kind: feature
+      status: active
+      origin: human
       implements:
         files:
-        - src/db/**
+        - "src/mobile/views/screens/*.ts"
+        - "src/mobile/views/screens/**"
+    - id: "Mobile/views/navigation"
+      name: "navigation"
+      kind: feature
       status: active
-    - id: event-bus
-      name: Event Bus
-      kind: module
-      purpose: Asynchronous pub/sub event dispatcher.
+      origin: human
       implements:
         files:
-        - src/events/**
-      status: active
-    - id: http-server
-      name: HTTP Server
-      kind: module
-      purpose: Express/Koa HTTP request routing and middleware pipeline.
+        - "src/mobile/views/navigation/*.ts"
+        - "src/mobile/views/navigation/**"
+    - id: "Mobile/views/widgets"
+      name: "widgets"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
       implements:
         files:
-        - src/server.ts
+        - "src/mobile/views/widgets/*.ts"
+        - "src/mobile/views/widgets/**"
+  - id: "Mobile/hooks"
+    name: "hooks"
+    kind: module
+    purpose: "Offline queue and mobile gesture hooks."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/mobile/hooks/*.ts"
+      - "src/mobile/hooks/**"
+    children:
+    - id: "Mobile/hooks/sync"
+      name: "sync"
+      kind: feature
       status: active
+      origin: human
+      implements:
+        files:
+        - "src/mobile/hooks/sync/*.ts"
+        - "src/mobile/hooks/sync/**"
+    - id: "Mobile/hooks/gestures"
+      name: "gestures"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/mobile/hooks/gestures/*.ts"
+        - "src/mobile/hooks/gestures/**"
+  - id: "Mobile/adapters"
+    name: "adapters"
+    kind: module
+    purpose: "Device storage, biometrics, and push notification bridges."
+    status: inferred
+    origin: afwe:inferred
+    implements:
+      files:
+      - "src/mobile/adapters/*.ts"
+      - "src/mobile/adapters/**"
+    children:
+    - id: "Mobile/adapters/storage"
+      name: "storage"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/mobile/adapters/storage/*.ts"
+        - "src/mobile/adapters/storage/**"
+    - id: "Mobile/adapters/biometrics"
+      name: "biometrics"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/mobile/adapters/biometrics/*.ts"
+        - "src/mobile/adapters/biometrics/**"
+- id: "Services"
+  name: "Services"
+  kind: domain
+  purpose: "Background job runners, billing orchestration, notifications, and analytics pipelines."
+  status: inferred
+  origin: afwe:inferred
+  tags:
+  - "icon:gear"
+  - "tier:1"
+  implements:
+    files:
+    - "src/services/*.ts"
+    - "src/services/**"
+    - "services/**"
+  children:
+  - id: "Services/jobs"
+    name: "jobs"
+    kind: module
+    purpose: "Asynchronous job workers, schedulers, and background auth token maintenance."
+    status: inferred
+    origin: afwe:inferred
+    implements:
+      files:
+      - "src/services/jobs/*.ts"
+      - "src/services/jobs/**"
+    children:
+    - id: "Services/jobs/auth"
+      name: "auth"
+      kind: feature
+      purpose: "Background credential rotation, token revocation, and OAuth key refresh jobs."
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/services/jobs/auth/*.ts"
+        - "src/services/jobs/auth/**"
+      children:
+      - id: "Services/jobs/auth/token_rotator"
+        name: "token_rotator"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/services/jobs/auth/token_rotator/*.ts"
+          - "src/services/jobs/auth/token_rotator/**"
+      - id: "Services/jobs/auth/session_pruner"
+        name: "session_pruner"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/services/jobs/auth/session_pruner/*.ts"
+          - "src/services/jobs/auth/session_pruner/**"
+      - id: "Services/jobs/auth/key_sync"
+        name: "key_sync"
+        kind: component
+        status: inferred
+        origin: afwe:inferred
+        implements:
+          files:
+          - "src/services/jobs/auth/key_sync/*.ts"
+          - "src/services/jobs/auth/key_sync/**"
+    - id: "Services/jobs/scheduler"
+      name: "scheduler"
+      kind: feature
+      purpose: "Cron expression parser and distributed job lock coordinator."
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/services/jobs/scheduler/*.ts"
+        - "src/services/jobs/scheduler/**"
+      children:
+      - id: "Services/jobs/scheduler/cron_runner"
+        name: "cron_runner"
+        kind: component
+        status: inferred
+        origin: afwe:inferred
+        implements:
+          files:
+          - "src/services/jobs/scheduler/cron_runner/*.ts"
+          - "src/services/jobs/scheduler/cron_runner/**"
+      - id: "Services/jobs/scheduler/lease_lock"
+        name: "lease_lock"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/services/jobs/scheduler/lease_lock/*.ts"
+          - "src/services/jobs/scheduler/lease_lock/**"
+    - id: "Services/jobs/workers"
+      name: "workers"
+      kind: feature
+      purpose: "Worker pool execution and retry backoff."
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/services/jobs/workers/*.ts"
+        - "src/services/jobs/workers/**"
+  - id: "Services/billing"
+    name: "billing"
+    kind: module
+    purpose: "Subscription lifecycle, invoicing, and payment gateway reconciliation."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/services/billing/*.ts"
+      - "src/services/billing/**"
+      - "src/billing/**"
+      - "src/payments/**"
+    children:
+    - id: "Services/billing/invoices"
+      name: "invoices"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/services/billing/invoices/*.ts"
+        - "src/services/billing/invoices/**"
+    - id: "Services/billing/subscriptions"
+      name: "subscriptions"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/services/billing/subscriptions/*.ts"
+        - "src/services/billing/subscriptions/**"
+    - id: "Services/billing/dunning"
+      name: "dunning"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/services/billing/dunning/*.ts"
+        - "src/services/billing/dunning/**"
+  - id: "Services/notifications"
+    name: "notifications"
+    kind: module
+    purpose: "Transactional email, webhook dispatch, and push delivery."
+    status: inferred
+    origin: afwe:inferred
+    implements:
+      files:
+      - "src/services/notifications/*.ts"
+      - "src/services/notifications/**"
+      - "src/realtime/**"
+      - "src/notifications/**"
+    children:
+    - id: "Services/notifications/email"
+      name: "email"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/services/notifications/email/*.ts"
+        - "src/services/notifications/email/**"
+    - id: "Services/notifications/push"
+      name: "push"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/services/notifications/push/*.ts"
+        - "src/services/notifications/push/**"
+    - id: "Services/notifications/digests"
+      name: "digests"
+      kind: feature
+      status: unmapped
+      origin: human
+      implements:
+        files:
+        - "src/services/notifications/digests/*.ts"
+        - "src/services/notifications/digests/**"
+  - id: "Services/analytics"
+    name: "analytics"
+    kind: module
+    purpose: "Uncharted event aggregation and cohort funnel scripts."
+    status: unmapped
+    origin: human
+    implements:
+      files:
+      - "src/services/analytics/*.ts"
+      - "src/services/analytics/**"
+    children:
+    - id: "Services/analytics/funnels"
+      name: "funnels"
+      kind: feature
+      status: unmapped
+      origin: human
+      implements:
+        files:
+        - "src/services/analytics/funnels/*.ts"
+        - "src/services/analytics/funnels/**"
+    - id: "Services/analytics/export"
+      name: "export"
+      kind: feature
+      status: unmapped
+      origin: human
+      implements:
+        files:
+        - "src/services/analytics/export/*.ts"
+        - "src/services/analytics/export/**"
+- id: "Backend"
+  name: "Backend"
+  kind: domain
+  purpose: "Core API gateway, domain event bus, authentication service, and billing controllers."
+  status: active
+  origin: human
+  tags:
+  - "icon:srv"
+  - "tier:1"
+  implements:
+    files:
+    - "src/backend/*.ts"
+    - "src/backend/**"
+  children:
+  - id: "Backend/events"
+    name: "events"
+    kind: module
+    purpose: "Domain event publishing, canonical event models, handlers, and transport adapters."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/backend/events/*.ts"
+      - "src/backend/events/**"
+    children:
+    - id: "Backend/events/models"
+      name: "models"
+      kind: feature
+      purpose: "Canonical event payload models and envelope definitions."
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/backend/events/models/*.ts"
+        - "src/backend/events/models/**"
+      children:
+      - id: "Backend/events/models/envelope"
+        name: "envelope"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/events/models/envelope/*.ts"
+          - "src/backend/events/models/envelope/**"
+      - id: "Backend/events/models/payloads"
+        name: "payloads"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/events/models/payloads/*.ts"
+          - "src/backend/events/models/payloads/**"
+      - id: "Backend/events/models/versioning"
+        name: "versioning"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/events/models/versioning/*.ts"
+          - "src/backend/events/models/versioning/**"
+      - id: "Backend/events/models/serializers"
+        name: "serializers"
+        kind: component
+        status: inferred
+        origin: afwe:inferred
+        implements:
+          files:
+          - "src/backend/events/models/serializers/*.ts"
+          - "src/backend/events/models/serializers/**"
+    - id: "Backend/events/handlers"
+      name: "handlers"
+      kind: feature
+      purpose: "Idempotent domain event consumers and side-effect processors."
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/backend/events/handlers/*.ts"
+        - "src/backend/events/handlers/**"
+      children:
+      - id: "Backend/events/handlers/order_placed"
+        name: "order_placed"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/events/handlers/order_placed/*.ts"
+          - "src/backend/events/handlers/order_placed/**"
+      - id: "Backend/events/handlers/invoice_paid"
+        name: "invoice_paid"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/events/handlers/invoice_paid/*.ts"
+          - "src/backend/events/handlers/invoice_paid/**"
+      - id: "Backend/events/handlers/user_signup"
+        name: "user_signup"
+        kind: component
+        status: inferred
+        origin: afwe:inferred
+        implements:
+          files:
+          - "src/backend/events/handlers/user_signup/*.ts"
+          - "src/backend/events/handlers/user_signup/**"
+    - id: "Backend/events/schema"
+      name: "schema"
+      kind: feature
+      purpose: "JSON schema registry and runtime payload validators."
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/backend/events/schema/*.ts"
+        - "src/backend/events/schema/**"
+      children:
+      - id: "Backend/events/schema/registry"
+        name: "registry"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/events/schema/registry/*.ts"
+          - "src/backend/events/schema/registry/**"
+      - id: "Backend/events/schema/validators"
+        name: "validators"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/events/schema/validators/*.ts"
+          - "src/backend/events/schema/validators/**"
+    - id: "Backend/events/adapters"
+      name: "adapters"
+      kind: feature
+      purpose: "Outbox relay and message broker transport adapters."
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/backend/events/adapters/*.ts"
+        - "src/backend/events/adapters/**"
+      children:
+      - id: "Backend/events/adapters/kafka_sink"
+        name: "kafka_sink"
+        kind: component
+        status: inferred
+        origin: afwe:inferred
+        implements:
+          files:
+          - "src/backend/events/adapters/kafka_sink/*.ts"
+          - "src/backend/events/adapters/kafka_sink/**"
+      - id: "Backend/events/adapters/outbox_relay"
+        name: "outbox_relay"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/events/adapters/outbox_relay/*.ts"
+          - "src/backend/events/adapters/outbox_relay/**"
+  - id: "Backend/api"
+    name: "api"
+    kind: module
+    purpose: "Versioned REST and RPC route definitions, request handlers, and auth middleware."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/backend/api/*.ts"
+      - "src/backend/api/**"
+    children:
+    - id: "Backend/api/routes"
+      name: "routes"
+      kind: feature
+      purpose: "Public API route declarations and OpenAPI bindings."
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/backend/api/routes/*.ts"
+        - "src/backend/api/routes/**"
+      children:
+      - id: "Backend/api/routes/v2_orders"
+        name: "v2_orders"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/api/routes/v2_orders/*.ts"
+          - "src/backend/api/routes/v2_orders/**"
+      - id: "Backend/api/routes/v2_users"
+        name: "v2_users"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/api/routes/v2_users/*.ts"
+          - "src/backend/api/routes/v2_users/**"
+      - id: "Backend/api/routes/v2_billing"
+        name: "v2_billing"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/api/routes/v2_billing/*.ts"
+          - "src/backend/api/routes/v2_billing/**"
+    - id: "Backend/api/handlers"
+      name: "handlers"
+      kind: feature
+      purpose: "HTTP controller handlers delegating to domain services."
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/backend/api/handlers/*.ts"
+        - "src/backend/api/handlers/**"
+      children:
+      - id: "Backend/api/handlers/order_ctrl"
+        name: "order_ctrl"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/api/handlers/order_ctrl/*.ts"
+          - "src/backend/api/handlers/order_ctrl/**"
+      - id: "Backend/api/handlers/user_ctrl"
+        name: "user_ctrl"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/backend/api/handlers/user_ctrl/*.ts"
+          - "src/backend/api/handlers/user_ctrl/**"
+    - id: "Backend/api/auth"
+      name: "auth"
+      kind: feature
+      purpose: "Bearer token verification and rate-limiting middleware."
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/backend/api/auth/*.ts"
+        - "src/backend/api/auth/**"
+  - id: "Backend/auth"
+    name: "auth"
+    kind: module
+    purpose: "Identity verification, token issuance, and SSO integration."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/backend/auth/*.ts"
+      - "src/backend/auth/**"
+      - "src/auth/**"
+      - "src/identity/**"
+    children:
+    - id: "Backend/auth/models"
+      name: "models"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/backend/auth/models/*.ts"
+        - "src/backend/auth/models/**"
+    - id: "Backend/auth/tokens"
+      name: "tokens"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/backend/auth/tokens/*.ts"
+        - "src/backend/auth/tokens/**"
+    - id: "Backend/auth/legacy_sso"
+      name: "legacy_sso"
+      kind: feature
+      status: legacy
+      origin: human
+      implements:
+        files:
+        - "src/backend/auth/legacy_sso/*.ts"
+        - "src/backend/auth/legacy_sso/**"
+  - id: "Backend/billing"
+    name: "billing"
+    kind: module
+    purpose: "Backend billing ledger models, job triggers, and raw webhook receivers."
+    status: inferred
+    origin: afwe:inferred
+    implements:
+      files:
+      - "src/backend/billing/*.ts"
+      - "src/backend/billing/**"
+    children:
+    - id: "Backend/billing/models"
+      name: "models"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/backend/billing/models/*.ts"
+        - "src/backend/billing/models/**"
+    - id: "Backend/billing/jobs"
+      name: "jobs"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/backend/billing/jobs/*.ts"
+        - "src/backend/billing/jobs/**"
+    - id: "Backend/billing/webhooks"
+      name: "webhooks"
+      kind: feature
+      status: unmapped
+      origin: human
+      implements:
+        files:
+        - "src/backend/billing/webhooks/*.ts"
+        - "src/backend/billing/webhooks/**"
+  - id: "Backend/cache"
+    name: "cache"
+    kind: module
+    purpose: "Legacy Redis and in-memory read-through cache wrappers."
+    status: legacy
+    origin: human
+    implements:
+      files:
+      - "src/backend/cache/*.ts"
+      - "src/backend/cache/**"
+    children:
+    - id: "Backend/cache/redis"
+      name: "redis"
+      kind: feature
+      status: legacy
+      origin: human
+      implements:
+        files:
+        - "src/backend/cache/redis/*.ts"
+        - "src/backend/cache/redis/**"
+    - id: "Backend/cache/mem"
+      name: "mem"
+      kind: feature
+      status: unmapped
+      origin: human
+      implements:
+        files:
+        - "src/backend/cache/mem/*.ts"
+        - "src/backend/cache/mem/**"
+- id: "Core"
+  name: "Core"
+  kind: domain
+  purpose: "Pure domain entities, business rules, domain event contracts, and invariant utilities."
+  status: inferred
+  origin: afwe:inferred
+  tags:
+  - "icon:layers"
+  - "tier:2"
+  implements:
+    files:
+    - "src/core/*.ts"
+    - "src/core/**"
+  children:
+  - id: "Core/models"
+    name: "models"
+    kind: module
+    purpose: "Domain aggregates, entities, and value objects."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/core/models/*.ts"
+      - "src/core/models/**"
+      - "src/workspace/**"
+    children:
+    - id: "Core/models/entities"
+      name: "entities"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/core/models/entities/*.ts"
+        - "src/core/models/entities/**"
+    - id: "Core/models/value_objects"
+      name: "value_objects"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/core/models/value_objects/*.ts"
+        - "src/core/models/value_objects/**"
+    - id: "Core/models/aggregates"
+      name: "aggregates"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/core/models/aggregates/*.ts"
+        - "src/core/models/aggregates/**"
+  - id: "Core/rules"
+    name: "rules"
+    kind: module
+    purpose: "Pricing, entitlement quota, and permission evaluation engines."
+    status: inferred
+    origin: afwe:inferred
+    implements:
+      files:
+      - "src/core/rules/*.ts"
+      - "src/core/rules/**"
+    children:
+    - id: "Core/rules/pricing"
+      name: "pricing"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/core/rules/pricing/*.ts"
+        - "src/core/rules/pricing/**"
+    - id: "Core/rules/permissions"
+      name: "permissions"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/core/rules/permissions/*.ts"
+        - "src/core/rules/permissions/**"
+    - id: "Core/rules/quotas"
+      name: "quotas"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/core/rules/quotas/*.ts"
+        - "src/core/rules/quotas/**"
+  - id: "Core/events"
+    name: "events"
+    kind: module
+    purpose: "In-process domain event dispatcher and contracts."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/core/events/*.ts"
+      - "src/core/events/**"
+    children:
+    - id: "Core/events/dispatcher"
+      name: "dispatcher"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/core/events/dispatcher/*.ts"
+        - "src/core/events/dispatcher/**"
+    - id: "Core/events/contracts"
+      name: "contracts"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/core/events/contracts/*.ts"
+        - "src/core/events/contracts/**"
+  - id: "Core/utils"
+    name: "utils"
+    kind: module
+    purpose: "Currency math and calendar calculation helpers."
+    status: inferred
+    origin: afwe:inferred
+    implements:
+      files:
+      - "src/core/utils/*.ts"
+      - "src/core/utils/**"
+    children:
+    - id: "Core/utils/money"
+      name: "money"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/core/utils/money/*.ts"
+        - "src/core/utils/money/**"
+    - id: "Core/utils/dates"
+      name: "dates"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/core/utils/dates/*.ts"
+        - "src/core/utils/dates/**"
+- id: "Data"
+  name: "Data"
+  kind: domain
+  purpose: "Relational schema definitions, query repositories, migrations, and ETL scripts."
+  status: active
+  origin: human
+  tags:
+  - "icon:db"
+  - "tier:2"
+  implements:
+    files:
+    - "src/data/*.ts"
+    - "src/data/**"
+  children:
+  - id: "Data/schema"
+    name: "schema"
+    kind: module
+    purpose: "PostgreSQL table DDL, views, and index declarations."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/data/schema/*.ts"
+      - "src/data/schema/**"
+    children:
+    - id: "Data/schema/tables"
+      name: "tables"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/data/schema/tables/*.ts"
+        - "src/data/schema/tables/**"
+      children:
+      - id: "Data/schema/tables/accounts"
+        name: "accounts"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/data/schema/tables/accounts/*.ts"
+          - "src/data/schema/tables/accounts/**"
+      - id: "Data/schema/tables/ledger"
+        name: "ledger"
+        kind: component
+        status: active
+        origin: human
+        implements:
+          files:
+          - "src/data/schema/tables/ledger/*.ts"
+          - "src/data/schema/tables/ledger/**"
+    - id: "Data/schema/views"
+      name: "views"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/data/schema/views/*.ts"
+        - "src/data/schema/views/**"
+    - id: "Data/schema/indexes"
+      name: "indexes"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/data/schema/indexes/*.ts"
+        - "src/data/schema/indexes/**"
+  - id: "Data/models"
+    name: "models"
+    kind: module
+    purpose: "Data access repositories and typed SQL builders."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/data/models/*.ts"
+      - "src/data/models/**"
+      - "src/data/*.ts"
+    children:
+    - id: "Data/models/repositories"
+      name: "repositories"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/data/models/repositories/*.ts"
+        - "src/data/models/repositories/**"
+    - id: "Data/models/queries"
+      name: "queries"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/data/models/queries/*.ts"
+        - "src/data/models/queries/**"
+  - id: "Data/migrations"
+    name: "migrations"
+    kind: module
+    purpose: "Zero-downtime schema migration runner and history."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/data/migrations/*.ts"
+      - "src/data/migrations/**"
+    children:
+    - id: "Data/migrations/runner"
+      name: "runner"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/data/migrations/runner/*.ts"
+        - "src/data/migrations/runner/**"
+    - id: "Data/migrations/history"
+      name: "history"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/data/migrations/history/*.ts"
+        - "src/data/migrations/history/**"
+  - id: "Data/legacy_etl"
+    name: "legacy_etl"
+    kind: module
+    purpose: "Uncharted batch CSV and XML import scripts."
+    status: unmapped
+    origin: human
+    implements:
+      files:
+      - "src/data/legacy_etl/*.ts"
+      - "src/data/legacy_etl/**"
+      - "src/legacy-sync/**"
+      - "src/cli-tools/**"
+      - "src/experiments/**"
+    children:
+    - id: "Data/legacy_etl/csv_import"
+      name: "csv_import"
+      kind: feature
+      status: unmapped
+      origin: human
+      implements:
+        files:
+        - "src/data/legacy_etl/csv_import/*.ts"
+        - "src/data/legacy_etl/csv_import/**"
+    - id: "Data/legacy_etl/xml_dump"
+      name: "xml_dump"
+      kind: feature
+      status: unmapped
+      origin: human
+      implements:
+        files:
+        - "src/data/legacy_etl/xml_dump/*.ts"
+        - "src/data/legacy_etl/xml_dump/**"
+- id: "Shared"
+  name: "Shared"
+  kind: domain
+  purpose: "Cross-cutting leaf utilities, environment configuration, shared TypeScript types, and structured logging."
+  status: inferred
+  origin: afwe:inferred
+  tags:
+  - "icon:link"
+  - "tier:3"
+  implements:
+    files:
+    - "src/shared/*.ts"
+    - "src/shared/**"
+  children:
+  - id: "Shared/utils"
+    name: "utils"
+    kind: module
+    purpose: "Cryptographic primitives, string formatting, and retry policies."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/shared/utils/*.ts"
+      - "src/shared/utils/**"
+    children:
+    - id: "Shared/utils/crypto"
+      name: "crypto"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/shared/utils/crypto/*.ts"
+        - "src/shared/utils/crypto/**"
+    - id: "Shared/utils/strings"
+      name: "strings"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/shared/utils/strings/*.ts"
+        - "src/shared/utils/strings/**"
+    - id: "Shared/utils/retry"
+      name: "retry"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/shared/utils/retry/*.ts"
+        - "src/shared/utils/retry/**"
+  - id: "Shared/config"
+    name: "config"
+    kind: module
+    purpose: "Typed environment configuration and feature flag evaluation."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/shared/config/*.ts"
+      - "src/shared/config/**"
+    children:
+    - id: "Shared/config/env"
+      name: "env"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/shared/config/env/*.ts"
+        - "src/shared/config/env/**"
+    - id: "Shared/config/flags"
+      name: "flags"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/shared/config/flags/*.ts"
+        - "src/shared/config/flags/**"
+  - id: "Shared/types"
+    name: "types"
+    kind: module
+    purpose: "Shared DTO and primitive type definitions."
+    status: inferred
+    origin: afwe:inferred
+    implements:
+      files:
+      - "src/shared/types/*.ts"
+      - "src/shared/types/**"
+    children:
+    - id: "Shared/types/api"
+      name: "api"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/shared/types/api/*.ts"
+        - "src/shared/types/api/**"
+    - id: "Shared/types/domain"
+      name: "domain"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/shared/types/domain/*.ts"
+        - "src/shared/types/domain/**"
+  - id: "Shared/logging"
+    name: "logging"
+    kind: module
+    purpose: "Structured JSON logger and PII redaction filters."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/shared/logging/*.ts"
+      - "src/shared/logging/**"
+    children:
+    - id: "Shared/logging/structured"
+      name: "structured"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/shared/logging/structured/*.ts"
+        - "src/shared/logging/structured/**"
+    - id: "Shared/logging/redaction"
+      name: "redaction"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/shared/logging/redaction/*.ts"
+        - "src/shared/logging/redaction/**"
+- id: "Infrastructure"
+  name: "Infrastructure"
+  kind: domain
+  purpose: "Container deployment manifests, OpenTelemetry collectors, and message queue provisioning."
+  status: active
+  origin: human
+  tags:
+  - "icon:cloud"
+  - "tier:3"
+  implements:
+    files:
+    - "src/infrastructure/*.ts"
+    - "src/infrastructure/**"
+  children:
+  - id: "Infrastructure/deploy"
+    name: "deploy"
+    kind: module
+    purpose: "Container health checks and Terraform deployment modules."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/infrastructure/deploy/*.ts"
+      - "src/infrastructure/deploy/**"
+    children:
+    - id: "Infrastructure/deploy/containers"
+      name: "containers"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/infrastructure/deploy/containers/*.ts"
+        - "src/infrastructure/deploy/containers/**"
+    - id: "Infrastructure/deploy/terraform"
+      name: "terraform"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/infrastructure/deploy/terraform/*.ts"
+        - "src/infrastructure/deploy/terraform/**"
+  - id: "Infrastructure/telemetry"
+    name: "telemetry"
+    kind: module
+    purpose: "Metrics exporters and distributed trace samplers."
+    status: active
+    origin: human
+    implements:
+      files:
+      - "src/infrastructure/telemetry/*.ts"
+      - "src/infrastructure/telemetry/**"
+    children:
+    - id: "Infrastructure/telemetry/metrics"
+      name: "metrics"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/infrastructure/telemetry/metrics/*.ts"
+        - "src/infrastructure/telemetry/metrics/**"
+    - id: "Infrastructure/telemetry/traces"
+      name: "traces"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/infrastructure/telemetry/traces/*.ts"
+        - "src/infrastructure/telemetry/traces/**"
+  - id: "Infrastructure/queues"
+    name: "queues"
+    kind: module
+    purpose: "Queue broker bindings and dead-letter queue consumers."
+    status: inferred
+    origin: afwe:inferred
+    implements:
+      files:
+      - "src/infrastructure/queues/*.ts"
+      - "src/infrastructure/queues/**"
+    children:
+    - id: "Infrastructure/queues/broker"
+      name: "broker"
+      kind: feature
+      status: inferred
+      origin: afwe:inferred
+      implements:
+        files:
+        - "src/infrastructure/queues/broker/*.ts"
+        - "src/infrastructure/queues/broker/**"
+    - id: "Infrastructure/queues/dlq"
+      name: "dlq"
+      kind: feature
+      status: active
+      origin: human
+      implements:
+        files:
+        - "src/infrastructure/queues/dlq/*.ts"
+        - "src/infrastructure/queues/dlq/**"

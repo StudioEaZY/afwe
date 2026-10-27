@@ -3,6 +3,7 @@
 // CodeMirror 6 syntax-highlighted code merge viewer, and contextual Turn Inspector.
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { ArrowLeft, ArrowRight, ArrowLeftRight, CheckCircle2, RotateCcw } from "lucide-react";
 import { useStore } from "../store";
 import { api, SceneData } from "../api";
 import { TimelineDualScrubber, TimelineTurnItem } from "./TimelineDualScrubber";
@@ -224,8 +225,12 @@ export const TimelinePage: React.FC = () => {
                   color: "var(--red)",
                   cursor: "pointer",
                   fontWeight: 600,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 5,
                 }}
               >
+                <RotateCcw size={12} />
                 Revert Turn
               </button>
             </div>
@@ -256,7 +261,7 @@ export const TimelinePage: React.FC = () => {
           <div style={{ flex: 1, padding: "10px 16px", borderRight: "1px solid var(--line)", display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ color: "var(--mute)", fontSize: "13px" }}>◀</span>
+                <ArrowLeft size={13} style={{ color: "var(--mute)" }} />
                 <span style={{ fontWeight: 700, fontSize: "13px", color: "var(--ink)" }}>Before #{selectedTurn?.id}</span>
               </div>
               <span style={{ fontSize: "10.5px", background: "var(--side)", padding: "1px 6px", borderRadius: "4px", color: "var(--mute)", fontFamily: "var(--mono)" }}>
@@ -284,13 +289,11 @@ export const TimelinePage: React.FC = () => {
                 border: "1px solid var(--line)",
                 display: "grid",
                 placeItems: "center",
-                fontSize: "11px",
-                fontWeight: 700,
                 color: "var(--mute)",
                 boxShadow: "0 2px 6px var(--shadow)",
               }}
             >
-              ⇄
+              <ArrowLeftRight size={13} />
             </div>
           </div>
 
@@ -298,7 +301,7 @@ export const TimelinePage: React.FC = () => {
           <div style={{ flex: 1, padding: "10px 16px", display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ color: "var(--accent)", fontSize: "13px" }}>▶</span>
+                <ArrowRight size={13} style={{ color: "var(--accent)" }} />
                 <span style={{ fontWeight: 700, fontSize: "13px", color: "var(--ink)" }}>After #{selectedTurn?.id}</span>
               </div>
               <span style={{ fontSize: "10.5px", background: "var(--side)", padding: "1px 6px", borderRadius: "4px", color: "var(--accent)", fontFamily: "var(--mono)", fontWeight: 600 }}>
@@ -413,9 +416,9 @@ export const TimelinePage: React.FC = () => {
               <div style={{ fontWeight: 600, fontSize: "13px", marginBottom: "8px", color: "var(--ink)" }}>
                 Turn Gate Verification Checks
               </div>
-              <div>✓ Tripwire gate checked before commit</div>
-              <div>✓ No forbidden cyclic imports detected in core crates</div>
-              <div>✓ Intent assumption claimed: <code>afwe-core does not import afwe-cli</code></div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}><CheckCircle2 size={13} style={{ color: "var(--accent)" }} /> Tripwire gate checked before commit</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}><CheckCircle2 size={13} style={{ color: "var(--accent)" }} /> No forbidden cyclic imports detected in core crates</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}><CheckCircle2 size={13} style={{ color: "var(--accent)" }} /> Intent assumption claimed: <code>afwe-core does not import afwe-cli</code></div>
             </div>
           )}
         </div>
@@ -513,8 +516,8 @@ export const TimelinePage: React.FC = () => {
 
           {activeInspectorTab === "checks" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <div style={{ color: "var(--accent)" }}>✓ Deterministic gate checks passed</div>
-              <div style={{ color: "var(--accent)" }}>✓ Pin boundaries respected</div>
+              <div style={{ color: "var(--accent)", display: "flex", alignItems: "center", gap: 5 }}><CheckCircle2 size={13} /> Deterministic gate checks passed</div>
+              <div style={{ color: "var(--accent)", display: "flex", alignItems: "center", gap: 5 }}><CheckCircle2 size={13} /> Pin boundaries respected</div>
             </div>
           )}
         </div>

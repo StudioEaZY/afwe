@@ -68,21 +68,21 @@ export default function App() {
 
   if (error && !graph) {
     return (
-      <div className="empty" style={{ padding: "40px", textAlign: "center", background: "#FAF8F3", height: "100vh" }}>
-        <h1 style={{ fontFamily: "Newsreader, serif", fontSize: "32px", color: "#1D1C1A" }}>AFWE Studio</h1>
-        <p style={{ color: "#B23A2B", fontSize: "14px", marginTop: "12px" }}>{error}</p>
-        <p style={{ color: "#6B675D", fontSize: "13px" }}>
+      <div className="empty" style={{ padding: "40px", textAlign: "center", background: "var(--bg)", height: "100vh" }}>
+        <h1 className="serif" style={{ fontSize: "32px", color: "var(--ink)" }}>AFWE Studio</h1>
+        <p style={{ color: "var(--red)", fontSize: "14px", marginTop: "12px" }}>{error}</p>
+        <p style={{ color: "var(--mute)", fontSize: "13px" }}>
           Run <code>afwe init</code> in your project, then <code>afwe studio</code> (web) or open the folder from the desktop app.
         </p>
         <button
           onClick={refresh}
           style={{
             marginTop: "16px",
-            background: "#2E7A57",
-            color: "#FFFFFF",
+            background: "var(--accent)",
+            color: "var(--accent-ink)",
             border: "none",
             padding: "8px 18px",
-            borderRadius: "6px",
+            borderRadius: "8px",
             fontSize: "13px",
             fontWeight: 600,
             cursor: "pointer",
@@ -96,14 +96,14 @@ export default function App() {
 
   if (!graph) {
     return (
-      <div className="empty" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#FAF8F3", color: "#6B675D", fontSize: "14px" }}>
+      <div className="empty" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "var(--bg)", color: "var(--mute)", fontSize: "14px" }}>
         {loading ? "Loading project data…" : "No project loaded"}
       </div>
     );
   }
 
   return (
-    <div className="app-container" style={{ display: "flex", height: "100vh", width: "100vw", overflow: "hidden", background: "#FAF8F4", color: "#1D1C1A", fontFamily: "'IBM Plex Sans', sans-serif" }}>
+    <div className="app-container" style={{ display: "flex", height: "100vh", width: "100vw", overflow: "hidden", background: "var(--bg)", color: "var(--ink)" }}>
       {/* 1. Left Vertical Navigation Sidebar */}
       <Sidebar />
 
@@ -111,7 +111,7 @@ export default function App() {
       <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%", minWidth: 0, overflow: "hidden" }}>
         <TopBar />
 
-        <main style={{ flex: 1, height: "calc(100% - 52px)", overflow: "hidden", position: "relative" }}>
+        <main style={{ flex: 1, height: "calc(100% - 56px)", overflow: "hidden", position: "relative" }}>
           {view === "overview" && (
             <ErrorBoundary name="Codebase Overview">
               <OverviewPage />

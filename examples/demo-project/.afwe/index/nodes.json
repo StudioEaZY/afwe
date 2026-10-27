@@ -1,367 +1,898 @@
 {
-  "auth-api": {
-    "path": "Pulse SaaS Product.Identity Subsystem.Auth API",
-    "name": "Auth API",
-    "kind": "module",
-    "depth": 2,
-    "parent": "identity",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "billing": {
-    "path": "Pulse SaaS Product.Billing Subsystem",
-    "name": "Billing Subsystem",
-    "kind": "subsystem",
-    "depth": 1,
-    "parent": "demo-product",
-    "files": [
-      "src/billing/checkout/CheckoutController.ts",
-      "src/billing/proration.ts"
-    ],
-    "symbols": [],
-    "memory": [
-      "con-workspace-billing-boundary"
-    ],
-    "guardrails": []
-  },
-  "billing-checkout": {
-    "path": "Pulse SaaS Product.Billing Subsystem.Billing Checkout",
-    "name": "Billing Checkout",
-    "kind": "module",
-    "depth": 2,
-    "parent": "billing",
-    "files": [
-      "src/billing/checkout/CheckoutController.ts"
-    ],
-    "symbols": [],
-    "memory": [
-      "con-idempotency-key-mandatory"
-    ],
-    "guardrails": []
-  },
-  "billing-plans": {
-    "path": "Pulse SaaS Product.Billing Subsystem.Billing Plans",
-    "name": "Billing Plans",
-    "kind": "module",
-    "depth": 2,
-    "parent": "billing",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "db-client": {
-    "path": "Pulse SaaS Product.Platform Infrastructure.Database Client",
-    "name": "Database Client",
-    "kind": "module",
-    "depth": 2,
-    "parent": "platform",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "demo-product": {
-    "path": "Pulse SaaS Product",
-    "name": "Pulse SaaS Product",
-    "kind": "product",
+  "Backend": {
+    "path": "Backend",
+    "name": "Backend",
+    "kind": "domain",
     "depth": 0,
-    "files": [],
+    "files": [
+      "src/backend/api/auth/index.ts",
+      "src/backend/api/auth/mod_2.ts",
+      "src/backend/api/auth/mod_3.ts",
+      "src/backend/api/handlers/index.ts",
+      "src/backend/api/handlers/mod_2.ts",
+      "src/backend/api/handlers/mod_3.ts",
+      "src/backend/api/handlers/mod_4.ts",
+      "src/backend/api/handlers/order_ctrl/index.ts",
+      "src/backend/api/handlers/order_ctrl/mod_2.ts",
+      "src/backend/api/handlers/user_ctrl/index.ts",
+      "src/backend/api/handlers/user_ctrl/mod_2.ts",
+      "src/backend/api/index.ts",
+      "src/backend/api/mod_2.ts",
+      "src/backend/api/mod_3.ts",
+      "src/backend/api/routes/index.ts",
+      "src/backend/api/routes/mod_2.ts",
+      "src/backend/api/routes/mod_3.ts",
+      "src/backend/api/routes/mod_4.ts",
+      "src/backend/api/routes/v2_billing/index.ts",
+      "src/backend/api/routes/v2_billing/mod_2.ts",
+      "src/backend/api/routes/v2_orders/index.ts",
+      "src/backend/api/routes/v2_orders/mod_2.ts",
+      "src/backend/api/routes/v2_orders/mod_3.ts",
+      "src/backend/api/routes/v2_users/index.ts",
+      "src/backend/api/routes/v2_users/mod_2.ts",
+      "src/backend/auth/index.ts",
+      "src/backend/auth/legacy_sso/index.ts",
+      "src/backend/auth/legacy_sso/mod_2.ts",
+      "src/backend/auth/legacy_sso/mod_3.ts",
+      "src/backend/auth/mod_2.ts",
+      "src/backend/auth/mod_3.ts",
+      "src/backend/auth/models/index.ts",
+      "src/backend/auth/models/mod_2.ts",
+      "src/backend/auth/models/mod_3.ts",
+      "src/backend/auth/tokens/index.ts",
+      "src/backend/auth/tokens/mod_2.ts",
+      "src/backend/auth/tokens/mod_3.ts",
+      "src/backend/billing/index.ts",
+      "src/backend/billing/jobs/index.ts",
+      "src/backend/billing/jobs/mod_2.ts",
+      "src/backend/billing/jobs/mod_3.ts",
+      "src/backend/billing/mod_2.ts",
+      "src/backend/billing/models/index.ts",
+      "src/backend/billing/models/mod_2.ts",
+      "src/backend/billing/models/mod_3.ts",
+      "src/backend/billing/webhooks/index.ts",
+      "src/backend/billing/webhooks/mod_2.ts",
+      "src/backend/cache/index.ts",
+      "src/backend/cache/mem/index.ts",
+      "src/backend/cache/mem/mod_2.ts",
+      "src/backend/cache/mod_2.ts",
+      "src/backend/cache/redis/index.ts",
+      "src/backend/cache/redis/mod_2.ts",
+      "src/backend/cache/redis/mod_3.ts",
+      "src/backend/events/adapters/index.ts",
+      "src/backend/events/adapters/kafka_sink/index.ts",
+      "src/backend/events/adapters/kafka_sink/mod_2.ts",
+      "src/backend/events/adapters/mod_2.ts",
+      "src/backend/events/adapters/outbox_relay/index.ts",
+      "src/backend/events/handlers/index.ts",
+      "src/backend/events/handlers/invoice_paid/index.ts",
+      "src/backend/events/handlers/invoice_paid/mod_2.ts",
+      "src/backend/events/handlers/mod_2.ts",
+      "src/backend/events/handlers/mod_3.ts",
+      "src/backend/events/handlers/mod_4.ts",
+      "src/backend/events/handlers/order_placed/index.ts",
+      "src/backend/events/handlers/order_placed/mod_2.ts",
+      "src/backend/events/handlers/user_signup/index.ts",
+      "src/backend/events/handlers/user_signup/mod_2.ts",
+      "src/backend/events/index.ts",
+      "src/backend/events/mod_2.ts",
+      "src/backend/events/mod_3.ts",
+      "src/backend/events/models/envelope/index.ts",
+      "src/backend/events/models/envelope/mod_2.ts",
+      "src/backend/events/models/envelope/mod_3.ts",
+      "src/backend/events/models/index.ts",
+      "src/backend/events/models/mod_2.ts",
+      "src/backend/events/models/mod_3.ts",
+      "src/backend/events/models/mod_4.ts",
+      "src/backend/events/models/payloads/index.ts",
+      "src/backend/events/models/payloads/mod_2.ts",
+      "src/backend/events/models/payloads/mod_3.ts",
+      "src/backend/events/models/serializers/index.ts",
+      "src/backend/events/models/serializers/mod_2.ts",
+      "src/backend/events/models/versioning/index.ts",
+      "src/backend/events/models/versioning/mod_2.ts",
+      "src/backend/events/schema/index.ts",
+      "src/backend/events/schema/mod_2.ts",
+      "src/backend/events/schema/mod_3.ts",
+      "src/backend/events/schema/registry/index.ts",
+      "src/backend/events/schema/registry/mod_2.ts",
+      "src/backend/events/schema/validators/index.ts",
+      "src/backend/events/schema/validators/mod_2.ts",
+      "src/backend/index.ts",
+      "src/backend/mod_2.ts",
+      "src/backend/mod_3.ts"
+    ],
     "symbols": [],
-    "memory": [],
+    "memory": [
+      "dec-postgres-relational"
+    ],
     "guardrails": []
   },
-  "event-bus": {
-    "path": "Pulse SaaS Product.Platform Infrastructure.Event Bus",
-    "name": "Event Bus",
+  "Backend/api": {
+    "path": "Backend.api",
+    "name": "api",
     "kind": "module",
-    "depth": 2,
-    "parent": "platform",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "http-server": {
-    "path": "Pulse SaaS Product.Platform Infrastructure.HTTP Server",
-    "name": "HTTP Server",
-    "kind": "module",
-    "depth": 2,
-    "parent": "platform",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "idempotency-key-hasher": {
-    "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator.Idempotency Key Hasher",
-    "name": "Idempotency Key Hasher",
-    "kind": "widget",
-    "depth": 4,
-    "parent": "proration-calculator",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "identity": {
-    "path": "Pulse SaaS Product.Identity Subsystem",
-    "name": "Identity Subsystem",
-    "kind": "subsystem",
     "depth": 1,
-    "parent": "demo-product",
+    "parent": "Backend",
+    "files": [
+      "src/backend/api/auth/index.ts",
+      "src/backend/api/auth/mod_2.ts",
+      "src/backend/api/auth/mod_3.ts",
+      "src/backend/api/handlers/index.ts",
+      "src/backend/api/handlers/mod_2.ts",
+      "src/backend/api/handlers/mod_3.ts",
+      "src/backend/api/handlers/mod_4.ts",
+      "src/backend/api/handlers/order_ctrl/index.ts",
+      "src/backend/api/handlers/order_ctrl/mod_2.ts",
+      "src/backend/api/handlers/user_ctrl/index.ts",
+      "src/backend/api/handlers/user_ctrl/mod_2.ts",
+      "src/backend/api/index.ts",
+      "src/backend/api/mod_2.ts",
+      "src/backend/api/mod_3.ts",
+      "src/backend/api/routes/index.ts",
+      "src/backend/api/routes/mod_2.ts",
+      "src/backend/api/routes/mod_3.ts",
+      "src/backend/api/routes/mod_4.ts",
+      "src/backend/api/routes/v2_billing/index.ts",
+      "src/backend/api/routes/v2_billing/mod_2.ts",
+      "src/backend/api/routes/v2_orders/index.ts",
+      "src/backend/api/routes/v2_orders/mod_2.ts",
+      "src/backend/api/routes/v2_orders/mod_3.ts",
+      "src/backend/api/routes/v2_users/index.ts",
+      "src/backend/api/routes/v2_users/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-openapi-from-routes"
+    ],
+    "guardrails": []
+  },
+  "Backend/api/auth": {
+    "path": "Backend.api.auth",
+    "name": "auth",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/api",
+    "files": [
+      "src/backend/api/auth/index.ts",
+      "src/backend/api/auth/mod_2.ts",
+      "src/backend/api/auth/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/api/handlers": {
+    "path": "Backend.api.handlers",
+    "name": "handlers",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/api",
+    "files": [
+      "src/backend/api/handlers/index.ts",
+      "src/backend/api/handlers/mod_2.ts",
+      "src/backend/api/handlers/mod_3.ts",
+      "src/backend/api/handlers/mod_4.ts",
+      "src/backend/api/handlers/order_ctrl/index.ts",
+      "src/backend/api/handlers/order_ctrl/mod_2.ts",
+      "src/backend/api/handlers/user_ctrl/index.ts",
+      "src/backend/api/handlers/user_ctrl/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/api/handlers/order_ctrl": {
+    "path": "Backend.api.handlers.order_ctrl",
+    "name": "order_ctrl",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/api/handlers",
+    "files": [
+      "src/backend/api/handlers/order_ctrl/index.ts",
+      "src/backend/api/handlers/order_ctrl/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/api/handlers/user_ctrl": {
+    "path": "Backend.api.handlers.user_ctrl",
+    "name": "user_ctrl",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/api/handlers",
+    "files": [
+      "src/backend/api/handlers/user_ctrl/index.ts",
+      "src/backend/api/handlers/user_ctrl/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/api/routes": {
+    "path": "Backend.api.routes",
+    "name": "routes",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/api",
+    "files": [
+      "src/backend/api/routes/index.ts",
+      "src/backend/api/routes/mod_2.ts",
+      "src/backend/api/routes/mod_3.ts",
+      "src/backend/api/routes/mod_4.ts",
+      "src/backend/api/routes/v2_billing/index.ts",
+      "src/backend/api/routes/v2_billing/mod_2.ts",
+      "src/backend/api/routes/v2_orders/index.ts",
+      "src/backend/api/routes/v2_orders/mod_2.ts",
+      "src/backend/api/routes/v2_orders/mod_3.ts",
+      "src/backend/api/routes/v2_users/index.ts",
+      "src/backend/api/routes/v2_users/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-openapi-from-routes"
+    ],
+    "guardrails": []
+  },
+  "Backend/api/routes/v2_billing": {
+    "path": "Backend.api.routes.v2_billing",
+    "name": "v2_billing",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/api/routes",
+    "files": [
+      "src/backend/api/routes/v2_billing/index.ts",
+      "src/backend/api/routes/v2_billing/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/api/routes/v2_orders": {
+    "path": "Backend.api.routes.v2_orders",
+    "name": "v2_orders",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/api/routes",
+    "files": [
+      "src/backend/api/routes/v2_orders/index.ts",
+      "src/backend/api/routes/v2_orders/mod_2.ts",
+      "src/backend/api/routes/v2_orders/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/api/routes/v2_users": {
+    "path": "Backend.api.routes.v2_users",
+    "name": "v2_users",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/api/routes",
+    "files": [
+      "src/backend/api/routes/v2_users/index.ts",
+      "src/backend/api/routes/v2_users/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/auth": {
+    "path": "Backend.auth",
+    "name": "auth",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Backend",
     "files": [
       "src/auth/auth.ts",
       "src/auth/jwtSigner.ts",
       "src/auth/oauth.ts",
       "src/auth/session.ts",
       "src/auth/sessionStore.ts",
-      "src/data/db.ts",
-      "src/data/replica.ts",
-      "src/identity/user.ts",
-      "src/payments/checkout.ts",
-      "src/payments/stripe.ts"
-    ],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "invoice-pdf-watermark": {
-    "path": "Pulse SaaS Product.Billing Subsystem.Invoice PDF Watermark",
-    "name": "Invoice PDF Watermark",
-    "kind": "module",
-    "depth": 2,
-    "parent": "billing",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "invoice-store": {
-    "path": "Pulse SaaS Product.Billing Subsystem.Invoice Store",
-    "name": "Invoice Store",
-    "kind": "module",
-    "depth": 2,
-    "parent": "billing",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "jwt-signer": {
-    "path": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer",
-    "name": "JWT Signer",
-    "kind": "component",
-    "depth": 3,
-    "parent": "auth-api",
-    "files": [
-      "src/auth/jwtSigner.ts"
+      "src/backend/auth/index.ts",
+      "src/backend/auth/legacy_sso/index.ts",
+      "src/backend/auth/legacy_sso/mod_2.ts",
+      "src/backend/auth/legacy_sso/mod_3.ts",
+      "src/backend/auth/mod_2.ts",
+      "src/backend/auth/mod_3.ts",
+      "src/backend/auth/models/index.ts",
+      "src/backend/auth/models/mod_2.ts",
+      "src/backend/auth/models/mod_3.ts",
+      "src/backend/auth/tokens/index.ts",
+      "src/backend/auth/tokens/mod_2.ts",
+      "src/backend/auth/tokens/mod_3.ts",
+      "src/identity/user.ts"
     ],
     "symbols": [],
     "memory": [
-      "dec-jwt-stateless",
-      "con-secret-entropy"
+      "dec-unify-token-refresh"
     ],
     "guardrails": []
   },
-  "legacy-webhook-retry": {
-    "path": "Pulse SaaS Product.Realtime Subsystem.Legacy Webhook Retry",
-    "name": "Legacy Webhook Retry",
-    "kind": "module",
+  "Backend/auth/legacy_sso": {
+    "path": "Backend.auth.legacy_sso",
+    "name": "legacy_sso",
+    "kind": "feature",
     "depth": 2,
-    "parent": "realtime",
-    "files": [],
+    "parent": "Backend/auth",
+    "files": [
+      "src/backend/auth/legacy_sso/index.ts",
+      "src/backend/auth/legacy_sso/mod_2.ts",
+      "src/backend/auth/legacy_sso/mod_3.ts"
+    ],
     "symbols": [],
     "memory": [],
     "guardrails": []
   },
-  "oauth-callback": {
-    "path": "Pulse SaaS Product.Identity Subsystem.Auth API.OAuth Callback",
-    "name": "OAuth Callback",
-    "kind": "component",
-    "depth": 3,
-    "parent": "auth-api",
-    "files": [],
+  "Backend/auth/models": {
+    "path": "Backend.auth.models",
+    "name": "models",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/auth",
+    "files": [
+      "src/backend/auth/models/index.ts",
+      "src/backend/auth/models/mod_2.ts",
+      "src/backend/auth/models/mod_3.ts"
+    ],
     "symbols": [],
     "memory": [],
     "guardrails": []
   },
-  "platform": {
-    "path": "Pulse SaaS Product.Platform Infrastructure",
-    "name": "Platform Infrastructure",
-    "kind": "subsystem",
+  "Backend/auth/tokens": {
+    "path": "Backend.auth.tokens",
+    "name": "tokens",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/auth",
+    "files": [
+      "src/backend/auth/tokens/index.ts",
+      "src/backend/auth/tokens/mod_2.ts",
+      "src/backend/auth/tokens/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/billing": {
+    "path": "Backend.billing",
+    "name": "billing",
+    "kind": "module",
     "depth": 1,
-    "parent": "demo-product",
-    "files": [],
+    "parent": "Backend",
+    "files": [
+      "src/backend/billing/index.ts",
+      "src/backend/billing/jobs/index.ts",
+      "src/backend/billing/jobs/mod_2.ts",
+      "src/backend/billing/jobs/mod_3.ts",
+      "src/backend/billing/mod_2.ts",
+      "src/backend/billing/models/index.ts",
+      "src/backend/billing/models/mod_2.ts",
+      "src/backend/billing/models/mod_3.ts",
+      "src/backend/billing/webhooks/index.ts",
+      "src/backend/billing/webhooks/mod_2.ts"
+    ],
     "symbols": [],
     "memory": [],
     "guardrails": []
   },
-  "proration-calculator": {
-    "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Proration Calculator",
-    "name": "Proration Calculator",
-    "kind": "component",
-    "depth": 3,
-    "parent": "stripe-gateway",
+  "Backend/billing/jobs": {
+    "path": "Backend.billing.jobs",
+    "name": "jobs",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/billing",
     "files": [
-      "src/billing/proration.ts"
+      "src/backend/billing/jobs/index.ts",
+      "src/backend/billing/jobs/mod_2.ts",
+      "src/backend/billing/jobs/mod_3.ts"
     ],
     "symbols": [],
-    "memory": [
-      "term-proration",
-      "prob-proration-rounding-drift"
-    ],
+    "memory": [],
     "guardrails": []
   },
-  "realtime": {
-    "path": "Pulse SaaS Product.Realtime Subsystem",
-    "name": "Realtime Subsystem",
-    "kind": "subsystem",
+  "Backend/billing/models": {
+    "path": "Backend.billing.models",
+    "name": "models",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/billing",
+    "files": [
+      "src/backend/billing/models/index.ts",
+      "src/backend/billing/models/mod_2.ts",
+      "src/backend/billing/models/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/billing/webhooks": {
+    "path": "Backend.billing.webhooks",
+    "name": "webhooks",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/billing",
+    "files": [
+      "src/backend/billing/webhooks/index.ts",
+      "src/backend/billing/webhooks/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/cache": {
+    "path": "Backend.cache",
+    "name": "cache",
+    "kind": "module",
     "depth": 1,
-    "parent": "demo-product",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "realtime-presence": {
-    "path": "Pulse SaaS Product.Realtime Subsystem.Realtime Presence",
-    "name": "Realtime Presence",
-    "kind": "module",
-    "depth": 2,
-    "parent": "realtime",
-    "files": [],
-    "symbols": [],
-    "memory": [
-      "term-presence-heartbeat",
-      "prob-zombie-websockets"
-    ],
-    "guardrails": []
-  },
-  "realtime-status-worker": {
-    "path": "Pulse SaaS Product.Realtime Subsystem.Realtime Status Worker",
-    "name": "Realtime Status Worker",
-    "kind": "module",
-    "depth": 2,
-    "parent": "realtime",
-    "files": [],
-    "symbols": [],
-    "memory": [
-      "dec-replica-reads",
-      "exc-realtime-admin-override",
-      "term-presence-heartbeat"
-    ],
-    "guardrails": []
-  },
-  "session-token": {
-    "path": "Pulse SaaS Product.Identity Subsystem.Session Token",
-    "name": "Session Token",
-    "kind": "module",
-    "depth": 2,
-    "parent": "identity",
+    "parent": "Backend",
     "files": [
-      "src/auth/session.ts"
+      "src/backend/cache/index.ts",
+      "src/backend/cache/mem/index.ts",
+      "src/backend/cache/mem/mod_2.ts",
+      "src/backend/cache/mod_2.ts",
+      "src/backend/cache/redis/index.ts",
+      "src/backend/cache/redis/mod_2.ts",
+      "src/backend/cache/redis/mod_3.ts"
     ],
-    "symbols": [],
-    "memory": [
-      "dec-jwt-stateless"
-    ],
-    "guardrails": []
-  },
-  "stripe-gateway": {
-    "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway",
-    "name": "Stripe Gateway",
-    "kind": "module",
-    "depth": 2,
-    "parent": "billing",
-    "files": [],
-    "symbols": [],
-    "memory": [
-      "con-idempotency-key-mandatory",
-      "exc-billing-test-bypass"
-    ],
-    "guardrails": []
-  },
-  "stripe-webhook-verifier": {
-    "path": "Pulse SaaS Product.Billing Subsystem.Stripe Gateway.Stripe Webhook Verifier",
-    "name": "Stripe Webhook Verifier",
-    "kind": "component",
-    "depth": 3,
-    "parent": "stripe-gateway",
-    "files": [],
     "symbols": [],
     "memory": [],
     "guardrails": []
   },
-  "tag-color-wheel": {
-    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel",
-    "name": "Tag Color Wheel",
-    "kind": "component",
-    "depth": 3,
-    "parent": "workspace-tagging",
+  "Backend/cache/mem": {
+    "path": "Backend.cache.mem",
+    "name": "mem",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/cache",
     "files": [
-      "src/workspace/tagging/ColorWheel.ts"
+      "src/backend/cache/mem/index.ts",
+      "src/backend/cache/mem/mod_2.ts"
     ],
     "symbols": [],
-    "memory": [
-      "prob-tag-color-collision"
-    ],
-    "guardrails": []
-  },
-  "tag-normaliser": {
-    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Normaliser",
-    "name": "Tag Normaliser",
-    "kind": "component",
-    "depth": 3,
-    "parent": "workspace-tagging",
-    "files": [],
-    "symbols": [],
     "memory": [],
     "guardrails": []
   },
-  "tag-pill-renderer": {
-    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging.Tag Color Wheel.Tag Pill Renderer",
-    "name": "Tag Pill Renderer",
-    "kind": "widget",
-    "depth": 4,
-    "parent": "tag-color-wheel",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "token-entropy-guard": {
-    "path": "Pulse SaaS Product.Identity Subsystem.Auth API.JWT Signer.Token Entropy Guard",
-    "name": "Token Entropy Guard",
-    "kind": "widget",
-    "depth": 4,
-    "parent": "jwt-signer",
-    "files": [],
-    "symbols": [],
-    "memory": [],
-    "guardrails": []
-  },
-  "user-store": {
-    "path": "Pulse SaaS Product.Identity Subsystem.User Store",
-    "name": "User Store",
-    "kind": "module",
+  "Backend/cache/redis": {
+    "path": "Backend.cache.redis",
+    "name": "redis",
+    "kind": "feature",
     "depth": 2,
-    "parent": "identity",
-    "files": [],
+    "parent": "Backend/cache",
+    "files": [
+      "src/backend/cache/redis/index.ts",
+      "src/backend/cache/redis/mod_2.ts",
+      "src/backend/cache/redis/mod_3.ts"
+    ],
     "symbols": [],
     "memory": [],
     "guardrails": []
   },
-  "workspace": {
-    "path": "Pulse SaaS Product.Workspace Subsystem",
-    "name": "Workspace Subsystem",
-    "kind": "subsystem",
+  "Backend/events": {
+    "path": "Backend.events",
+    "name": "events",
+    "kind": "module",
     "depth": 1,
-    "parent": "demo-product",
+    "parent": "Backend",
     "files": [
-      "src/canvas/CanvasRenderer.tsx",
+      "src/backend/events/adapters/index.ts",
+      "src/backend/events/adapters/kafka_sink/index.ts",
+      "src/backend/events/adapters/kafka_sink/mod_2.ts",
+      "src/backend/events/adapters/mod_2.ts",
+      "src/backend/events/adapters/outbox_relay/index.ts",
+      "src/backend/events/handlers/index.ts",
+      "src/backend/events/handlers/invoice_paid/index.ts",
+      "src/backend/events/handlers/invoice_paid/mod_2.ts",
+      "src/backend/events/handlers/mod_2.ts",
+      "src/backend/events/handlers/mod_3.ts",
+      "src/backend/events/handlers/mod_4.ts",
+      "src/backend/events/handlers/order_placed/index.ts",
+      "src/backend/events/handlers/order_placed/mod_2.ts",
+      "src/backend/events/handlers/user_signup/index.ts",
+      "src/backend/events/handlers/user_signup/mod_2.ts",
+      "src/backend/events/index.ts",
+      "src/backend/events/mod_2.ts",
+      "src/backend/events/mod_3.ts",
+      "src/backend/events/models/envelope/index.ts",
+      "src/backend/events/models/envelope/mod_2.ts",
+      "src/backend/events/models/envelope/mod_3.ts",
+      "src/backend/events/models/index.ts",
+      "src/backend/events/models/mod_2.ts",
+      "src/backend/events/models/mod_3.ts",
+      "src/backend/events/models/mod_4.ts",
+      "src/backend/events/models/payloads/index.ts",
+      "src/backend/events/models/payloads/mod_2.ts",
+      "src/backend/events/models/payloads/mod_3.ts",
+      "src/backend/events/models/serializers/index.ts",
+      "src/backend/events/models/serializers/mod_2.ts",
+      "src/backend/events/models/versioning/index.ts",
+      "src/backend/events/models/versioning/mod_2.ts",
+      "src/backend/events/schema/index.ts",
+      "src/backend/events/schema/mod_2.ts",
+      "src/backend/events/schema/mod_3.ts",
+      "src/backend/events/schema/registry/index.ts",
+      "src/backend/events/schema/registry/mod_2.ts",
+      "src/backend/events/schema/validators/index.ts",
+      "src/backend/events/schema/validators/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-freeze-v2-event-envelope"
+    ],
+    "guardrails": []
+  },
+  "Backend/events/adapters": {
+    "path": "Backend.events.adapters",
+    "name": "adapters",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/events",
+    "files": [
+      "src/backend/events/adapters/index.ts",
+      "src/backend/events/adapters/kafka_sink/index.ts",
+      "src/backend/events/adapters/kafka_sink/mod_2.ts",
+      "src/backend/events/adapters/mod_2.ts",
+      "src/backend/events/adapters/outbox_relay/index.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/adapters/kafka_sink": {
+    "path": "Backend.events.adapters.kafka_sink",
+    "name": "kafka_sink",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/adapters",
+    "files": [
+      "src/backend/events/adapters/kafka_sink/index.ts",
+      "src/backend/events/adapters/kafka_sink/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/adapters/outbox_relay": {
+    "path": "Backend.events.adapters.outbox_relay",
+    "name": "outbox_relay",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/adapters",
+    "files": [
+      "src/backend/events/adapters/outbox_relay/index.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/handlers": {
+    "path": "Backend.events.handlers",
+    "name": "handlers",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/events",
+    "files": [
+      "src/backend/events/handlers/index.ts",
+      "src/backend/events/handlers/invoice_paid/index.ts",
+      "src/backend/events/handlers/invoice_paid/mod_2.ts",
+      "src/backend/events/handlers/mod_2.ts",
+      "src/backend/events/handlers/mod_3.ts",
+      "src/backend/events/handlers/mod_4.ts",
+      "src/backend/events/handlers/order_placed/index.ts",
+      "src/backend/events/handlers/order_placed/mod_2.ts",
+      "src/backend/events/handlers/user_signup/index.ts",
+      "src/backend/events/handlers/user_signup/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-dlq-three-retries"
+    ],
+    "guardrails": []
+  },
+  "Backend/events/handlers/invoice_paid": {
+    "path": "Backend.events.handlers.invoice_paid",
+    "name": "invoice_paid",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/handlers",
+    "files": [
+      "src/backend/events/handlers/invoice_paid/index.ts",
+      "src/backend/events/handlers/invoice_paid/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/handlers/order_placed": {
+    "path": "Backend.events.handlers.order_placed",
+    "name": "order_placed",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/handlers",
+    "files": [
+      "src/backend/events/handlers/order_placed/index.ts",
+      "src/backend/events/handlers/order_placed/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/handlers/user_signup": {
+    "path": "Backend.events.handlers.user_signup",
+    "name": "user_signup",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/handlers",
+    "files": [
+      "src/backend/events/handlers/user_signup/index.ts",
+      "src/backend/events/handlers/user_signup/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/models": {
+    "path": "Backend.events.models",
+    "name": "models",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/events",
+    "files": [
+      "src/backend/events/models/envelope/index.ts",
+      "src/backend/events/models/envelope/mod_2.ts",
+      "src/backend/events/models/envelope/mod_3.ts",
+      "src/backend/events/models/index.ts",
+      "src/backend/events/models/mod_2.ts",
+      "src/backend/events/models/mod_3.ts",
+      "src/backend/events/models/mod_4.ts",
+      "src/backend/events/models/payloads/index.ts",
+      "src/backend/events/models/payloads/mod_2.ts",
+      "src/backend/events/models/payloads/mod_3.ts",
+      "src/backend/events/models/serializers/index.ts",
+      "src/backend/events/models/serializers/mod_2.ts",
+      "src/backend/events/models/versioning/index.ts",
+      "src/backend/events/models/versioning/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-freeze-v2-event-envelope"
+    ],
+    "guardrails": []
+  },
+  "Backend/events/models/envelope": {
+    "path": "Backend.events.models.envelope",
+    "name": "envelope",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/models",
+    "files": [
+      "src/backend/events/models/envelope/index.ts",
+      "src/backend/events/models/envelope/mod_2.ts",
+      "src/backend/events/models/envelope/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/models/payloads": {
+    "path": "Backend.events.models.payloads",
+    "name": "payloads",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/models",
+    "files": [
+      "src/backend/events/models/payloads/index.ts",
+      "src/backend/events/models/payloads/mod_2.ts",
+      "src/backend/events/models/payloads/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/models/serializers": {
+    "path": "Backend.events.models.serializers",
+    "name": "serializers",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/models",
+    "files": [
+      "src/backend/events/models/serializers/index.ts",
+      "src/backend/events/models/serializers/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/models/versioning": {
+    "path": "Backend.events.models.versioning",
+    "name": "versioning",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/models",
+    "files": [
+      "src/backend/events/models/versioning/index.ts",
+      "src/backend/events/models/versioning/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/schema": {
+    "path": "Backend.events.schema",
+    "name": "schema",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Backend/events",
+    "files": [
+      "src/backend/events/schema/index.ts",
+      "src/backend/events/schema/mod_2.ts",
+      "src/backend/events/schema/mod_3.ts",
+      "src/backend/events/schema/registry/index.ts",
+      "src/backend/events/schema/registry/mod_2.ts",
+      "src/backend/events/schema/validators/index.ts",
+      "src/backend/events/schema/validators/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-freeze-v2-event-envelope"
+    ],
+    "guardrails": []
+  },
+  "Backend/events/schema/registry": {
+    "path": "Backend.events.schema.registry",
+    "name": "registry",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/schema",
+    "files": [
+      "src/backend/events/schema/registry/index.ts",
+      "src/backend/events/schema/registry/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Backend/events/schema/validators": {
+    "path": "Backend.events.schema.validators",
+    "name": "validators",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Backend/events/schema",
+    "files": [
+      "src/backend/events/schema/validators/index.ts",
+      "src/backend/events/schema/validators/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core": {
+    "path": "Core",
+    "name": "Core",
+    "kind": "domain",
+    "depth": 0,
+    "files": [
+      "src/core/events/contracts/index.ts",
+      "src/core/events/contracts/mod_2.ts",
+      "src/core/events/contracts/mod_3.ts",
+      "src/core/events/dispatcher/index.ts",
+      "src/core/events/dispatcher/mod_2.ts",
+      "src/core/events/dispatcher/mod_3.ts",
+      "src/core/events/index.ts",
+      "src/core/events/mod_2.ts",
+      "src/core/events/mod_3.ts",
+      "src/core/index.ts",
+      "src/core/mod_2.ts",
+      "src/core/models/aggregates/index.ts",
+      "src/core/models/aggregates/mod_2.ts",
+      "src/core/models/aggregates/mod_3.ts",
+      "src/core/models/entities/index.ts",
+      "src/core/models/entities/mod_2.ts",
+      "src/core/models/entities/mod_3.ts",
+      "src/core/models/entities/mod_4.ts",
+      "src/core/models/index.ts",
+      "src/core/models/mod_2.ts",
+      "src/core/models/mod_3.ts",
+      "src/core/models/mod_4.ts",
+      "src/core/models/value_objects/index.ts",
+      "src/core/models/value_objects/mod_2.ts",
+      "src/core/models/value_objects/mod_3.ts",
+      "src/core/rules/index.ts",
+      "src/core/rules/mod_2.ts",
+      "src/core/rules/mod_3.ts",
+      "src/core/rules/permissions/index.ts",
+      "src/core/rules/permissions/mod_2.ts",
+      "src/core/rules/permissions/mod_3.ts",
+      "src/core/rules/pricing/index.ts",
+      "src/core/rules/pricing/mod_2.ts",
+      "src/core/rules/pricing/mod_3.ts",
+      "src/core/rules/quotas/index.ts",
+      "src/core/rules/quotas/mod_2.ts",
+      "src/core/utils/dates/index.ts",
+      "src/core/utils/dates/mod_2.ts",
+      "src/core/utils/index.ts",
+      "src/core/utils/mod_2.ts",
+      "src/core/utils/money/index.ts",
+      "src/core/utils/money/mod_2.ts",
+      "src/core/utils/money/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/events": {
+    "path": "Core.events",
+    "name": "events",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Core",
+    "files": [
+      "src/core/events/contracts/index.ts",
+      "src/core/events/contracts/mod_2.ts",
+      "src/core/events/contracts/mod_3.ts",
+      "src/core/events/dispatcher/index.ts",
+      "src/core/events/dispatcher/mod_2.ts",
+      "src/core/events/dispatcher/mod_3.ts",
+      "src/core/events/index.ts",
+      "src/core/events/mod_2.ts",
+      "src/core/events/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/events/contracts": {
+    "path": "Core.events.contracts",
+    "name": "contracts",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Core/events",
+    "files": [
+      "src/core/events/contracts/index.ts",
+      "src/core/events/contracts/mod_2.ts",
+      "src/core/events/contracts/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/events/dispatcher": {
+    "path": "Core.events.dispatcher",
+    "name": "dispatcher",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Core/events",
+    "files": [
+      "src/core/events/dispatcher/index.ts",
+      "src/core/events/dispatcher/mod_2.ts",
+      "src/core/events/dispatcher/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/models": {
+    "path": "Core.models",
+    "name": "models",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Core",
+    "files": [
+      "src/core/models/aggregates/index.ts",
+      "src/core/models/aggregates/mod_2.ts",
+      "src/core/models/aggregates/mod_3.ts",
+      "src/core/models/entities/index.ts",
+      "src/core/models/entities/mod_2.ts",
+      "src/core/models/entities/mod_3.ts",
+      "src/core/models/entities/mod_4.ts",
+      "src/core/models/index.ts",
+      "src/core/models/mod_2.ts",
+      "src/core/models/mod_3.ts",
+      "src/core/models/mod_4.ts",
+      "src/core/models/value_objects/index.ts",
+      "src/core/models/value_objects/mod_2.ts",
+      "src/core/models/value_objects/mod_3.ts",
       "src/workspace/library/Library.ts",
       "src/workspace/preview/Preview.ts",
       "src/workspace/search/Search.ts",
@@ -369,70 +900,1888 @@
       "src/workspace/tagging/Tags.ts"
     ],
     "symbols": [],
-    "memory": [
-      "con-workspace-billing-boundary"
-    ],
+    "memory": [],
     "guardrails": []
   },
-  "workspace-bulk-export": {
-    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Bulk Export",
-    "name": "Workspace Bulk Export",
-    "kind": "module",
+  "Core/models/aggregates": {
+    "path": "Core.models.aggregates",
+    "name": "aggregates",
+    "kind": "feature",
     "depth": 2,
-    "parent": "workspace",
-    "files": [],
+    "parent": "Core/models",
+    "files": [
+      "src/core/models/aggregates/index.ts",
+      "src/core/models/aggregates/mod_2.ts",
+      "src/core/models/aggregates/mod_3.ts"
+    ],
     "symbols": [],
     "memory": [],
     "guardrails": []
   },
-  "workspace-library": {
-    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Library",
-    "name": "Workspace Library",
-    "kind": "module",
+  "Core/models/entities": {
+    "path": "Core.models.entities",
+    "name": "entities",
+    "kind": "feature",
     "depth": 2,
-    "parent": "workspace",
+    "parent": "Core/models",
     "files": [
+      "src/core/models/entities/index.ts",
+      "src/core/models/entities/mod_2.ts",
+      "src/core/models/entities/mod_3.ts",
+      "src/core/models/entities/mod_4.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/models/value_objects": {
+    "path": "Core.models.value_objects",
+    "name": "value_objects",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Core/models",
+    "files": [
+      "src/core/models/value_objects/index.ts",
+      "src/core/models/value_objects/mod_2.ts",
+      "src/core/models/value_objects/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/rules": {
+    "path": "Core.rules",
+    "name": "rules",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Core",
+    "files": [
+      "src/core/rules/index.ts",
+      "src/core/rules/mod_2.ts",
+      "src/core/rules/mod_3.ts",
+      "src/core/rules/permissions/index.ts",
+      "src/core/rules/permissions/mod_2.ts",
+      "src/core/rules/permissions/mod_3.ts",
+      "src/core/rules/pricing/index.ts",
+      "src/core/rules/pricing/mod_2.ts",
+      "src/core/rules/pricing/mod_3.ts",
+      "src/core/rules/quotas/index.ts",
+      "src/core/rules/quotas/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/rules/permissions": {
+    "path": "Core.rules.permissions",
+    "name": "permissions",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Core/rules",
+    "files": [
+      "src/core/rules/permissions/index.ts",
+      "src/core/rules/permissions/mod_2.ts",
+      "src/core/rules/permissions/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/rules/pricing": {
+    "path": "Core.rules.pricing",
+    "name": "pricing",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Core/rules",
+    "files": [
+      "src/core/rules/pricing/index.ts",
+      "src/core/rules/pricing/mod_2.ts",
+      "src/core/rules/pricing/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/rules/quotas": {
+    "path": "Core.rules.quotas",
+    "name": "quotas",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Core/rules",
+    "files": [
+      "src/core/rules/quotas/index.ts",
+      "src/core/rules/quotas/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/utils": {
+    "path": "Core.utils",
+    "name": "utils",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Core",
+    "files": [
+      "src/core/utils/dates/index.ts",
+      "src/core/utils/dates/mod_2.ts",
+      "src/core/utils/index.ts",
+      "src/core/utils/mod_2.ts",
+      "src/core/utils/money/index.ts",
+      "src/core/utils/money/mod_2.ts",
+      "src/core/utils/money/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/utils/dates": {
+    "path": "Core.utils.dates",
+    "name": "dates",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Core/utils",
+    "files": [
+      "src/core/utils/dates/index.ts",
+      "src/core/utils/dates/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Core/utils/money": {
+    "path": "Core.utils.money",
+    "name": "money",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Core/utils",
+    "files": [
+      "src/core/utils/money/index.ts",
+      "src/core/utils/money/mod_2.ts",
+      "src/core/utils/money/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data": {
+    "path": "Data",
+    "name": "Data",
+    "kind": "domain",
+    "depth": 0,
+    "files": [
+      "src/data/db.ts",
+      "src/data/index.ts",
+      "src/data/legacy_etl/csv_import/index.ts",
+      "src/data/legacy_etl/index.ts",
+      "src/data/legacy_etl/mod_2.ts",
+      "src/data/legacy_etl/xml_dump/index.ts",
+      "src/data/migrations/history/index.ts",
+      "src/data/migrations/history/mod_2.ts",
+      "src/data/migrations/index.ts",
+      "src/data/migrations/mod_2.ts",
+      "src/data/migrations/runner/index.ts",
+      "src/data/migrations/runner/mod_2.ts",
+      "src/data/mod_2.ts",
+      "src/data/models/index.ts",
+      "src/data/models/mod_2.ts",
+      "src/data/models/mod_3.ts",
+      "src/data/models/queries/index.ts",
+      "src/data/models/queries/mod_2.ts",
+      "src/data/models/repositories/index.ts",
+      "src/data/models/repositories/mod_2.ts",
+      "src/data/models/repositories/mod_3.ts",
+      "src/data/replica.ts",
+      "src/data/schema/index.ts",
+      "src/data/schema/indexes/index.ts",
+      "src/data/schema/indexes/mod_2.ts",
+      "src/data/schema/mod_2.ts",
+      "src/data/schema/mod_3.ts",
+      "src/data/schema/tables/accounts/index.ts",
+      "src/data/schema/tables/accounts/mod_2.ts",
+      "src/data/schema/tables/index.ts",
+      "src/data/schema/tables/ledger/index.ts",
+      "src/data/schema/tables/ledger/mod_2.ts",
+      "src/data/schema/tables/mod_2.ts",
+      "src/data/schema/tables/mod_3.ts",
+      "src/data/schema/views/index.ts",
+      "src/data/schema/views/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-postgres-relational"
+    ],
+    "guardrails": []
+  },
+  "Data/legacy_etl": {
+    "path": "Data.legacy_etl",
+    "name": "legacy_etl",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Data",
+    "files": [
+      "src/cli-tools/seedRunner.ts",
+      "src/data/legacy_etl/csv_import/index.ts",
+      "src/data/legacy_etl/index.ts",
+      "src/data/legacy_etl/mod_2.ts",
+      "src/data/legacy_etl/xml_dump/index.ts",
+      "src/experiments/aiSuggest.ts",
+      "src/legacy-sync/xmlImporter.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/legacy_etl/csv_import": {
+    "path": "Data.legacy_etl.csv_import",
+    "name": "csv_import",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Data/legacy_etl",
+    "files": [
+      "src/data/legacy_etl/csv_import/index.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/legacy_etl/xml_dump": {
+    "path": "Data.legacy_etl.xml_dump",
+    "name": "xml_dump",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Data/legacy_etl",
+    "files": [
+      "src/data/legacy_etl/xml_dump/index.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/migrations": {
+    "path": "Data.migrations",
+    "name": "migrations",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Data",
+    "files": [
+      "src/data/migrations/history/index.ts",
+      "src/data/migrations/history/mod_2.ts",
+      "src/data/migrations/index.ts",
+      "src/data/migrations/mod_2.ts",
+      "src/data/migrations/runner/index.ts",
+      "src/data/migrations/runner/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/migrations/history": {
+    "path": "Data.migrations.history",
+    "name": "history",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Data/migrations",
+    "files": [
+      "src/data/migrations/history/index.ts",
+      "src/data/migrations/history/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/migrations/runner": {
+    "path": "Data.migrations.runner",
+    "name": "runner",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Data/migrations",
+    "files": [
+      "src/data/migrations/runner/index.ts",
+      "src/data/migrations/runner/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/models": {
+    "path": "Data.models",
+    "name": "models",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Data",
+    "files": [
+      "src/data/db.ts",
+      "src/data/index.ts",
+      "src/data/legacy_etl/csv_import/index.ts",
+      "src/data/legacy_etl/index.ts",
+      "src/data/legacy_etl/mod_2.ts",
+      "src/data/legacy_etl/xml_dump/index.ts",
+      "src/data/migrations/history/index.ts",
+      "src/data/migrations/history/mod_2.ts",
+      "src/data/migrations/index.ts",
+      "src/data/migrations/mod_2.ts",
+      "src/data/migrations/runner/index.ts",
+      "src/data/migrations/runner/mod_2.ts",
+      "src/data/mod_2.ts",
+      "src/data/models/index.ts",
+      "src/data/models/mod_2.ts",
+      "src/data/models/mod_3.ts",
+      "src/data/models/queries/index.ts",
+      "src/data/models/queries/mod_2.ts",
+      "src/data/models/repositories/index.ts",
+      "src/data/models/repositories/mod_2.ts",
+      "src/data/models/repositories/mod_3.ts",
+      "src/data/replica.ts",
+      "src/data/schema/index.ts",
+      "src/data/schema/indexes/index.ts",
+      "src/data/schema/indexes/mod_2.ts",
+      "src/data/schema/mod_2.ts",
+      "src/data/schema/mod_3.ts",
+      "src/data/schema/tables/accounts/index.ts",
+      "src/data/schema/tables/accounts/mod_2.ts",
+      "src/data/schema/tables/index.ts",
+      "src/data/schema/tables/ledger/index.ts",
+      "src/data/schema/tables/ledger/mod_2.ts",
+      "src/data/schema/tables/mod_2.ts",
+      "src/data/schema/tables/mod_3.ts",
+      "src/data/schema/views/index.ts",
+      "src/data/schema/views/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-postgres-relational"
+    ],
+    "guardrails": []
+  },
+  "Data/models/queries": {
+    "path": "Data.models.queries",
+    "name": "queries",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Data/models",
+    "files": [
+      "src/data/models/queries/index.ts",
+      "src/data/models/queries/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/models/repositories": {
+    "path": "Data.models.repositories",
+    "name": "repositories",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Data/models",
+    "files": [
+      "src/data/models/repositories/index.ts",
+      "src/data/models/repositories/mod_2.ts",
+      "src/data/models/repositories/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/schema": {
+    "path": "Data.schema",
+    "name": "schema",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Data",
+    "files": [
+      "src/data/schema/index.ts",
+      "src/data/schema/indexes/index.ts",
+      "src/data/schema/indexes/mod_2.ts",
+      "src/data/schema/mod_2.ts",
+      "src/data/schema/mod_3.ts",
+      "src/data/schema/tables/accounts/index.ts",
+      "src/data/schema/tables/accounts/mod_2.ts",
+      "src/data/schema/tables/index.ts",
+      "src/data/schema/tables/ledger/index.ts",
+      "src/data/schema/tables/ledger/mod_2.ts",
+      "src/data/schema/tables/mod_2.ts",
+      "src/data/schema/tables/mod_3.ts",
+      "src/data/schema/views/index.ts",
+      "src/data/schema/views/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-strict-fk-billing"
+    ],
+    "guardrails": []
+  },
+  "Data/schema/indexes": {
+    "path": "Data.schema.indexes",
+    "name": "indexes",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Data/schema",
+    "files": [
+      "src/data/schema/indexes/index.ts",
+      "src/data/schema/indexes/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/schema/tables": {
+    "path": "Data.schema.tables",
+    "name": "tables",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Data/schema",
+    "files": [
+      "src/data/schema/tables/accounts/index.ts",
+      "src/data/schema/tables/accounts/mod_2.ts",
+      "src/data/schema/tables/index.ts",
+      "src/data/schema/tables/ledger/index.ts",
+      "src/data/schema/tables/ledger/mod_2.ts",
+      "src/data/schema/tables/mod_2.ts",
+      "src/data/schema/tables/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/schema/tables/accounts": {
+    "path": "Data.schema.tables.accounts",
+    "name": "accounts",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Data/schema/tables",
+    "files": [
+      "src/data/schema/tables/accounts/index.ts",
+      "src/data/schema/tables/accounts/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/schema/tables/ledger": {
+    "path": "Data.schema.tables.ledger",
+    "name": "ledger",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Data/schema/tables",
+    "files": [
+      "src/data/schema/tables/ledger/index.ts",
+      "src/data/schema/tables/ledger/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Data/schema/views": {
+    "path": "Data.schema.views",
+    "name": "views",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Data/schema",
+    "files": [
+      "src/data/schema/views/index.ts",
+      "src/data/schema/views/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Infrastructure": {
+    "path": "Infrastructure",
+    "name": "Infrastructure",
+    "kind": "domain",
+    "depth": 0,
+    "files": [
+      "src/infrastructure/deploy/containers/index.ts",
+      "src/infrastructure/deploy/containers/mod_2.ts",
+      "src/infrastructure/deploy/index.ts",
+      "src/infrastructure/deploy/mod_2.ts",
+      "src/infrastructure/deploy/terraform/index.ts",
+      "src/infrastructure/deploy/terraform/mod_2.ts",
+      "src/infrastructure/index.ts",
+      "src/infrastructure/mod_2.ts",
+      "src/infrastructure/queues/broker/index.ts",
+      "src/infrastructure/queues/broker/mod_2.ts",
+      "src/infrastructure/queues/dlq/index.ts",
+      "src/infrastructure/queues/dlq/mod_2.ts",
+      "src/infrastructure/queues/index.ts",
+      "src/infrastructure/queues/mod_2.ts",
+      "src/infrastructure/telemetry/index.ts",
+      "src/infrastructure/telemetry/metrics/index.ts",
+      "src/infrastructure/telemetry/metrics/mod_2.ts",
+      "src/infrastructure/telemetry/mod_2.ts",
+      "src/infrastructure/telemetry/traces/index.ts",
+      "src/infrastructure/telemetry/traces/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-container-health-checks"
+    ],
+    "guardrails": []
+  },
+  "Infrastructure/deploy": {
+    "path": "Infrastructure.deploy",
+    "name": "deploy",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Infrastructure",
+    "files": [
+      "src/infrastructure/deploy/containers/index.ts",
+      "src/infrastructure/deploy/containers/mod_2.ts",
+      "src/infrastructure/deploy/index.ts",
+      "src/infrastructure/deploy/mod_2.ts",
+      "src/infrastructure/deploy/terraform/index.ts",
+      "src/infrastructure/deploy/terraform/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-container-health-checks"
+    ],
+    "guardrails": []
+  },
+  "Infrastructure/deploy/containers": {
+    "path": "Infrastructure.deploy.containers",
+    "name": "containers",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Infrastructure/deploy",
+    "files": [
+      "src/infrastructure/deploy/containers/index.ts",
+      "src/infrastructure/deploy/containers/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Infrastructure/deploy/terraform": {
+    "path": "Infrastructure.deploy.terraform",
+    "name": "terraform",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Infrastructure/deploy",
+    "files": [
+      "src/infrastructure/deploy/terraform/index.ts",
+      "src/infrastructure/deploy/terraform/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Infrastructure/queues": {
+    "path": "Infrastructure.queues",
+    "name": "queues",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Infrastructure",
+    "files": [
+      "src/infrastructure/queues/broker/index.ts",
+      "src/infrastructure/queues/broker/mod_2.ts",
+      "src/infrastructure/queues/dlq/index.ts",
+      "src/infrastructure/queues/dlq/mod_2.ts",
+      "src/infrastructure/queues/index.ts",
+      "src/infrastructure/queues/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-dlq-three-retries"
+    ],
+    "guardrails": []
+  },
+  "Infrastructure/queues/broker": {
+    "path": "Infrastructure.queues.broker",
+    "name": "broker",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Infrastructure/queues",
+    "files": [
+      "src/infrastructure/queues/broker/index.ts",
+      "src/infrastructure/queues/broker/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Infrastructure/queues/dlq": {
+    "path": "Infrastructure.queues.dlq",
+    "name": "dlq",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Infrastructure/queues",
+    "files": [
+      "src/infrastructure/queues/dlq/index.ts",
+      "src/infrastructure/queues/dlq/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Infrastructure/telemetry": {
+    "path": "Infrastructure.telemetry",
+    "name": "telemetry",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Infrastructure",
+    "files": [
+      "src/infrastructure/telemetry/index.ts",
+      "src/infrastructure/telemetry/metrics/index.ts",
+      "src/infrastructure/telemetry/metrics/mod_2.ts",
+      "src/infrastructure/telemetry/mod_2.ts",
+      "src/infrastructure/telemetry/traces/index.ts",
+      "src/infrastructure/telemetry/traces/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Infrastructure/telemetry/metrics": {
+    "path": "Infrastructure.telemetry.metrics",
+    "name": "metrics",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Infrastructure/telemetry",
+    "files": [
+      "src/infrastructure/telemetry/metrics/index.ts",
+      "src/infrastructure/telemetry/metrics/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Infrastructure/telemetry/traces": {
+    "path": "Infrastructure.telemetry.traces",
+    "name": "traces",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Infrastructure/telemetry",
+    "files": [
+      "src/infrastructure/telemetry/traces/index.ts",
+      "src/infrastructure/telemetry/traces/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile": {
+    "path": "Mobile",
+    "name": "Mobile",
+    "kind": "domain",
+    "depth": 0,
+    "files": [
+      "src/mobile/adapters/biometrics/index.ts",
+      "src/mobile/adapters/biometrics/mod_2.ts",
+      "src/mobile/adapters/index.ts",
+      "src/mobile/adapters/mod_2.ts",
+      "src/mobile/adapters/storage/index.ts",
+      "src/mobile/adapters/storage/mod_2.ts",
+      "src/mobile/hooks/gestures/index.ts",
+      "src/mobile/hooks/gestures/mod_2.ts",
+      "src/mobile/hooks/index.ts",
+      "src/mobile/hooks/mod_2.ts",
+      "src/mobile/hooks/sync/index.ts",
+      "src/mobile/hooks/sync/mod_2.ts",
+      "src/mobile/index.ts",
+      "src/mobile/mod_2.ts",
+      "src/mobile/views/index.ts",
+      "src/mobile/views/mod_2.ts",
+      "src/mobile/views/navigation/index.ts",
+      "src/mobile/views/navigation/mod_2.ts",
+      "src/mobile/views/screens/index.ts",
+      "src/mobile/views/screens/mod_2.ts",
+      "src/mobile/views/screens/mod_3.ts",
+      "src/mobile/views/widgets/index.ts",
+      "src/mobile/views/widgets/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-unify-token-refresh"
+    ],
+    "guardrails": []
+  },
+  "Mobile/adapters": {
+    "path": "Mobile.adapters",
+    "name": "adapters",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Mobile",
+    "files": [
+      "src/mobile/adapters/biometrics/index.ts",
+      "src/mobile/adapters/biometrics/mod_2.ts",
+      "src/mobile/adapters/index.ts",
+      "src/mobile/adapters/mod_2.ts",
+      "src/mobile/adapters/storage/index.ts",
+      "src/mobile/adapters/storage/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile/adapters/biometrics": {
+    "path": "Mobile.adapters.biometrics",
+    "name": "biometrics",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Mobile/adapters",
+    "files": [
+      "src/mobile/adapters/biometrics/index.ts",
+      "src/mobile/adapters/biometrics/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile/adapters/storage": {
+    "path": "Mobile.adapters.storage",
+    "name": "storage",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Mobile/adapters",
+    "files": [
+      "src/mobile/adapters/storage/index.ts",
+      "src/mobile/adapters/storage/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile/hooks": {
+    "path": "Mobile.hooks",
+    "name": "hooks",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Mobile",
+    "files": [
+      "src/mobile/hooks/gestures/index.ts",
+      "src/mobile/hooks/gestures/mod_2.ts",
+      "src/mobile/hooks/index.ts",
+      "src/mobile/hooks/mod_2.ts",
+      "src/mobile/hooks/sync/index.ts",
+      "src/mobile/hooks/sync/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile/hooks/gestures": {
+    "path": "Mobile.hooks.gestures",
+    "name": "gestures",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Mobile/hooks",
+    "files": [
+      "src/mobile/hooks/gestures/index.ts",
+      "src/mobile/hooks/gestures/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile/hooks/sync": {
+    "path": "Mobile.hooks.sync",
+    "name": "sync",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Mobile/hooks",
+    "files": [
+      "src/mobile/hooks/sync/index.ts",
+      "src/mobile/hooks/sync/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile/views": {
+    "path": "Mobile.views",
+    "name": "views",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Mobile",
+    "files": [
+      "src/mobile/views/index.ts",
+      "src/mobile/views/mod_2.ts",
+      "src/mobile/views/navigation/index.ts",
+      "src/mobile/views/navigation/mod_2.ts",
+      "src/mobile/views/screens/index.ts",
+      "src/mobile/views/screens/mod_2.ts",
+      "src/mobile/views/screens/mod_3.ts",
+      "src/mobile/views/widgets/index.ts",
+      "src/mobile/views/widgets/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile/views/navigation": {
+    "path": "Mobile.views.navigation",
+    "name": "navigation",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Mobile/views",
+    "files": [
+      "src/mobile/views/navigation/index.ts",
+      "src/mobile/views/navigation/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile/views/screens": {
+    "path": "Mobile.views.screens",
+    "name": "screens",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Mobile/views",
+    "files": [
+      "src/mobile/views/screens/index.ts",
+      "src/mobile/views/screens/mod_2.ts",
+      "src/mobile/views/screens/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Mobile/views/widgets": {
+    "path": "Mobile.views.widgets",
+    "name": "widgets",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Mobile/views",
+    "files": [
+      "src/mobile/views/widgets/index.ts",
+      "src/mobile/views/widgets/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services": {
+    "path": "Services",
+    "name": "Services",
+    "kind": "domain",
+    "depth": 0,
+    "files": [
+      "services/status_worker.py",
+      "src/services/analytics/export/index.ts",
+      "src/services/analytics/export/mod_2.ts",
+      "src/services/analytics/funnels/index.ts",
+      "src/services/analytics/funnels/mod_2.ts",
+      "src/services/analytics/index.ts",
+      "src/services/analytics/mod_2.ts",
+      "src/services/analytics/mod_3.ts",
+      "src/services/billing/dunning/index.ts",
+      "src/services/billing/dunning/mod_2.ts",
+      "src/services/billing/index.ts",
+      "src/services/billing/invoices/index.ts",
+      "src/services/billing/invoices/mod_2.ts",
+      "src/services/billing/invoices/mod_3.ts",
+      "src/services/billing/mod_2.ts",
+      "src/services/billing/mod_3.ts",
+      "src/services/billing/subscriptions/index.ts",
+      "src/services/billing/subscriptions/mod_2.ts",
+      "src/services/billing/subscriptions/mod_3.ts",
+      "src/services/index.ts",
+      "src/services/jobs/auth/index.ts",
+      "src/services/jobs/auth/key_sync/index.ts",
+      "src/services/jobs/auth/key_sync/mod_2.ts",
+      "src/services/jobs/auth/mod_2.ts",
+      "src/services/jobs/auth/mod_3.ts",
+      "src/services/jobs/auth/mod_4.ts",
+      "src/services/jobs/auth/mod_5.ts",
+      "src/services/jobs/auth/session_pruner/index.ts",
+      "src/services/jobs/auth/session_pruner/mod_2.ts",
+      "src/services/jobs/auth/token_rotator/index.ts",
+      "src/services/jobs/auth/token_rotator/mod_2.ts",
+      "src/services/jobs/auth/token_rotator/mod_3.ts",
+      "src/services/jobs/index.ts",
+      "src/services/jobs/mod_2.ts",
+      "src/services/jobs/mod_3.ts",
+      "src/services/jobs/scheduler/cron_runner/index.ts",
+      "src/services/jobs/scheduler/cron_runner/mod_2.ts",
+      "src/services/jobs/scheduler/index.ts",
+      "src/services/jobs/scheduler/lease_lock/index.ts",
+      "src/services/jobs/scheduler/lease_lock/mod_2.ts",
+      "src/services/jobs/scheduler/mod_2.ts",
+      "src/services/jobs/scheduler/mod_3.ts",
+      "src/services/jobs/workers/index.ts",
+      "src/services/jobs/workers/mod_2.ts",
+      "src/services/jobs/workers/mod_3.ts",
+      "src/services/mod_2.ts",
+      "src/services/notifications/digests/index.ts",
+      "src/services/notifications/digests/mod_2.ts",
+      "src/services/notifications/email/index.ts",
+      "src/services/notifications/email/mod_2.ts",
+      "src/services/notifications/email/mod_3.ts",
+      "src/services/notifications/index.ts",
+      "src/services/notifications/mod_2.ts",
+      "src/services/notifications/push/index.ts",
+      "src/services/notifications/push/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/analytics": {
+    "path": "Services.analytics",
+    "name": "analytics",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Services",
+    "files": [
+      "src/services/analytics/export/index.ts",
+      "src/services/analytics/export/mod_2.ts",
+      "src/services/analytics/funnels/index.ts",
+      "src/services/analytics/funnels/mod_2.ts",
+      "src/services/analytics/index.ts",
+      "src/services/analytics/mod_2.ts",
+      "src/services/analytics/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/analytics/export": {
+    "path": "Services.analytics.export",
+    "name": "export",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/analytics",
+    "files": [
+      "src/services/analytics/export/index.ts",
+      "src/services/analytics/export/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/analytics/funnels": {
+    "path": "Services.analytics.funnels",
+    "name": "funnels",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/analytics",
+    "files": [
+      "src/services/analytics/funnels/index.ts",
+      "src/services/analytics/funnels/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/billing": {
+    "path": "Services.billing",
+    "name": "billing",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Services",
+    "files": [
+      "src/billing/checkout/CheckoutController.ts",
+      "src/billing/proration.ts",
+      "src/payments/checkout.ts",
+      "src/payments/stripe.ts",
+      "src/services/billing/dunning/index.ts",
+      "src/services/billing/dunning/mod_2.ts",
+      "src/services/billing/index.ts",
+      "src/services/billing/invoices/index.ts",
+      "src/services/billing/invoices/mod_2.ts",
+      "src/services/billing/invoices/mod_3.ts",
+      "src/services/billing/mod_2.ts",
+      "src/services/billing/mod_3.ts",
+      "src/services/billing/subscriptions/index.ts",
+      "src/services/billing/subscriptions/mod_2.ts",
+      "src/services/billing/subscriptions/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-strict-fk-billing"
+    ],
+    "guardrails": []
+  },
+  "Services/billing/dunning": {
+    "path": "Services.billing.dunning",
+    "name": "dunning",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/billing",
+    "files": [
+      "src/services/billing/dunning/index.ts",
+      "src/services/billing/dunning/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/billing/invoices": {
+    "path": "Services.billing.invoices",
+    "name": "invoices",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/billing",
+    "files": [
+      "src/services/billing/invoices/index.ts",
+      "src/services/billing/invoices/mod_2.ts",
+      "src/services/billing/invoices/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/billing/subscriptions": {
+    "path": "Services.billing.subscriptions",
+    "name": "subscriptions",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/billing",
+    "files": [
+      "src/services/billing/subscriptions/index.ts",
+      "src/services/billing/subscriptions/mod_2.ts",
+      "src/services/billing/subscriptions/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/jobs": {
+    "path": "Services.jobs",
+    "name": "jobs",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Services",
+    "files": [
+      "src/services/jobs/auth/index.ts",
+      "src/services/jobs/auth/key_sync/index.ts",
+      "src/services/jobs/auth/key_sync/mod_2.ts",
+      "src/services/jobs/auth/mod_2.ts",
+      "src/services/jobs/auth/mod_3.ts",
+      "src/services/jobs/auth/mod_4.ts",
+      "src/services/jobs/auth/mod_5.ts",
+      "src/services/jobs/auth/session_pruner/index.ts",
+      "src/services/jobs/auth/session_pruner/mod_2.ts",
+      "src/services/jobs/auth/token_rotator/index.ts",
+      "src/services/jobs/auth/token_rotator/mod_2.ts",
+      "src/services/jobs/auth/token_rotator/mod_3.ts",
+      "src/services/jobs/index.ts",
+      "src/services/jobs/mod_2.ts",
+      "src/services/jobs/mod_3.ts",
+      "src/services/jobs/scheduler/cron_runner/index.ts",
+      "src/services/jobs/scheduler/cron_runner/mod_2.ts",
+      "src/services/jobs/scheduler/index.ts",
+      "src/services/jobs/scheduler/lease_lock/index.ts",
+      "src/services/jobs/scheduler/lease_lock/mod_2.ts",
+      "src/services/jobs/scheduler/mod_2.ts",
+      "src/services/jobs/scheduler/mod_3.ts",
+      "src/services/jobs/workers/index.ts",
+      "src/services/jobs/workers/mod_2.ts",
+      "src/services/jobs/workers/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/jobs/auth": {
+    "path": "Services.jobs.auth",
+    "name": "auth",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/jobs",
+    "files": [
+      "src/services/jobs/auth/index.ts",
+      "src/services/jobs/auth/key_sync/index.ts",
+      "src/services/jobs/auth/key_sync/mod_2.ts",
+      "src/services/jobs/auth/mod_2.ts",
+      "src/services/jobs/auth/mod_3.ts",
+      "src/services/jobs/auth/mod_4.ts",
+      "src/services/jobs/auth/mod_5.ts",
+      "src/services/jobs/auth/session_pruner/index.ts",
+      "src/services/jobs/auth/session_pruner/mod_2.ts",
+      "src/services/jobs/auth/token_rotator/index.ts",
+      "src/services/jobs/auth/token_rotator/mod_2.ts",
+      "src/services/jobs/auth/token_rotator/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/jobs/auth/key_sync": {
+    "path": "Services.jobs.auth.key_sync",
+    "name": "key_sync",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Services/jobs/auth",
+    "files": [
+      "src/services/jobs/auth/key_sync/index.ts",
+      "src/services/jobs/auth/key_sync/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/jobs/auth/session_pruner": {
+    "path": "Services.jobs.auth.session_pruner",
+    "name": "session_pruner",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Services/jobs/auth",
+    "files": [
+      "src/services/jobs/auth/session_pruner/index.ts",
+      "src/services/jobs/auth/session_pruner/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/jobs/auth/token_rotator": {
+    "path": "Services.jobs.auth.token_rotator",
+    "name": "token_rotator",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Services/jobs/auth",
+    "files": [
+      "src/services/jobs/auth/token_rotator/index.ts",
+      "src/services/jobs/auth/token_rotator/mod_2.ts",
+      "src/services/jobs/auth/token_rotator/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/jobs/scheduler": {
+    "path": "Services.jobs.scheduler",
+    "name": "scheduler",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/jobs",
+    "files": [
+      "src/services/jobs/scheduler/cron_runner/index.ts",
+      "src/services/jobs/scheduler/cron_runner/mod_2.ts",
+      "src/services/jobs/scheduler/index.ts",
+      "src/services/jobs/scheduler/lease_lock/index.ts",
+      "src/services/jobs/scheduler/lease_lock/mod_2.ts",
+      "src/services/jobs/scheduler/mod_2.ts",
+      "src/services/jobs/scheduler/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/jobs/scheduler/cron_runner": {
+    "path": "Services.jobs.scheduler.cron_runner",
+    "name": "cron_runner",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Services/jobs/scheduler",
+    "files": [
+      "src/services/jobs/scheduler/cron_runner/index.ts",
+      "src/services/jobs/scheduler/cron_runner/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/jobs/scheduler/lease_lock": {
+    "path": "Services.jobs.scheduler.lease_lock",
+    "name": "lease_lock",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Services/jobs/scheduler",
+    "files": [
+      "src/services/jobs/scheduler/lease_lock/index.ts",
+      "src/services/jobs/scheduler/lease_lock/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/jobs/workers": {
+    "path": "Services.jobs.workers",
+    "name": "workers",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/jobs",
+    "files": [
+      "src/services/jobs/workers/index.ts",
+      "src/services/jobs/workers/mod_2.ts",
+      "src/services/jobs/workers/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/notifications": {
+    "path": "Services.notifications",
+    "name": "notifications",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Services",
+    "files": [
+      "src/notifications/mailer.ts",
+      "src/services/notifications/digests/index.ts",
+      "src/services/notifications/digests/mod_2.ts",
+      "src/services/notifications/email/index.ts",
+      "src/services/notifications/email/mod_2.ts",
+      "src/services/notifications/email/mod_3.ts",
+      "src/services/notifications/index.ts",
+      "src/services/notifications/mod_2.ts",
+      "src/services/notifications/push/index.ts",
+      "src/services/notifications/push/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/notifications/digests": {
+    "path": "Services.notifications.digests",
+    "name": "digests",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/notifications",
+    "files": [
+      "src/services/notifications/digests/index.ts",
+      "src/services/notifications/digests/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/notifications/email": {
+    "path": "Services.notifications.email",
+    "name": "email",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/notifications",
+    "files": [
+      "src/services/notifications/email/index.ts",
+      "src/services/notifications/email/mod_2.ts",
+      "src/services/notifications/email/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Services/notifications/push": {
+    "path": "Services.notifications.push",
+    "name": "push",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Services/notifications",
+    "files": [
+      "src/services/notifications/push/index.ts",
+      "src/services/notifications/push/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared": {
+    "path": "Shared",
+    "name": "Shared",
+    "kind": "domain",
+    "depth": 0,
+    "files": [
+      "src/shared/config/env/index.ts",
+      "src/shared/config/env/mod_2.ts",
+      "src/shared/config/flags/index.ts",
+      "src/shared/config/flags/mod_2.ts",
+      "src/shared/config/index.ts",
+      "src/shared/config/mod_2.ts",
+      "src/shared/config/mod_3.ts",
+      "src/shared/index.ts",
+      "src/shared/logging/index.ts",
+      "src/shared/logging/mod_2.ts",
+      "src/shared/logging/redaction/index.ts",
+      "src/shared/logging/redaction/mod_2.ts",
+      "src/shared/logging/structured/index.ts",
+      "src/shared/logging/structured/mod_2.ts",
+      "src/shared/mod_2.ts",
+      "src/shared/types/api/index.ts",
+      "src/shared/types/api/mod_2.ts",
+      "src/shared/types/domain/index.ts",
+      "src/shared/types/domain/mod_2.ts",
+      "src/shared/types/index.ts",
+      "src/shared/types/mod_2.ts",
+      "src/shared/utils/crypto/index.ts",
+      "src/shared/utils/crypto/mod_2.ts",
+      "src/shared/utils/crypto/mod_3.ts",
+      "src/shared/utils/index.ts",
+      "src/shared/utils/mod_2.ts",
+      "src/shared/utils/mod_3.ts",
+      "src/shared/utils/retry/index.ts",
+      "src/shared/utils/retry/mod_2.ts",
+      "src/shared/utils/strings/index.ts",
+      "src/shared/utils/strings/mod_2.ts",
+      "src/shared/utils/strings/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/config": {
+    "path": "Shared.config",
+    "name": "config",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Shared",
+    "files": [
+      "src/shared/config/env/index.ts",
+      "src/shared/config/env/mod_2.ts",
+      "src/shared/config/flags/index.ts",
+      "src/shared/config/flags/mod_2.ts",
+      "src/shared/config/index.ts",
+      "src/shared/config/mod_2.ts",
+      "src/shared/config/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/config/env": {
+    "path": "Shared.config.env",
+    "name": "env",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Shared/config",
+    "files": [
+      "src/shared/config/env/index.ts",
+      "src/shared/config/env/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/config/flags": {
+    "path": "Shared.config.flags",
+    "name": "flags",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Shared/config",
+    "files": [
+      "src/shared/config/flags/index.ts",
+      "src/shared/config/flags/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/logging": {
+    "path": "Shared.logging",
+    "name": "logging",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Shared",
+    "files": [
+      "src/shared/logging/index.ts",
+      "src/shared/logging/mod_2.ts",
+      "src/shared/logging/redaction/index.ts",
+      "src/shared/logging/redaction/mod_2.ts",
+      "src/shared/logging/structured/index.ts",
+      "src/shared/logging/structured/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/logging/redaction": {
+    "path": "Shared.logging.redaction",
+    "name": "redaction",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Shared/logging",
+    "files": [
+      "src/shared/logging/redaction/index.ts",
+      "src/shared/logging/redaction/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/logging/structured": {
+    "path": "Shared.logging.structured",
+    "name": "structured",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Shared/logging",
+    "files": [
+      "src/shared/logging/structured/index.ts",
+      "src/shared/logging/structured/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/types": {
+    "path": "Shared.types",
+    "name": "types",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Shared",
+    "files": [
+      "src/shared/types/api/index.ts",
+      "src/shared/types/api/mod_2.ts",
+      "src/shared/types/domain/index.ts",
+      "src/shared/types/domain/mod_2.ts",
+      "src/shared/types/index.ts",
+      "src/shared/types/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/types/api": {
+    "path": "Shared.types.api",
+    "name": "api",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Shared/types",
+    "files": [
+      "src/shared/types/api/index.ts",
+      "src/shared/types/api/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/types/domain": {
+    "path": "Shared.types.domain",
+    "name": "domain",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Shared/types",
+    "files": [
+      "src/shared/types/domain/index.ts",
+      "src/shared/types/domain/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/utils": {
+    "path": "Shared.utils",
+    "name": "utils",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Shared",
+    "files": [
+      "src/shared/utils/crypto/index.ts",
+      "src/shared/utils/crypto/mod_2.ts",
+      "src/shared/utils/crypto/mod_3.ts",
+      "src/shared/utils/index.ts",
+      "src/shared/utils/mod_2.ts",
+      "src/shared/utils/mod_3.ts",
+      "src/shared/utils/retry/index.ts",
+      "src/shared/utils/retry/mod_2.ts",
+      "src/shared/utils/strings/index.ts",
+      "src/shared/utils/strings/mod_2.ts",
+      "src/shared/utils/strings/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/utils/crypto": {
+    "path": "Shared.utils.crypto",
+    "name": "crypto",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Shared/utils",
+    "files": [
+      "src/shared/utils/crypto/index.ts",
+      "src/shared/utils/crypto/mod_2.ts",
+      "src/shared/utils/crypto/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/utils/retry": {
+    "path": "Shared.utils.retry",
+    "name": "retry",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Shared/utils",
+    "files": [
+      "src/shared/utils/retry/index.ts",
+      "src/shared/utils/retry/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Shared/utils/strings": {
+    "path": "Shared.utils.strings",
+    "name": "strings",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Shared/utils",
+    "files": [
+      "src/shared/utils/strings/index.ts",
+      "src/shared/utils/strings/mod_2.ts",
+      "src/shared/utils/strings/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web": {
+    "path": "Web",
+    "name": "Web",
+    "kind": "domain",
+    "depth": 0,
+    "files": [
+      "src/web/api/client/index.ts",
+      "src/web/api/client/mod_2.ts",
+      "src/web/api/index.ts",
+      "src/web/api/interceptors/index.ts",
+      "src/web/api/interceptors/mod_2.ts",
+      "src/web/api/mod_2.ts",
+      "src/web/hooks/cart/index.ts",
+      "src/web/hooks/cart/mod_2.ts",
+      "src/web/hooks/index.ts",
+      "src/web/hooks/mod_2.ts",
+      "src/web/hooks/query/index.ts",
+      "src/web/hooks/query/mod_2.ts",
+      "src/web/hooks/session/index.ts",
+      "src/web/hooks/session/mod_2.ts",
+      "src/web/index.ts",
+      "src/web/legacy_ui/forms/index.ts",
+      "src/web/legacy_ui/forms/mod_2.ts",
+      "src/web/legacy_ui/index.ts",
+      "src/web/legacy_ui/mod_2.ts",
+      "src/web/legacy_ui/tables/index.ts",
+      "src/web/mod_2.ts",
+      "src/web/views/catalog/index.ts",
+      "src/web/views/catalog/mod_2.ts",
+      "src/web/views/checkout/cart_summary/index.ts",
+      "src/web/views/checkout/cart_summary/mod_2.ts",
+      "src/web/views/checkout/index.ts",
+      "src/web/views/checkout/mod_2.ts",
+      "src/web/views/checkout/mod_3.ts",
+      "src/web/views/checkout/payment_form/index.ts",
+      "src/web/views/checkout/payment_form/mod_2.ts",
+      "src/web/views/checkout/receipt_view/index.ts",
+      "src/web/views/dashboard/activity_feed/index.ts",
+      "src/web/views/dashboard/index.ts",
+      "src/web/views/dashboard/metrics_grid/index.ts",
+      "src/web/views/dashboard/metrics_grid/mod_2.ts",
+      "src/web/views/dashboard/mod_2.ts",
+      "src/web/views/dashboard/mod_3.ts",
+      "src/web/views/index.ts",
+      "src/web/views/mod_2.ts",
+      "src/web/views/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [
+      "dec-static-checkout-shell"
+    ],
+    "guardrails": []
+  },
+  "Web/api": {
+    "path": "Web.api",
+    "name": "api",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Web",
+    "files": [
+      "src/web/api/client/index.ts",
+      "src/web/api/client/mod_2.ts",
+      "src/web/api/index.ts",
+      "src/web/api/interceptors/index.ts",
+      "src/web/api/interceptors/mod_2.ts",
+      "src/web/api/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/api/client": {
+    "path": "Web.api.client",
+    "name": "client",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Web/api",
+    "files": [
+      "src/web/api/client/index.ts",
+      "src/web/api/client/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/api/interceptors": {
+    "path": "Web.api.interceptors",
+    "name": "interceptors",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Web/api",
+    "files": [
+      "src/web/api/interceptors/index.ts",
+      "src/web/api/interceptors/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/hooks": {
+    "path": "Web.hooks",
+    "name": "hooks",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Web",
+    "files": [
+      "src/web/hooks/cart/index.ts",
+      "src/web/hooks/cart/mod_2.ts",
+      "src/web/hooks/index.ts",
+      "src/web/hooks/mod_2.ts",
+      "src/web/hooks/query/index.ts",
+      "src/web/hooks/query/mod_2.ts",
+      "src/web/hooks/session/index.ts",
+      "src/web/hooks/session/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/hooks/cart": {
+    "path": "Web.hooks.cart",
+    "name": "cart",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Web/hooks",
+    "files": [
+      "src/web/hooks/cart/index.ts",
+      "src/web/hooks/cart/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/hooks/query": {
+    "path": "Web.hooks.query",
+    "name": "query",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Web/hooks",
+    "files": [
+      "src/web/hooks/query/index.ts",
+      "src/web/hooks/query/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/hooks/session": {
+    "path": "Web.hooks.session",
+    "name": "session",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Web/hooks",
+    "files": [
+      "src/web/hooks/session/index.ts",
+      "src/web/hooks/session/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/legacy_ui": {
+    "path": "Web.legacy_ui",
+    "name": "legacy_ui",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Web",
+    "files": [
+      "src/web/legacy_ui/forms/index.ts",
+      "src/web/legacy_ui/forms/mod_2.ts",
+      "src/web/legacy_ui/index.ts",
+      "src/web/legacy_ui/mod_2.ts",
+      "src/web/legacy_ui/tables/index.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/legacy_ui/forms": {
+    "path": "Web.legacy_ui.forms",
+    "name": "forms",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Web/legacy_ui",
+    "files": [
+      "src/web/legacy_ui/forms/index.ts",
+      "src/web/legacy_ui/forms/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/legacy_ui/tables": {
+    "path": "Web.legacy_ui.tables",
+    "name": "tables",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Web/legacy_ui",
+    "files": [
+      "src/web/legacy_ui/tables/index.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/views": {
+    "path": "Web.views",
+    "name": "views",
+    "kind": "module",
+    "depth": 1,
+    "parent": "Web",
+    "files": [
+      "src/canvas/CanvasRenderer.tsx",
       "src/dashboard/Dashboard.tsx",
       "src/dashboard/Widget.tsx",
       "src/ui/Button.tsx",
       "src/ui/Layout.tsx",
-      "src/workspace/library/Library.ts"
+      "src/web/views/catalog/index.ts",
+      "src/web/views/catalog/mod_2.ts",
+      "src/web/views/checkout/cart_summary/index.ts",
+      "src/web/views/checkout/cart_summary/mod_2.ts",
+      "src/web/views/checkout/index.ts",
+      "src/web/views/checkout/mod_2.ts",
+      "src/web/views/checkout/mod_3.ts",
+      "src/web/views/checkout/payment_form/index.ts",
+      "src/web/views/checkout/payment_form/mod_2.ts",
+      "src/web/views/checkout/receipt_view/index.ts",
+      "src/web/views/dashboard/activity_feed/index.ts",
+      "src/web/views/dashboard/index.ts",
+      "src/web/views/dashboard/metrics_grid/index.ts",
+      "src/web/views/dashboard/metrics_grid/mod_2.ts",
+      "src/web/views/dashboard/mod_2.ts",
+      "src/web/views/dashboard/mod_3.ts",
+      "src/web/views/index.ts",
+      "src/web/views/mod_2.ts",
+      "src/web/views/mod_3.ts"
     ],
     "symbols": [],
     "memory": [
-      "term-workspace-item"
+      "dec-static-checkout-shell"
     ],
     "guardrails": []
   },
-  "workspace-search": {
-    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Search",
-    "name": "Workspace Search",
-    "kind": "module",
+  "Web/views/catalog": {
+    "path": "Web.views.catalog",
+    "name": "catalog",
+    "kind": "feature",
     "depth": 2,
-    "parent": "workspace",
+    "parent": "Web/views",
     "files": [
-      "src/workspace/search/Search.ts"
+      "src/web/views/catalog/index.ts",
+      "src/web/views/catalog/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/views/checkout": {
+    "path": "Web.views.checkout",
+    "name": "checkout",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Web/views",
+    "files": [
+      "src/web/views/checkout/cart_summary/index.ts",
+      "src/web/views/checkout/cart_summary/mod_2.ts",
+      "src/web/views/checkout/index.ts",
+      "src/web/views/checkout/mod_2.ts",
+      "src/web/views/checkout/mod_3.ts",
+      "src/web/views/checkout/payment_form/index.ts",
+      "src/web/views/checkout/payment_form/mod_2.ts",
+      "src/web/views/checkout/receipt_view/index.ts"
     ],
     "symbols": [],
     "memory": [
-      "exc-search-direct-query"
+      "dec-static-checkout-shell"
     ],
     "guardrails": []
   },
-  "workspace-tagging": {
-    "path": "Pulse SaaS Product.Workspace Subsystem.Workspace Tagging",
-    "name": "Workspace Tagging",
-    "kind": "module",
-    "depth": 2,
-    "parent": "workspace",
+  "Web/views/checkout/cart_summary": {
+    "path": "Web.views.checkout.cart_summary",
+    "name": "cart_summary",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Web/views/checkout",
     "files": [
-      "src/workspace/tagging/ColorWheel.ts",
-      "src/workspace/tagging/Tags.ts"
+      "src/web/views/checkout/cart_summary/index.ts",
+      "src/web/views/checkout/cart_summary/mod_2.ts"
     ],
     "symbols": [],
-    "memory": [
-      "dec-flat-tags"
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/views/checkout/payment_form": {
+    "path": "Web.views.checkout.payment_form",
+    "name": "payment_form",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Web/views/checkout",
+    "files": [
+      "src/web/views/checkout/payment_form/index.ts",
+      "src/web/views/checkout/payment_form/mod_2.ts"
     ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/views/checkout/receipt_view": {
+    "path": "Web.views.checkout.receipt_view",
+    "name": "receipt_view",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Web/views/checkout",
+    "files": [
+      "src/web/views/checkout/receipt_view/index.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/views/dashboard": {
+    "path": "Web.views.dashboard",
+    "name": "dashboard",
+    "kind": "feature",
+    "depth": 2,
+    "parent": "Web/views",
+    "files": [
+      "src/web/views/dashboard/activity_feed/index.ts",
+      "src/web/views/dashboard/index.ts",
+      "src/web/views/dashboard/metrics_grid/index.ts",
+      "src/web/views/dashboard/metrics_grid/mod_2.ts",
+      "src/web/views/dashboard/mod_2.ts",
+      "src/web/views/dashboard/mod_3.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/views/dashboard/activity_feed": {
+    "path": "Web.views.dashboard.activity_feed",
+    "name": "activity_feed",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Web/views/dashboard",
+    "files": [
+      "src/web/views/dashboard/activity_feed/index.ts"
+    ],
+    "symbols": [],
+    "memory": [],
+    "guardrails": []
+  },
+  "Web/views/dashboard/metrics_grid": {
+    "path": "Web.views.dashboard.metrics_grid",
+    "name": "metrics_grid",
+    "kind": "component",
+    "depth": 3,
+    "parent": "Web/views/dashboard",
+    "files": [
+      "src/web/views/dashboard/metrics_grid/index.ts",
+      "src/web/views/dashboard/metrics_grid/mod_2.ts"
+    ],
+    "symbols": [],
+    "memory": [],
     "guardrails": []
   }
 }

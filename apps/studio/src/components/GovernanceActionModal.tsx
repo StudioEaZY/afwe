@@ -1,5 +1,6 @@
 // apps/studio/src/components/GovernanceActionModal.tsx
 import React, { useEffect, useState } from "react";
+import { AlertTriangle, Scale, FileCode, X, Undo2, Redo2 } from "lucide-react";
 import { useStore } from "../store";
 
 export const GovernanceActionModal: React.FC = () => {
@@ -92,7 +93,11 @@ export async function ${sym}(payload: Record<string, any>) {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-              <span style={{ fontSize: "20px" }}>{consequenceModal.isCascading ? "⚠️" : "⚖"}</span>
+              {consequenceModal.isCascading ? (
+                <AlertTriangle size={20} style={{ color: "var(--red)" }} />
+              ) : (
+                <Scale size={20} style={{ color: "var(--accent)" }} />
+              )}
               <h3 style={{ fontFamily: "Newsreader, serif", fontSize: "22px", margin: 0, color: "#1D1C1A" }}>
                 {consequenceModal.title}
               </h3>
@@ -310,16 +315,17 @@ export async function ${sym}(payload: Record<string, any>) {
                 <h3 style={{ fontFamily: "Newsreader, serif", fontSize: "20px", margin: 0, color: "#1D1C1A" }}>
                   {codePreviewTarget.title || "Source Code Preview"}
                 </h3>
-                <div style={{ fontSize: "11.5px", color: "#6B675D", fontFamily: "'IBM Plex Mono', monospace", marginTop: "2px" }}>
-                  📄 {codePreviewTarget.filePath}
+                <div style={{ fontSize: "11.5px", color: "#6B675D", fontFamily: "'IBM Plex Mono', monospace", marginTop: "2px", display: "flex", alignItems: "center", gap: 6 }}>
+                  <FileCode size={13} />
+                  {codePreviewTarget.filePath}
                   {codePreviewTarget.symbol && ` :: ${codePreviewTarget.symbol}`}
                 </div>
               </div>
               <button
                 onClick={closeCodePreview}
-                style={{ background: "none", border: "none", fontSize: "16px", cursor: "pointer", color: "#6B675D" }}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#6B675D", display: "inline-flex" }}
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
 
@@ -383,8 +389,8 @@ export async function ${sym}(payload: Record<string, any>) {
               <div style={{ fontWeight: 600, fontSize: "15px", color: "#1D1C1A" }}>Session Undo / Redo History</div>
               <div style={{ fontSize: "11px", color: "#6B675D" }}>{undoStack.length} reversible actions in session</div>
             </div>
-            <button onClick={() => setDrawer(null)} style={{ background: "none", border: "none", fontSize: "14px", cursor: "pointer", color: "#6B675D" }}>
-              ✕
+            <button onClick={() => setDrawer(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#6B675D", display: "inline-flex" }}>
+              <X size={15} />
             </button>
           </div>
 
@@ -402,9 +408,13 @@ export async function ${sym}(payload: Record<string, any>) {
                 fontSize: "12px",
                 fontWeight: 600,
                 cursor: undoStack.length > 0 ? "pointer" : "default",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
               }}
             >
-              ↶ Undo (Ctrl+Z)
+              <Undo2 size={13} /> Undo (Ctrl+Z)
             </button>
             <button
               onClick={() => redo()}
@@ -419,9 +429,13 @@ export async function ${sym}(payload: Record<string, any>) {
                 fontSize: "12px",
                 fontWeight: 600,
                 cursor: redoStack.length > 0 ? "pointer" : "default",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
               }}
             >
-              ↷ Redo (Ctrl+Y)
+              <Redo2 size={13} /> Redo (Ctrl+Y)
             </button>
           </div>
 

@@ -1,14 +1,28 @@
 // apps/studio/src/components/TopologyMap.tsx
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
+import {
+  Layers,
+  ArrowDown,
+  AlertTriangle,
+  Lock,
+  Plus,
+  Minus,
+  RotateCcw,
+} from "lucide-react";
 import { useStore } from "../store";
 import {
   buildHierarchyTree,
+  buildDirectedEdges,
   findNodeById,
-  generateOrganicClusterHull,
+  computeNodeFlags,
+  stateDescription,
+  shortLabel,
   HierarchyNode,
+  DirectedEdge,
   SelectedEntity,
+  NodeState,
 } from "../lib/hierarchy";
-import { getTopologyTerritoryStyle } from "../lib/palettes";
+import { SvgDomainIcon, SvgMiniLock, SvgMiniAlertTriangle } from "../lib/lucideSvgPaths";
 
 export interface TopologyDiffMode {
   addedNodes?: Set<string>;
@@ -23,32 +37,61 @@ export interface TopologyMapProps {
   compact?: boolean;
   snapshotScene?: any | null;
   diffMode?: TopologyDiffMode | null;
+  timelineT?: number;
   onSelectEntity?: (entity: SelectedEntity) => void;
   onDrillDown?: (nodeId: string) => void;
+  onOpenConstellation?: (nodeKey: string) => void;
+}
+
+const TIER_NAMES = [
+  "Tier 1 · Presentation Layer",
+  "Tier 2 · Application & Services",
+  "Tier 3 · Domain & Data",
+  "Tier 4 · Foundation & Platform",
+];
+
+function fillFor(state: NodeState): string {
+  if (state === "mapped") return "var(--mapped)";
+  if (state === "inferred") return "var(--inferred)";
+  if (state === "legacy") return "var(--legacy)";
+  return "url(#hatch-topology)";
+}
+
+function dotColorFor(state: NodeState): string {
+  if (state === "mapped") return "var(--accent)";
+  if (state === "inferred") return "var(--amber)";
+  return "var(--mute)";
 }
 
 export const TopologyMap: React.FC<TopologyMapProps> = ({
   compact = false,
   snapshotScene = null,
   diffMode = null,
+  timelineT,
   onSelectEntity,
   onDrillDown,
+  onOpenConstellation,
 }) => {
   const {
     graph,
-    currentScopeId,
-    currentDepth,
-    drillDown,
-    drillUp,
+    overviewTimelineT,
+    filterMode,
+    selectedEntity,
     selectEntity,
-    jumpToTurn,
+    drillDown,
+    setActiveLens,
+    openConstellationFor,
   } = useStore();
 
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
-  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
-  const [activeAttentionTab, setActiveAttentionTab] = useState<"attention" | "turns" | "proposals" | "pins">("attention");
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState<{ k: number; x: number; y: number }>({ k: 1, x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState<{ x: number; y: number; zx: number; zy: number } | null>(null);
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const [hoveredEdgeIdx, setHoveredEdgeIdx] = useState<number | null>(null);
+  const [tip, setTip] = useState<{ x: number; y: number; html: React.ReactNode } | null>(null);
 
-  // If a snapshotScene is provided, use its entities, else use live graph
+  const effectiveT = timelineT ?? overviewTimelineT ?? 1;
+
   const effectiveGraph = useMemo(() => {
     if (!snapshotScene) return graph;
     return {
@@ -58,652 +101,536 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
     };
   }, [snapshotScene, graph]);
 
-  const rootHierarchy = useMemo(() => buildHierarchyTree(effectiveGraph), [effectiveGraph]);
+  const root = useMemo(() => buildHierarchyTree(effectiveGraph), [effectiveGraph]);
+  const { domainEdges } = useMemo(
+    () => buildDirectedEdges(effectiveGraph, root),
+    [effectiveGraph, root]
+  );
 
-  const focusNode: HierarchyNode = useMemo(() => {
-    if (!currentScopeId) return rootHierarchy;
-    return findNodeById(rootHierarchy, currentScopeId) || rootHierarchy;
-  }, [rootHierarchy, currentScopeId]);
+  // Group top-level domains into 4 architectural tiers
+  const { tiers, pos, activeEdges } = useMemo(() => {
+    const tierBuckets: HierarchyNode[][] = [[], [], [], []];
+    const aliveDomains = (root.children || []).filter((d) => (d.birth || 0) <= effectiveT);
 
-  const children = focusNode.children || [];
-  const totalFiles = focusNode.fileCount || (graph?.files?.length || 1);
-  const violationsCount = (graph?.code_edges || []).filter((e: any) => e.violation).length;
-  const pinsCount = (graph?.pins || []).filter((p: any) => p.status === "active").length;
-  const questionsCount = (graph?.calibration?.questions || []).filter((q: any) => q.status === "open").length;
-
-  const isDrilledIn = currentDepth > 0;
-
-  // ── Layout Calculations ──
-  // If at Root: asymmetric organic constellation
-  // If Drilled-in: central sweeping envelope with external satellite pills
-  const { territories, satellites, outerEnvelopeD } = useMemo(() => {
-    const list: any[] = [];
-    const satList: any[] = [];
-
-    if (!isDrilledIn) {
-      // Root Constellation layout (Screenshot 3)
-      // Asymmetric placement: 3 columns with varied heights and L-shapes
-      const colDefs = [
-        { startX: 40, y: 30, width: 280 },
-        { startX: 350, y: 30, width: 300 },
-        { startX: 680, y: 30, width: 270 },
-      ];
-
-      const colHeights = [30, 30, 30];
-
-      children.forEach((child, index) => {
-        // Pick column with smallest height
-        let targetCol = 0;
-        if (colHeights[1] < colHeights[targetCol]) targetCol = 1;
-        if (colHeights[2] < colHeights[targetCol]) targetCol = 2;
-
-        const subItems = child.children || [];
-        const cardCount = Math.max(1, subItems.length);
-        const isLshape = cardCount >= 5;
-        const w = colDefs[targetCol].width;
-        const h = isLshape ? 210 : cardCount <= 2 ? 110 : 165;
-        const x = colDefs[targetCol].startX;
-        const y = colHeights[targetCol];
-        colHeights[targetCol] += h + 24;
-
-        const cards: any[] = [];
-        const cardW = 118;
-        const cardH = 46;
-
-        subItems.slice(0, 6).forEach((sub, subIdx) => {
-          const colIdx = subIdx % 2;
-          const rowIdx = Math.floor(subIdx / 2);
-          const cx = x + 16 + colIdx * (cardW + 12);
-          const cy = y + 42 + rowIdx * (cardH + 10);
-          cards.push({
-            id: sub.id,
-            label: sub.label,
-            path: sub.path,
-            subPath: sub.path.split("/").pop() || sub.label,
-            isCharted: sub.isCharted,
-            fileCount: sub.fileCount,
-            hasViolation: sub.hasViolation,
-            hasPin: sub.hasPin,
-            x: cx,
-            y: cy,
-            width: cardW,
-            height: cardH,
-            node: sub,
-          });
-        });
-
-        const style = getTopologyTerritoryStyle(child.label, child.hasViolation);
-
-        list.push({
-          id: child.id,
-          label: child.label,
-          path: child.path,
-          isCharted: child.isCharted,
-          fileCount: child.fileCount,
-          hasViolation: child.hasViolation,
-          hasPin: child.hasPin,
-          x,
-          y,
-          width: w,
-          height: h,
-          style,
-          hullD: generateOrganicClusterHull(x, y, w, h, cardCount, index, isLshape ? "l-shape" : cardCount <= 2 ? "capsule" : "box"),
-          cards,
-          node: child,
-        });
-      });
-
-      return { territories: list, satellites: [], outerEnvelopeD: "" };
-    } else {
-      // Drilled-In Domain View (Screenshot 2)
-      // Main central domain surrounded by external satellite nodes
-      const centerX = 160;
-      const centerY = 40;
-      const centerW = 660;
-      const centerH = 400;
-
-      // Sweeping amoeba boundary for the focused domain
-      const envelope = generateOrganicClusterHull(centerX, centerY, centerW, centerH, 8, 3, "amoeba");
-
-      // Place children inside the sweeping boundary
-      const innerCols = 3;
-      children.forEach((child, index) => {
-        const col = index % innerCols;
-        const row = Math.floor(index / innerCols);
-        const ix = centerX + 40 + col * 195;
-        const iy = centerY + 50 + row * 160;
-        const iw = 180;
-        const ih = 140;
-
-        const subItems = child.children || [];
-        const cards: any[] = [];
-        subItems.slice(0, 4).forEach((sub, sIdx) => {
-          const scx = ix + 12 + (sIdx % 2) * 78;
-          const scy = iy + 38 + Math.floor(sIdx / 2) * 44;
-          cards.push({
-            id: sub.id,
-            label: sub.label,
-            path: sub.path,
-            subPath: sub.path.split("/").pop() || sub.label,
-            isCharted: sub.isCharted,
-            fileCount: sub.fileCount,
-            hasViolation: sub.hasViolation,
-            hasPin: sub.hasPin,
-            x: scx,
-            y: scy,
-            width: 72,
-            height: 38,
-            node: sub,
-          });
-        });
-
-        const style = getTopologyTerritoryStyle(child.label, child.hasViolation);
-
-        list.push({
-          id: child.id,
-          label: child.label,
-          path: child.path,
-          isCharted: child.isCharted,
-          fileCount: child.fileCount,
-          hasViolation: child.hasViolation,
-          hasPin: child.hasPin,
-          x: ix,
-          y: iy,
-          width: iw,
-          height: ih,
-          style,
-          hullD: generateOrganicClusterHull(ix, iy, iw, ih, subItems.length, index, "box"),
-          cards,
-          node: child,
-        });
-      });
-
-      // External satellite domains placed around the outer envelope
-      satList.push(
-        { id: "sat:web", label: "Web / Frontend", x: 20, y: 70, width: 110, height: 42, relation: "API requests", direction: "in" },
-        { id: "sat:infra", label: "Infrastructure", x: 20, y: 260, width: 110, height: 42, relation: "Webhooks (in)", direction: "in" },
-        { id: "sat:data", label: "Data / Storage", x: 840, y: 120, width: 110, height: 42, relation: "Reads / Writes", direction: "out" },
-        { id: "sat:shared", label: "Shared / Core", x: 840, y: 280, width: 110, height: 42, relation: "Types & Utils", direction: "out" },
-      );
-
-      return { territories: list, satellites: satList, outerEnvelopeD: envelope };
-    }
-  }, [children, isDrilledIn]);
-
-  // Inter-territory dependency ribbons
-  const edges = useMemo(() => {
-    const codeEdges = graph?.code_edges || [];
-    const list: any[] = [];
-    const territoryMap = new Map<string, any>();
-    territories.forEach((t) => {
-      territoryMap.set(t.id, t);
-      t.cards.forEach((c: any) => territoryMap.set(c.id, t));
+    aliveDomains.forEach((d, idx) => {
+      const t =
+        typeof d.tier === "number" && d.tier >= 0 && d.tier <= 3
+          ? d.tier
+          : idx % 4;
+      tierBuckets[t].push(d);
     });
 
-    let count = 0;
-    for (const ce of codeEdges) {
-      if (count >= 12) break;
-      const fromT = territoryMap.get(ce.from);
-      const toT = territoryMap.get(ce.to);
+    const nodePos: Record<string, { x: number; y: number; tier: number; node: HierarchyNode }> = {};
+    tierBuckets.forEach((list, ti) => {
+      const y = -195 + ti * 130;
+      const count = list.length;
+      list.forEach((n, idx) => {
+        const x = (idx - (count - 1) / 2) * 240;
+        nodePos[n.key] = { x, y, tier: ti, node: n };
+      });
+    });
 
-      if (fromT && toT && fromT.id !== toT.id) {
-        const x1 = fromT.x + fromT.width / 2;
-        const y1 = fromT.y + fromT.height / 2;
-        const x2 = toT.x + toT.width / 2;
-        const y2 = toT.y + toT.height / 2;
+    const edges = domainEdges.filter((e) => {
+      if (!nodePos[e.a] || !nodePos[e.b]) return false;
+      return e.birth <= effectiveT && (e.death === null || e.death > effectiveT);
+    });
 
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const cx1 = x1 + dx * 0.25 - dy * 0.15;
-        const cy1 = y1 + dy * 0.25 + dx * 0.15;
-        const cx2 = x1 + dx * 0.75 - dy * 0.15;
-        const cy2 = y1 + dy * 0.75 + dx * 0.15;
+    return { tiers: tierBuckets, pos: nodePos, activeEdges: edges };
+  }, [root, domainEdges, effectiveT]);
 
-        const pathD = `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`;
-        const midX = (x1 + x2) / 2;
-        const midY = (y1 + y2) / 2;
+  const passFilter = (n: HierarchyNode): boolean => {
+    if (filterMode === "all") return true;
+    if (filterMode === "uncharted" || filterMode === "unmapped") return n.state === "unmapped";
+    if (filterMode === "issues") return n.hasViolation;
+    if (filterMode === "proposals") return n.hasProposal;
+    return n.state === filterMode;
+  };
 
-        list.push({
-          id: `edge:${ce.from}->${ce.to}`,
-          fromId: ce.from,
-          toId: ce.to,
-          fromName: fromT.label,
-          toName: toT.label,
-          verb: ce.violation ? "Rule violation" : ce.count > 5 ? "API requests" : "Uses",
-          count: ce.count,
-          isViolation: !!ce.violation,
-          pathD,
-          midX,
-          midY,
-          raw: ce,
-        });
-        count++;
-      }
-    }
-    return list;
-  }, [territories, graph]);
+  const updateTipPos = (ev: React.MouseEvent, content: React.ReactNode) => {
+    if (!stageRef.current) return;
+    const r = stageRef.current.getBoundingClientRect();
+    setTip({
+      x: Math.min(r.width - 280, Math.max(12, ev.clientX - r.left + 14)),
+      y: Math.min(r.height - 150, Math.max(12, ev.clientY - r.top + 14)),
+      html: content,
+    });
+  };
 
-  const handleSelectNode = (node: HierarchyNode) => {
-    const entity: SelectedEntity = {
-      id: node.id,
-      kind: node.kind,
-      label: node.label,
-      path: node.path,
-      status: node.hasViolation ? "violation" : node.hasPin ? "pinned" : node.isCharted ? "mapped" : "uncharted",
-      fileCount: node.fileCount,
-      mappedCount: node.mappedCount,
-      parentId: node.parentId,
-      raw: node.raw,
+  const handleSelectNode = (n: HierarchyNode) => {
+    const ent: SelectedEntity = {
+      id: n.id,
+      key: n.key,
+      kind: n.kind,
+      label: n.label,
+      path: n.path,
+      status: n.hasViolation
+        ? "violation"
+        : n.hasPin
+        ? "pinned"
+        : n.state === "unmapped"
+        ? "uncharted"
+        : "mapped",
+      state: n.state,
+      fileCount: n.fileCount,
+      mappedCount: n.mappedCount,
+      node: n,
+      raw: n.raw,
     };
-    selectEntity(entity);
-    if (onSelectEntity) onSelectEntity(entity);
+    if (onSelectEntity) onSelectEntity(ent);
+    else selectEntity(ent);
   };
 
-  const handleDoubleClickNode = (nodeId: string) => {
-    drillDown(nodeId);
-    if (onDrillDown) onDrillDown(nodeId);
+  const handleSelectEdge = (e: DirectedEdge) => {
+    const ent: SelectedEntity = {
+      id: `${e.a}->${e.b}`,
+      key: `${e.a}->${e.b}`,
+      kind: "edge",
+      label: `${shortLabel(e.a)} → ${shortLabel(e.b)}`,
+      path: `${e.a} → ${e.b}`,
+      status: e.bad ? "violation" : "mapped",
+      edgeData: e,
+    };
+    if (onSelectEntity) onSelectEntity(ent);
+    else selectEntity(ent);
   };
 
-  const canvasWidth = 980;
-  const canvasHeight = Math.max(540, isDrilledIn ? 500 : Math.max(...territories.map((t) => t.y + t.height + 40), 520));
+  const handleOpenInRadial = (nodeId: string) => {
+    if (onDrillDown) {
+      onDrillDown(nodeId);
+    } else {
+      setActiveLens("radial");
+      drillDown(nodeId);
+    }
+  };
+
+  const handleOpenConstellation = (nodeKey: string) => {
+    if (onOpenConstellation) {
+      onOpenConstellation(nodeKey);
+    } else {
+      openConstellationFor(nodeKey);
+    }
+  };
+
+  const selectedNode =
+    selectedEntity && selectedEntity.kind !== "edge"
+      ? selectedEntity.node || findNodeById(root, selectedEntity.key || selectedEntity.id)
+      : null;
 
   return (
     <div
-      className="topology-map-container"
+      ref={stageRef}
+      className="stage-soft"
       style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        background: compact ? "transparent" : "var(--bg)",
-        color: "var(--ink)",
-        fontFamily: "'IBM Plex Sans', sans-serif",
+        flex: 1,
+        minHeight: compact ? 380 : 540,
+        userSelect: "none",
       }}
+      onWheel={(e) => {
+        e.preventDefault();
+        setZoom((z) => ({
+          ...z,
+          k: Math.max(0.6, Math.min(2.6, z.k * (e.deltaY < 0 ? 1.12 : 0.89))),
+        }));
+      }}
+      onPointerDown={(e) => {
+        if ((e.target as HTMLElement).closest("button,.zctl,.ex")) return;
+        setDragStart({ x: e.clientX, y: e.clientY, zx: zoom.x, zy: zoom.y });
+      }}
+      onPointerMove={(e) => {
+        if (!dragStart) return;
+        setZoom((z) => ({
+          ...z,
+          x: dragStart.zx + (e.clientX - dragStart.x),
+          y: dragStart.zy + (e.clientY - dragStart.y),
+        }));
+      }}
+      onPointerUp={() => setDragStart(null)}
     >
-      {/* 1. Top KPI Summary Strip (Only when not compact) */}
+      {/* Top Overlay Context Banner & Selection Bar (#stageTop) */}
       {!compact && (
-        <div style={{ padding: "14px 24px 8px 24px", borderBottom: "1px solid var(--line)", background: "var(--panel)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
-              <h2 style={{ fontFamily: "Newsreader, serif", fontSize: "24px", fontWeight: 600, color: "var(--ink)", margin: 0 }}>
-                {focusNode.label} {isDrilledIn ? "Domain Topology" : "Topology"}
-              </h2>
-              <span style={{ fontSize: "12px", background: "var(--side)", color: "var(--accent)", padding: "2px 8px", borderRadius: "12px", fontWeight: 600 }}>
-                ● {focusNode.mappedCount > 0 ? "Charted Architecture" : "Uncharted"}
+        <div className="stage-top">
+          <div className="ctx-banner">
+            <span>
+              Layered architecture · Top-to-bottom flow · Red upward arrows = forbidden
+              dependencies
+            </span>
+          </div>
+
+          {selectedNode && (
+            <div className="sel-bar">
+              <span className="sel-path">
+                Selected: <b>{selectedNode.breadcrumbLabels.join(" › ")}</b>
               </span>
-            </div>
-
-            {isDrilledIn && (
               <button
-                onClick={() => drillUp()}
-                style={{
-                  background: "var(--panel)",
-                  border: "1px solid var(--line)",
-                  padding: "6px 14px",
-                  borderRadius: "6px",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  color: "var(--ink)",
-                  cursor: "pointer",
-                  boxShadow: "0 1px 3px var(--shadow)",
-                }}
+                type="button"
+                className="btn-soft primary"
+                onClick={() => handleOpenInRadial(selectedNode.id)}
               >
-                ↑ Step out to Root
+                Open map
               </button>
-            )}
-          </div>
-
-          {/* 6-KPI Metric Pill Strip */}
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            {[
-              { label: "Total files", value: totalFiles.toLocaleString() },
-              { label: "Features", value: children.length },
-              { label: "Modules", value: Math.max(1, Math.round(totalFiles / 32)) },
-              { label: "Pinned items", value: pinsCount, isPin: true },
-              { label: "Open proposals", value: questionsCount },
-              { label: "Rule violation", value: violationsCount, isViolation: violationsCount > 0 },
-            ].map((kpi, idx) => (
-              <div
-                key={idx}
-                style={{
-                  background: kpi.isViolation ? "var(--redbg)" : "var(--panel)",
-                  border: `1px solid ${kpi.isViolation ? "var(--red)" : "var(--line)"}`,
-                  borderRadius: "6px",
-                  padding: "4px 10px",
-                  fontSize: "11px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
+              <button
+                type="button"
+                className="btn-soft"
+                onClick={() => handleOpenConstellation(selectedNode.key)}
               >
-                <span style={{ color: "var(--mute)" }}>{kpi.label}</span>
-                <span style={{ fontWeight: 700, color: kpi.isViolation ? "var(--red)" : kpi.isPin ? "var(--amber)" : "var(--ink)" }}>
-                  {kpi.value}
-                </span>
-              </div>
-            ))}
-          </div>
+                Constellation
+              </button>
+            </div>
+          )}
         </div>
       )}
 
-      {/* 2. Main SVG Topology Canvas */}
-      <div style={{ flex: 1, overflow: "auto", position: "relative" }}>
-        <svg width={canvasWidth} height={canvasHeight} style={{ overflow: "visible", padding: "10px" }}>
-          <defs>
-            <filter id="topo-card-shadow" x="-8%" y="-8%" width="116%" height="120%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#42361E" floodOpacity="0.06" />
-            </filter>
+      {/* Main Topology SVG */}
+      <svg
+        viewBox="-360 -295 720 590"
+        aria-label="Architectural topology map"
+        style={{
+          width: "100%",
+          height: "100%",
+          maxHeight: compact ? 420 : 610,
+          display: "block",
+          margin: "0 auto",
+        }}
+      >
+        <defs>
+          <pattern
+            id="hatch-topology"
+            width="6"
+            height="6"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
+          >
+            <rect width="6" height="6" fill="var(--unm)" />
+            <line x1="0" y1="0" x2="0" y2="6" stroke="var(--hatch)" strokeWidth="1.5" />
+          </pattern>
+          <marker
+            id="arr-top"
+            viewBox="0 0 10 10"
+            refX="7"
+            refY="5"
+            markerWidth="5.5"
+            markerHeight="5.5"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,1.5 L8,5 L0,8.5 z" fill="var(--mute)" />
+          </marker>
+          <marker
+            id="arr-top-bad"
+            viewBox="0 0 10 10"
+            refX="7"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,1 L9,5 L0,9 z" fill="var(--red)" />
+          </marker>
+        </defs>
 
-            <marker id="arrow-slate" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-              <path d="M 0 1 L 6 4 L 0 7 Z" fill="#6E685F" />
-            </marker>
-
-            <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-              <path d="M 0 1 L 6 4 L 0 7 Z" fill="#2E7A57" />
-            </marker>
-
-            <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-              <path d="M 0 1 L 6 4 L 0 7 Z" fill="#C94A38" />
-            </marker>
-          </defs>
-
-          {/* Drilled-In: Sweeping Outer Amoeba Boundary Envelope (Screenshot 2) */}
-          {isDrilledIn && outerEnvelopeD && (
-            <g className="outer-domain-envelope">
-              <path
-                d={outerEnvelopeD}
-                fill="#EBF3EE"
-                fillOpacity={0.65}
-                stroke="#6A987E"
-                strokeWidth="1.5"
-                strokeDasharray="6 4"
-              />
-              <text x="180" y="70" fontSize="13" fontWeight="700" fill="#256345" style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                {focusNode.label} Domain Boundary
-              </text>
-            </g>
-          )}
-
-          {/* External Satellite Nodes (When Drilled In) */}
-          {isDrilledIn &&
-            satellites.map((sat) => (
-              <g key={sat.id} transform={`translate(${sat.x}, ${sat.y})`} style={{ cursor: "pointer" }}>
-                <rect width={sat.width} height={sat.height} rx="8" fill="#FFFFFF" stroke="#DCD9D0" filter="url(#topo-card-shadow)" />
-                <text x="10" y="24" fontSize="11" fontWeight="600" fill="#1D1C1A">
-                  {sat.label}
+        <g transform={`translate(${zoom.x},${zoom.y}) scale(${zoom.k})`}>
+          {/* 4 Architectural Tier Bands */}
+          {tiers.map((_, ti) => {
+            const y = -195 + ti * 130;
+            return (
+              <g key={`tier-${ti}`}>
+                <rect
+                  x={-320}
+                  y={y - 44}
+                  width={640}
+                  height={88}
+                  rx={16}
+                  className="tier-box"
+                />
+                <text
+                  x={-304}
+                  y={y - 26}
+                  fontSize="10"
+                  letterSpacing=".08em"
+                  fill="var(--mute)"
+                >
+                  {TIER_NAMES[ti].toUpperCase()}
                 </text>
-
-                {/* Arrow connecting satellite to main envelope */}
-                {sat.direction === "in" && (
-                  <path
-                    d={`M ${sat.width} ${sat.height / 2} C ${sat.width + 25} ${sat.height / 2}, 150 ${sat.y + 10}, 180 ${sat.y + 10}`}
-                    fill="none"
-                    stroke="#6E685F"
-                    strokeWidth="1.2"
-                    markerEnd="url(#arrow-slate)"
-                  />
-                )}
-                {sat.direction === "out" && (
-                  <path
-                    d={`M 810 ${sat.y + 20} C 825 ${sat.y + 20}, ${sat.x - 20} ${sat.height / 2}, 0 ${sat.height / 2}`}
-                    fill="none"
-                    stroke="#6E685F"
-                    strokeWidth="1.2"
-                    markerEnd="url(#arrow-slate)"
-                  />
-                )}
               </g>
-            ))}
+            );
+          })}
 
-          {/* Dependency Ribbons */}
-          <g className="topology-edges">
-            {edges.map((edge) => {
-              const isSelected = selectedEdgeId === edge.id;
+          {/* Directed Edges Between Tiers */}
+          <g>
+            {activeEdges.map((e, idx) => {
+              const p1 = pos[e.a];
+              const p2 = pos[e.b];
+              if (!p1 || !p2) return null;
+
+              const up = p1.y > p2.y;
+              const y1 = p1.y + (up ? -26 : 26);
+              const y2 = p2.y + (up ? 26 : -26);
+              const cx = (p1.x + p2.x) * 0.5 + (e.bad ? 90 : 0);
+              const cy = (y1 + y2) * 0.5;
+              const dPath = `M${p1.x},${y1} Q${cx},${cy} ${p2.x},${y2}`;
+
+              const isHoveredEdge = hoveredEdgeIdx === idx;
+              const isConnectedToHover =
+                hoveredKey !== null && (e.a === hoveredKey || e.b === hoveredKey);
+              const dimmed =
+                hoveredKey !== null && !isConnectedToHover && !e.bad;
+
               return (
-                <g key={edge.id} onClick={() => setSelectedEdgeId(edge.id)} style={{ cursor: "pointer" }}>
-                  <path
-                    d={edge.pathD}
-                    fill="none"
-                    stroke={edge.isViolation ? "#C94A38" : isSelected ? "#1D1C1A" : "#8A8475"}
-                    strokeWidth={edge.isViolation ? 2 : isSelected ? 2 : 1.2}
-                    strokeDasharray={edge.isViolation ? "4 3" : "none"}
-                    markerEnd={edge.isViolation ? "url(#arrow-red)" : "url(#arrow-slate)"}
-                  />
-                  {/* Verb Pill */}
-                  <g transform={`translate(${edge.midX}, ${edge.midY})`}>
-                    <rect
-                      x="-32"
-                      y="-10"
-                      width="64"
-                      height="20"
-                      rx="10"
-                      fill={edge.isViolation ? "#FDECE9" : "#FFFFFF"}
-                      stroke={edge.isViolation ? "#C94A38" : "#DCD9D0"}
-                      strokeWidth="1"
-                    />
-                    <text
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fill={edge.isViolation ? "#C94A38" : "#4A463E"}
-                      style={{ fontSize: "9px", fontWeight: 600 }}
-                    >
-                      {edge.verb}
-                    </text>
-                  </g>
-                </g>
+                <path
+                  key={`${e.a}->${e.b}-${idx}`}
+                  d={dPath}
+                  className={`edge ${e.bad ? "bad" : ""} ${
+                    isHoveredEdge || isConnectedToHover ? "hi" : ""
+                  }`}
+                  markerEnd={e.bad ? "url(#arr-top-bad)" : "url(#arr-top)"}
+                  style={dimmed ? { opacity: 0.14 } : undefined}
+                  onMouseMove={(ev) => {
+                    setHoveredEdgeIdx(idx);
+                    updateTipPos(
+                      ev,
+                      <div>
+                        <b className="serif">
+                          {e.a} → {e.b}
+                        </b>
+                        <div className="tm">
+                          Architectural dependency: <b>{e.a}</b> depends on <b>{e.b}</b>
+                        </div>
+                        {e.bad && (
+                          <div style={{ color: "var(--red)", fontWeight: 600 }}>
+                            Rule violation: upward dependency against layered architecture
+                          </div>
+                        )}
+                        <div className="tm">Click line to inspect details</div>
+                      </div>
+                    );
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredEdgeIdx(null);
+                    setTip(null);
+                  }}
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    handleSelectEdge(e);
+                  }}
+                />
               );
             })}
           </g>
 
-          {/* Territories & Nested Feature Cards */}
-          {territories.map((territory) => {
+          {/* Tier Domain Cards */}
+          {Object.entries(pos).map(([k, p]) => {
+            const n = p.node;
+            const st = n.state;
+            const flags = computeNodeFlags(n);
+            const isSelected = selectedNode?.key === n.key;
+
+            const isDiffAdded =
+              diffMode?.addedNodes?.has(n.id) || diffMode?.addedNodes?.has(n.key);
+            const isDiffModified =
+              diffMode?.modifiedNodes?.has(n.id) || diffMode?.modifiedNodes?.has(n.key);
+            const isDiffViolated =
+              diffMode?.violatedNodes?.has(n.id) || diffMode?.violatedNodes?.has(n.key);
+
+            const pass = passFilter(n);
+            const isConnectedToHover =
+              !hoveredKey ||
+              hoveredKey === k ||
+              activeEdges.some(
+                (e) => (e.a === hoveredKey && e.b === k) || (e.b === hoveredKey && e.a === k)
+              );
+            const dimmed = !pass || (hoveredKey !== null && !isConnectedToHover);
+
+            const subNames = (n.children || [])
+              .slice(0, 3)
+              .map((c) => c.label)
+              .join(" · ");
+
             return (
-              <g key={territory.id} className="territory-group">
-                {/* Organic Wonky Spline Hull */}
-                <path
-                  d={territory.hullD}
-                  fill={territory.style.fill}
-                  fillOpacity={0.7}
-                  stroke={territory.hasViolation ? "#C94A38" : territory.style.stroke}
-                  strokeWidth={territory.hasViolation ? 1.8 : 1.2}
-                  strokeDasharray="5 4"
-                  onClick={() => handleSelectNode(territory.node)}
-                  onDoubleClick={() => handleDoubleClickNode(territory.id)}
-                  style={{ cursor: "pointer", transition: "all 0.15s ease" }}
+              <g
+                key={k}
+                className="ex"
+                transform={`translate(${p.x},${p.y + 6})`}
+                style={dimmed ? { opacity: 0.25 } : undefined}
+                onMouseMove={(ev) => {
+                  setHoveredKey(k);
+                  updateTipPos(
+                    ev,
+                    <div>
+                      <b className="serif">{n.label}</b>
+                      <div className="tm">{TIER_NAMES[p.tier]}</div>
+                      <div>
+                        <b>Domain</b> · {st} · {n.fileCount} files
+                      </div>
+                      <div className="tm">{stateDescription(st, n)}</div>
+                      {flags.pin > 0 && (
+                        <div style={{ color: "var(--accent)", fontWeight: 600 }}>
+                          Pinned check active ({flags.pin})
+                        </div>
+                      )}
+                      {flags.viol > 0 && (
+                        <div style={{ color: "var(--red)", fontWeight: 600 }}>
+                          Rule violation ({flags.viol})
+                        </div>
+                      )}
+                      <div className="tm">
+                        Click to inspect · double-click to open in Radial
+                      </div>
+                    </div>
+                  );
+                }}
+                onMouseLeave={() => {
+                  setHoveredKey(null);
+                  setTip(null);
+                }}
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  handleSelectNode(n);
+                }}
+                onDoubleClick={(ev) => {
+                  ev.stopPropagation();
+                  handleOpenInRadial(n.id);
+                }}
+              >
+                <rect
+                  x={-92}
+                  y={-26}
+                  width={184}
+                  height={52}
+                  rx={14}
+                  fill={fillFor(st)}
+                  stroke={
+                    n.hasViolation || isDiffViolated
+                      ? "var(--red)"
+                      : isDiffAdded
+                      ? "var(--accent)"
+                      : isDiffModified
+                      ? "var(--amber)"
+                      : isSelected
+                      ? "var(--ink)"
+                      : "var(--line)"
+                  }
+                  strokeWidth={
+                    n.hasViolation || isDiffViolated || isDiffAdded || isDiffModified || isSelected
+                      ? 1.9
+                      : 1.2
+                  }
+                  strokeDasharray={st === "inferred" ? "4 2.5" : undefined}
                 />
 
-                {/* Territory Domain Header */}
-                <text
-                  x={territory.x + 16}
-                  y={territory.y + 24}
-                  fill="#1D1C1A"
-                  style={{ fontFamily: "Newsreader, serif", fontSize: "15px", fontWeight: 600, cursor: "pointer" }}
-                  onClick={() => handleSelectNode(territory.node)}
-                  onDoubleClick={() => handleDoubleClickNode(territory.id)}
-                >
-                  {territory.label}
+                {/* Left Domain Icon */}
+                <g transform="translate(-76, -12) scale(0.75)">
+                  <SvgDomainIcon iconKey={n.icon} stroke="var(--ink)" strokeWidth={1.7} />
+                </g>
+
+                {/* Status Dot */}
+                <circle cx={-52} cy={-6} r={3.5} fill={dotColorFor(st)} />
+
+                {/* Primary Domain Name & File Count */}
+                <text x={-42} y={-2} fontSize="13" fontWeight="600" fill="var(--ink)">
+                  {n.label}
                 </text>
-                <text
-                  x={territory.x + territory.width - 16}
-                  y={territory.y + 24}
-                  textAnchor="end"
-                  fill="#8E8878"
-                  style={{ fontSize: "10.5px" }}
-                >
-                  {territory.fileCount} files
+                <text x={80} y={-2} textAnchor="end" fontSize="10.5" fill="var(--mute)">
+                  {n.fileCount}f
                 </text>
 
-                {/* Feature Cards Inside Territory */}
-                {territory.cards.map((card: any) => {
-                  const isHovered = hoveredNodeId === card.id;
-                  const isAdded = diffMode?.addedNodes?.has(card.id) || diffMode?.addedNodes?.has(card.label);
-                  const isModified = diffMode?.modifiedNodes?.has(card.id) || diffMode?.modifiedNodes?.has(card.label);
-                  const isRemoved = diffMode?.removedNodes?.has(card.id) || diffMode?.removedNodes?.has(card.label);
-                  const isDiffViolated = diffMode?.violatedNodes?.has(card.id) || diffMode?.violatedNodes?.has(card.label);
+                {/* Submodules Preview Line */}
+                <text x={-74} y={15} fontSize="10" fill="var(--mute)">
+                  {subNames}
+                </text>
 
-                  let strokeColor = card.hasViolation || isDiffViolated ? "var(--red)" : isAdded ? "var(--accent)" : isModified ? "var(--amber)" : isRemoved ? "var(--red)" : "var(--line)";
-                  let strokeWidth = isAdded || isModified || isRemoved || isDiffViolated || card.hasViolation ? 1.8 : 1;
+                {/* Pin Badge */}
+                {n.hasPin && (
+                  <g transform="translate(82, -22)">
+                    <circle r={7} fill="var(--panel)" stroke="var(--ink)" strokeWidth="1.1" />
+                    <SvgMiniLock stroke="var(--ink)" />
+                  </g>
+                )}
 
-                  return (
-                    <g
-                      key={card.id}
-                      transform={`translate(${card.x}, ${card.y})`}
-                      opacity={isRemoved ? 0.45 : 1}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSelectNode(card.node);
-                      }}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        handleDoubleClickNode(card.id);
-                      }}
-                      onMouseEnter={() => setHoveredNodeId(card.id)}
-                      onMouseLeave={() => setHoveredNodeId(null)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <rect
-                        width={card.width}
-                        height={card.height}
-                        rx="6"
-                        fill={isHovered ? "var(--side)" : "var(--panel)"}
-                        stroke={strokeColor}
-                        strokeWidth={strokeWidth}
-                        strokeDasharray={isRemoved ? "4 3" : "none"}
-                        filter="url(#topo-card-shadow)"
-                      />
-                      <text x="8" y="16" fill="var(--ink)" style={{ fontSize: "11px", fontWeight: 600 }}>
-                        {card.label.length > 12 ? `${card.label.slice(0, 11)}…` : card.label}
-                      </text>
-                      <text x="8" y="30" fill="var(--mute)" style={{ fontSize: "9.5px", fontFamily: "var(--mono)" }}>
-                        {card.subPath}
-                      </text>
-                      {(card.hasViolation || isDiffViolated) && <circle cx={card.width - 10} cy="12" r="4.5" fill="var(--red)" />}
-                      {isAdded && (
-                        <text x={card.width - 14} y="15" fill="var(--accent)" fontSize="11" fontWeight="bold">
-                          +
-                        </text>
-                      )}
-                      {isModified && (
-                        <text x={card.width - 14} y="15" fill="var(--amber)" fontSize="10" fontWeight="bold">
-                          Δ
-                        </text>
-                      )}
-                      {card.hasPin && !card.hasViolation && !isAdded && !isModified && (
-                        <text x={card.width - 14} y="15" fill="var(--amber)" fontSize="10">
-                          ✦
-                        </text>
-                      )}
-                    </g>
-                  );
-                })}
+                {/* Violation Badge */}
+                {n.hasViolation && (
+                  <g transform="translate(-82, -22)">
+                    <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
+                  </g>
+                )}
               </g>
             );
           })}
-        </svg>
+        </g>
+      </svg>
+
+      {/* 4 Corner Instructional Callouts (100% Lucide Icons) */}
+      {!compact && (
+        <>
+          <div className="call c-tl">
+            <div className="ic">
+              <Layers size={16} />
+            </div>
+            <div>
+              <b>4 Architectural Tiers</b>
+              Presentation at top down to Foundation at bottom.
+            </div>
+          </div>
+
+          <div className="call c-tr">
+            <div className="ic">
+              <ArrowDown size={16} />
+            </div>
+            <div>
+              <b>Downward Flow</b>
+              Upper tiers may depend on lower tiers, never the reverse.
+            </div>
+          </div>
+
+          <div className="call c-bl">
+            <div className="ic">
+              <Lock size={16} />
+            </div>
+            <div>
+              <b>Click Card or Line</b>
+              Inspect domain submodules or jump to Constellation.
+            </div>
+          </div>
+
+          <div className="call c-br">
+            <div className="ic" style={{ color: "var(--red)" }}>
+              <AlertTriangle size={16} />
+            </div>
+            <div>
+              <b>Upward Red Curve = Violation</b>
+              Data → Web violates the downward dependency rule.
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Zoom Controls (Lucide Icons) */}
+      <div className="zctl">
+        <button
+          type="button"
+          title="Zoom in"
+          onClick={() => setZoom((z) => ({ ...z, k: Math.min(2.6, z.k * 1.18) }))}
+        >
+          <Plus size={14} />
+        </button>
+        <button
+          type="button"
+          title="Zoom out"
+          onClick={() => setZoom((z) => ({ ...z, k: Math.max(0.6, z.k / 1.18) }))}
+        >
+          <Minus size={14} />
+        </button>
+        <button
+          type="button"
+          title="Reset view"
+          onClick={() => setZoom({ k: 1, x: 0, y: 0 })}
+        >
+          <RotateCcw size={13} />
+        </button>
       </div>
 
-      {/* 3. Bottom Attention Strip & Legend (Only when not compact) */}
-      {!compact && (
-        <div style={{ background: "var(--panel)", borderTop: "1px solid var(--line)" }}>
-          {/* Bottom Legend */}
-          <div style={{ padding: "6px 24px", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", gap: "16px", fontSize: "11px", color: "var(--mute)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--accent)", display: "inline-block" }} />
-              <span>Mapped</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--red)", display: "inline-block" }} />
-              <span>Violation</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <span style={{ color: "var(--amber)", fontWeight: "bold" }}>✦</span>
-              <span>Pinned</span>
-            </div>
-            <span style={{ color: "var(--line)" }}>|</span>
-            <span>──→ Uses</span>
-            <span style={{ color: "var(--red)" }}>- - → Forbidden Dep</span>
-          </div>
-
-          {/* 4-Column Interactive Attention Tray */}
-          <div style={{ display: "flex", padding: "10px 24px", gap: "14px", background: "var(--side)" }}>
-            {/* Needs Attention Tab */}
-            <div
-              onClick={() => setActiveAttentionTab("attention")}
-              style={{
-                flex: 1,
-                background: activeAttentionTab === "attention" ? "var(--panel)" : "transparent",
-                border: `1px solid ${activeAttentionTab === "attention" ? "var(--line)" : "transparent"}`,
-                borderRadius: "6px",
-                padding: "8px 12px",
-                cursor: "pointer",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--red)" }}>● Needs attention ({violationsCount + questionsCount})</span>
-              </div>
-              <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "2px" }}>
-                {violationsCount} rule violation · {questionsCount} calibration questions
-              </div>
-            </div>
-
-            {/* Recent Turns Tab */}
-            <div
-              onClick={() => {
-                setActiveAttentionTab("turns");
-                jumpToTurn("t0004");
-              }}
-              style={{
-                flex: 1,
-                background: activeAttentionTab === "turns" ? "var(--panel)" : "transparent",
-                border: `1px solid ${activeAttentionTab === "turns" ? "var(--line)" : "transparent"}`,
-                borderRadius: "6px",
-                padding: "8px 12px",
-                cursor: "pointer",
-              }}
-            >
-              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--ink)" }}>Recent turns</div>
-              <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "2px" }}>
-                Browse chronological turn diffs
-              </div>
-            </div>
-
-            {/* Proposals Tab */}
-            <div
-              onClick={() => setActiveAttentionTab("proposals")}
-              style={{
-                flex: 1,
-                background: activeAttentionTab === "proposals" ? "var(--panel)" : "transparent",
-                border: `1px solid ${activeAttentionTab === "proposals" ? "var(--line)" : "transparent"}`,
-                borderRadius: "6px",
-                padding: "8px 12px",
-                cursor: "pointer",
-              }}
-            >
-              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--ink)" }}>Proposals</div>
-              <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "2px" }}>
-                Decouple payments and boundary changes
-              </div>
-            </div>
-
-            {/* Pinned Items Tab */}
-            <div
-              onClick={() => setActiveAttentionTab("pins")}
-              style={{
-                flex: 1,
-                background: activeAttentionTab === "pins" ? "var(--panel)" : "transparent",
-                border: `1px solid ${activeAttentionTab === "pins" ? "var(--line)" : "transparent"}`,
-                borderRadius: "6px",
-                padding: "8px 12px",
-                cursor: "pointer",
-              }}
-            >
-              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--amber)" }}>✦ Pinned items ({pinsCount})</div>
-              <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "2px" }}>
-                Invariants and governance checks locked
-              </div>
-            </div>
-          </div>
+      {/* Floating Tooltip */}
+      {tip && (
+        <div className="tip on" style={{ left: tip.x, top: tip.y }}>
+          {tip.html}
         </div>
       )}
     </div>

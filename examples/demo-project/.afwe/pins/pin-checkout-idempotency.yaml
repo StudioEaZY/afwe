@@ -1,0 +1,16 @@
+{
+  "id": "pin-checkout-idempotency",
+  "statement": "Checkout payment submissions must attach a client-generated idempotency key.",
+  "kind": "constraint",
+  "attaches": {
+    "nodes": [
+      "Web/views/checkout",
+      "Services/billing"
+    ]
+  },
+  "severity": "block",
+  "status": "active",
+  "origin": "human:fintech",
+  "created": "2026-09-10T11:00:00Z",
+  "reason": "prevent-double-charge"
+}

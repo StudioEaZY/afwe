@@ -1,5 +1,6 @@
 // apps/studio/src/components/SettingsPage.tsx
 import React, { useState } from "react";
+import { Clock, Lock, Unlock } from "lucide-react";
 import { useStore } from "../store";
 import { api } from "../api";
 import { RADIAL_PALETTE_PRESETS } from "../lib/palettes";
@@ -123,7 +124,7 @@ export const SettingsPage: React.FC = () => {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: "16px", color: "#1D1C1A", display: "flex", alignItems: "center", gap: "8px" }}>
-                <span>⏱</span> Two-Tier Undo & Quarantine Grace Period
+                <Clock size={16} /> Two-Tier Undo & Quarantine Grace Period
               </div>
               <div style={{ fontSize: "12.5px", color: "#6E685F", marginTop: "4px", lineHeight: "1.45" }}>
                 Because AFWE actions cascade into the codebase (modifying files, triggering AI agents, and regenerating git/CI hooks), destructive actions are quarantined for a countdown grace period before execution.
@@ -270,7 +271,7 @@ export const SettingsPage: React.FC = () => {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: "16px", color: "#1D1C1A", display: "flex", alignItems: "center", gap: "8px" }}>
-                <span>{exploreMode ? "🔓" : "🔒"}</span> Explore Mode ({exploreMode ? "Unlocked" : "Enforced"})
+                {exploreMode ? <Unlock size={16} /> : <Lock size={16} />} Explore Mode ({exploreMode ? "Unlocked" : "Enforced"})
               </div>
               <div style={{ fontSize: "12.5px", color: "#6E685F", marginTop: "4px", lineHeight: "1.4" }}>
                 When enabled, AFWE temporarily converts blocking checks into warnings so you can prototype rapidly without gate interruption. Locking runs full verification.

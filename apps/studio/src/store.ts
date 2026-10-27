@@ -9,6 +9,7 @@ import {
   setGraceSeconds as persistGraceSeconds,
   StudioPrefs,
   StudioBookmark,
+  MapLens,
 } from "./lib/prefs";
 import { SelectedEntity } from "./lib/hierarchy";
 
@@ -32,6 +33,8 @@ export type FilterMode =
   | "legacy"
   | "proposals"
   | "issues";
+
+export type ConstellationScope = "node" | "map" | "two";
 
 export interface UndoAction {
   id: string;
@@ -75,21 +78,25 @@ interface State {
   loading: boolean;
   error: string | null;
   view: View;
-  selected: string | null; // blueprint node id
+  selected: string | null;
   selectedFile: string | null;
   expanded: Set<string>;
   showImpl: boolean;
-  lens: string | null; // legacy lens id or null
+  lens: string | null;
   drawer: null | "drift" | "search" | "history";
   toast: string | null;
   busy: string | null;
   onboardOpen: boolean;
   configured: boolean | null;
 
-  // ── v2 Architecture Map & Navigation ──
-  activeLens: "radial" | "topology";
-  currentScopeId: string | null; // null = root project
+  // ── v2 Architecture Map & Navigation (Radial, Constellation, Topology) ──
+  activeLens: MapLens;
+  currentScopeId: string | null; // null = root project in Radial
   currentDepth: number;
+  constellationAnchorKey: string | null; // e.g. "Backend/events/models"
+  constellationScope: ConstellationScope;
+  forceParentFallback: boolean;
+  overviewTimelineT: number; // 0..1 continuous rewind playhead on Overview
   selectedEntity: SelectedEntity | null;
   filterMode: FilterMode;
   prefs: StudioPrefs;
@@ -130,13 +137,18 @@ interface State {
   run: <T>(label: string, fn: () => Promise<T>, refresh?: boolean) => Promise<T | undefined>;
 
   // ── Map actions ──
-  setActiveLens: (lens: "radial" | "topology") => void;
+  setActiveLens: (lens: MapLens) => void;
+  setConstellationAnchor: (nodeKey: string) => void;
+  openConstellationFor: (nodeKey: string) => void;
+  setConstellationScope: (scope: ConstellationScope) => void;
+  setForceParentFallback: (b: boolean) => void;
+  setOverviewTimelineT: (t: number) => void;
   drillDown: (nodeId: string) => void;
   drillUp: () => void;
   setScope: (nodeId: string | null) => void;
   selectEntity: (entity: SelectedEntity | null) => void;
   setFilterMode: (m: FilterMode) => void;
-  pinStartView: (nodeId: string | null, lens: "radial" | "topology") => void;
+  pinStartView: (nodeId: string | null, lens: MapLens) => void;
   addBookmark: (b: StudioBookmark) => void;
   removeBookmark: (id: string) => void;
   setRadialPalette: (p: string) => void;
@@ -194,7 +206,11 @@ export const useStore = create<State>((set, get) => ({
   // Map state
   activeLens: initialPrefs.defaultLens || "radial",
   currentScopeId: initialPrefs.defaultStartNodeId || null,
-  currentDepth: initialPrefs.defaultStartNodeId ? 1 : 0,
+  currentDepth: initialPrefs.defaultStartNodeId ? initialPrefs.defaultStartNodeId.split("/").length : 0,
+  constellationAnchorKey: "Backend/events/models",
+  constellationScope: "map",
+  forceParentFallback: false,
+  overviewTimelineT: 1,
   selectedEntity: null,
   filterMode: "all",
   prefs: initialPrefs,
@@ -209,10 +225,7 @@ export const useStore = create<State>((set, get) => ({
 
   refreshScene: async () => {
     try {
-      const [scene, res] = await Promise.all([
-        api.scene.get(),
-        api.timeline4d.frames(),
-      ]);
+      const [scene, res] = await Promise.all([api.scene.get(), api.timeline4d.frames()]);
       set({ scene, timelineFrames: res.frames || [] });
     } catch (e: any) {
       console.warn("Could not load scene or frames:", e);
@@ -260,7 +273,10 @@ export const useStore = create<State>((set, get) => ({
         graph,
         loading: false,
         expanded: next,
-        selected: prevSelected && graph.nodes.some((n) => n.id === prevSelected) ? prevSelected : graph.nodes[0]?.id ?? null,
+        selected:
+          prevSelected && graph.nodes.some((n) => n.id === prevSelected)
+            ? prevSelected
+            : graph.nodes[0]?.id ?? null,
       });
     } catch (e: any) {
       set({ loading: false, error: e.message || String(e) });
@@ -322,7 +338,7 @@ export const useStore = create<State>((set, get) => ({
       if (refresh) await get().refresh();
       return r;
     } catch (e: any) {
-      get().notify(`✗ ${e.message || e}`);
+      get().notify(`Error: ${e.message || e}`);
       return undefined;
     } finally {
       set({ busy: null });
@@ -330,29 +346,69 @@ export const useStore = create<State>((set, get) => ({
   },
 
   // Map actions
-  setActiveLens: (lens) => set({ activeLens: lens }),
+  setActiveLens: (lens) => {
+    if (lens === "constellation") {
+      const curSel = get().selectedEntity;
+      const curScope = get().currentScopeId;
+      let anchor = get().constellationAnchorKey || "Backend/events/models";
+      if (curSel && curSel.kind !== "edge" && curSel.id !== "root") {
+        anchor = curSel.key || curSel.id;
+      } else if (curScope && curScope !== "root") {
+        anchor = curScope;
+      }
+      set({ activeLens: lens, constellationAnchorKey: anchor, forceParentFallback: false });
+      return;
+    }
+    set({ activeLens: lens });
+  },
+
+  setConstellationAnchor: (nodeKey: string) => {
+    set({ constellationAnchorKey: nodeKey, forceParentFallback: false });
+  },
+
+  openConstellationFor: (nodeKey: string) => {
+    set({
+      view: "overview",
+      activeLens: "constellation",
+      constellationAnchorKey: nodeKey,
+      forceParentFallback: false,
+    });
+  },
+
+  setConstellationScope: (constellationScope: ConstellationScope) => set({ constellationScope }),
+  setForceParentFallback: (forceParentFallback: boolean) => set({ forceParentFallback }),
+  setOverviewTimelineT: (overviewTimelineT: number) => set({ overviewTimelineT }),
 
   drillDown: (nodeId: string) => {
-    const nextDepth = get().currentDepth + 1;
-    set({ currentScopeId: nodeId, currentDepth: nextDepth });
+    const clean = nodeId === "root" ? null : nodeId;
+    const nextDepth = clean ? clean.split("/").length : 0;
+    set({
+      currentScopeId: clean,
+      currentDepth: nextDepth,
+      activeLens: "radial",
+      constellationAnchorKey: clean || get().constellationAnchorKey,
+    });
   },
 
   drillUp: () => {
-    const depth = get().currentDepth;
-    if (depth <= 0) return;
-    const graph = get().graph;
     const cur = get().currentScopeId;
-    let parentId: string | null = null;
-    if (graph && cur) {
-      const node = graph.nodes.find((n) => n.id === cur);
-      if (node && node.parent) {
-        parentId = node.parent;
-      }
+    if (!cur) return;
+    const parts = cur.split("/");
+    if (parts.length <= 1) {
+      set({ currentScopeId: null, currentDepth: 0 });
+    } else {
+      const parentKey = parts.slice(0, -1).join("/");
+      set({ currentScopeId: parentKey, currentDepth: parts.length - 1 });
     }
-    set({ currentScopeId: parentId, currentDepth: Math.max(0, depth - 1) });
   },
 
-  setScope: (nodeId) => set({ currentScopeId: nodeId, currentDepth: nodeId ? 1 : 0 }),
+  setScope: (nodeId) => {
+    const clean = !nodeId || nodeId === "root" ? null : nodeId;
+    set({
+      currentScopeId: clean,
+      currentDepth: clean ? clean.split("/").length : 0,
+    });
+  },
 
   selectEntity: (selectedEntity) => {
     set({ selectedEntity });
@@ -415,14 +471,16 @@ export const useStore = create<State>((set, get) => ({
     set({
       view: "overview",
       currentScopeId: parentId,
-      currentDepth: parentId ? 1 : 0,
+      currentDepth: parentId ? parentId.split("/").length : 0,
       selected: nodeId,
       selectedEntity: {
         id: nodeId,
+        key: nodeId,
         kind: "feature",
         label: nodeLabel,
-        path: nodeId,
+        path: nodeId.toLowerCase(),
         status: "mapped",
+        state: "mapped",
         fileCount: 1,
         mappedCount: 1,
       },
@@ -449,7 +507,6 @@ export const useStore = create<State>((set, get) => ({
   closeConsequenceModal: () => set({ consequenceModal: null }),
 
   scheduleQuarantineAction: (opts) => {
-    // Clear any existing quarantine timer
     const prev = get().pendingQuarantine;
     if (prev) {
       if (get().quarantineIntervalId) clearInterval(get().quarantineIntervalId);
@@ -572,20 +629,4 @@ export const ancestors = (g: Graph, id: string): string[] => {
   return out;
 };
 
-export const kindIcon = (kind: string) =>
-  ({
-    project: "⌘",
-    domain: "▣",
-    feature: "▢",
-    folder: "📁",
-    file: "📄",
-    symbol: "λ",
-    boundary: "▥",
-    violation: "▲",
-    pin: "✦",
-    question: "?",
-    proposal: "✎",
-    module: "▢",
-    service: "⚙",
-    ui: "▭",
-  }[kind] || "▢");
+export const kindIcon = (kind: string) => kind;

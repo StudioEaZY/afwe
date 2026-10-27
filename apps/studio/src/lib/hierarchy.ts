@@ -1,5 +1,5 @@
 // apps/studio/src/lib/hierarchy.ts
-// Indefinite-depth hierarchy builder, kind discovery, adaptive split strategy, and layout computation.
+// Indefinite-depth hierarchy builder, canonical path keys, honest blueprint link status, and directed edge graph.
 
 export type EntityKind =
   | "project"
@@ -15,18 +15,35 @@ export type EntityKind =
   | "pin"
   | "question";
 
+export type NodeState = "mapped" | "inferred" | "unmapped" | "legacy";
+
+export interface DirectedEdge {
+  a: string; // consumer key (depends on b)
+  b: string; // dependency key (used by a)
+  birth: number;
+  death: number | null;
+  bad: boolean;
+  count?: number;
+  status?: string;
+}
+
 export interface SelectedEntity {
   id: string;
+  key?: string;
   kind: EntityKind;
   label: string;
   path: string;
   status: "mapped" | "uncharted" | "proposed" | "violation" | "pinned" | "question";
+  state?: NodeState;
   fileCount?: number;
   mappedCount?: number;
   description?: string;
   purpose?: string;
   parentId?: string | null;
+  partOf?: string;
   raw?: any;
+  node?: HierarchyNode;
+  edgeData?: DirectedEdge;
   violationMessage?: string;
   pinStatement?: string;
   questionText?: string;
@@ -34,19 +51,33 @@ export interface SelectedEntity {
 
 export interface HierarchyNode {
   id: string;
+  key: string; // Canonical "/" separated path from domain to node (e.g. "Backend/events/models")
   label: string;
   kind: EntityKind;
-  path: string;
+  path: string; // Lowercase display path (e.g. "backend/events/models")
+  breadcrumbLabels: string[]; // ["Backend", "events", "models"]
+  state: NodeState;
   isCharted: boolean;
   fileCount: number;
   mappedCount: number;
+  weight: number; // Math.max(8, fileCount) ** 0.8
   depth: number;
   parentId: string | null;
   children: HierarchyNode[];
+  filesList: string[];
   hasViolation: boolean;
   hasPin: boolean;
   hasQuestion: boolean;
   hasProposal: boolean;
+  pinCount: number;
+  violationCount: number;
+  proposalCount: number;
+  icon?: string;
+  tier?: number;
+  birth: number;
+  constraints: string[];
+  decisions: [string, string][];
+  mustNotDependOn: string[];
   violationDetails?: string[];
   pinDetails?: string[];
   questionDetails?: string[];
@@ -58,11 +89,11 @@ export interface RadialSlice {
   label: string;
   kind: EntityKind;
   path: string;
-  ring: 1 | 2; // Ring 1 = child, Ring 2 = grandchild
+  ring: 1 | 2;
   isCharted: boolean;
   fileCount: number;
   mappedCount: number;
-  startAngle: number; // in radians
+  startAngle: number;
   endAngle: number;
   innerRadius: number;
   outerRadius: number;
@@ -87,7 +118,7 @@ export interface TopologyTerritory {
   y: number;
   width: number;
   height: number;
-  hullPath: string; // Organic concave SVG path
+  hullPath: string;
   cards: TopologyCard[];
   parcels: TopologyParcel[];
   node: HierarchyNode;
@@ -138,6 +169,29 @@ export interface TopologyEdge {
 }
 
 /**
+ * Deterministic hash & PRNG matching AFWE Codebase Atlas
+ */
+export function hashStr(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+export function seededRand(seed: number): () => number {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
  * Normalize an AFWE `Attachment` object (`{ nodes, files, symbols, global }`) or legacy string array into a flat string array.
  */
 export function extractAttachmentItems(att: any): string[] {
@@ -162,6 +216,73 @@ export function formatAttachment(att: any): string {
   return items.length > 0 ? items.join(", ") : "Global";
 }
 
+const DEFAULT_DOMAIN_ICONS: Record<string, string> = {
+  web: "web",
+  mobile: "phone",
+  services: "gear",
+  backend: "srv",
+  core: "layers",
+  data: "db",
+  shared: "link",
+  infrastructure: "cloud",
+  identity: "srv",
+  workspace: "layers",
+  billing: "gear",
+  realtime: "link",
+  platform: "cloud",
+};
+
+const DEFAULT_DOMAIN_TIERS: Record<string, number> = {
+  web: 0,
+  mobile: 0,
+  services: 1,
+  backend: 1,
+  core: 2,
+  data: 2,
+  shared: 3,
+  infrastructure: 3,
+};
+
+/**
+ * Check if a mapped node has genuine linked constraints or decisions in the blueprint.
+ */
+export function hasBlueprintLinks(node: HierarchyNode | null | undefined): boolean {
+  if (!node) return false;
+  if (node.state !== "mapped") return false;
+  return (node.constraints && node.constraints.length > 0) || (node.decisions && node.decisions.length > 0);
+}
+
+/**
+ * Return honest state description matching AFWE Codebase Atlas.
+ */
+export function stateDescription(state: NodeState, node?: HierarchyNode | null): string {
+  if (state === "mapped") {
+    return hasBlueprintLinks(node)
+      ? "Mapped to the blueprint. Applicable constraints and decisions are linked."
+      : "Mapped to the blueprint.";
+  }
+  if (state === "inferred") return "Structure guessed from the code, not confirmed yet.";
+  if (state === "unmapped") return "Not charted yet. AFWE has not read this area.";
+  return "Older code kept for reference.";
+}
+
+/**
+ * Format a key like "Backend/events/models" as "Backend›models"
+ */
+export function shortLabel(key: string): string {
+  const parts = key.split("/");
+  return parts.length > 1 ? `${parts[0]}›${parts[parts.length - 1]}` : key;
+}
+
+/**
+ * Find the top-level domain (depth 1) for any node in the hierarchy tree.
+ */
+export function getDomainNode(root: HierarchyNode, node: HierarchyNode): HierarchyNode {
+  if (node.depth <= 1) return node;
+  const topKey = node.key.split("/")[0];
+  return root.children.find((c) => c.key === topKey || c.id === topKey || c.label === topKey) || node;
+}
+
 /**
  * Build the multi-layer hierarchy tree from graph snapshot.
  */
@@ -169,53 +290,128 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
   if (!graph) {
     return {
       id: "root",
-      label: "Project",
+      key: "root",
+      label: "Codebase",
       kind: "project",
       path: "",
+      breadcrumbLabels: [],
+      state: "mapped",
       isCharted: false,
       fileCount: 0,
       mappedCount: 0,
+      weight: 8,
       depth: 0,
       parentId: null,
       children: [],
+      filesList: [],
       hasViolation: false,
       hasPin: false,
       hasQuestion: false,
       hasProposal: false,
+      pinCount: 0,
+      violationCount: 0,
+      proposalCount: 0,
+      birth: 0,
+      constraints: [],
+      decisions: [],
+      mustNotDependOn: [],
     };
   }
 
-  const nodes = graph.nodes || [];
-  const files = graph.files || [];
-  const unmapped = new Set(graph.unmapped || []);
-  const pins = graph.pins || [];
-  const checks = graph.checks || [];
+  const nodes: any[] = graph.nodes || [];
+  const files: any[] = graph.files || [];
+  const unmapped: string[] = graph.unmapped || [];
+  const pins: any[] = graph.pins || [];
   const calibration = graph.calibration || { guides: [], questions: [] };
-  const proposals = graph.proposals || [];
-  const codeEdges = graph.code_edges || [];
+  const proposals: any[] = graph.proposals || [];
+  const codeEdges: any[] = graph.code_edges || [];
+  const constraints: any[] = graph.constraints || [];
+  const memoryObj: Record<string, any> = graph.memory || {};
 
-  const violationsByNode = new Set<string>();
-  for (const ce of codeEdges) {
-    if (ce.violation) {
-      violationsByNode.add(ce.from);
-      violationsByNode.add(ce.to);
-    }
-  }
-
-  const pinsByNode = new Set<string>();
-  for (const pin of pins) {
-    if (pin.status === "active" && pin.attaches) {
-      for (const att of extractAttachmentItems(pin.attaches)) {
-        pinsByNode.add(att);
+  // Index constraints by node id/key
+  const constraintsByNode = new Map<string, string[]>();
+  const mustNotByNode = new Map<string, string[]>();
+  for (const c of constraints) {
+    if (!c.from) continue;
+    const text = c.rationale || c.description || `${c.from} must not depend on ${(c.to || []).join(", ")}.`;
+    if (!constraintsByNode.has(c.from)) constraintsByNode.set(c.from, []);
+    constraintsByNode.get(c.from)!.push(text);
+    if (c.rule === "must_not_depend" && Array.isArray(c.to)) {
+      if (!mustNotByNode.has(c.from)) mustNotByNode.set(c.from, []);
+      for (const target of c.to) {
+        if (!mustNotByNode.get(c.from)!.includes(target)) {
+          mustNotByNode.get(c.from)!.push(target);
+        }
       }
     }
   }
 
-  const questionsByNode = new Set<string>();
+  // Index memory decisions by node id/key
+  const decisionsByNode = new Map<string, [string, string][]>();
+  for (const [memId, mem] of Object.entries(memoryObj)) {
+    if (!mem || mem.kind !== "decision") continue;
+    const title = mem.title || memId;
+    const dateLabel = "Accepted";
+    for (const target of mem.nodes || []) {
+      if (!decisionsByNode.has(target)) decisionsByNode.set(target, []);
+      decisionsByNode.get(target)!.push([title, dateLabel]);
+    }
+  }
+
+  // Violations by node
+  const violationsByNode = new Map<string, string[]>();
+  const addViolation = (nodeId: string, msg: string) => {
+    if (!violationsByNode.has(nodeId)) violationsByNode.set(nodeId, []);
+    if (!violationsByNode.get(nodeId)!.includes(msg)) {
+      violationsByNode.get(nodeId)!.push(msg);
+    }
+  };
+
+  for (const ce of codeEdges) {
+    if (ce.violation) {
+      const msg = `${ce.from} depends on ${ce.to}, which is forbidden.`;
+      addViolation(ce.from, msg);
+    }
+  }
+  // Also check declared relations against must_not_depend constraints
+  for (const rel of graph.relations || []) {
+    const forbiddenTargets = mustNotByNode.get(rel.from) || [];
+    if (forbiddenTargets.includes(rel.to)) {
+      const msg = `${rel.from} depends on ${rel.to}, which is forbidden.`;
+      addViolation(rel.from, msg);
+    }
+  }
+
+  // Pins by node
+  const pinsByNode = new Map<string, string[]>();
+  for (const pin of pins) {
+    if (pin.status === "active" && pin.attaches) {
+      for (const att of extractAttachmentItems(pin.attaches)) {
+        if (!pinsByNode.has(att)) pinsByNode.set(att, []);
+        pinsByNode.get(att)!.push(pin.statement || pin.id);
+      }
+    }
+  }
+
+  // Questions by node
+  const questionsByNode = new Map<string, string[]>();
   for (const q of calibration.questions || []) {
     if (q.status === "open" && q.attaches) {
       for (const att of extractAttachmentItems(q.attaches)) {
-        questionsByNode.add(att);
+        if (!questionsByNode.has(att)) questionsByNode.set(att, []);
+        questionsByNode.get(att)!.push(q.question || q.id);
+      }
+    }
+  }
+
+  // Pending proposals by node
+  const proposalsByNode = new Set<string>();
+  for (const prop of proposals) {
+    if (prop.status === "pending" || !prop.status) {
+      const pNodes = prop.finding?.nodes || [];
+      for (const pn of pNodes) proposalsByNode.add(pn);
+      if (prop.finding?.change?.parent && prop.finding?.change?.name) {
+        proposalsByNode.add(`${prop.finding.change.parent}/${prop.finding.change.name}`);
       }
     }
   }
@@ -225,172 +421,374 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
     nodeMap.set(n.id, n);
   }
 
-  // 1. Group blueprint nodes by parent
-  const topBlueprintNodes = nodes.filter((n: any) => !n.parent || !nodeMap.has(n.parent));
-
-  // 2. Discover unmapped top-level folders
-  const unmappedFolders = new Map<string, string[]>();
-  for (const f of unmapped) {
-    const parts = (f as string).split("/");
-    const topFolder = parts.length > 1 ? parts[0] : "(root)";
-    if (!unmappedFolders.has(topFolder)) {
-      unmappedFolders.set(topFolder, []);
+  // 1. Find top-level blueprint nodes; unwrap single product/project root wrapper if present
+  let topBlueprintNodes = nodes.filter((n: any) => !n.parent || !nodeMap.has(n.parent));
+  if (
+    topBlueprintNodes.length === 1 &&
+    (topBlueprintNodes[0].kind === "product" || topBlueprintNodes[0].kind === "project")
+  ) {
+    const wrapperId = topBlueprintNodes[0].id;
+    const unwrapped = nodes.filter((n: any) => n.parent === wrapperId);
+    if (unwrapped.length > 0) {
+      topBlueprintNodes = unwrapped;
     }
-    unmappedFolders.get(topFolder)!.push(f as string);
   }
 
   // Convert blueprint node recursively
-  function convertBlueprintNode(bn: any, depth: number): HierarchyNode {
-    const hasV = violationsByNode.has(bn.id);
-    const hasP = pinsByNode.has(bn.id);
-    const hasQ = questionsByNode.has(bn.id);
+  function convertBlueprintNode(
+    bn: any,
+    depth: number,
+    parentKey: string | null,
+    parentBreadcrumbs: string[],
+    parentBirth: number
+  ): HierarchyNode {
+    const label = bn.name || bn.id.split("/").pop() || bn.id;
+    const key = parentKey ? `${parentKey}/${label}` : label;
+    const breadcrumbs = [...parentBreadcrumbs, label];
+    const displayPath = breadcrumbs.join("/").toLowerCase();
+
+    // Determine state accurately without conflating violations with legacy
+    const rawStatus = (bn.status || "active").toLowerCase();
+    const rawOrigin = (bn.origin || "").toLowerCase();
+    let state: NodeState = "mapped";
+    if (rawStatus === "unmapped") {
+      state = "unmapped";
+    } else if (rawStatus === "legacy" || rawStatus === "deprecated") {
+      state = "legacy";
+    } else if (rawStatus === "inferred" || rawOrigin.includes("inferred")) {
+      state = "inferred";
+    }
+
+    const r = seededRand(hashStr(key));
+    const birth = depth === 1 ? 0 : Math.min(0.92, parentBirth + r() * 0.18);
 
     const childBpNodes = nodes.filter((child: any) => child.parent === bn.id);
-    const mappedChildren = childBpNodes.map((child: any) => convertBlueprintNode(child, depth + 1));
+    const mappedChildren = childBpNodes.map((child: any) =>
+      convertBlueprintNode(child, depth + 1, key, breadcrumbs, birth)
+    );
 
-    // Also collect files associated with this node
-    const nodeFiles = (bn.file_list || []).map((fp: string) => {
-      const parts = fp.split("/");
-      const fileName = parts[parts.length - 1];
-      return {
-        id: `file:${fp}`,
-        label: fileName,
-        kind: "file" as EntityKind,
-        path: fp,
-        isCharted: true,
-        fileCount: 1,
-        mappedCount: 1,
-        depth: depth + 2,
-        parentId: bn.id,
-        children: [],
-        hasViolation: false,
-        hasPin: false,
-        hasQuestion: false,
-        hasProposal: false,
-      };
-    });
+    const ownFilesCount = typeof bn.files === "number" ? bn.files : (bn.file_list || []).length;
+    const childrenFilesSum = mappedChildren.reduce((acc, c) => acc + c.fileCount, 0);
+    const fileCount = Math.max(1, ownFilesCount, childrenFilesSum);
 
-    const isDomain = depth === 1 || bn.kind === "module" || bn.kind === "domain";
-    const totalFiles = (bn.files || 0) + mappedChildren.reduce((acc: number, c: HierarchyNode) => acc + c.fileCount, 0);
+    const mappedCount =
+      state === "unmapped"
+        ? 0
+        : mappedChildren.length > 0
+        ? mappedChildren.reduce((acc, c) => acc + c.mappedCount, 0)
+        : fileCount;
+
+    const vList = violationsByNode.get(bn.id) || violationsByNode.get(key) || [];
+    const pList = pinsByNode.get(bn.id) || pinsByNode.get(key) || [];
+    const qList = questionsByNode.get(bn.id) || questionsByNode.get(key) || [];
+    const hasProp = proposalsByNode.has(bn.id) || proposalsByNode.has(key);
+
+    // Extract icon and tier from tags or domain name
+    const tags: string[] = bn.tags || [];
+    const iconTag = tags.find((t) => t.startsWith("icon:"))?.slice(5);
+    const tierTag = tags.find((t) => t.startsWith("tier:"))?.slice(5);
+    const icon = iconTag || (depth === 1 ? DEFAULT_DOMAIN_ICONS[label.toLowerCase()] : undefined);
+    const tier =
+      tierTag !== undefined
+        ? Number(tierTag)
+        : depth === 1
+        ? DEFAULT_DOMAIN_TIERS[label.toLowerCase()] ?? 1
+        : undefined;
+
+    const nodeConstraints = [
+      ...(constraintsByNode.get(bn.id) || []),
+      ...(bn.id !== key ? constraintsByNode.get(key) || [] : []),
+    ];
+    const nodeDecisions = [
+      ...(decisionsByNode.get(bn.id) || []),
+      ...(bn.id !== key ? decisionsByNode.get(key) || [] : []),
+    ];
+    const mustNot = [
+      ...(mustNotByNode.get(bn.id) || []),
+      ...(bn.id !== key ? mustNotByNode.get(key) || [] : []),
+    ];
+
+    const isDomain = depth === 1 || bn.kind === "domain";
 
     return {
       id: bn.id,
-      label: bn.name || bn.id,
+      key,
+      label,
       kind: isDomain ? "domain" : "feature",
-      path: bn.path || bn.id,
-      isCharted: true,
-      fileCount: totalFiles > 0 ? totalFiles : 1,
-      mappedCount: totalFiles > 0 ? totalFiles : 1,
+      path: displayPath,
+      breadcrumbLabels: breadcrumbs,
+      state,
+      isCharted: state !== "unmapped",
+      fileCount,
+      mappedCount,
+      weight: Math.pow(Math.max(8, fileCount), 0.8),
       depth,
-      parentId: bn.parent || null,
-      children: mappedChildren.length > 0 ? mappedChildren : nodeFiles,
-      hasViolation: hasV,
-      hasPin: hasP,
-      hasQuestion: hasQ,
-      hasProposal: false,
+      parentId: depth === 1 ? "root" : bn.parent || parentKey,
+      children: mappedChildren,
+      filesList: bn.file_list || [],
+      hasViolation: vList.length > 0,
+      hasPin: pList.length > 0,
+      hasQuestion: qList.length > 0,
+      hasProposal: hasProp,
+      pinCount: pList.length,
+      violationCount: vList.length,
+      proposalCount: hasProp ? 1 : 0,
+      icon,
+      tier,
+      birth,
+      constraints: nodeConstraints,
+      decisions: nodeDecisions,
+      mustNotDependOn: mustNot,
+      violationDetails: vList,
+      pinDetails: pList,
+      questionDetails: qList,
       raw: bn,
     };
   }
 
-  const topNodes: HierarchyNode[] = topBlueprintNodes.map((bn: any) => convertBlueprintNode(bn, 1));
+  const topNodes: HierarchyNode[] = topBlueprintNodes.map((bn: any) =>
+    convertBlueprintNode(bn, 1, null, [], 0)
+  );
 
-  // Add unmapped top-level folders as uncharted domains
-  for (const [folderName, folderFiles] of unmappedFolders.entries()) {
-    // If there's already a blueprint domain with this name, don't duplicate
-    if (topNodes.some((tn) => tn.label.toLowerCase() === folderName.toLowerCase() || tn.path.toLowerCase() === folderName.toLowerCase())) {
-      continue;
+  // If there are any unmapped files in graph.unmapped that don't belong to an existing domain, attach them cleanly
+  if (unmapped.length > 0) {
+    const unmappedByTop = new Map<string, string[]>();
+    for (const f of unmapped) {
+      const clean = f.replace(/^src\//, "");
+      const parts = clean.split("/");
+      const topFolder = parts.length > 1 ? parts[0] : "unmapped";
+      // Check if topNodes already has this domain
+      if (topNodes.some((tn) => tn.label.toLowerCase() === topFolder.toLowerCase())) {
+        continue;
+      }
+      if (!unmappedByTop.has(topFolder)) unmappedByTop.set(topFolder, []);
+      unmappedByTop.get(topFolder)!.push(f);
     }
-
-    const subFolders = new Map<string, string[]>();
-    for (const ff of folderFiles) {
-      const parts = ff.split("/");
-      const sub = parts.length > 2 ? parts[1] : "(files)";
-      if (!subFolders.has(sub)) subFolders.set(sub, []);
-      subFolders.get(sub)!.push(ff);
-    }
-
-    const subChildren: HierarchyNode[] = Array.from(subFolders.entries()).map(([subName, subFiles]) => ({
-      id: `folder:${folderName}/${subName}`,
-      label: subName,
-      kind: "folder" as EntityKind,
-      path: `${folderName}/${subName}`,
-      isCharted: false,
-      fileCount: subFiles.length,
-      mappedCount: 0,
-      depth: 2,
-      parentId: `folder:${folderName}`,
-      children: subFiles.map((sf) => ({
-        id: `file:${sf}`,
-        label: sf.split("/").pop() || sf,
-        kind: "file" as EntityKind,
-        path: sf,
+    for (const [folderName, folderFiles] of unmappedByTop.entries()) {
+      const fc = folderFiles.length;
+      topNodes.push({
+        id: folderName,
+        key: folderName,
+        label: folderName,
+        kind: "folder",
+        path: folderName.toLowerCase(),
+        breadcrumbLabels: [folderName],
+        state: "unmapped",
         isCharted: false,
-        fileCount: 1,
+        fileCount: fc,
         mappedCount: 0,
-        depth: 3,
-        parentId: `folder:${folderName}/${subName}`,
+        weight: Math.pow(Math.max(8, fc), 0.8),
+        depth: 1,
+        parentId: "root",
         children: [],
+        filesList: folderFiles,
         hasViolation: false,
         hasPin: false,
         hasQuestion: false,
         hasProposal: false,
-      })),
-      hasViolation: false,
-      hasPin: false,
-      hasQuestion: false,
-      hasProposal: false,
-    }));
-
-    topNodes.push({
-      id: `folder:${folderName}`,
-      label: folderName,
-      kind: "folder",
-      path: folderName,
-      isCharted: false,
-      fileCount: folderFiles.length,
-      mappedCount: 0,
-      depth: 1,
-      parentId: null,
-      children: subChildren,
-      hasViolation: false,
-      hasPin: false,
-      hasQuestion: false,
-      hasProposal: false,
-    });
+        pinCount: 0,
+        violationCount: 0,
+        proposalCount: 0,
+        birth: 0.2,
+        constraints: [],
+        decisions: [],
+        mustNotDependOn: [],
+      });
+    }
   }
 
-  const totalFiles = files.length || topNodes.reduce((acc, n) => acc + n.fileCount, 0);
+  const totalFiles = topNodes.reduce((acc, n) => acc + n.fileCount, 0) || files.length;
   const totalMapped = topNodes.reduce((acc, n) => acc + n.mappedCount, 0);
 
   return {
     id: "root",
-    label: graph.project?.name || "Codebase",
+    key: "root",
+    label: graph.project?.name || "Acme App",
     kind: "project",
     path: "",
+    breadcrumbLabels: [],
+    state: "mapped",
     isCharted: totalMapped > 0,
     fileCount: totalFiles,
     mappedCount: totalMapped,
+    weight: Math.pow(Math.max(8, totalFiles), 0.8),
     depth: 0,
     parentId: null,
     children: topNodes,
+    filesList: [],
     hasViolation: violationsByNode.size > 0,
-    hasPin: pins.some((p: any) => p.status === "active"),
-    hasQuestion: (calibration.questions || []).some((q: any) => q.status === "open"),
-    hasProposal: proposals.some((p: any) => p.status === "pending"),
+    hasPin: pinsByNode.size > 0,
+    hasQuestion: questionsByNode.size > 0,
+    hasProposal: proposalsByNode.size > 0,
+    pinCount: pinsByNode.size,
+    violationCount: violationsByNode.size,
+    proposalCount: proposalsByNode.size,
+    birth: 0,
+    constraints: [],
+    decisions: [],
+    mustNotDependOn: [],
     raw: graph,
   };
 }
 
 /**
- * Find a node in the hierarchy tree by ID.
+ * Flatten all nodes in the hierarchy tree into a lookup map by id and key.
  */
-export function findNodeById(root: HierarchyNode, id: string): HierarchyNode | null {
-  if (root.id === id) return root;
-  for (const child of root.children) {
-    const found = findNodeById(child, id);
-    if (found) return found;
+export function indexHierarchyNodes(root: HierarchyNode): Map<string, HierarchyNode> {
+  const map = new Map<string, HierarchyNode>();
+  const walk = (n: HierarchyNode) => {
+    map.set(n.id, n);
+    map.set(n.key, n);
+    map.set(n.path, n);
+    for (const c of n.children) walk(c);
+  };
+  walk(root);
+  return map;
+}
+
+/**
+ * Find a node in the hierarchy tree by ID, canonical key, or path.
+ */
+export function findNodeById(root: HierarchyNode, idOrKey: string | null | undefined): HierarchyNode | null {
+  if (!idOrKey) return null;
+  if (root.id === idOrKey || root.key === idOrKey) return root;
+  const lower = idOrKey.toLowerCase();
+  const walk = (n: HierarchyNode): HierarchyNode | null => {
+    if (n.id === idOrKey || n.key === idOrKey || n.path === lower || n.key.toLowerCase() === lower) {
+      return n;
+    }
+    for (const child of n.children) {
+      const found = walk(child);
+      if (found) return found;
+    }
+    return null;
+  };
+  return walk(root);
+}
+
+/**
+ * Compute rolled-up badge counts (pins, violations, proposals, unmapped files) for a node key.
+ */
+export function computeNodeFlags(node: HierarchyNode | null | undefined): {
+  pin: number;
+  viol: number;
+  prop: number;
+  unm: number;
+} {
+  if (!node) return { pin: 0, viol: 0, prop: 0, unm: 0 };
+  const f = {
+    pin: node.hasPin ? 1 : 0,
+    viol: node.hasViolation ? 1 : 0,
+    prop: node.hasProposal ? 1 : 0,
+    unm: node.state === "unmapped" ? node.fileCount : 0,
+  };
+  const walk = (n: HierarchyNode, d: number) => {
+    for (const k of n.children || []) {
+      if (k.hasPin) f.pin++;
+      if (k.hasViolation) f.viol++;
+      if (k.hasProposal) f.prop++;
+      if (k.state === "unmapped") f.unm += k.fileCount;
+      if (d + 1 < 4) walk(k, d + 1);
+    }
+  };
+  if (node.depth <= 2) walk(node, node.depth);
+  return f;
+}
+
+/**
+ * Build unified domain-level and node-level directed edges from the graph.
+ */
+export function buildDirectedEdges(
+  graph: any,
+  root: HierarchyNode
+): {
+  domainEdges: DirectedEdge[];
+  nodeEdges: DirectedEdge[];
+} {
+  if (!graph) return { domainEdges: [], nodeEdges: [] };
+  const nodeMap = indexHierarchyNodes(root);
+  const constraints: any[] = graph.constraints || [];
+
+  const isForbiddenPair = (fromKey: string, toKey: string): boolean => {
+    const fromDom = fromKey.split("/")[0];
+    const toDom = toKey.split("/")[0];
+    for (const c of constraints) {
+      if (c.rule !== "must_not_depend") continue;
+      const targets: string[] = c.to || [];
+      if (c.from === fromKey && (targets.includes(toKey) || targets.includes(toDom))) return true;
+      if (c.from === fromDom && (targets.includes(toKey) || targets.includes(toDom))) return true;
+    }
+    return false;
+  };
+
+  const domainEdgeMap = new Map<string, DirectedEdge>();
+  const nodeEdgeMap = new Map<string, DirectedEdge>();
+
+  const registerEdge = (rawFrom: string, rawTo: string, badFlag: boolean, count = 1, status = "declared") => {
+    const nFrom = nodeMap.get(rawFrom);
+    const nTo = nodeMap.get(rawTo);
+    const fromKey = nFrom ? nFrom.key : rawFrom;
+    const toKey = nTo ? nTo.key : rawTo;
+    if (!fromKey || !toKey || fromKey === toKey) return;
+
+    const bad = badFlag || isForbiddenPair(fromKey, toKey);
+    const h = hashStr(`${fromKey}>${toKey}`);
+    const birth = 0.03 + (h % 280) / 1000;
+
+    const fromDepth = nFrom ? nFrom.depth : fromKey.split("/").length;
+    const toDepth = nTo ? nTo.depth : toKey.split("/").length;
+
+    if (fromDepth === 1 && toDepth === 1) {
+      const k = `${fromKey}>${toKey}`;
+      const existing = domainEdgeMap.get(k);
+      if (existing) {
+        existing.bad = existing.bad || bad;
+        existing.count = (existing.count || 1) + count;
+      } else {
+        domainEdgeMap.set(k, { a: fromKey, b: toKey, birth, death: null, bad, count, status });
+      }
+    } else {
+      const k = `${fromKey}>${toKey}`;
+      const existing = nodeEdgeMap.get(k);
+      if (existing) {
+        existing.bad = existing.bad || bad;
+        existing.count = (existing.count || 1) + count;
+      } else {
+        nodeEdgeMap.set(k, { a: fromKey, b: toKey, birth, death: null, bad, count, status });
+      }
+      // Also ensure the parent domains have a rolled-up domain edge
+      const domA = fromKey.split("/")[0];
+      const domB = toKey.split("/")[0];
+      if (domA && domB && domA !== domB) {
+        const dk = `${domA}>${domB}`;
+        const domBad = isForbiddenPair(domA, domB);
+        if (!domainEdgeMap.has(dk)) {
+          const dh = hashStr(dk);
+          domainEdgeMap.set(dk, {
+            a: domA,
+            b: domB,
+            birth: 0.02 + (dh % 300) / 1000,
+            death: null,
+            bad: domBad,
+            count,
+            status,
+          });
+        }
+      }
+    }
+  };
+
+  for (const rel of graph.relations || []) {
+    registerEdge(rel.from, rel.to, false, rel.evidence || 1, rel.status || "declared");
   }
-  return null;
+  for (const ce of graph.code_edges || []) {
+    registerEdge(ce.from, ce.to, Boolean(ce.violation), ce.count || 1, ce.declared ? "declared" : "inferred");
+  }
+
+  return {
+    domainEdges: Array.from(domainEdgeMap.values()),
+    nodeEdges: Array.from(nodeEdgeMap.values()),
+  };
 }
 
 /**
@@ -460,7 +858,6 @@ export function discoverVisibleKinds(focusNode: HierarchyNode): EntityKind[] {
 
 /**
  * Compute radial slices for Ring 1 and Ring 2 around a center focus node.
- * Applies sqrt-dampened angles and +N more folding for long tails.
  */
 export function computeRadialLayout(
   focusNode: HierarchyNode,
@@ -483,45 +880,12 @@ export function computeRadialLayout(
   const ring2Inner = ring1Outer + 6;
   const ring2Outer = maxRadius;
 
-  const rawChildren = [...focusNode.children];
-  const maxSlicesRing1 = 8;
-
-  let displayChildren = rawChildren;
-  let foldedChildren: HierarchyNode[] = [];
-
-  if (rawChildren.length > maxSlicesRing1) {
-    // Keep top (maxSlicesRing1 - 1) largest, fold remainder
-    const sorted = [...rawChildren].sort((a, b) => b.fileCount - a.fileCount);
-    displayChildren = sorted.slice(0, maxSlicesRing1 - 1);
-    foldedChildren = sorted.slice(maxSlicesRing1 - 1);
-
-    const foldedFiles = foldedChildren.reduce((acc, c) => acc + c.fileCount, 0);
-    const foldedMapped = foldedChildren.reduce((acc, c) => acc + c.mappedCount, 0);
-
-    displayChildren.push({
-      id: `folded:${focusNode.id}`,
-      label: `+${foldedChildren.length} more`,
-      kind: "folder",
-      path: `${focusNode.path}/more`,
-      isCharted: foldedMapped > 0,
-      fileCount: foldedFiles,
-      mappedCount: foldedMapped,
-      depth: focusNode.depth + 1,
-      parentId: focusNode.id,
-      children: foldedChildren,
-      hasViolation: foldedChildren.some((c) => c.hasViolation),
-      hasPin: foldedChildren.some((c) => c.hasPin),
-      hasQuestion: foldedChildren.some((c) => c.hasQuestion),
-      hasProposal: foldedChildren.some((c) => c.hasProposal),
-    });
-  }
-
-  // Angular calculation: angle proportional to sqrt(fileCount)
-  const weights = displayChildren.map((c) => Math.max(1, Math.sqrt(c.fileCount)));
+  const displayChildren = [...focusNode.children];
+  const weights = displayChildren.map((c) => c.weight || Math.pow(Math.max(8, c.fileCount), 0.8));
   const totalWeight = weights.reduce((a, b) => a + b, 0) || 1;
 
   const slices: RadialSlice[] = [];
-  let currentAngle = -Math.PI / 2; // Start from top 12 o'clock
+  let currentAngle = 0;
 
   for (let i = 0; i < displayChildren.length; i++) {
     const child = displayChildren[i];
@@ -531,7 +895,7 @@ export function computeRadialLayout(
     const endAngle = currentAngle + sliceAngle;
     currentAngle = endAngle;
 
-    const ring1Slice: RadialSlice = {
+    slices.push({
       id: child.id,
       label: child.label,
       kind: child.kind,
@@ -549,42 +913,16 @@ export function computeRadialLayout(
       hasQuestion: child.hasQuestion,
       hasProposal: child.hasProposal,
       node: child,
-    };
-    slices.push(ring1Slice);
+    });
 
-    // Now compute Ring 2 slices for grandchildren
     const grandchildren = child.children || [];
     if (grandchildren.length > 0) {
-      const maxG = 6;
-      let displayG = grandchildren;
-      if (grandchildren.length > maxG) {
-        const sortedG = [...grandchildren].sort((a, b) => b.fileCount - a.fileCount);
-        displayG = sortedG.slice(0, maxG - 1);
-        const remG = sortedG.slice(maxG - 1);
-        displayG.push({
-          id: `folded:${child.id}`,
-          label: `+${remG.length}`,
-          kind: "folder",
-          path: `${child.path}/more`,
-          isCharted: remG.some((g) => g.isCharted),
-          fileCount: remG.reduce((a, b) => a + b.fileCount, 0),
-          mappedCount: remG.reduce((a, b) => a + b.mappedCount, 0),
-          depth: child.depth + 1,
-          parentId: child.id,
-          children: remG,
-          hasViolation: remG.some((g) => g.hasViolation),
-          hasPin: remG.some((g) => g.hasPin),
-          hasQuestion: remG.some((g) => g.hasQuestion),
-          hasProposal: remG.some((g) => g.hasProposal),
-        });
-      }
-
-      const gWeights = displayG.map((g) => Math.max(1, Math.sqrt(g.fileCount)));
+      const gWeights = grandchildren.map((g) => g.weight || Math.pow(Math.max(8, g.fileCount), 0.8));
       const totalGWeight = gWeights.reduce((a, b) => a + b, 0) || 1;
       let gCurrentAngle = startAngle;
 
-      for (let j = 0; j < displayG.length; j++) {
-        const g = displayG[j];
+      for (let j = 0; j < grandchildren.length; j++) {
+        const g = grandchildren[j];
         const gWeight = gWeights[j];
         const gSliceAngle = (gWeight / totalGWeight) * (endAngle - startAngle);
         const gStart = gCurrentAngle;
@@ -638,11 +976,9 @@ export function describeArc(
   startAngle: number,
   endAngle: number
 ): string {
-  // Cap slice angle slightly to prevent full-circle overlap glitches
   const angleDelta = endAngle - startAngle;
   const largeArcFlag = angleDelta > Math.PI ? 1 : 0;
 
-  // Inner start and end
   const x1 = cx + outerRadius * Math.cos(startAngle);
   const y1 = cy + outerRadius * Math.sin(startAngle);
   const x2 = cx + outerRadius * Math.cos(endAngle);
@@ -662,18 +998,10 @@ export function describeArc(
   ].join(" ");
 }
 
-/**
- * Helper to build an organic rounded concave/L-shaped dashed hull path.
- */
 export function generateOrganicHull(x: number, y: number, w: number, h: number, seed = 0): string {
   return generateOrganicClusterHull(x, y, w, h, 4, seed, "box");
 }
 
-/**
- * Compute an organic Catmull-Rom or cubic Bezier hull enclosing a cluster of cards.
- * Creates stepped L-shapes, wide pills, or sweeping amoeba contours matching
- * hand-drawn cartographic topologies.
- */
 export function generateOrganicClusterHull(
   x: number,
   y: number,
@@ -688,7 +1016,6 @@ export function generateOrganicClusterHull(
   const jitter = (idx: number, amp = 6) => Math.sin(s * 3.7 + idx * 2.3) * amp;
 
   if (shapeType === "amoeba") {
-    // Large sweeping organic boundary (used for domain envelope when drilled in)
     const cx = x + w / 2;
     const cy = y + h / 2;
     const rx = w / 2 + pad;
@@ -706,8 +1033,6 @@ export function generateOrganicClusterHull(
   }
 
   if (shapeType === "l-shape" || (cardCount >= 5 && shapeType !== "capsule")) {
-    // L-shaped / stepped stepped organic hull:
-    // Top row wider (e.g. 3-4 cards), bottom row narrower (e.g. 2 cards)
     const midX = x + w * 0.62 + jitter(1, 8);
     const midY = y + h * 0.54 + jitter(2, 6);
 
@@ -727,7 +1052,6 @@ export function generateOrganicClusterHull(
   }
 
   if (shapeType === "capsule" || cardCount <= 3) {
-    // Wide capsule or organic pill
     const pts: [number, number][] = [
       [x + 22, y + jitter(0, 3)],
       [x + w - 22, y + jitter(1, 3)],
@@ -739,7 +1063,6 @@ export function generateOrganicClusterHull(
     return smoothSplineClosed(pts);
   }
 
-  // Boxy organic blob
   const pts: [number, number][] = [
     [x + 20, y + jitter(0, 3)],
     [x + w - 20, y + jitter(1, 3)],
@@ -764,7 +1087,6 @@ function smoothSplineClosed(points: [number, number][]): string {
     const p2 = points[(i + 1) % n];
     const p3 = points[(i + 2) % n];
 
-    // Catmull-Rom to Cubic Bezier conversion
     const cp1x = p1[0] + (p2[0] - p0[0]) / 6;
     const cp1y = p1[1] + (p2[1] - p0[1]) / 6;
     const cp2x = p2[0] - (p3[0] - p1[0]) / 6;
