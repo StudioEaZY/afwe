@@ -453,12 +453,27 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     for c in &snap.sources.constraints.constraints {
         guard_fps.insert(format!("constraint:{}", c.id), format!("{}:{}", c.severity, c.phase.as_deref().unwrap_or("active")));
     }
+    let mut importer_counts: BTreeMap<String, usize> = BTreeMap::new();
+    for f in &snap.code.files {
+        for imp in &f.resolved_imports {
+            *importer_counts.entry(imp.clone()).or_default() += 1;
+        }
+    }
+    let mut exported_symbols: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for f in &snap.code.files {
+        let syms: Vec<String> = f.symbols.iter().filter(|s| s.exported).map(|s| s.qualified.clone()).collect();
+        if !syms.is_empty() {
+            exported_symbols.insert(f.path.clone(), syms);
+        }
+    }
     let baseline = Baseline {
         head: vcs::open(&snap.manifest.vcs.provider).head(&root),
         files: tree_hashes(engine, &snap),
         symbols: symbol_map(&snap),
         implements: implements_map(&snap, &prefix),
         guards: guard_fps,
+        importer_counts,
+        exported_symbols,
     };
     engine.store.save_baseline(&id, &baseline)?;
 
@@ -775,6 +790,29 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     if let Some(b) = &base {
         for p in conflict::partial_loss(&b.implements, &after_map, &touched_list) {
             notices.push(format!("PARTIAL_LOSS: {p}"));
+        }
+
+        // Inter-file reachability ratchet: detect newly orphaned unmounted modules
+        let mut now_importers: BTreeMap<String, usize> = BTreeMap::new();
+        for f in &snap.code.files {
+            for imp in &f.resolved_imports {
+                *now_importers.entry(imp.clone()).or_default() += 1;
+            }
+        }
+        for orph in conflict::newly_orphaned_files(&b.importer_counts, &now_importers, &removes, &turn.intents) {
+            blocking.push(format!("ORPHANED_MODULE: `{orph}` lost all incoming imports and has become dead code — wire it in, or declare it in `turn assume` with action `remove` or `replace`"));
+        }
+
+        // Intra-file capability ratchet: detect dropped exported symbols in touched files
+        let mut now_exported: BTreeMap<String, Vec<String>> = BTreeMap::new();
+        for f in &snap.code.files {
+            let syms: Vec<String> = f.symbols.iter().filter(|s| s.exported).map(|s| s.qualified.clone()).collect();
+            if !syms.is_empty() {
+                now_exported.insert(f.path.clone(), syms);
+            }
+        }
+        for dropped in conflict::dropped_intrafile_capabilities(&b.exported_symbols, &now_exported, &code_rel, &removes, &turn.intents) {
+            blocking.push(format!("DROPPED_CAPABILITY: `{dropped}` was deleted or dropped from exports — restore it, or declare it in `turn assume` with action `remove` or `replace`"));
         }
     }
 
@@ -1399,6 +1437,54 @@ pub fn get(engine: &Engine, id: &str) -> Result<Turn> {
 
 pub fn list(engine: &Engine) -> Result<Vec<Turn>> {
     engine.store.turns()
+}
+
+/// Reset working tree changes made during this turn back to baseline while keeping the turn open.
+/// This allows an agent or developer to cleanly redo their attempt without abandoning the turn.
+pub fn redo(engine: &Engine, id: &str, origin: &str) -> Result<Value> {
+    let mut t = load(engine, id)?;
+    if !matches!(t.status.as_str(), "open" | "staged" | "ready") {
+        return Err(anyhow!("turn {id} is {}; only open, staged or ready turns can be redone", t.status));
+    }
+    let m = engine.store.manifest()?;
+    let vcs = vcs::open(&m.vcs.provider);
+    let root = engine.store.project_root.clone();
+    let snap = engine.snapshot(true)?;
+    let base = engine.store.baseline(id)?;
+    let changed: Vec<String> = match &base {
+        Some(b) => changed_paths(&b.files, &tree_hashes(engine, &snap)).into_iter().collect(),
+        None => t.touched.files.clone(),
+    };
+    let mut restored = vec![];
+    let mut deleted = vec![];
+    for f in &changed {
+        let head = vcs.show(&root, "HEAD", f);
+        let base_hash = base.as_ref().and_then(|b| b.files.get(f).cloned());
+        match (head, base_hash) {
+            (Some(c), Some(bh)) if hash_bytes(c.as_bytes()) == bh => {
+                let _ = std::fs::write(root.join(f), c);
+                restored.push(f.clone());
+            }
+            (None, None) => {
+                if root.join(f).exists() {
+                    let _ = std::fs::remove_file(root.join(f));
+                }
+                deleted.push(f.clone());
+            }
+            _ => {}
+        }
+    }
+    t.status = "open".into();
+    t.gate = GateRecord::default();
+    engine.store.save_turn(&t)?;
+    engine.log(origin, "turn_redo", format!("{id} reset for redo: {} restored, {} deleted", restored.len(), deleted.len()), Some(json!({"turn": id})))?;
+    Ok(json!({
+        "status": "open",
+        "turn": id,
+        "restored": restored,
+        "deleted": deleted,
+        "next": "turn is open and clean; modify code and call turn.commit again"
+    }))
 }
 
 #[cfg(test)]

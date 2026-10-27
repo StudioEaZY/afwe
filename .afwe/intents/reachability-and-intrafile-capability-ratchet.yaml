@@ -1,0 +1,21 @@
+id: reachability-and-intrafile-capability-ratchet
+title: Upgrade afwe-core with in-degree reachability and intra-file capability drop gates
+statement: Track file importer in-degree and exported symbol signatures in Baseline. Flag newly orphaned unmounted modules and undeclared dropped capabilities at turn commit without any LLM model calls (100% deterministic).
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  - afwe-cli
+from_turns:
+- t0032
+history:
+- turn: t0032
+  ts: 2026-10-27T08:10:35Z
+  statement: Track file importer in-degree and exported symbol signatures in Baseline. Flag newly orphaned unmounted modules and undeclared dropped capabilities at turn commit.
+- turn: t0032
+  ts: 2026-10-27T08:38:22Z
+  statement: Track file importer in-degree and exported symbol signatures in Baseline. Flag newly orphaned unmounted modules and undeclared dropped capabilities at turn commit without any LLM model calls (100% deterministic).
+created: 2026-10-27T08:10:35Z
+updated: 2026-10-27T08:38:22Z
+task: task-t0032

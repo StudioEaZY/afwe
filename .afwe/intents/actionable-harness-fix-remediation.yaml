@@ -1,0 +1,17 @@
+id: actionable-harness-fix-remediation
+title: Build actionable HarnessFixPrompt remediation component across Studio views
+statement: Embed ready-to-run agent remediation prompts and direct CLI commands on every rule violation, unmapped code parcel, and failed check in Studio.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0032
+history:
+- turn: t0032
+  ts: 2026-10-27T08:10:35Z
+  statement: Embed ready-to-run agent remediation prompts and direct CLI commands on every rule violation, unmapped code parcel, and failed check in Studio.
+created: 2026-10-27T08:10:35Z
+updated: 2026-10-27T08:38:22Z
+task: task-t0032

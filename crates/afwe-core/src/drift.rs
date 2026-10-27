@@ -301,6 +301,38 @@ pub fn detect(snap: &Snapshot, only_files: Option<&[String]>) -> Vec<Finding> {
                 }
             }
         }
+        // ── 9. orphaned non-entrypoint code files (0 incoming imports) ──
+        let mut importer_counts: HashMap<&str, usize> = HashMap::new();
+        for f in &snap.code.files {
+            for imp in &f.resolved_imports {
+                *importer_counts.entry(imp.as_str()).or_default() += 1;
+            }
+        }
+        for f in &snap.code.files {
+            if !expects_home(f) {
+                continue;
+            }
+            let base = basename(&f.path);
+            if matches!(base, "main.rs" | "lib.rs" | "main.tsx" | "main.ts" | "main.jsx" | "main.js" | "index.tsx" | "index.ts" | "index.jsx" | "index.js" | "App.tsx" | "App.jsx") {
+                continue;
+            }
+            let count = importer_counts.get(f.path.as_str()).copied().unwrap_or(0);
+            if count == 0 {
+                if let Some(node_id) = snap.mapping.primary(&f.path) {
+                    out.push(Finding {
+                        id: fid("orphaned_file", &f.path),
+                        kind: "orphaned_file".into(),
+                        severity: "warn".into(),
+                        confidence: 0.90,
+                        summary: format!("`{}` in {} has 0 incoming imports (unmounted component or dead module)", f.path, table.path_of(&node_id)),
+                        evidence: vec!["no project file imports this module".into()],
+                        change: None,
+                        nodes: vec![node_id.to_string()],
+                        files: vec![f.path.clone()],
+                    });
+                }
+            }
+        }
     }
     out
 }

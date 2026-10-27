@@ -11,6 +11,7 @@ import {
   Move,
 } from "lucide-react";
 import { useStore } from "../store";
+import { api } from "../api";
 import {
   buildHierarchyTree,
   buildDirectedEdges,
@@ -79,6 +80,9 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
     filterMode,
     selectedEntity,
     selectEntity,
+    openConsequenceModal,
+    scheduleQuarantineAction,
+    notify,
     drillDown,
     setActiveLens,
     openConstellationFor,
@@ -273,6 +277,41 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
   const handleNodePointerUp = (ev: React.PointerEvent) => {
     if (draggingKey) {
+      // Check if dropped onto another node while holding Shift or moving over a target
+      const dropTargetEl = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".ex");
+      const dropTargetKey = dropTargetEl?.getAttribute("data-node-key");
+
+      if (dropTargetKey && dropTargetKey !== draggingKey && (ev.shiftKey || ev.altKey)) {
+        const srcNode = findNodeById(root, draggingKey);
+        const targetNode = findNodeById(root, dropTargetKey);
+        if (srcNode && targetNode) {
+          openConsequenceModal({
+            title: "Reparent Architectural Blueprint Node",
+            statement: `Move node "${srcNode.label}" under "${targetNode.label}"? This is a structural edit of .afwe/blueprint.yaml.`,
+            isCascading: true,
+            impact: [
+              `Node path will change to: ${targetNode.path}/${srcNode.id}`,
+              `Descendant modules will be re-nested under ${targetNode.label}.`,
+              `Changes will be staged in the 10-second quarantine grace period with full undo support.`,
+            ],
+            confirmLabel: "Reparent Node",
+            onConfirm: () => {
+              scheduleQuarantineAction({
+                id: `move-node-${srcNode.id}-under-${targetNode.id}`,
+                label: `Move ${srcNode.label} under ${targetNode.label}`,
+                description: `Reparenting blueprint node ${srcNode.id}`,
+                isCascading: true,
+                execute: async () => {
+                  await api.bp.move(srcNode.id, targetNode.id);
+                  notify(`Reparented ${srcNode.label} under ${targetNode.label}`);
+                },
+              });
+            },
+            onCancel: () => {},
+          });
+        }
+      }
+
       setDraggingKey(null);
       dragNodeStartRef.current = null;
       try {
@@ -511,6 +550,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
               <g
                 key={k}
                 className="ex"
+                data-node-key={k}
                 transform={`translate(${p.x},${p.y + 6})`}
                 style={{
                   opacity: dimmed ? 0.25 : 1,

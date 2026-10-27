@@ -4,6 +4,7 @@ import { FileCode, Box, ArrowUpRight, Lock, ShieldCheck, Clock } from "lucide-re
 import { useStore } from "../store";
 import { api } from "../api";
 import { extractAttachmentItems, formatAttachment } from "../lib/hierarchy";
+import { HarnessFixButton } from "./HarnessFixPrompt";
 
 export const ChecksPage: React.FC = () => {
   const {
@@ -260,22 +261,32 @@ export const ChecksPage: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <button
-                      onClick={() => handleRetirePin(pin)}
-                      style={{
-                        background: "#FFFFFF",
-                        border: "1px solid #DCD9D0",
-                        padding: "3px 10px",
-                        borderRadius: "5px",
-                        fontSize: "11px",
-                        color: "#6E685F",
-                        cursor: "pointer",
-                        fontWeight: 500,
-                        flexShrink: 0,
-                      }}
-                    >
-                      Retire
-                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-end" }}>
+                      <HarnessFixButton
+                        compact
+                        issueType="pin_conflict"
+                        title={`Pin ${pin.id}: ${pin.statement}`}
+                        ruleId={pin.id}
+                        rationale={pin.statement}
+                        suggestedAction="Comply with this locked intent pin or provide an explicit override in turn.assume."
+                      />
+                      <button
+                        onClick={() => handleRetirePin(pin)}
+                        style={{
+                          background: "#FFFFFF",
+                          border: "1px solid #DCD9D0",
+                          padding: "3px 10px",
+                          borderRadius: "5px",
+                          fontSize: "11px",
+                          color: "#6E685F",
+                          cursor: "pointer",
+                          fontWeight: 500,
+                          flexShrink: 0,
+                        }}
+                      >
+                        Retire
+                      </button>
+                    </div>
                   </div>
                 ))
             )}
@@ -364,22 +375,32 @@ export const ChecksPage: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <button
-                      onClick={() => handleRemoveCheck(chk)}
-                      style={{
-                        background: "#FFFFFF",
-                        border: "1px solid #DCD9D0",
-                        padding: "3px 10px",
-                        borderRadius: "5px",
-                        fontSize: "11px",
-                        color: "#C94A38",
-                        cursor: "pointer",
-                        fontWeight: 500,
-                        flexShrink: 0,
-                      }}
-                    >
-                      Remove
-                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-end" }}>
+                      <HarnessFixButton
+                        compact
+                        issueType="failed_check"
+                        title={`Check ${chk.id}: ${chk.title || chk.id}`}
+                        ruleId={chk.id}
+                        offendingFiles={chk.claim?.files}
+                        suggestedAction="Comply with this standing tripwire claim or adjust checkgen requirements."
+                      />
+                      <button
+                        onClick={() => handleRemoveCheck(chk)}
+                        style={{
+                          background: "#FFFFFF",
+                          border: "1px solid #DCD9D0",
+                          padding: "3px 10px",
+                          borderRadius: "5px",
+                          fontSize: "11px",
+                          color: "#C94A38",
+                          cursor: "pointer",
+                          fontWeight: 500,
+                          flexShrink: 0,
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 ))
             )}

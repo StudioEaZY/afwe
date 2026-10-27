@@ -14,8 +14,16 @@ import {
   Lock,
   FileCode,
   Bookmark,
+  FileText,
+  Edit3,
+  PlusCircle,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useStore } from "../store";
+import { api } from "../api";
+import { HarnessFixButton } from "./HarnessFixPrompt";
+import { EditNodeModal, MappingModal, ConstraintModal } from "./BlueprintModals";
 import {
   buildHierarchyTree,
   buildDirectedEdges,
@@ -128,13 +136,24 @@ const EdgeInspectorView: React.FC<EdgeInspectorViewProps> = ({
       </div>
 
       {e.bad && (
-        <div className="warn">
-          <b>Rule violation</b>
-          <br />
-          {e.a} must not depend on {e.b}.<br />
-          <span style={{ opacity: 0.85 }}>
-            Suggested fix: invert dependency via an event or move shared types into Shared.
-          </span>
+        <div className="warn" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div>
+            <b>Rule violation</b>
+            <br />
+            {e.a} must not depend on {e.b}.<br />
+            <span style={{ opacity: 0.85 }}>
+              Suggested fix: invert dependency via an event or move shared types into Shared.
+            </span>
+          </div>
+          <HarnessFixButton
+            compact
+            issueType="constraint_violation"
+            title={`${shortLabel(e.a)} -> ${shortLabel(e.b)} boundary violation`}
+            sourceNode={e.a}
+            targetNode={e.b}
+            rationale={`${e.a} must not depend on ${e.b}`}
+            suggestedAction="Invert the dependency via an interface or move shared types behind an allowed boundary."
+          />
         </div>
       )}
 
@@ -203,7 +222,18 @@ export const NodeInspector: React.FC = () => {
     setConstellationAnchor,
     openConstellationFor,
     openCodePreview,
+    notify,
+    run,
   } = useStore();
+
+  const [activeTab, setActiveTab] = useState<"inspect" | "agent">("inspect");
+  const [agentBriefing, setAgentBriefing] = useState<string>("");
+  const [briefingLoading, setBriefingLoading] = useState<boolean>(false);
+  const [briefingCopied, setBriefingCopied] = useState<boolean>(false);
+
+  const [editingNode, setEditingNode] = useState<boolean>(false);
+  const [editingMapping, setEditingMapping] = useState<boolean>(false);
+  const [addingConstraint, setAddingConstraint] = useState<boolean>(false);
 
   const [bookmarks, setBookmarks] = useState<StudioBookmark[]>(() => getStudioPrefs().bookmarks);
 
@@ -379,6 +409,20 @@ export const NodeInspector: React.FC = () => {
 
   const isBookmarked = bookmarks.some((b) => b.id === activeNode.key);
 
+  useEffect(() => {
+    if (activeTab === "agent" && activeNode) {
+      setBriefingLoading(true);
+      api.context({ node: activeNode.key || activeNode.id })
+        .then((res: any) => {
+          setAgentBriefing(res?.markdown || `# Agent Briefing: ${activeNode.label}\nNo micro-context returned.`);
+        })
+        .catch((err: any) => {
+          setAgentBriefing(`# Error retrieving agent context\n${err?.message || err}`);
+        })
+        .finally(() => setBriefingLoading(false));
+    }
+  }, [activeTab, activeNode.key]);
+
   const handleToggleBookmark = () => {
     if (isBookmarked) {
       removeBookmark(activeNode.key);
@@ -444,6 +488,91 @@ export const NodeInspector: React.FC = () => {
         </div>
       </div>
 
+      {/* Segmented Inspector vs Agent Briefing View Switcher */}
+      <div style={{ display: "flex", borderBottom: "1px solid var(--line)", background: "var(--side)", margin: "0 -16px 12px -16px", padding: "0 16px" }}>
+        <button
+          type="button"
+          onClick={() => setActiveTab("inspect")}
+          style={{
+            flex: 1,
+            padding: "8px 0",
+            background: "none",
+            border: "none",
+            borderBottom: activeTab === "inspect" ? "2px solid var(--accent)" : "2px solid transparent",
+            fontWeight: activeTab === "inspect" ? 600 : 500,
+            fontSize: "12px",
+            color: activeTab === "inspect" ? "var(--ink)" : "var(--mute)",
+            cursor: "pointer",
+          }}
+        >
+          Inspector
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("agent")}
+          style={{
+            flex: 1,
+            padding: "8px 0",
+            background: "none",
+            border: "none",
+            borderBottom: activeTab === "agent" ? "2px solid var(--accent)" : "2px solid transparent",
+            fontWeight: activeTab === "agent" ? 600 : 500,
+            fontSize: "12px",
+            color: activeTab === "agent" ? "var(--ink)" : "var(--mute)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "5px",
+          }}
+        >
+          <FileText size={12} />
+          <span>Agent View</span>
+        </button>
+      </div>
+
+      {activeTab === "agent" ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase" }}>
+              Exact LLM Micro-Context Briefing
+            </span>
+            <button
+              type="button"
+              className="btn-soft"
+              onClick={() => {
+                navigator.clipboard.writeText(agentBriefing);
+                setBriefingCopied(true);
+                setTimeout(() => setBriefingCopied(false), 2000);
+              }}
+              style={{ padding: "3px 8px", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "4px" }}
+            >
+              {briefingCopied ? <Check size={11} /> : <Copy size={11} />}
+              <span>{briefingCopied ? "Copied" : "Copy Briefing"}</span>
+            </button>
+          </div>
+          <pre
+            style={{
+              background: "var(--bg)",
+              border: "1px solid var(--line)",
+              borderRadius: "6px",
+              padding: "12px",
+              fontSize: "11px",
+              fontFamily: "'IBM Plex Mono', monospace",
+              color: "var(--ink)",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+              maxHeight: "420px",
+              overflowY: "auto",
+              margin: 0,
+            }}
+          >
+            {briefingLoading ? "Retrieving agent micro-context..." : agentBriefing}
+          </pre>
+        </div>
+      ) : (
+        <>
+
       {/* Honest Blueprint Link Status Box (.bp-status) */}
       <div className={`bp-status ${nodeLinked ? "linked" : ""}`}>
         {stateDescription(activeNode.state, activeNode)}
@@ -451,13 +580,24 @@ export const NodeInspector: React.FC = () => {
 
       {/* Rule Violation Warning (.warn) */}
       {(bads.length > 0 || flags.viol > 0) && (
-        <div className="warn">
-          <b>Rule violation</b>
-          <br />
-          {bads[0]
-            ? `${bads[0].a} depends on ${bads[0].b}, which is forbidden.`
-            : activeNode.violationDetails?.[0] ||
-              `${activeNode.label} contains a boundary violation.`}
+        <div className="warn" style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div>
+            <b>Rule violation</b>
+            <br />
+            {bads[0]
+              ? `${bads[0].a} depends on ${bads[0].b}, which is forbidden.`
+              : activeNode.violationDetails?.[0] ||
+                `${activeNode.label} contains a boundary violation.`}
+          </div>
+          <HarnessFixButton
+            compact
+            issueType="constraint_violation"
+            title={`${activeNode.label} boundary rule violation`}
+            sourceNode={activeNode.key}
+            targetNode={bads[0]?.b}
+            rationale={bads[0] ? `${bads[0].a} must not depend on ${bads[0].b}` : undefined}
+            suggestedAction="Repair boundary constraint violation or invert dependency."
+          />
         </div>
       )}
 
@@ -649,7 +789,18 @@ export const NodeInspector: React.FC = () => {
 
       {/* Constraints Section */}
       <div className="sec">
-        <h3>Constraints</h3>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h3>Constraints</h3>
+          <button
+            type="button"
+            className="btn-soft"
+            onClick={() => setAddingConstraint(true)}
+            style={{ padding: "2px 6px", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "4px" }}
+          >
+            <PlusCircle size={11} />
+            <span>+ Rule</span>
+          </button>
+        </div>
         {constraintsToShow.length > 0 ? (
           constraintsToShow.map((c, idx) => (
             <div key={idx} className="row">
@@ -693,6 +844,66 @@ export const NodeInspector: React.FC = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Blueprint Inline Actions */}
+      <div style={{ marginTop: "16px", paddingTop: "12px", borderTop: "1px solid var(--line)", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        <button
+          type="button"
+          className="btn-soft"
+          onClick={() => setEditingNode(true)}
+          style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "11px", padding: "4px 8px" }}
+        >
+          <Edit3 size={11} />
+          <span>Edit Node</span>
+        </button>
+        <button
+          type="button"
+          className="btn-soft"
+          onClick={() => setEditingMapping(true)}
+          style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "11px", padding: "4px 8px" }}
+        >
+          <FileCode size={11} />
+          <span>Edit Mapping</span>
+        </button>
+      </div>
+
+      </>
+      )}
+
+      {editingNode && (
+        <EditNodeModal
+          node={{ id: activeNode.key, name: activeNode.label, path: activeNode.path, status: activeNode.state }}
+          onClose={() => setEditingNode(false)}
+          onSave={async (patch) => {
+            await run("Updating Node", async () => {
+              await api.bp.update(activeNode.key, patch);
+              notify(`Updated ${activeNode.label}`);
+            });
+            setEditingNode(false);
+          }}
+        />
+      )}
+
+      {editingMapping && (
+        <MappingModal
+          node={{ id: activeNode.key, path: activeNode.path, implements: { files: activeNode.filesList || [] } }}
+          onClose={() => setEditingMapping(false)}
+          onSave={async (files, symbols) => {
+            await run("Updating Mapping", async () => {
+              await api.bp.update(activeNode.key, { files, symbols });
+              notify(`Updated mapping for ${activeNode.label}`);
+            });
+            setEditingMapping(false);
+          }}
+        />
+      )}
+
+      {addingConstraint && (
+        <ConstraintModal
+          from={activeNode.key}
+          onClose={() => setAddingConstraint(false)}
+        />
       )}
     </aside>
   );

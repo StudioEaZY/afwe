@@ -8,16 +8,77 @@ nodes:
   children:
   - id: studio
     name: Studio
-    kind: module
-    description: Bootstrapped from `apps/studio/` (31 code files). Review and give it a purpose.
+    kind: subsystem
+    description: Web and desktop architectural workstation for visualization, drift review, intent governance, and timeline diffs.
     implements:
       files:
       - apps/studio/**
     tags:
-    - bootstrapped
+    - active
     status: active
-    origin: afwe:bootstrap
+    origin: human
     children:
+    - id: studio-shell
+      name: Studio Shell
+      kind: module
+      description: App layout, state stores, prefs, API transport, sidebar navigation, and top bar.
+      implements:
+        files:
+        - apps/studio/src/App.tsx
+        - apps/studio/src/store.ts
+        - apps/studio/src/lib/prefs.ts
+        - apps/studio/src/api.ts
+        - apps/studio/src/components/Sidebar.tsx
+        - apps/studio/src/components/TopBar.tsx
+      status: active
+      origin: human
+    - id: studio-maps
+      name: Studio Maps
+      kind: module
+      description: Codebase overview maps (Radial pill-wedge atlas, Organic multi-lobe topology hulls, Constellation graph).
+      implements:
+        files:
+        - apps/studio/src/components/OverviewPage.tsx
+        - apps/studio/src/components/RadialMap.tsx
+        - apps/studio/src/components/TopologyMap.tsx
+        - apps/studio/src/components/ConstellationMap.tsx
+      status: active
+      origin: human
+    - id: studio-inspector
+      name: Studio Inspector & Remediation
+      kind: module
+      description: Node/edge inspector, live agent briefing preview, inline blueprint editing, and actionable harness remediation prompts.
+      implements:
+        files:
+        - apps/studio/src/components/NodeInspector.tsx
+        - apps/studio/src/components/HarnessFixPrompt.tsx
+        - apps/studio/src/components/BlueprintModals.tsx
+      status: active
+      origin: human
+    - id: studio-timeline
+      name: Studio Timeline
+      kind: module
+      description: Unified 4D timeline dual-scrubber, turn history, and CodeMirror side-by-side diff workstation.
+      implements:
+        files:
+        - apps/studio/src/components/TimelinePage.tsx
+        - apps/studio/src/components/TimelineDualScrubber.tsx
+        - apps/studio/src/components/CodeDiffViewer.tsx
+      status: active
+      origin: human
+    - id: studio-governance
+      name: Studio Governance
+      kind: module
+      description: Architectural blueprint page, standing checks and pins, decisions queue, two-tier quarantine modals, and settings.
+      implements:
+        files:
+        - apps/studio/src/components/BlueprintPage.tsx
+        - apps/studio/src/components/ChecksPage.tsx
+        - apps/studio/src/components/DecisionsPage.tsx
+        - apps/studio/src/components/GovernanceActionModal.tsx
+        - apps/studio/src/components/SettingsPage.tsx
+      status: active
+      origin: human
     - id: studio-prompt-gateway
       name: studio-prompt-gateway
       kind: module

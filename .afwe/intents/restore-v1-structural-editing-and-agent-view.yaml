@@ -1,0 +1,17 @@
+id: restore-v1-structural-editing-and-agent-view
+title: Restore V1 structural drag-and-drop, edge declaration, and Agent View briefing in V2 Studio
+statement: Add structural reparenting drop targets (api.bp.move), edge declaration (api.bp.relate), live Agent View markdown preview (api.context), and inline blueprint modals to TopologyMap, ConstellationMap, NodeInspector, and BlueprintPage.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0032
+history:
+- turn: t0032
+  ts: 2026-10-27T08:10:35Z
+  statement: Add structural reparenting drop targets (api.bp.move), edge declaration (api.bp.relate), live Agent View markdown preview (api.context), and inline blueprint modals to TopologyMap, ConstellationMap, NodeInspector, and BlueprintPage.
+created: 2026-10-27T08:10:35Z
+updated: 2026-10-27T08:38:22Z
+task: task-t0032

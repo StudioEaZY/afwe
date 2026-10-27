@@ -1,0 +1,18 @@
+id: turn-redo-update-and-preplan-protocol
+title: Implement turn update/redo commands and enforce 3-phase turn lifecycle
+statement: Expose afwe turn update and afwe turn redo in CLI and update SKILL.md and AGENTS.md with pre-planning turn protocol.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+  - afwe-core
+from_turns:
+- t0032
+history:
+- turn: t0032
+  ts: 2026-10-27T08:10:35Z
+  statement: Expose afwe turn update and afwe turn redo in CLI and update SKILL.md and AGENTS.md with pre-planning turn protocol.
+created: 2026-10-27T08:10:35Z
+updated: 2026-10-27T08:38:22Z
+task: task-t0032

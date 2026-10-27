@@ -101,6 +101,92 @@ pub fn partial_loss(before: &BTreeMap<String, Vec<String>>, after: &BTreeMap<Str
     out
 }
 
+/// Files that had incoming imports before this turn and now have 0, without an explicit declaration
+/// (either in `removes` or an intent with `action: remove` or `replace`).
+/// Entrypoints (main, lib, index, App) are exempt.
+pub fn newly_orphaned_files(
+    before_importers: &BTreeMap<String, usize>,
+    after_importers: &BTreeMap<String, usize>,
+    declared_removes: &[String],
+    intents: &[crate::model::TurnIntent],
+) -> Vec<String> {
+    let mut out = vec![];
+    let is_exempt = |f: &str| -> bool {
+        let base = f.rsplit('/').next().unwrap_or(f);
+        matches!(
+            base,
+            "main.rs"
+                | "lib.rs"
+                | "main.tsx"
+                | "main.ts"
+                | "main.jsx"
+                | "main.js"
+                | "index.tsx"
+                | "index.ts"
+                | "index.jsx"
+                | "index.js"
+                | "App.tsx"
+                | "App.jsx"
+        )
+    };
+
+    let is_declared = |f: &str| -> bool {
+        if declared_removes.iter().any(|r| r == f || f.ends_with(r) || r.ends_with(f)) {
+            return true;
+        }
+        for it in intents {
+            if matches!(it.action.as_str(), "remove" | "replace") {
+                if it.targets.iter().any(|t| t == f || f.ends_with(t) || t.ends_with(f)) {
+                    return true;
+                }
+            }
+        }
+        false
+    };
+
+    for (file, &count) in before_importers {
+        if count > 0 && !is_exempt(file) {
+            let now_count = after_importers.get(file).copied().unwrap_or(0);
+            if now_count == 0 && !is_declared(file) {
+                out.push(file.clone());
+            }
+        }
+    }
+    out
+}
+
+/// Intra-file capability drops: exported symbols that were in `before` but disappeared in `after`,
+/// without an explicit intent targeting that symbol or file with `action: remove` or `replace`.
+pub fn dropped_intrafile_capabilities(
+    before_exported: &BTreeMap<String, Vec<String>>,
+    after_exported: &BTreeMap<String, Vec<String>>,
+    touched_files: &[String],
+    declared_removes: &[String],
+    intents: &[crate::model::TurnIntent],
+) -> Vec<String> {
+    let mut out = vec![];
+    for f in touched_files {
+        let clean_f = f.trim_start_matches("./");
+        if let Some(before_syms) = before_exported.get(clean_f) {
+            let after_syms = after_exported.get(clean_f).cloned().unwrap_or_default();
+            for sym in before_syms {
+                if !after_syms.contains(sym) {
+                    let sym_short = sym.rsplit("::").next().unwrap_or(sym);
+                    let is_declared = declared_removes.iter().any(|r| r == sym || r == sym_short || r == clean_f)
+                        || intents.iter().any(|it| {
+                            matches!(it.action.as_str(), "remove" | "replace")
+                                && it.targets.iter().any(|t| t == sym || t == sym_short || t == clean_f)
+                        });
+                    if !is_declared {
+                        out.push(format!("{clean_f}::{sym_short}"));
+                    }
+                }
+            }
+        }
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

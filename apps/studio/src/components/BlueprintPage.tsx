@@ -1,11 +1,18 @@
 // apps/studio/src/components/BlueprintPage.tsx
 import React, { useState } from "react";
+import { FolderGit2, Plus, Edit2, Layers } from "lucide-react";
 import { useStore } from "../store";
+import { api } from "../api";
+import { EditNodeModal, MappingModal, ConstraintModal } from "./BlueprintModals";
+import { HarnessFixButton } from "./HarnessFixPrompt";
 
 export const BlueprintPage: React.FC = () => {
-  const { graph, notify, jumpToNodeOnMap, openCodePreview } = useStore();
+  const { graph, notify, run, jumpToNodeOnMap, openCodePreview } = useStore();
   const [search, setSearch] = useState("");
   const [selectedNode, setSelectedNode] = useState<any | null>(null);
+  const [editingNode, setEditingNode] = useState<any | null>(null);
+  const [mappingNode, setMappingNode] = useState<any | null>(null);
+  const [constrainingNode, setConstrainingNode] = useState<any | null>(null);
 
   const nodes = graph?.nodes || [];
   const constraints = graph?.constraints || [];
@@ -85,17 +92,31 @@ export const BlueprintPage: React.FC = () => {
           {/* Unmapped code parcels alert strip if any */}
           {unmapped.length > 0 && (
             <div style={{ padding: "12px 16px", background: "#FAF5E9", borderBottom: "1px solid #EEDEA8" }}>
-              <div style={{ fontWeight: 600, fontSize: "12px", color: "#87661A", display: "flex", alignItems: "center", gap: "6px" }}>
-                <span>📁</span> {unmapped.length} Unmapped Code Parcel(s)
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ fontWeight: 600, fontSize: "12px", color: "#87661A", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <FolderGit2 size={14} />
+                  <span>{unmapped.length} Unmapped Code Parcel(s)</span>
+                </div>
+                <HarnessFixButton
+                  compact
+                  issueType="unmapped_code"
+                  title={`${unmapped.length} unmapped code parcel(s)`}
+                  offendingFiles={unmapped}
+                  suggestedAction="Anchor discovered unmapped directories to blueprint nodes using 'afwe bp map <node> <files>'."
+                  cliCommand={`afwe bp map ${nodes[0]?.id || "app"} ${unmapped.slice(0, 3).join(" ")}`}
+                />
               </div>
-              <div style={{ fontSize: "11px", color: "#6A4E11", marginTop: "2px" }}>
+              <div style={{ fontSize: "11px", color: "#6A4E11", marginTop: "4px" }}>
                 Folders discovered by static analysis not yet anchored to blueprint.
               </div>
-              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "6px" }}>
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "8px" }}>
                 {unmapped.slice(0, 4).map((f: string, idx: number) => (
                   <span
                     key={idx}
-                    onClick={() => notify(`Staged mapping for ${f}`)}
+                    onClick={() => {
+                      setSelectedNode(nodes[0] || null);
+                      setMappingNode(nodes[0] || null);
+                    }}
                     style={{
                       background: "#FFFFFF",
                       border: "1px solid #E0CCA0",
@@ -241,7 +262,7 @@ export const BlueprintPage: React.FC = () => {
                         Active Boundary Constraints ({relevantConstraints.length})
                       </div>
                       <button
-                        onClick={() => notify(`Drafted new constraint for ${node.id}`)}
+                        onClick={() => setConstrainingNode(node)}
                         style={{ background: "none", border: "1px solid #DCD9D0", padding: "2px 8px", borderRadius: "4px", fontSize: "10.5px", cursor: "pointer" }}
                       >
                         + Add Rule
@@ -254,7 +275,18 @@ export const BlueprintPage: React.FC = () => {
                       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                         {relevantConstraints.map((c: any) => (
                           <div key={c.id} style={{ padding: "8px 10px", borderRadius: "4px", background: "#FAF8F4", border: "1px solid #ECE7D9", fontSize: "11.5px" }}>
-                            <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{c.id}</div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <div style={{ fontWeight: 600, color: "#1D1C1A" }}>{c.id}</div>
+                              <HarnessFixButton
+                                compact
+                                issueType="constraint_violation"
+                                title={`Rule ${c.id}: ${c.from} ${c.rule} ${Array.isArray(c.to) ? c.to.join(", ") : c.to}`}
+                                sourceNode={c.from}
+                                targetNode={Array.isArray(c.to) ? c.to[0] : c.to}
+                                ruleId={c.id}
+                                rationale={c.rationale}
+                              />
+                            </div>
                             <div style={{ color: "#6E685F", marginTop: "2px" }}>
                               {c.from} <span style={{ color: "#C94A38", fontWeight: 600 }}>{c.rule || c.kind}</span> {Array.isArray(c.to) ? c.to.join(", ") : c.to}
                             </div>
@@ -271,6 +303,41 @@ export const BlueprintPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {editingNode && (
+        <EditNodeModal
+          node={editingNode}
+          onClose={() => setEditingNode(null)}
+          onSave={async (patch) => {
+            await run("Updating node", async () => {
+              await api.bp.update(editingNode.id, patch);
+              notify(`Updated node ${editingNode.name || editingNode.id}`);
+            });
+            setEditingNode(null);
+          }}
+        />
+      )}
+
+      {mappingNode && (
+        <MappingModal
+          node={mappingNode}
+          onClose={() => setMappingNode(null)}
+          onSave={async (files, symbols) => {
+            await run("Updating mapping", async () => {
+              await api.bp.update(mappingNode.id, { files, symbols });
+              notify(`Updated mapping for ${mappingNode.name || mappingNode.id}`);
+            });
+            setMappingNode(null);
+          }}
+        />
+      )}
+
+      {constrainingNode && (
+        <ConstraintModal
+          from={constrainingNode.id}
+          onClose={() => setConstrainingNode(null)}
+        />
+      )}
     </div>
   );
 };

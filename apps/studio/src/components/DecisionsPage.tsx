@@ -4,6 +4,7 @@ import { HelpCircle, Scale } from "lucide-react";
 import { useStore } from "../store";
 import { api } from "../api";
 import { formatAttachment } from "../lib/hierarchy";
+import { HarnessFixButton } from "./HarnessFixPrompt";
 
 export const DecisionsPage: React.FC = () => {
   const { graph, notify, run } = useStore();
@@ -135,7 +136,17 @@ export const DecisionsPage: React.FC = () => {
                         cursor: "pointer",
                       }}
                     >
-                      <div style={{ fontWeight: 600, color: "#1D1C1A", fontSize: "13px" }}>{q.question}</div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+                        <div style={{ fontWeight: 600, color: "#1D1C1A", fontSize: "13px" }}>{q.question}</div>
+                        <HarnessFixButton
+                          compact
+                          issueType="ambiguity_question"
+                          title={`Ambiguity: ${q.question}`}
+                          ruleId={q.id}
+                          rationale={q.why_asking || "Human architectural clarification required"}
+                          suggestedAction="Clarify intent and pin the answer in .afwe/pins."
+                        />
+                      </div>
                       <div style={{ fontSize: "11px", color: "#6B675D", marginTop: "3px" }}>
                         Scope: {formatAttachment(q.attaches)} · Blast score: {q.blast_score ?? 5}
                       </div>

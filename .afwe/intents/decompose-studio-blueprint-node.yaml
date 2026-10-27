@@ -1,0 +1,17 @@
+id: decompose-studio-blueprint-node
+title: Decompose monolithic studio blueprint node into architectural sub-nodes
+statement: Decompose studio in .afwe/blueprint/blueprint.yaml into studio-shell, studio-maps, studio-inspector, studio-timeline, and studio-governance.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0032
+history:
+- turn: t0032
+  ts: 2026-10-27T08:10:35Z
+  statement: Decompose studio in .afwe/blueprint/blueprint.yaml into studio-shell, studio-maps, studio-inspector, studio-timeline, and studio-governance.
+created: 2026-10-27T08:10:35Z
+updated: 2026-10-27T08:38:22Z
+task: task-t0032

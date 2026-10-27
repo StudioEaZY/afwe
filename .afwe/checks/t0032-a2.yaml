@@ -1,0 +1,25 @@
+id: t0032-a2
+title: apps/studio/src/components/HarnessFixPrompt.tsx defines HarnessFixButton
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-cli
+  - afwe-core
+  - crates
+  - studio
+  - studio-governance
+  - studio-inspector
+  - studio-maps
+  files:
+  - apps/studio/src/components/HarnessFixPrompt.tsx
+claim:
+  type: require_pattern
+  pattern: export const HarnessFixButton
+  files:
+  - apps/studio/src/components/HarnessFixPrompt.tsx
+status: active
+origin: afwe:checkgen
+created: 2026-10-27T08:38:59Z
+created_from: t0032
+provenance: confirmed

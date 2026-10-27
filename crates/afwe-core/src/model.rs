@@ -1413,4 +1413,10 @@ pub struct Baseline {
     /// Guard fingerprints at begin (pins, checks, constraints) for anti-tamper detection
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub guards: BTreeMap<String, String>,
+    /// Number of incoming imports per code-relative file at begin (used for newly-orphaned module detection)
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub importer_counts: BTreeMap<String, usize>,
+    /// Exported symbol signatures per file at begin (used for intra-file dropped capability detection)
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub exported_symbols: BTreeMap<String, Vec<String>>,
 }
