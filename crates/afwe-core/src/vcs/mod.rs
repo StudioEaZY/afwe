@@ -45,6 +45,20 @@ pub trait VcsProvider {
     fn parent(&self, root: &Path, rev: &str) -> Option<String>;
     /// 3-way merge of file contents: (merged text, number of conflict regions).
     fn merge3(&self, ours: &str, base: &str, theirs: &str) -> Result<(String, usize)>;
+    /// Blob hash at revision (None if file does not exist or revision invalid).
+    fn blob_hash(&self, _root: &Path, _rev: &str, _path: &str) -> Option<String> {
+        None
+    }
+    /// Isolated commit: stages blobs directly via ephemeral plumbing without touching `.git/index`.
+    fn commit_isolated(
+        &self,
+        root: &Path,
+        paths: &[String],
+        message: &str,
+        _expected_head: Option<&str>,
+    ) -> Result<Option<String>> {
+        self.commit_paths(root, paths, message)
+    }
 }
 
 /// Provider for projects without version control: turns are recorded, not committed.

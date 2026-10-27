@@ -266,15 +266,7 @@ mod tests {
                 hint: None,
             },
         ];
-        let checks = vec![CheckResult {
-            id: "project-tests".into(),
-            title: "cargo test".into(),
-            trust: CheckTrust::Deterministic,
-            authored_by: "human".into(),
-            passed: true,
-            message: None,
-            blocking: true,
-        }];
+        let checks = vec![CheckResult::new("project-tests", "cargo test", CheckTrust::Deterministic, "human", true, None, true)];
         let blocking = vec!["leaf violation".to_string(), "subsystem violation".to_string(), "product violation".to_string()];
 
         let j = build_judgment(BuildJudgmentInput {

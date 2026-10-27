@@ -5,9 +5,65 @@
 //! surface across concurrently executing subagents.
 
 use crate::engine::Engine;
+use crate::store::Store;
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+
+/// Check if any of the requested paths are claimed by another open turn.
+/// Returns Ok(Some((path, conflicting_turn_id))) if contention exists.
+pub fn check_file_contention(store: &Store, turn_hash: &str, paths: &[String]) -> Result<Option<(String, String)>> {
+    let turns = store.turns()?;
+    for t in turns {
+        if t.turn_hash == turn_hash || t.id == turn_hash || t.alias.as_deref() == Some(turn_hash) {
+            continue;
+        }
+        // Only open turns can hold active claims
+        if t.status != "open" {
+            continue;
+        }
+        for c in &t.claims {
+            if paths.iter().any(|p| p == &c.path) {
+                let name = t.alias.clone().unwrap_or_else(|| {
+                    if t.turn_hash.is_empty() {
+                        t.id.clone()
+                    } else {
+                        t.turn_hash[..8.min(t.turn_hash.len())].to_string()
+                    }
+                });
+                return Ok(Some((c.path.clone(), name)));
+            }
+        }
+    }
+    Ok(None)
+}
+
+/// Check if any of the claimed nodes are also being worked on by another open turn.
+/// Returns advisory warnings.
+pub fn check_node_overlap(store: &Store, turn_hash: &str, claimed_nodes: &[String]) -> Result<Vec<String>> {
+    let mut warnings = vec![];
+    let turns = store.turns()?;
+    for t in turns {
+        if t.turn_hash == turn_hash || t.id == turn_hash || t.alias.as_deref() == Some(turn_hash) {
+            continue;
+        }
+        if t.status != "open" {
+            continue;
+        }
+        for c in &t.claims {
+            if let Some(node) = &c.node {
+                if claimed_nodes.contains(node) {
+                    let name = t.alias.as_deref().unwrap_or(&t.turn_hash);
+                    let warn = format!("NODE_OVERLAP: Node `{node}` is also claimed by open turn {name}");
+                    if !warnings.contains(&warn) {
+                        warnings.push(warn);
+                    }
+                }
+            }
+        }
+    }
+    Ok(warnings)
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct NodeLease {

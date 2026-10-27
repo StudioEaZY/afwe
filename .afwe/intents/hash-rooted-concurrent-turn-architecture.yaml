@@ -1,0 +1,17 @@
+id: hash-rooted-concurrent-turn-architecture
+title: Hash-Rooted Concurrent Turn Architecture v4
+statement: Implement random BLAKE3 hash identity, OS advisory locking, private Git plumbing indexes, single-HEAD capability deltas, write-time file claims, and executed check ladder.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0040
+history:
+- turn: t0040
+  ts: 2026-10-27T22:29:48Z
+  statement: Implement random BLAKE3 hash identity, OS advisory locking, private Git plumbing indexes, single-HEAD capability deltas, write-time file claims, and executed check ladder.
+created: 2026-10-27T22:29:48Z
+updated: 2026-10-27T22:29:48Z
+task: task-t0040

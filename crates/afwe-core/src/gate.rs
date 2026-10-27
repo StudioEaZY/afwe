@@ -135,7 +135,7 @@ mod tests {
     use super::*;
 
     fn check(trust: CheckTrust, passed: bool) -> CheckResult {
-        CheckResult { id: "c".into(), title: "c".into(), trust, authored_by: "human".into(), passed, message: None, blocking: true }
+        CheckResult::new("c", "c", trust, "human", passed, None, true)
     }
 
     fn input<'a>(checks: &'a [CheckResult]) -> GateInput<'a> {

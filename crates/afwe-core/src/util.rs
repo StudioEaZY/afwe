@@ -95,3 +95,18 @@ pub fn origin_or(o: Option<&str>, default: &str) -> String {
 pub fn clamp01(x: f64) -> f64 {
     x.clamp(0.0, 1.0)
 }
+
+pub fn normalize_crlf(b: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(b.len());
+    let mut i = 0;
+    while i < b.len() {
+        if b[i] == b'\r' && i + 1 < b.len() && b[i + 1] == b'\n' {
+            out.push(b'\n');
+            i += 2;
+        } else {
+            out.push(b[i]);
+            i += 1;
+        }
+    }
+    out
+}

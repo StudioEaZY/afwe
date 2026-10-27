@@ -23,3 +23,4 @@ tree-sitter-javascript.workspace = true
 tree-sitter-rust.workspace = true
 tree-sitter-go.workspace = true
 tree-sitter-java.workspace = true
+fs2.workspace = true

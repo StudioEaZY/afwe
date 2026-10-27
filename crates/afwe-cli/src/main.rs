@@ -1127,25 +1127,52 @@ fn run(cli: Cli) -> Result<i32> {
         Cmd::Turn(cmd) => {
             let engine = engine_for(&cli.dir)?;
             let code = match cmd {
-                TurnCmd::Begin { prompt, file, target, refines, kind, agent } => {
+                TurnCmd::Begin { prompt, file, target, refines, kind, agent, parent, claim } => {
                     let text = match (prompt, file) {
                         (Some(p), _) => p,
                         (None, Some(f)) => read_text_input(&f)?,
                         _ => return Err(anyhow!("give the prompt text, or --file <path> (use `-` for stdin)")),
                     };
-                    let v = api::call(&engine, "turn.begin", json!({"prompt": text, "targets": strs(&target), "refines": strs(&refines), "kind": kind, "agent": agent}), &origin)?;
+                    let v = api::call(&engine, "turn.begin", json!({
+                        "prompt": text,
+                        "targets": strs(&target),
+                        "refines": strs(&refines),
+                        "kind": kind,
+                        "agent": agent,
+                        "parent": parent,
+                        "claims": strs(&claim),
+                    }), &origin)?;
                     out(json, &v, render::turn_briefing);
                     0
                 }
-                TurnCmd::Assume { turn, file } => {
+                TurnCmd::Assume { turn, file, token, claim } => {
                     let mut body = read_json_input(file)?;
                     body["turn"] = json!(turn);
+                    if let Some(tok) = token {
+                        body["token"] = json!(tok);
+                    }
+                    if !claim.is_empty() {
+                        body["claims"] = json!(strs(&claim));
+                    }
                     let v = api::call(&engine, "turn.assume", body, &origin)?;
                     out(json, &v, render::turn_result);
                     if v["status"] == "redo" { 1 } else { 0 }
                 }
-                TurnCmd::Commit { turn, summary, footer_shown, remove, touch, overrides } => {
-                    let v = api::call(&engine, "turn.commit", json!({"turn": turn, "summary": summary, "footer_shown": footer_shown, "removes": strs(&remove), "touched": strs(&touch), "overrides": parse_overrides(&overrides)?}), &origin)?;
+                TurnCmd::Commit { turn, summary, footer_shown, remove, touch, overrides, token, force, parent } => {
+                    let mut body = json!({
+                        "turn": turn,
+                        "summary": summary,
+                        "footer_shown": footer_shown,
+                        "removes": strs(&remove),
+                        "touched": strs(&touch),
+                        "overrides": parse_overrides(&overrides)?,
+                        "force": force,
+                        "parent": parent,
+                    });
+                    if let Some(tok) = token {
+                        body["token"] = json!(tok);
+                    }
+                    let v = api::call(&engine, "turn.commit", body, &origin)?;
                     out(json, &v, render::turn_result);
                     if v["status"] == "redo" { 1 } else { 0 }
                 }
@@ -1159,8 +1186,21 @@ fn run(cli: Cli) -> Result<i32> {
                     out(json, &v, render::turn_result);
                     0
                 }
-                TurnCmd::Redo { turn } => {
-                    let v = api::call(&engine, "turn.redo", json!({"turn": turn}), &origin)?;
+                TurnCmd::Redo { turn, token } => {
+                    let mut body = json!({"turn": turn});
+                    if let Some(tok) = token {
+                        body["token"] = json!(tok);
+                    }
+                    let v = api::call(&engine, "turn.redo", body, &origin)?;
+                    out(json, &v, render::turn_result);
+                    0
+                }
+                TurnCmd::Abandon { turn, token } => {
+                    let mut body = json!({"turn": turn});
+                    if let Some(tok) = token {
+                        body["token"] = json!(tok);
+                    }
+                    let v = api::call(&engine, "turn.abandon", body, &origin)?;
                     out(json, &v, render::turn_result);
                     0
                 }
@@ -1581,12 +1621,24 @@ enum TurnCmd {
         kind: String,
         #[arg(long)]
         agent: Option<String>,
+        /// Parent turn hash or alias if running as a subagent
+        #[arg(long)]
+        parent: Option<String>,
+        /// File claims to reserve immediately upon begin
+        #[arg(long = "claim", num_args = 1.., value_delimiter = ',')]
+        claim: Vec<String>,
     },
     /// Declare intents and assumption claims (JSON via --file or stdin) before writing code
     Assume {
         turn: String,
         #[arg(long)]
         file: Option<String>,
+        /// Bearer security token issued at turn.begin
+        #[arg(long)]
+        token: Option<String>,
+        /// Additional file claims to register
+        #[arg(long = "claim", num_args = 1.., value_delimiter = ',')]
+        claim: Vec<String>,
     },
     /// Check and commit (or stage, or REDO) what changed since turn begin
     Commit {
@@ -1605,13 +1657,32 @@ enum TurnCmd {
         /// Pin override: pin-id=reason
         #[arg(long = "override")]
         overrides: Vec<String>,
+        /// Bearer security token issued at turn.begin
+        #[arg(long)]
+        token: Option<String>,
+        /// Bypass undeclared dirty file checks if concurrent peers are open
+        #[arg(long)]
+        force: bool,
+        /// Parent turn hash or alias
+        #[arg(long)]
+        parent: Option<String>,
     },
     /// Confirm a staged proposal (commits it through the gate)
     Confirm { turn: String },
     /// Undo a turn as far as that is safe
     Revert { turn: String },
     /// Reset working changes back to turn.begin baseline, keeping the turn open for clean rework
-    Redo { turn: String },
+    Redo {
+        turn: String,
+        #[arg(long)]
+        token: Option<String>,
+    },
+    /// Abandon an open turn, releasing all file claims and locks without committing
+    Abandon {
+        turn: String,
+        #[arg(long)]
+        token: Option<String>,
+    },
     /// Undo a committed turn explicitly (reverts git commit and prunes generated checks)
     Undo { turn: String },
     /// One turn in full (JSON)

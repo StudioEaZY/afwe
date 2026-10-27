@@ -71,6 +71,16 @@ impl Engine {
         self.build(manifest, sources, code, true)
     }
 
+    /// Snapshot computed via virtual overlay: claimed files read from disk,
+    /// out-of-scope files read from git `head`. Untracked files outside `claimed` are excluded.
+    pub fn snapshot_overlay(&self, head: &str, claimed: &[String]) -> Result<Snapshot> {
+        let sources = self.store.sources()?;
+        let manifest = sources.manifest.clone().expect("manifest");
+        let analyzer = self.analyzer(&manifest);
+        let code = analyzer.analyze_overlay(head, claimed)?;
+        self.build(manifest, sources, code, true)
+    }
+
     fn build(&self, manifest: Manifest, sources: Sources, code: CodeModel, fresh: bool) -> Result<Snapshot> {
         let table = NodeTable::from_blueprint(&sources.blueprint);
         let mapping = compute_mapping(&table, &code)?;
