@@ -1,12 +1,19 @@
 ---
 // roadmap.astro - Phased Roadmap & Community Upvoting
 import MarketingLayout from '../layouts/MarketingLayout.astro';
-import { getRoadmapProposals } from '../lib/supabase';
+import { 
+  ArrowRight, 
+  BookOpen, 
+  Check, 
+  Clock, 
+  Circle, 
+  ChevronUp 
+} from '@lucide/astro';
 
-const proposals = await getRoadmapProposals();
-const editorVotes = proposals.find(p => p.id === 'editor-support')?.votes_count ?? 1240;
-const teamVotes = proposals.find(p => p.id === 'team-collab')?.votes_count ?? 892;
-const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes_count ?? 437;
+// Instant static baseline - 0ms server blocking!
+const editorVotes = 1240;
+const teamVotes = 892;
+const analyticsVotes = 437;
 ---
 
 <MarketingLayout
@@ -34,17 +41,17 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
         <div class="flex flex-wrap items-center gap-3 pt-2">
           <a 
             href="#phases" 
-            class="px-5 py-2.5 rounded-xl bg-graphite hover:bg-stone-800 text-white dark:bg-white dark:text-obsidian-950 dark:hover:bg-stone-200 font-mono text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-xs"
+            class="px-5 py-2.5 rounded-xl bg-graphite hover:bg-stone-800 text-white dark:bg-white dark:text-obsidian-950 dark:hover:bg-stone-200 font-mono text-xs font-bold transition-colors inline-flex items-center gap-2 shadow-xs"
           >
             <span>Explore what is live</span>
-            <span>→</span>
+            <ArrowRight class="size-3.5" />
           </a>
           <a 
             href="/docs" 
             class="px-5 py-2.5 rounded-xl border border-stone-300 dark:border-obsidian-700 hover:border-graphite text-xs font-mono font-bold text-graphite dark:text-stone-200 inline-flex items-center gap-2 transition-colors"
           >
             <span>Read the roadmap guide</span>
-            <span>📖</span>
+            <BookOpen class="size-3.5" />
           </a>
         </div>
       </div>
@@ -105,7 +112,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
       </div>
     </section>
 
-    <!-- Horizontal Phase Timeline (0 to 5+) -->
+    <!-- Horizontal Phase Timeline (0 to 5+) with Lucide Icons -->
     <section class="overflow-x-auto pb-4">
       <div class="min-w-[700px] flex items-center justify-between relative py-6">
         <!-- Connecting Line -->
@@ -114,7 +121,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
         <!-- Phase 0 -->
         <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
           <div class="size-7 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs ring-2 ring-emerald-500">
-            ✓
+            <Check class="size-3.5" />
           </div>
           <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 0</div>
           <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Foundation<br /><span class="font-mono text-emerald-600 font-bold">Live</span></div>
@@ -123,7 +130,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
         <!-- Phase 1 -->
         <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
           <div class="size-7 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs ring-2 ring-emerald-500">
-            ✓
+            <Check class="size-3.5" />
           </div>
           <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 1</div>
           <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Studio<br /><span class="font-mono text-emerald-600 font-bold">Live</span></div>
@@ -132,7 +139,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
         <!-- Phase 2 -->
         <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
           <div class="size-7 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs ring-2 ring-emerald-500">
-            ✓
+            <Check class="size-3.5" />
           </div>
           <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 2</div>
           <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Governance<br /><span class="font-mono text-emerald-600 font-bold">Live</span></div>
@@ -141,7 +148,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
         <!-- Phase 3 -->
         <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
           <div class="size-7 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs ring-2 ring-emerald-500">
-            ✓
+            <Check class="size-3.5" />
           </div>
           <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 3</div>
           <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Ecosystem<br /><span class="font-mono text-emerald-600 font-bold">Live</span></div>
@@ -150,7 +157,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
         <!-- Phase 4 -->
         <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
           <div class="size-7 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-xs ring-2 ring-amber-500 animate-pulse">
-            ◎
+            <Clock class="size-3.5" />
           </div>
           <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 4</div>
           <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Community<br /><span class="font-mono text-amber-600 font-bold">In Progress</span></div>
@@ -159,7 +166,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
         <!-- Phase 5+ -->
         <div class="relative z-10 flex flex-col items-center text-center space-y-2 bg-paper dark:bg-obsidian-950 px-3">
           <div class="size-7 rounded-full bg-stone-200 dark:bg-obsidian-800 text-graphite/60 dark:text-stone-400 flex items-center justify-center font-bold text-xs ring-1 ring-stone-300">
-            ○
+            <Circle class="size-3" />
           </div>
           <div class="text-xs font-bold text-graphite dark:text-stone-100">Phase 5+</div>
           <div class="text-[10px] text-graphite/70 dark:text-stone-400 font-sans">Beyond<br /><span class="font-mono text-stone-500 font-bold">Planned</span></div>
@@ -183,11 +190,11 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
           class="text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline inline-flex items-center gap-1"
         >
           <span>View detailed roadmap</span>
-          <span>→</span>
+          <ArrowRight class="size-3" />
         </a>
       </div>
 
-      <!-- 6 Phase Cards Grid -->
+      <!-- 6 Phase Cards Grid with Lucide Checks -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Phase 0: Foundation -->
         <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between space-y-5 shadow-xs">
@@ -203,15 +210,15 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
               <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">The core AFWE engine.</p>
             </div>
             <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Core architecture</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> CLI (57 MCP tools)</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Tree-sitter integration</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Local documentation</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Cross-platform support</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Core architecture</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> CLI (57 MCP tools)</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Tree-sitter integration</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Local documentation</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Cross-platform support</li>
             </ul>
           </div>
-          <a href="/docs/concepts/core-concepts" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
-            <span>View details</span> <span>→</span>
+          <a href="/docs/concepts/core-concepts" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
+            <span>View details</span> <ArrowRight class="size-3" />
           </a>
         </div>
 
@@ -229,15 +236,15 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
               <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">Understand your codebase.</p>
             </div>
             <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Visual Codebase Atlas</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Components & structure</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Interactive exploration</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Search & filters</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Local customization</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Visual Codebase Atlas</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Components & structure</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Interactive exploration</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Search & filters</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Local customization</li>
             </ul>
           </div>
-          <a href="/docs" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
-            <span>View details</span> <span>→</span>
+          <a href="/docs" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
+            <span>View details</span> <ArrowRight class="size-3" />
           </a>
         </div>
 
@@ -255,15 +262,15 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
               <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">Keep your architecture intact.</p>
             </div>
             <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Constraints as geometry</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Turn system (begin → commit)</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Intent verification</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Tripwires & BLAKE3</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Probing guides & rubric</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Constraints as geometry</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Turn system (begin to commit)</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Intent verification</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Tripwires & BLAKE3</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Probing guides & rubric</li>
             </ul>
           </div>
-          <a href="/docs/concepts/core-concepts" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
-            <span>View details</span> <span>→</span>
+          <a href="/docs/concepts/core-concepts" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
+            <span>View details</span> <ArrowRight class="size-3" />
           </a>
         </div>
 
@@ -281,15 +288,15 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
               <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">Extend AFWE everywhere.</p>
             </div>
             <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> All 57 MCP tools</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Editor integrations</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> CI & automation</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> API & SDK architecture</li>
-              <li class="flex items-center gap-2"><span class="text-survey-600 font-bold">✓</span> Community contributions</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> All 57 MCP tools</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Editor integrations</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> CI & automation</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> API & SDK architecture</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-survey-600 shrink-0" /> Community contributions</li>
             </ul>
           </div>
-          <a href="/docs/reference/mcp" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
-            <span>View details</span> <span>→</span>
+          <a href="/docs/reference/mcp" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-2">
+            <span>View details</span> <ArrowRight class="size-3" />
           </a>
         </div>
 
@@ -307,15 +314,15 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
               <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">Sustain and grow AFWE.</p>
             </div>
             <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
-              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Sustainer recognition</li>
-              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Seat pool system</li>
-              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Monthly points (3:1)</li>
-              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Roadmap voting</li>
-              <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">✓</span> Open support knowledge</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-amber-600 shrink-0" /> Sustainer recognition</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-amber-600 shrink-0" /> Seat pool system</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-amber-600 shrink-0" /> Monthly points (3:1)</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-amber-600 shrink-0" /> Roadmap voting</li>
+              <li class="flex items-center gap-2"><Check class="size-3.5 text-amber-600 shrink-0" /> Open support knowledge</li>
             </ul>
           </div>
-          <a href="/pricing" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-amber-600 dark:text-amber-400 hover:underline pt-2">
-            <span>View details</span> <span>→</span>
+          <a href="/pricing" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-amber-600 dark:text-amber-400 hover:underline pt-2">
+            <span>View details</span> <ArrowRight class="size-3" />
           </a>
         </div>
 
@@ -333,15 +340,15 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
               <p class="text-xs text-graphite/70 dark:text-stone-400 font-sans mt-0.5">A bigger AFWE.</p>
             </div>
             <ul class="space-y-2 text-xs font-sans text-graphite/70 dark:text-stone-400 pt-2 border-t border-stone-200 dark:border-obsidian-800">
-              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Advanced analytics</li>
-              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Enterprise tooling</li>
-              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Deeper integrations</li>
-              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Global community hub</li>
-              <li class="flex items-center gap-2"><span class="text-stone-400">○</span> Long-term ecosystem</li>
+              <li class="flex items-center gap-2"><Circle class="size-3 text-stone-400 shrink-0" /> Advanced analytics</li>
+              <li class="flex items-center gap-2"><Circle class="size-3 text-stone-400 shrink-0" /> Enterprise tooling</li>
+              <li class="flex items-center gap-2"><Circle class="size-3 text-stone-400 shrink-0" /> Deeper integrations</li>
+              <li class="flex items-center gap-2"><Circle class="size-3 text-stone-400 shrink-0" /> Global community hub</li>
+              <li class="flex items-center gap-2"><Circle class="size-3 text-stone-400 shrink-0" /> Long-term ecosystem</li>
             </ul>
           </div>
           <span class="inline-flex items-center gap-1 text-xs font-mono text-graphite/50 dark:text-stone-400 pt-2">
-            <span>View details</span> <span>→</span>
+            <span>Planned</span>
           </span>
         </div>
       </div>
@@ -386,8 +393,8 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
             </div>
           </div>
 
-          <a href="/pricing" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline pt-2">
-            <span>Learn more</span> <span>→</span>
+          <a href="/pricing" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline pt-2">
+            <span>Learn more</span> <ArrowRight class="size-3" />
           </a>
         </div>
 
@@ -418,8 +425,8 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
             </div>
           </div>
 
-          <a href="/blog/the-sponsored-seat-pool" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline pt-2">
-            <span>Learn more</span> <span>→</span>
+          <a href="/blog/the-sponsored-seat-pool" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline pt-2">
+            <span>Learn more</span> <ArrowRight class="size-3" />
           </a>
         </div>
 
@@ -450,14 +457,14 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
             </div>
           </div>
 
-          <a href="/docs/reference/mcp" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline pt-2">
-            <span>Learn more</span> <span>→</span>
+          <a href="/docs/reference/mcp" class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-survey-600 dark:text-survey-light hover:underline pt-2">
+            <span>Learn more</span> <ArrowRight class="size-3" />
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Bottom Interactive Feedback & Upvoting Banner -->
+    <!-- Bottom Interactive Feedback & Upvoting Banner with Lucide ChevronUp -->
     <section class="rounded-2xl border border-stone-800 bg-graphite dark:bg-obsidian-900 text-stone-200 p-8 sm:p-10 relative overflow-hidden">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
         <div class="lg:col-span-6 space-y-3">
@@ -474,10 +481,10 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
             <button 
               type="button"
               onclick="document.getElementById('vote-cards')?.scrollIntoView({ behavior: 'smooth' })"
-              class="px-5 py-2.5 rounded-xl bg-white text-graphite hover:bg-stone-100 font-mono text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+              class="px-5 py-2.5 rounded-xl bg-white text-graphite hover:bg-stone-100 font-mono text-xs font-bold transition-colors inline-flex items-center gap-2 shadow-sm cursor-pointer"
             >
               <span>View roadmap & vote</span>
-              <span>→</span>
+              <ArrowRight class="size-3.5" />
             </button>
           </div>
         </div>
@@ -495,7 +502,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
               data-item="editor-support"
               class="vote-btn px-3 py-1.5 rounded-lg border border-stone-600 hover:border-survey-light bg-stone-800/80 hover:bg-survey-600/30 text-white font-mono text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <span>▲</span>
+              <ChevronUp class="size-4" />
               <span id="vote-count-editor-support">{editorVotes.toLocaleString()}</span>
             </button>
           </div>
@@ -511,7 +518,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
               data-item="team-collab"
               class="vote-btn px-3 py-1.5 rounded-lg border border-stone-600 hover:border-survey-light bg-stone-800/80 hover:bg-survey-600/30 text-white font-mono text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <span>▲</span>
+              <ChevronUp class="size-4" />
               <span id="vote-count-team-collab">{teamVotes.toLocaleString()}</span>
             </button>
           </div>
@@ -527,7 +534,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
               data-item="advanced-analytics"
               class="vote-btn px-3 py-1.5 rounded-lg border border-stone-600 hover:border-survey-light bg-stone-800/80 hover:bg-survey-600/30 text-white font-mono text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <span>▲</span>
+              <ChevronUp class="size-4" />
               <span id="vote-count-advanced-analytics">{analyticsVotes.toLocaleString()}</span>
             </button>
           </div>
@@ -556,7 +563,7 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
           class="w-full py-3 px-4 rounded-xl bg-graphite hover:bg-stone-800 text-white font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors"
         >
           <span>Claim with GitHub</span>
-          <span>→</span>
+          <ArrowRight class="size-3.5" />
         </button>
         <button 
           id="close-modal-btn"
@@ -569,10 +576,8 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
     </div>
   </div>
 
-  <!-- Client-Side Upvoting & Session Script -->
+  <!-- Client-Side Upvoting & Lazyload Script: Non-blocking background fetch -->
   <script>
-    import { supabase, upvoteProposal } from '../lib/supabase';
-
     // 2-Tier Identity: Retrieve or generate persistent anonymous session voter ID
     let voterId = localStorage.getItem('afwe_voter_id');
     if (!voterId) {
@@ -592,7 +597,6 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
     });
 
     claimGithubBtn?.addEventListener('click', () => {
-      // Simulate/trigger claiming process
       isClaimed = true;
       localStorage.setItem('afwe_account_claimed', 'true');
       modal?.classList.add('hidden');
@@ -606,10 +610,9 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
       if (!countEl) return;
 
       const currentVal = parseInt(countEl.textContent?.replace(/,/g, '') || '0', 10);
-      // Optimistic update
       countEl.textContent = (currentVal + 1).toLocaleString();
 
-      // Submit to Supabase
+      const { upvoteProposal } = await import('../lib/supabase');
       const res = await upvoteProposal(itemId, voterId, isClaimed);
       if (res && res.votes) {
         countEl.textContent = res.votes.toLocaleString();
@@ -630,5 +633,32 @@ const analyticsVotes = proposals.find(p => p.id === 'advanced-analytics')?.votes
         }
       });
     });
+
+    // Background lazyload: fetch updated vote counts after page is switched/idle
+    async function refreshVotes() {
+      try {
+        const { supabase } = await import('../lib/supabase');
+        const { data, error } = await supabase
+          .from('roadmap_proposals')
+          .select('id, votes_count');
+
+        if (data && !error) {
+          for (const item of data) {
+            const countEl = document.getElementById(`vote-count-${item.id}`);
+            if (countEl && item.votes_count) {
+              countEl.textContent = item.votes_count.toLocaleString();
+            }
+          }
+        }
+      } catch (e) {
+        // Fallback baseline remains displayed
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      setTimeout(refreshVotes, 150);
+    } else {
+      window.addEventListener('load', () => setTimeout(refreshVotes, 150));
+    }
   </script>
 </MarketingLayout>

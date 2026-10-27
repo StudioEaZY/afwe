@@ -1,163 +1,132 @@
 ---
 // SearchModal.astro - Quick Fuzzy Search Modal (Cmd/Ctrl + K)
+import { Search } from '@lucide/astro';
 ---
 
 <div id="search-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm p-4 sm:p-6 md:p-20 overflow-y-auto">
-  <div class="mx-auto max-w-2xl rounded-xl border border-parchment-400 dark:border-obsidian-700 bg-white dark:bg-obsidian-850 shadow-2xl overflow-hidden transition-all">
-    <!-- Search Input -->
-    <div class="flex items-center gap-3 px-4 py-3 border-b border-parchment-300 dark:border-obsidian-700">
-      <svg class="size-5 text-parchment-600 dark:text-obsidian-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
+  <div class="mx-auto max-w-2xl rounded-xl border border-stone-300 dark:border-obsidian-700 bg-white dark:bg-obsidian-850 shadow-2xl overflow-hidden transition-all">
+    <!-- Search Input with Lucide Search -->
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-stone-200 dark:border-obsidian-700">
+      <Search class="size-5 text-stone-400 dark:text-stone-400" />
       <input
         id="search-input"
         type="text"
         placeholder="Search concepts, commands, AST claims, guides... (Esc to close)"
-        class="w-full bg-transparent text-sm text-parchment-900 dark:text-obsidian-100 placeholder:text-parchment-600 dark:placeholder:text-obsidian-400 focus:outline-none"
+        class="w-full bg-transparent text-sm text-graphite dark:text-obsidian-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none"
       />
-      <kbd class="hidden sm:inline-block rounded px-1.5 py-0.5 text-[10px] font-mono text-parchment-600 dark:text-obsidian-400 border border-parchment-300 dark:border-obsidian-700">ESC</kbd>
+      <kbd class="hidden sm:inline-block rounded px-1.5 py-0.5 text-[10px] font-mono text-stone-500 dark:text-stone-400 border border-stone-200 dark:border-obsidian-700">ESC</kbd>
     </div>
 
     <!-- Search Results List -->
     <div id="search-results" class="max-h-96 overflow-y-auto p-2 space-y-1 text-xs">
-      <a href="/docs/concepts/core-concepts#turns" class="search-item block p-3 rounded-lg hover:bg-parchment-100 dark:hover:bg-obsidian-800 transition-colors">
+      <a href="/docs/concepts/core-concepts#turns" class="search-item block p-3 rounded-lg hover:bg-stone-100 dark:hover:bg-obsidian-800 transition-colors">
         <div class="flex items-center justify-between">
-          <span class="font-semibold text-parchment-900 dark:text-obsidian-100">Turns & The Turn Protocol</span>
+          <span class="font-semibold text-graphite dark:text-obsidian-100">Turns & The Turn Protocol</span>
           <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">Concept</span>
         </div>
-        <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-0.5">The atomic 3-step loop: turn begin ➔ turn assume ➔ turn commit with deterministic gating.</p>
+        <p class="text-stone-600 dark:text-obsidian-400 text-[11px] mt-0.5">The atomic 3-step loop: turn begin ➔ turn assume ➔ turn commit with deterministic gating.</p>
       </a>
 
-      <a href="/docs/concepts/core-concepts#the-blueprint" class="search-item block p-3 rounded-lg hover:bg-parchment-100 dark:hover:bg-obsidian-800 transition-colors">
+      <a href="/docs/concepts/core-concepts#the-blueprint" class="search-item block p-3 rounded-lg hover:bg-stone-100 dark:hover:bg-obsidian-800 transition-colors">
         <div class="flex items-center justify-between">
-          <span class="font-semibold text-parchment-900 dark:text-obsidian-100">The Blueprint & Scene Graph</span>
+          <span class="font-semibold text-graphite dark:text-obsidian-100">The Blueprint & Scene Graph</span>
           <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-700 dark:text-indigo-400">Concept</span>
         </div>
-        <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-0.5">Deterministic structural reality: subsystems, modules, components, and boundary constraints.</p>
+        <p class="text-stone-600 dark:text-obsidian-400 text-[11px] mt-0.5">Deterministic structural reality: subsystems, modules, components, and boundary constraints.</p>
       </a>
 
-      <a href="/docs/concepts/core-concepts#constraints-are-geometry" class="search-item block p-3 rounded-lg hover:bg-parchment-100 dark:hover:bg-obsidian-800 transition-colors">
+      <a href="/docs/concepts/core-concepts#constraints-are-geometry" class="search-item block p-3 rounded-lg hover:bg-stone-100 dark:hover:bg-obsidian-800 transition-colors">
         <div class="flex items-center justify-between">
-          <span class="font-semibold text-parchment-900 dark:text-obsidian-100">Constraints are Geometry</span>
+          <span class="font-semibold text-graphite dark:text-obsidian-100">Constraints are Geometry</span>
           <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-500/10 text-red-700 dark:text-red-400">Rules</span>
         </div>
-        <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-0.5">must_not_depend and may_depend_only rules enforced at the gate before git commits.</p>
+        <p class="text-stone-600 dark:text-obsidian-400 text-[11px] mt-0.5">must_not_depend and may_depend_only rules enforced at the gate before git commits.</p>
       </a>
 
-      <a href="/docs/concepts/core-concepts#tripwires" class="search-item block p-3 rounded-lg hover:bg-parchment-100 dark:hover:bg-obsidian-800 transition-colors">
+      <a href="/docs/concepts/core-concepts#tripwires" class="search-item block p-3 rounded-lg hover:bg-stone-100 dark:hover:bg-obsidian-800 transition-colors">
         <div class="flex items-center justify-between">
-          <span class="font-semibold text-parchment-900 dark:text-obsidian-100">Tripwires & BLAKE3 Manifest</span>
-          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-400">Materialize</span>
+          <span class="font-semibold text-graphite dark:text-obsidian-100">Tripwires & BLAKE3 Manifest</span>
+          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400">Security</span>
         </div>
-        <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-0.5">Chained git pre-commit hooks, CI PR gate verification, and anti-tamper hashes.</p>
+        <p class="text-stone-600 dark:text-obsidian-400 text-[11px] mt-0.5">Cryptographic guardrail manifest verified on pre-commit and CI against unauthorized edits.</p>
       </a>
 
-      <a href="/docs/concepts/core-concepts#calibration" class="search-item block p-3 rounded-lg hover:bg-parchment-100 dark:hover:bg-obsidian-800 transition-colors">
+      <a href="/docs/reference/cli" class="search-item block p-3 rounded-lg hover:bg-stone-100 dark:hover:bg-obsidian-800 transition-colors">
         <div class="flex items-center justify-between">
-          <span class="font-semibold text-parchment-900 dark:text-obsidian-100">Probing Guides & Additive Rubric</span>
-          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400">ReBorn</span>
+          <span class="font-semibold text-graphite dark:text-obsidian-100">CLI Reference</span>
+          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-700 dark:text-blue-400">CLI</span>
         </div>
-        <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-0.5">Evidence-based confidence rubric, hold-out probing, and anti-echo chamber graduation.</p>
+        <p class="text-stone-600 dark:text-obsidian-400 text-[11px] mt-0.5">Complete command list: turn, status, blueprint, memory, pin, check, and lease.</p>
       </a>
 
-      <a href="/docs/validators" class="search-item block p-3 rounded-lg hover:bg-parchment-100 dark:hover:bg-obsidian-800 transition-colors">
+      <a href="/docs/reference/mcp" class="search-item block p-3 rounded-lg hover:bg-stone-100 dark:hover:bg-obsidian-800 transition-colors">
         <div class="flex items-center justify-between">
-          <span class="font-semibold text-parchment-900 dark:text-obsidian-100">Validators & AST Claims Hub</span>
-          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-700 dark:text-purple-400">Hub</span>
+          <span class="font-semibold text-graphite dark:text-obsidian-100">Model Context Protocol (57 Tools)</span>
+          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-700 dark:text-purple-400">MCP</span>
         </div>
-        <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-0.5">forbid_symbol, export_exists, symbol_signature, blank_comments catalog.</p>
-      </a>
-
-      <a href="/docs/reference/cli" class="search-item block p-3 rounded-lg hover:bg-parchment-100 dark:hover:bg-obsidian-800 transition-colors">
-        <div class="flex items-center justify-between">
-          <span class="font-semibold text-parchment-900 dark:text-obsidian-100">CLI Commands Reference</span>
-          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-500/10 text-slate-700 dark:text-slate-400">CLI</span>
-        </div>
-        <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-0.5">afwe turn, sync, verify, materialize, unlock/lock, stats, studio, docs.</p>
-      </a>
-
-      <a href="/docs/reference/mcp" class="search-item block p-3 rounded-lg hover:bg-parchment-100 dark:hover:bg-obsidian-800 transition-colors">
-        <div class="flex items-center justify-between">
-          <span class="font-semibold text-parchment-900 dark:text-obsidian-100">57 MCP Tools for Agents</span>
-          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-700 dark:text-blue-400">MCP</span>
-        </div>
-        <p class="text-parchment-600 dark:text-obsidian-400 text-[11px] mt-0.5">Comprehensive JSON-RPC MCP server tool specifications for AI harnesses.</p>
+        <p class="text-stone-600 dark:text-obsidian-400 text-[11px] mt-0.5">Native MCP server exposing intent, claims, and constraint validation directly to agents.</p>
       </a>
     </div>
 
     <!-- Modal Footer -->
-    <div class="flex items-center justify-between px-4 py-2 bg-parchment-100 dark:bg-obsidian-900 border-t border-parchment-300 dark:border-obsidian-800 text-[11px] font-mono text-parchment-600 dark:text-obsidian-400">
-      <span>Navigate with <kbd>↑</kbd> <kbd>↓</kbd></span>
-      <span>Select with <kbd>↵</kbd></span>
+    <div class="px-4 py-2.5 bg-stone-50 dark:bg-obsidian-900 border-t border-stone-200 dark:border-obsidian-750 flex items-center justify-between text-[11px] font-mono text-stone-500 dark:text-stone-400">
+      <span>Navigate: <kbd class="px-1 py-0.5 rounded bg-paper dark:bg-obsidian-800 border border-stone-300 dark:border-obsidian-700">↑</kbd> <kbd class="px-1 py-0.5 rounded bg-paper dark:bg-obsidian-800 border border-stone-300 dark:border-obsidian-700">↓</kbd></span>
+      <span>Select: <kbd class="px-1 py-0.5 rounded bg-paper dark:bg-obsidian-800 border border-stone-300 dark:border-obsidian-700">↵</kbd></span>
+      <span>Close: <kbd class="px-1 py-0.5 rounded bg-paper dark:bg-obsidian-800 border border-stone-300 dark:border-obsidian-700">ESC</kbd></span>
     </div>
   </div>
 </div>
 
 <script>
-  function setupSearchModal() {
-    const modal = document.getElementById('search-modal');
-    const input = document.getElementById('search-input') as HTMLInputElement | null;
-    const items = document.querySelectorAll('.search-item');
+  // Simple client-side search modal handler
+  const modal = document.getElementById('search-modal');
+  const input = document.getElementById('search-input') as HTMLInputElement | null;
+  const items = document.querySelectorAll('.search-item');
 
-    function openModal() {
-      if (modal) {
-        modal.classList.remove('hidden');
-        if (input) {
-          input.value = '';
-          input.focus();
-        }
-        filterItems('');
-      }
-    }
-
-    function closeModal() {
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function filterItems(query: string) {
-      const q = query.toLowerCase().trim();
-      items.forEach(el => {
-        const text = el.textContent?.toLowerCase() || '';
-        if (!q || text.includes(q)) {
-          (el as HTMLElement).style.display = 'block';
-        } else {
-          (el as HTMLElement).style.display = 'none';
-        }
-      });
-    }
-
-    // Keyboard shortcut Cmd/Ctrl + K
-    window.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        if (modal?.classList.contains('hidden')) {
-          openModal();
-        } else {
-          closeModal();
-        }
-      }
-      if (e.key === 'Escape' && !modal?.classList.contains('hidden')) {
-        closeModal();
-      }
-    });
-
-    // Close on click outside
-    modal?.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
-
-    // Search input filter
-    input?.addEventListener('input', (e) => {
-      filterItems((e.target as HTMLInputElement).value);
-    });
-
-    // Wire global search triggers
-    document.querySelectorAll('[data-open-search]').forEach(btn => {
-      btn.addEventListener('click', openModal);
-    });
+  function openSearch() {
+    modal?.classList.remove('hidden');
+    input?.focus();
   }
 
-  document.addEventListener('DOMContentLoaded', setupSearchModal);
-  document.addEventListener('astro:after-swap', setupSearchModal);
+  function closeSearch() {
+    modal?.classList.add('hidden');
+    if (input) input.value = '';
+    items.forEach(el => (el as HTMLElement).style.display = 'block');
+  }
+
+  // Trigger buttons
+  document.querySelectorAll('[data-open-search]').forEach(btn => {
+    btn.addEventListener('click', openSearch);
+  });
+
+  // Keyboard shortcut: Cmd/Ctrl + K and Esc
+  window.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (modal?.classList.contains('hidden')) {
+        openSearch();
+      } else {
+        closeSearch();
+      }
+    }
+    if (e.key === 'Escape' && !modal?.classList.contains('hidden')) {
+      closeSearch();
+    }
+  });
+
+  // Click backdrop to close
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeSearch();
+    }
+  });
+
+  // Client filtering
+  input?.addEventListener('input', () => {
+    const query = input.value.toLowerCase().trim();
+    items.forEach(item => {
+      const text = item.textContent?.toLowerCase() || '';
+      (item as HTMLElement).style.display = text.includes(query) ? 'block' : 'none';
+    });
+  });
 </script>

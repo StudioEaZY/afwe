@@ -11,12 +11,18 @@ importers:
       '@astrojs/tailwind':
         specifier: ^5.1.5
         version: 5.1.5(astro@5.18.2(jiti@1.21.7)(rollup@4.65.0)(typescript@5.9.3)(yaml@2.9.1))(tailwindcss@3.4.19(yaml@2.9.1))
+      '@lucide/astro':
+        specifier: ^1.61.0
+        version: 1.61.0(astro@5.18.2(jiti@1.21.7)(rollup@4.65.0)(typescript@5.9.3)(yaml@2.9.1))
       '@supabase/supabase-js':
         specifier: ^2.118.0
         version: 2.118.0
       astro:
         specifier: ^5.4.1
         version: 5.18.2(jiti@1.21.7)(rollup@4.65.0)(typescript@5.9.3)(yaml@2.9.1)
+      lucide-astro:
+        specifier: ^0.556.0
+        version: 0.556.0(astro@5.18.2(jiti@1.21.7)(rollup@4.65.0)(typescript@5.9.3)(yaml@2.9.1))
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.19(yaml@2.9.1)
@@ -535,6 +541,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lucide/astro@1.61.0':
+    resolution: {integrity: sha512-XoFZGoHjYtnDTuOQ4b105IO+WUCh8rzitIgBIrkOcdC1PRmsvLx+fwnrCRHiZ1JfbA36r/jAMxQL/HeyRqKJjQ==}
+    peerDependencies:
+      astro: ^4 || ^5 || ^6 || ^7
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     resolution: {integrity: sha512-oTXEIha4SsuXdTA4Iyskj0kpdx2yVXdhd75c2v3xGrHFfVMsbhTPZU/nMPL4sWKo4pBHm3aucLaqGlF696dTyQ==}
@@ -1244,6 +1255,12 @@ packages:
   lru-cache@11.5.3:
     resolution: {integrity: sha512-U4N8FgzmWxc8k1VH8Kr6lQg18U7Fjvby6wXHVRX/ZZ7IwWbRMgrRbP0Wrb5q5NVinryp4SQampHKdvtecItxUg==}
     engines: {node: 20 || >=22}
+
+  lucide-astro@0.556.0:
+    resolution: {integrity: sha512-ugMjPb45AMfkLCaduNSbyy5NQEKvB1TxVVMmUS4S6L807PMESnX0Qp+DIKHjbyjJmPXOyLRbrzvR3YikTK7brg==}
+    deprecated: 'Deprecated: Use `@lucide/astro`'
+    peerDependencies:
+      astro: '>=2.7.1'
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -2343,6 +2360,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
+  '@lucide/astro@1.61.0(astro@5.18.2(jiti@1.21.7)(rollup@4.65.0)(typescript@5.9.3)(yaml@2.9.1))':
+    dependencies:
+      astro: 5.18.2(jiti@1.21.7)(rollup@4.65.0)(typescript@5.9.3)(yaml@2.9.1)
+
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     optional: true
 
@@ -3126,6 +3147,10 @@ snapshots:
   longest-streak@3.1.0: {}
 
   lru-cache@11.5.3: {}
+
+  lucide-astro@0.556.0(astro@5.18.2(jiti@1.21.7)(rollup@4.65.0)(typescript@5.9.3)(yaml@2.9.1)):
+    dependencies:
+      astro: 5.18.2(jiti@1.21.7)(rollup@4.65.0)(typescript@5.9.3)(yaml@2.9.1)
 
   magic-string@0.30.21:
     dependencies:

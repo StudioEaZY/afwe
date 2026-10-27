@@ -9,5 +9,10 @@ export default defineConfig({
   output: 'static',
   build: {
     format: 'directory'
+  },
+  vite: {
+    optimizeDeps: {
+      exclude: ['@lucide/astro']
+    }
   }
 });

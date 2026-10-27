@@ -1,9 +1,29 @@
 ---
 // pricing.astro - 4-Tier Recognition & Community Seat Pool
 import MarketingLayout from '../layouts/MarketingLayout.astro';
-import { getSeatAllocation } from '../lib/supabase';
+import { 
+  ArrowDownToLine, 
+  Eye, 
+  Scale, 
+  Users, 
+  Info, 
+  Check, 
+  ArrowRight, 
+  Code, 
+  Building2, 
+  Palette as PaletteIcon, 
+  Sparkles, 
+  Gamepad2, 
+  Star, 
+  ShieldCheck 
+} from '@lucide/astro';
 
-const initialAllocation = await getSeatAllocation();
+// Instant static baseline - 0ms server blocking!
+const baselineAllocation = {
+  total_seats: 1000,
+  claimed_seats: 5,
+  available_seats: 995
+};
 ---
 
 <MarketingLayout
@@ -28,22 +48,22 @@ const initialAllocation = await getSeatAllocation();
           AFWE's core functionality is open to everyone. Your contribution helps sustain development, unlocks greater recognition options, and gives you a bigger voice in what comes next.
         </p>
 
-        <!-- 4 Core Feature Pills -->
+        <!-- 4 Core Feature Pills with Lucide Icons -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
           <div class="flex items-center gap-2 p-2.5 rounded-xl border border-stone-300/80 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-850 text-xs font-mono text-graphite dark:text-stone-200">
-            <span class="text-survey-600 dark:text-survey-light font-bold">↓</span>
+            <ArrowDownToLine class="size-3.5 text-survey-600 dark:text-survey-light shrink-0" />
             <span class="text-[11px] font-sans leading-tight">Same access for everyone</span>
           </div>
           <div class="flex items-center gap-2 p-2.5 rounded-xl border border-stone-300/80 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-850 text-xs font-mono text-graphite dark:text-stone-200">
-            <span class="text-survey-600 dark:text-survey-light font-bold">□</span>
+            <Eye class="size-3.5 text-survey-600 dark:text-survey-light shrink-0" />
             <span class="text-[11px] font-sans leading-tight">Transparent availability</span>
           </div>
           <div class="flex items-center gap-2 p-2.5 rounded-xl border border-stone-300/80 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-850 text-xs font-mono text-graphite dark:text-stone-200">
-            <span class="text-survey-600 dark:text-survey-light font-bold">⚖</span>
+            <Scale class="size-3.5 text-survey-600 dark:text-survey-light shrink-0" />
             <span class="text-[11px] font-sans leading-tight">Fair contribution model</span>
           </div>
           <div class="flex items-center gap-2 p-2.5 rounded-xl border border-stone-300/80 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-850 text-xs font-mono text-graphite dark:text-stone-200">
-            <span class="text-survey-600 dark:text-survey-light font-bold">👥</span>
+            <Users class="size-3.5 text-survey-600 dark:text-survey-light shrink-0" />
             <span class="text-[11px] font-sans leading-tight">Open source always</span>
           </div>
         </div>
@@ -104,7 +124,7 @@ const initialAllocation = await getSeatAllocation();
           </div>
           <div class="flex items-center gap-3">
             <span id="allocation-count" class="text-2xl sm:text-3xl font-mono font-bold text-graphite dark:text-white">
-              {initialAllocation.available_seats.toLocaleString()} / {initialAllocation.total_seats.toLocaleString()} available
+              {baselineAllocation.available_seats.toLocaleString()} / {baselineAllocation.total_seats.toLocaleString()} available
             </span>
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
               Available
@@ -115,7 +135,7 @@ const initialAllocation = await getSeatAllocation();
             <div 
               id="allocation-bar"
               class="h-full bg-survey-600 dark:bg-survey-light rounded-full transition-all duration-700" 
-              style={`width: ${Math.min(100, Math.max(5, (initialAllocation.available_seats / initialAllocation.total_seats) * 100))}%`}
+              style={`width: ${Math.min(100, Math.max(5, (baselineAllocation.available_seats / baselineAllocation.total_seats) * 100))}%`}
             ></div>
           </div>
         </div>
@@ -125,23 +145,23 @@ const initialAllocation = await getSeatAllocation();
           A limited number of seats are currently available for new users. Once they are gone, the <strong class="font-bold text-graphite dark:text-white">free tier will not be accessible from the website</strong>.
         </div>
 
-        <!-- Right MIT GitHub Box -->
+        <!-- Right MIT GitHub Box with Lucide Info -->
         <div class="lg:col-span-3 text-xs space-y-1.5 border-t lg:border-t-0 lg:border-l border-stone-200 dark:border-obsidian-800 pt-4 lg:pt-0 lg:pl-6">
           <div class="flex items-center gap-1.5 font-bold text-graphite dark:text-stone-200">
             <span>Already have access?</span>
-            <span class="text-graphite/40 dark:text-stone-500">ⓘ</span>
+            <Info class="size-3.5 text-graphite/60 dark:text-stone-400" />
           </div>
           <p class="text-[11px] text-graphite/70 dark:text-stone-400">
             You can still use AFWE via the open source repo (MIT License).
           </p>
           <a 
-            href="https://github.com" 
+            href="https://github.com/StudioEaZY/afwe" 
             target="_blank" 
             rel="noopener noreferrer" 
             class="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light pt-1"
           >
             <span>View on GitHub</span>
-            <span>→</span>
+            <ArrowRight class="size-3" />
           </a>
         </div>
       </div>
@@ -182,19 +202,19 @@ const initialAllocation = await getSeatAllocation();
 
             <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Full AFWE functionality</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Local customization</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Monthly points (baseline)</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Community support</span>
               </li>
             </ul>
@@ -205,7 +225,7 @@ const initialAllocation = await getSeatAllocation();
             <div class="p-3.5 rounded-xl border border-stone-200 dark:border-obsidian-800 bg-paper/60 dark:bg-obsidian-950 space-y-2">
               <div class="flex items-center gap-2.5">
                 <div class="size-7 rounded-full bg-stone-300 dark:bg-obsidian-800 flex items-center justify-center font-bold text-xs text-graphite dark:text-stone-200">
-                  A
+                  <Code class="size-3.5" />
                 </div>
                 <div>
                   <div class="text-xs font-bold text-graphite dark:text-stone-100 leading-none">AFWE</div>
@@ -219,9 +239,10 @@ const initialAllocation = await getSeatAllocation();
 
             <a 
               href="/docs/getting-started/quick-start" 
-              class="w-full py-2.5 px-4 rounded-xl border border-stone-300 dark:border-obsidian-700 hover:border-graphite text-xs font-mono font-bold text-graphite dark:text-stone-200 flex items-center justify-center gap-1 transition-colors"
+              class="w-full py-2.5 px-4 rounded-xl border border-stone-300 dark:border-obsidian-700 hover:border-graphite text-xs font-mono font-bold text-graphite dark:text-stone-200 flex items-center justify-center gap-1.5 transition-colors"
             >
-              Get started →
+              <span>Get started</span>
+              <ArrowRight class="size-3" />
             </a>
           </div>
         </div>
@@ -248,19 +269,19 @@ const initialAllocation = await getSeatAllocation();
 
             <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Everything in Community</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Custom name & logo</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Visibility preferences</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Standard styling options</span>
               </li>
             </ul>
@@ -271,7 +292,7 @@ const initialAllocation = await getSeatAllocation();
             <div class="p-3.5 rounded-xl border border-stone-200 dark:border-obsidian-800 bg-paper/60 dark:bg-obsidian-950 space-y-2">
               <div class="flex items-center gap-2.5">
                 <div class="size-7 rounded-full bg-survey-600/20 text-survey-700 dark:text-survey-light flex items-center justify-center font-bold text-xs">
-                  ▲
+                  <Building2 class="size-3.5" />
                 </div>
                 <div>
                   <div class="text-xs font-bold text-graphite dark:text-stone-100 leading-none">Nova Works</div>
@@ -285,10 +306,11 @@ const initialAllocation = await getSeatAllocation();
 
             <button 
               type="button"
-              class="w-full py-2.5 px-4 rounded-xl border border-stone-300 dark:border-obsidian-700 hover:border-graphite text-xs font-mono font-bold text-graphite dark:text-stone-200 flex items-center justify-center gap-1 transition-colors cursor-pointer"
+              class="w-full py-2.5 px-4 rounded-xl border border-stone-300 dark:border-obsidian-700 hover:border-graphite text-xs font-mono font-bold text-graphite dark:text-stone-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               onclick="alert('Presence Tier sponsorship checkout will connect when Phase 4 Community billing launches.')"
             >
-              Choose Presence →
+              <span>Choose Presence</span>
+              <ArrowRight class="size-3" />
             </button>
           </div>
         </div>
@@ -315,19 +337,19 @@ const initialAllocation = await getSeatAllocation();
 
             <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Everything in Presence</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Custom colors & palette</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Advanced styling options</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Priority in recognition queue</span>
               </li>
             </ul>
@@ -338,7 +360,7 @@ const initialAllocation = await getSeatAllocation();
             <div class="p-3.5 rounded-xl border border-survey-600/30 bg-amber-500/10 dark:bg-amber-500/15 space-y-2">
               <div class="flex items-center gap-2.5">
                 <div class="size-7 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 flex items-center justify-center font-bold text-xs">
-                  ⬡
+                  <PaletteIcon class="size-3.5" />
                 </div>
                 <div>
                   <div class="text-xs font-bold text-graphite dark:text-stone-100 leading-none">Etheral Labs</div>
@@ -352,10 +374,11 @@ const initialAllocation = await getSeatAllocation();
 
             <button 
               type="button"
-              class="w-full py-2.5 px-4 rounded-xl bg-survey-600 hover:bg-survey-700 text-white dark:bg-survey-light dark:text-obsidian-950 dark:hover:bg-white text-xs font-mono font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer shadow-xs"
+              class="w-full py-2.5 px-4 rounded-xl bg-survey-600 hover:bg-survey-700 text-white dark:bg-survey-light dark:text-obsidian-950 dark:hover:bg-white text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               onclick="alert('Palette Tier sponsorship checkout will connect when Phase 4 Community billing launches.')"
             >
-              Choose Palette →
+              <span>Choose Palette</span>
+              <ArrowRight class="size-3" />
             </button>
           </div>
         </div>
@@ -382,19 +405,19 @@ const initialAllocation = await getSeatAllocation();
 
             <ul class="space-y-2 text-xs font-sans text-graphite/80 dark:text-stone-300 pt-2 border-t border-stone-200 dark:border-obsidian-800">
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Everything in Palette</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Micro-animations (AFWE UI)</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Enhanced visual effects</span>
               </li>
               <li class="flex items-center gap-2">
-                <span class="text-survey-600 font-bold">✓</span>
+                <Check class="size-3.5 text-survey-600 shrink-0" />
                 <span>Top-tier recognition placement</span>
               </li>
             </ul>
@@ -405,7 +428,7 @@ const initialAllocation = await getSeatAllocation();
             <div class="p-3.5 rounded-xl border border-stone-200 dark:border-obsidian-800 bg-paper/60 dark:bg-obsidian-950 space-y-2 relative overflow-hidden">
               <div class="flex items-center gap-2.5">
                 <div class="size-7 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs ring-1 ring-emerald-500/50">
-                  ◎
+                  <Sparkles class="size-3.5" />
                 </div>
                 <div>
                   <div class="text-xs font-bold text-graphite dark:text-stone-100 leading-none">Vertex Studio</div>
@@ -419,17 +442,18 @@ const initialAllocation = await getSeatAllocation();
 
             <button 
               type="button"
-              class="w-full py-2.5 px-4 rounded-xl border border-stone-300 dark:border-obsidian-700 hover:border-graphite text-xs font-mono font-bold text-graphite dark:text-stone-200 flex items-center justify-center gap-1 transition-colors cursor-pointer"
+              class="w-full py-2.5 px-4 rounded-xl border border-stone-300 dark:border-obsidian-700 hover:border-graphite text-xs font-mono font-bold text-graphite dark:text-stone-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               onclick="alert('Motion Tier sponsorship checkout will connect when Phase 4 Community billing launches.')"
             >
-              Choose Motion →
+              <span>Choose Motion</span>
+              <ArrowRight class="size-3" />
             </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- More Than Just A Tier Section -->
+    <!-- More Than Just A Tier Section with Lucide Icons -->
     <section class="space-y-6 pt-4">
       <div class="text-[10px] font-mono font-bold tracking-[0.2em] text-survey-600 dark:text-survey-light uppercase">
         MORE THAN JUST A TIER
@@ -438,8 +462,8 @@ const initialAllocation = await getSeatAllocation();
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- 1. The recognition experience -->
         <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-900 p-6 space-y-3">
-          <div class="size-8 rounded-xl bg-stone-200 dark:bg-obsidian-800 flex items-center justify-center text-sm font-mono text-graphite dark:text-stone-200">
-            🎮
+          <div class="size-9 rounded-xl bg-stone-200 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+            <Gamepad2 class="size-5 text-survey-600 dark:text-survey-light" />
           </div>
           <h3 class="text-base font-bold text-graphite dark:text-white">The recognition experience</h3>
           <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
@@ -449,8 +473,8 @@ const initialAllocation = await getSeatAllocation();
 
         <!-- 2. Points & community influence -->
         <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-900 p-6 space-y-3">
-          <div class="size-8 rounded-xl bg-stone-200 dark:bg-obsidian-800 flex items-center justify-center text-sm font-mono text-graphite dark:text-stone-200">
-            ⭐
+          <div class="size-9 rounded-xl bg-stone-200 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+            <Star class="size-5 text-survey-600 dark:text-survey-light" />
           </div>
           <h3 class="text-base font-bold text-graphite dark:text-white">Points & community influence</h3>
           <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
@@ -460,8 +484,8 @@ const initialAllocation = await getSeatAllocation();
 
         <!-- 3. Transparent & fair -->
         <div class="rounded-2xl border border-stone-300 dark:border-obsidian-700 bg-white/60 dark:bg-obsidian-900 p-6 space-y-3">
-          <div class="size-8 rounded-xl bg-stone-200 dark:bg-obsidian-800 flex items-center justify-center text-sm font-mono text-graphite dark:text-stone-200">
-            🛡️
+          <div class="size-9 rounded-xl bg-stone-200 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
+            <ShieldCheck class="size-5 text-survey-600 dark:text-survey-light" />
           </div>
           <h3 class="text-base font-bold text-graphite dark:text-white">Transparent & fair</h3>
           <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
@@ -492,19 +516,18 @@ const initialAllocation = await getSeatAllocation();
             class="px-5 py-3 rounded-xl bg-white text-graphite hover:bg-stone-100 font-mono text-xs font-bold transition-colors inline-flex items-center gap-2 shadow-sm"
           >
             <span>Read the full blog</span>
-            <span>→</span>
+            <ArrowRight class="size-3.5" />
           </a>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- Dynamic Supabase Seat Telemetry Script -->
+  <!-- Lazyload Supabase Telemetry Script: Non-blocking background fetch -->
   <script>
-    import { supabase } from '../lib/supabase';
-
     async function refreshSeatTelemetry() {
       try {
+        const { supabase } = await import('../lib/supabase');
         const { data, error } = await supabase
           .from('seat_pool')
           .select('total_seats, claimed_seats')
@@ -524,10 +547,15 @@ const initialAllocation = await getSeatAllocation();
           }
         }
       } catch (e) {
-        // Fallback default remains in HTML
+        // Fallback baseline remains displayed with zero disruption
       }
     }
 
-    refreshSeatTelemetry();
+    // Lazyload in background after page is displayed
+    if (document.readyState === 'complete') {
+      setTimeout(refreshSeatTelemetry, 150);
+    } else {
+      window.addEventListener('load', () => setTimeout(refreshSeatTelemetry, 150));
+    }
   </script>
 </MarketingLayout>

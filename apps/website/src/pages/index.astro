@@ -3,6 +3,7 @@
 import MarketingLayout from '../layouts/MarketingLayout.astro';
 import AfweIsometricHero from '../components/AfweIsometricHero.astro';
 import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
+import { Copy, Check, FileText, Code2, ShieldCheck, ArrowRight, Sparkles, RefreshCw } from '@lucide/astro';
 ---
 
 <MarketingLayout
@@ -29,18 +30,29 @@ import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
             <span class="text-graphite/70 dark:text-stone-400">Your repo shouldn’t.</span>
           </h1>
 
-          <!-- Value Proposition Description -->
+          <!-- Value Proposition Description with Randomized / Rotatable Context -->
           <p class="text-base sm:text-lg text-graphite/80 dark:text-stone-300 leading-relaxed max-w-xl">
-            AFWE records what your code is <em>supposed to be</em>, then checks every agent change against that intent. <strong>Double-entry bookkeeping for autonomous coding.</strong>
+            AFWE records what your code is <em>supposed to be</em>, then checks every agent change against that intent.
+            <span class="inline-block mt-1">
+              <strong 
+                id="dynamic-hero-tagline" 
+                class="text-graphite dark:text-white underline decoration-survey-500/40 hover:decoration-survey-600 cursor-pointer transition-opacity duration-300 inline-flex items-center gap-1.5"
+                title="Click to explore another architectural perspective"
+              >
+                <span>Double-entry bookkeeping for autonomous coding.</span>
+                <RefreshCw class="size-3.5 text-survey-600 dark:text-survey-light opacity-60 hover:opacity-100 transition-opacity" />
+              </strong>
+            </span>
           </p>
 
           <!-- Action Buttons -->
           <div class="flex flex-wrap items-center gap-3 pt-2">
             <a 
               href="/docs/getting-started/quick-start" 
-              class="px-5 py-3 rounded-lg bg-graphite hover:bg-graphite-900 dark:bg-white dark:hover:bg-stone-100 text-white dark:text-graphite font-mono text-xs font-semibold shadow-sm transition-all"
+              class="px-5 py-3 rounded-lg bg-graphite hover:bg-graphite-900 dark:bg-white dark:hover:bg-stone-100 text-white dark:text-graphite font-mono text-xs font-semibold shadow-sm transition-all inline-flex items-center gap-2"
             >
-              Install AFWE →
+              <span>Install AFWE</span>
+              <ArrowRight class="size-3.5" />
             </a>
             <a 
               href="/docs/concepts/core-concepts" 
@@ -61,14 +73,14 @@ import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
                 <div class="flex items-center gap-2">
                   <button 
                     id="copy-install-btn" 
-                    class="p-1.5 rounded hover:bg-stone-200 dark:hover:bg-obsidian-800 text-graphite/70 dark:text-stone-400 transition-colors"
+                    class="p-1.5 rounded hover:bg-stone-200 dark:hover:bg-obsidian-800 text-graphite/70 dark:text-stone-400 transition-colors flex items-center justify-center cursor-pointer"
                     title="Copy command"
                     aria-label="Copy install command"
                   >
-                    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
+                    <span id="copy-icon-wrap"><Copy class="size-4" /></span>
+                    <span id="copied-icon-wrap" class="hidden text-survey-600 font-bold text-[11px] flex items-center gap-1">
+                      <Check class="size-3.5" /> Copied!
+                    </span>
                   </button>
                 </div>
               </div>
@@ -99,50 +111,42 @@ import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
           <h2 class="text-3xl sm:text-4xl font-bold text-graphite dark:text-white tracking-tight">
             See your codebase in context.
           </h2>
-          <p class="text-sm sm:text-base text-graphite/80 dark:text-stone-300 leading-relaxed">
-            The Blueprint gives you a clear, interactive view of your architecture: components, dependencies, constraints and intent, so you can understand what matters, move with confidence and make better decisions.
+          <p class="text-xs sm:text-sm text-graphite/80 dark:text-stone-300 leading-relaxed font-sans">
+            Every codebase has an implicit architecture. AFWE parses your repository into an explicit DAG of subsystems, components, AST claims, and non-negotiable boundary constraints.
           </p>
         </div>
-        <a 
-          href="/docs/concepts/core-concepts#the-blueprint" 
-          class="font-mono text-xs font-semibold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light flex items-center gap-1.5 transition-colors shrink-0"
-        >
-          Explore the Blueprint →
-        </a>
+        <div class="flex items-center gap-2">
+          <a 
+            href="/docs/concepts/core-concepts#the-blueprint" 
+            class="font-mono text-xs font-bold text-survey-600 dark:text-survey-light hover:underline inline-flex items-center gap-1"
+          >
+            <span>Learn how the Blueprint works</span>
+            <ArrowRight class="size-3.5" />
+          </a>
+        </div>
       </div>
 
-      <!-- Live Interactive Sunburst Workstation -->
-      <div class="pt-2">
-        <CodebaseBlueprintRadar />
-      </div>
+      <!-- Live Codebase Radar Preview Component -->
+      <CodebaseBlueprintRadar />
     </section>
 
     <!-- ========================================================================= -->
-    <!-- SECTION 3: HOW IT WORKS (THE REBORN TURN PROTOCOL)                        -->
+    <!-- SECTION 3: HOW IT WORKS (THE 3-STEP TURN LOOP)                            -->
     <!-- ========================================================================= -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-300 dark:border-obsidian-800 pb-6">
-        <div>
-          <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-graphite/70 dark:text-stone-400 uppercase mb-2">
-            HOW IT WORKS
-          </div>
-          <h2 class="text-3xl sm:text-4xl font-bold text-graphite dark:text-white tracking-tight">
-            Deterministic turn governance.
-          </h2>
-          <p class="text-sm sm:text-base text-graphite/80 dark:text-stone-300 mt-1 max-w-xl">
-            AFWE wraps every prompt to your AI coding agent in a reproducible 3-step protocol. The kernel never makes internal model calls.
-          </p>
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div class="border-b border-stone-300 dark:border-obsidian-800 pb-6">
+        <div class="text-[11px] font-mono font-bold tracking-[0.2em] text-graphite/70 dark:text-stone-400 uppercase mb-2">
+          HOW IT WORKS
         </div>
-        <a 
-          href="/docs/concepts/core-concepts#turns" 
-          class="font-mono text-xs font-semibold text-graphite dark:text-stone-200 hover:text-survey-600 dark:hover:text-survey-light flex items-center gap-1.5 transition-colors shrink-0"
-        >
-          The 3-step process →
-        </a>
+        <h2 class="text-3xl sm:text-4xl font-bold text-graphite dark:text-white tracking-tight">
+          The 3-step turn protocol.
+        </h2>
+        <p class="text-sm sm:text-base text-graphite/80 dark:text-stone-300 mt-1 max-w-2xl leading-relaxed">
+          AFWE turns replace unsupervised agent edits with a rigorous double-entry protocol: Briefing Pack ➔ Intent Claims ➔ Deterministic Gating.
+        </p>
       </div>
 
-      <!-- 3 Steps Chain Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Step 1: Begin -->
         <div class="rounded-2xl border border-stone-400/70 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between shadow-xs hover:border-graphite/50 transition-all">
           <div class="space-y-4">
@@ -151,13 +155,7 @@ import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
                 1
               </span>
               <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
+                <FileText class="size-5" />
               </div>
             </div>
             <div>
@@ -180,10 +178,7 @@ import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
                 2
               </span>
               <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="16 18 22 12 16 6"></polyline>
-                  <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
+                <Code2 class="size-5" />
               </div>
             </div>
             <div>
@@ -206,9 +201,7 @@ import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
                 3
               </span>
               <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                </svg>
+                <ShieldCheck class="size-5" />
               </div>
             </div>
             <div>
@@ -325,9 +318,9 @@ import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
           </div>
 
           <div class="pt-6 relative z-10 flex items-center gap-4 text-xs font-mono text-graphite/70 dark:text-stone-400">
-            <span>✓ MIT Open Source</span>
-            <span>✓ Zero Telemetry</span>
-            <span>✓ 57 MCP Tools</span>
+            <span class="inline-flex items-center gap-1.5"><Check class="size-3.5 text-survey-600" /> MIT Open Source</span>
+            <span class="inline-flex items-center gap-1.5"><Check class="size-3.5 text-survey-600" /> Zero Telemetry</span>
+            <span class="inline-flex items-center gap-1.5"><Check class="size-3.5 text-survey-600" /> 57 MCP Tools</span>
           </div>
         </div>
 
@@ -350,7 +343,8 @@ import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
               href="/docs/getting-started/quick-start" 
               class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-graphite font-mono text-xs font-bold hover:bg-stone-200 transition-colors shadow-sm"
             >
-              View quick start →
+              <span>View quick start</span>
+              <ArrowRight class="size-3.5" />
             </a>
           </div>
         </div>
@@ -359,16 +353,50 @@ import CodebaseBlueprintRadar from '../components/CodebaseBlueprintRadar.astro';
   </div>
 
   <script>
-    // Copy install command script
+    // 1. Dynamic Hero Tagline Rotation
+    const taglines = [
+      "Double-entry bookkeeping for autonomous coding.",
+      "What Rust did for safer systems, AFWE does for AI coding.",
+      "The intent layer that ensures your code matches what it was supposed to be.",
+      "Deterministic guardrails that stop architectural drift before commit.",
+      "From prompt suggestions to mathematical AST invariants.",
+      "What compilers did for type safety, AFWE does for codebase architecture."
+    ];
+
+    const taglineEl = document.getElementById('dynamic-hero-tagline');
+    if (taglineEl) {
+      let currentIndex = Math.floor(Math.random() * taglines.length);
+      const textSpan = taglineEl.querySelector('span');
+      if (textSpan) {
+        textSpan.textContent = taglines[currentIndex];
+      }
+
+      taglineEl.addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % taglines.length;
+        taglineEl.style.opacity = '0';
+        setTimeout(() => {
+          if (textSpan) {
+            textSpan.textContent = taglines[currentIndex];
+          }
+          taglineEl.style.opacity = '1';
+        }, 150);
+      });
+    }
+
+    // 2. Copy install command script
     const copyBtn = document.getElementById('copy-install-btn');
     const cmdText = document.getElementById('install-cmd-text');
-    if (copyBtn && cmdText) {
+    const copyIconWrap = document.getElementById('copy-icon-wrap');
+    const copiedIconWrap = document.getElementById('copied-icon-wrap');
+
+    if (copyBtn && cmdText && copyIconWrap && copiedIconWrap) {
       copyBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(cmdText.textContent || 'cargo install afwe');
-        const originalHtml = copyBtn.innerHTML;
-        copyBtn.innerHTML = '<span class="text-survey-500 font-bold text-[11px]">Copied!</span>';
+        copyIconWrap.classList.add('hidden');
+        copiedIconWrap.classList.remove('hidden');
         setTimeout(() => {
-          copyBtn.innerHTML = originalHtml;
+          copyIconWrap.classList.remove('hidden');
+          copiedIconWrap.classList.add('hidden');
         }, 1500);
       });
     }
