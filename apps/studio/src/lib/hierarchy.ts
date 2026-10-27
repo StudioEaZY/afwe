@@ -358,12 +358,29 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
     }
   }
 
-  // Violations by node
+  // Violations by node - indexed across dot, slash, and ancestral segments
   const violationsByNode = new Map<string, string[]>();
   const addViolation = (nodeId: string, msg: string) => {
-    if (!violationsByNode.has(nodeId)) violationsByNode.set(nodeId, []);
-    if (!violationsByNode.get(nodeId)!.includes(msg)) {
-      violationsByNode.get(nodeId)!.push(msg);
+    if (!nodeId) return;
+    const slashId = nodeId.replace(/\./g, "/");
+    const dotId = nodeId.replace(/\//g, ".");
+    for (const id of [nodeId, slashId, dotId]) {
+      if (!violationsByNode.has(id)) violationsByNode.set(id, []);
+      if (!violationsByNode.get(id)!.includes(msg)) {
+        violationsByNode.get(id)!.push(msg);
+      }
+    }
+    // Also bubble up violation messages to parent modules and domain ancestors
+    const parts = slashId.split("/");
+    for (let i = 1; i < parts.length; i++) {
+      const ancSlash = parts.slice(0, i).join("/");
+      const ancDot = parts.slice(0, i).join(".");
+      for (const id of [ancSlash, ancDot]) {
+        if (!violationsByNode.has(id)) violationsByNode.set(id, []);
+        if (!violationsByNode.get(id)!.includes(msg)) {
+          violationsByNode.get(id)!.push(msg);
+        }
+      }
     }
   };
 
@@ -478,7 +495,24 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
         ? mappedChildren.reduce((acc, c) => acc + c.mappedCount, 0)
         : fileCount;
 
-    const vList = violationsByNode.get(bn.id) || violationsByNode.get(key) || [];
+    const slashId = bn.id.replace(/\./g, "/");
+    const dotId = bn.id.replace(/\//g, ".");
+    const slashKey = key.replace(/\./g, "/");
+    const dotKey = key.replace(/\//g, ".");
+    const directViolations = [
+      ...(violationsByNode.get(bn.id) || []),
+      ...(violationsByNode.get(key) || []),
+      ...(violationsByNode.get(slashId) || []),
+      ...(violationsByNode.get(dotId) || []),
+      ...(violationsByNode.get(slashKey) || []),
+      ...(violationsByNode.get(dotKey) || []),
+    ];
+    const vList = Array.from(new Set(directViolations));
+    const childHasViolation = mappedChildren.some((c) => c.hasViolation);
+    const childViolationCount = mappedChildren.reduce((acc, c) => acc + c.violationCount, 0);
+    const totalViolationCount = vList.length + childViolationCount;
+    const nodeHasViolation = vList.length > 0 || childHasViolation;
+
     const pList = pinsByNode.get(bn.id) || pinsByNode.get(key) || [];
     const qList = questionsByNode.get(bn.id) || questionsByNode.get(key) || [];
     const hasProp = proposalsByNode.has(bn.id) || proposalsByNode.has(key);
@@ -526,12 +560,12 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
       parentId: depth === 1 ? "root" : bn.parent || parentKey,
       children: mappedChildren,
       filesList: bn.file_list || [],
-      hasViolation: vList.length > 0,
+      hasViolation: nodeHasViolation,
       hasPin: pList.length > 0,
       hasQuestion: qList.length > 0,
       hasProposal: hasProp,
       pinCount: pList.length,
-      violationCount: vList.length,
+      violationCount: totalViolationCount,
       proposalCount: hasProp ? 1 : 0,
       icon,
       tier,
@@ -710,13 +744,23 @@ export function buildDirectedEdges(
   const constraints: any[] = graph.constraints || [];
 
   const isForbiddenPair = (fromKey: string, toKey: string): boolean => {
-    const fromDom = fromKey.split("/")[0];
-    const toDom = toKey.split("/")[0];
+    const fSlash = fromKey.replace(/\./g, "/");
+    const tSlash = toKey.replace(/\./g, "/");
+    const fromDom = fSlash.split("/")[0];
+    const toDom = tSlash.split("/")[0];
     for (const c of constraints) {
       if (c.rule !== "must_not_depend") continue;
-      const targets: string[] = c.to || [];
-      if (c.from === fromKey && (targets.includes(toKey) || targets.includes(toDom))) return true;
-      if (c.from === fromDom && (targets.includes(toKey) || targets.includes(toDom))) return true;
+      const cFrom = (c.from || "").replace(/\./g, "/");
+      const cFromDom = cFrom.split("/")[0];
+      const targets: string[] = (c.to || []).map((t: string) => t.replace(/\./g, "/"));
+      const targetDoms = targets.map((t: string) => t.split("/")[0]);
+
+      if (
+        (cFrom === fSlash || cFrom === fromDom || cFromDom === fromDom) &&
+        (targets.includes(tSlash) || targets.includes(toDom) || targetDoms.includes(toDom))
+      ) {
+        return true;
+      }
     }
     return false;
   };
@@ -724,19 +768,33 @@ export function buildDirectedEdges(
   const domainEdgeMap = new Map<string, DirectedEdge>();
   const nodeEdgeMap = new Map<string, DirectedEdge>();
 
+  const extractDomainKey = (raw: string): string => {
+    const norm = raw.replace(/\./g, "/");
+    const seg = norm.split("/")[0];
+    const n = nodeMap.get(raw) || nodeMap.get(norm) || nodeMap.get(seg);
+    if (n) {
+      let cur: HierarchyNode = n;
+      while (cur.depth > 1 && cur.parent) {
+        cur = cur.parent;
+      }
+      return cur.key.replace(/\./g, "/").split("/")[0];
+    }
+    return seg;
+  };
+
   const registerEdge = (rawFrom: string, rawTo: string, badFlag: boolean, count = 1, status = "declared") => {
-    const nFrom = nodeMap.get(rawFrom);
-    const nTo = nodeMap.get(rawTo);
+    const nFrom = nodeMap.get(rawFrom) || nodeMap.get(rawFrom.replace(/\./g, "/"));
+    const nTo = nodeMap.get(rawTo) || nodeMap.get(rawTo.replace(/\./g, "/"));
     const fromKey = nFrom ? nFrom.key : rawFrom;
     const toKey = nTo ? nTo.key : rawTo;
     if (!fromKey || !toKey || fromKey === toKey) return;
 
-    const bad = badFlag || isForbiddenPair(fromKey, toKey);
+    const bad = badFlag || isForbiddenPair(fromKey, toKey) || isForbiddenPair(rawFrom, rawTo);
     const h = hashStr(`${fromKey}>${toKey}`);
     const birth = 0.03 + (h % 280) / 1000;
 
-    const fromDepth = nFrom ? nFrom.depth : fromKey.split("/").length;
-    const toDepth = nTo ? nTo.depth : toKey.split("/").length;
+    const fromDepth = nFrom ? nFrom.depth : fromKey.replace(/\./g, "/").split("/").length;
+    const toDepth = nTo ? nTo.depth : toKey.replace(/\./g, "/").split("/").length;
 
     if (fromDepth === 1 && toDepth === 1) {
       const k = `${fromKey}>${toKey}`;
@@ -757,12 +815,16 @@ export function buildDirectedEdges(
         nodeEdgeMap.set(k, { a: fromKey, b: toKey, birth, death: null, bad, count, status });
       }
       // Also ensure the parent domains have a rolled-up domain edge
-      const domA = fromKey.split("/")[0];
-      const domB = toKey.split("/")[0];
+      const domA = extractDomainKey(fromKey);
+      const domB = extractDomainKey(toKey);
       if (domA && domB && domA !== domB) {
         const dk = `${domA}>${domB}`;
-        const domBad = isForbiddenPair(domA, domB);
-        if (!domainEdgeMap.has(dk)) {
+        const existing = domainEdgeMap.get(dk);
+        const domBad = bad || isForbiddenPair(domA, domB);
+        if (existing) {
+          existing.bad = existing.bad || domBad;
+          existing.count = (existing.count || 0) + count;
+        } else {
           const dh = hashStr(dk);
           domainEdgeMap.set(dk, {
             a: domA,

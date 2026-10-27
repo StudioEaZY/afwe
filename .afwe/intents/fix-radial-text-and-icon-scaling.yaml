@@ -1,0 +1,17 @@
+id: fix-radial-text-and-icon-scaling
+title: Radial Text Scaling, Normal Icon Proportions, and Consistent Legend Data
+statement: Scale down normal domain icons in Radial, scale radial labels against available arc length and zoom level to prevent premature truncation, and synchronize shell violation counts.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0038
+history:
+- turn: t0038
+  ts: 2026-10-27T21:34:59Z
+  statement: Scale down normal domain icons in Radial, scale radial labels against available arc length and zoom level to prevent premature truncation, and synchronize shell violation counts.
+created: 2026-10-27T21:34:59Z
+updated: 2026-10-27T21:34:59Z
+task: task-t0038

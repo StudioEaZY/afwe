@@ -1,6 +1,6 @@
 id: unify-briefing-context
 title: Unify turn briefing with context engine
-statement: Turn briefing in turn.rs reuses context.rs scope matching for passive guardrails and memories.
+statement: Unify turn briefing pin and memory matching with context.rs scope resolution
 status: active
 origin: human
 attaches:
@@ -8,10 +8,14 @@ attaches:
   - afwe-core
 from_turns:
 - t0035
+- t0039
 history:
 - turn: t0035
   ts: 2026-10-27T18:39:30Z
   statement: Turn briefing in turn.rs reuses context.rs scope matching for passive guardrails and memories.
+- turn: t0039
+  ts: 2026-10-27T21:36:15Z
+  statement: Unify turn briefing pin and memory matching with context.rs scope resolution
 created: 2026-10-27T18:39:30Z
-updated: 2026-10-27T18:50:26Z
+updated: 2026-10-27T21:36:15Z
 task: task-t0035

@@ -9,7 +9,18 @@
 #         AFWE=target/release/afwe scripts/demo.sh
 set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-AFWE="${AFWE:-afwe}"
+if [ -n "${AFWE:-}" ]; then
+    AFWE_BIN="$AFWE"
+elif command -v afwe >/dev/null 2>&1; then
+    AFWE_BIN="afwe"
+elif [ -f "$ROOT/target/debug/afwe" ]; then
+    AFWE_BIN="$ROOT/target/debug/afwe"
+elif [ -f "$ROOT/target/release/afwe" ]; then
+    AFWE_BIN="$ROOT/target/release/afwe"
+else
+    AFWE_BIN="afwe"
+fi
+AFWE="$AFWE_BIN"
 run() { echo; echo "\$ $*"; "$@"; }
 step() { echo; echo "════════════════════════════════════════════════════════════════════"; echo "$*"; }
 

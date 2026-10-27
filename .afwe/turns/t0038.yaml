@@ -1,0 +1,83 @@
+id: t0038
+ts: 2026-10-27T21:34:04Z
+origin: human
+prompt: Fix hand pan bypass across maps, topology card layout and upward violation curves, constellation violations, radial text scaling and icon sizes, consistent legend counts, line hotspot hitboxes, and prompt display
+prompt_hash: e55f18f4cd91700d
+task: task-t0038
+targets:
+- apps/studio/src/components/TopologyMap.tsx
+- apps/studio/src/components/RadialMap.tsx
+- apps/studio/src/components/ConstellationMap.tsx
+- apps/studio/src/components/TopBar.tsx
+- apps/studio/src/components/OverviewPage.tsx
+- apps/studio/src/components/TimelinePage.tsx
+- apps/studio/src/lib/hierarchy.ts
+- apps/studio/src/lib/semanticZoomEngine.ts
+- apps/studio/src/styles.css
+scope:
+  nodes:
+  - studio
+  files:
+  - apps/studio/src/components/TopologyMap.tsx
+  - apps/studio/src/components/RadialMap.tsx
+  - apps/studio/src/components/ConstellationMap.tsx
+  - apps/studio/src/components/TopBar.tsx
+  - apps/studio/src/components/OverviewPage.tsx
+  - apps/studio/src/components/TimelinePage.tsx
+  - apps/studio/src/lib/hierarchy.ts
+  - apps/studio/src/lib/semanticZoomEngine.ts
+  - apps/studio/src/styles.css
+intents:
+- id: fix-hand-pan-tool
+  action: update
+  targets:
+  - studio
+  title: Unconditional Hand Pan Tool Event Bypass
+  statement: 'Ensure Spacebar and Hand tool activate an unconditional pan mode across RadialMap, ConstellationMap, and TopologyMap where children set pointer-events: none, disabling child interception and stopPropagation.'
+- id: fix-topology-layout-and-violations
+  action: update
+  targets:
+  - studio
+  title: Topology Card Layout and Upward Violation Curves
+  statement: Fix TopologyMap card geometry with left-aligned text, reasonable icon badges, upward red violation routing, and double-click deference to Constellation.
+- id: fix-constellation-violations-and-hitboxes
+  action: update
+  targets:
+  - studio
+  title: Constellation Rule Violations and Line Hitboxes
+  statement: Correctly attribute constraint violations to nodes and ancestors across dot and slash formats, render red alert badges and links, and add 14px transparent hitboxes for generous line selection.
+- id: fix-radial-text-and-icon-scaling
+  action: update
+  targets:
+  - studio
+  title: Radial Text Scaling, Normal Icon Proportions, and Consistent Legend Data
+  statement: Scale down normal domain icons in Radial, scale radial labels against available arc length and zoom level to prevent premature truncation, and synchronize shell violation counts.
+assumptions:
+- id: a1
+  text: afwe-core does not import afwe-cli
+  claim:
+    type: forbid_import
+    files:
+    - crates/afwe-core/**
+    to_nodes:
+    - afwe-cli
+  status: proposed
+status: open
+touched: {}
+strength: unverified
+confidence: 0.0
+gate:
+  decision: ''
+footer_shown: false
+turn_token: 930b985b7ed662c7
+session_id: sess-cbf30d
+held_out_guides:
+- guide-t0022-a1
+- guide-t0025-a1
+- guide-t0026-a1
+- guide-t0028-a1
+- guide-t0032-a1
+- guide-t0035-a2
+- guide-t0036-a1
+- guide-t0036-a2
+- guide-t0037-a1

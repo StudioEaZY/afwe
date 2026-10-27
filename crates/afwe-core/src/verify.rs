@@ -108,74 +108,63 @@ pub fn verify(snap: &Snapshot, project_root: &Path, opts: &VerifyOptions) -> Ver
         for (ci, check) in g.checks.iter().enumerate() {
             let sev = check.severity.clone().unwrap_or("error".into());
             let cid = format!("{}#{}", g.id, ci + 1);
-            match check.kind.as_str() {
-                "forbid_import" => {
-                    let targets: Vec<String> = check.to_nodes.iter().filter_map(|r| table.resolve(r)).collect();
-                    for f in &touched {
-                        for imp in &f.resolved_imports {
-                            if let Some(b) = snap.mapping.primary(imp) {
-                                if targets.iter().any(|t| table.is_ancestor_or_same(t, b)) {
-                                    issues.push(VerifyIssue { severity: sev.clone(), source: "guardrail".into(), id: cid.clone(), message: check.message.clone().unwrap_or(format!("{} imports {} which is inside {} — forbidden by guardrail `{}`: {}", f.path, imp, table.path_of(b), g.id, g.statement)), files: vec![f.path.clone(), imp.clone()], nodes: vec![b.to_string()], hint: g.reason.clone() });
-                                }
-                            }
-                        }
-                    }
+            if check.kind == "command" {
+                if !opts.run_commands {
+                    continue;
                 }
-                "forbid_pattern" | "require_pattern" => {
-                    let Some(pat) = &check.pattern else { continue };
-                    let Ok(re) = regex::Regex::new(pat) else {
-                        issues.push(VerifyIssue { severity: "warn".into(), source: "guardrail".into(), id: cid.clone(), message: format!("invalid regex in guardrail `{}`: {pat}", g.id), files: vec![], nodes: vec![], hint: None });
-                        continue;
-                    };
-                    let files_gs = if check.files.is_empty() { None } else { build_globset(&check.files).ok() };
-                    let mut candidates: Vec<&FileInfo> = if check.files.is_empty() { touched.clone() } else { snap.code.files.iter().filter(|f| files_gs.as_ref().map(|g| g.is_match(&f.path)).unwrap_or(true)).filter(|f| !scoped || changed_set.contains(f.path.as_str())).collect() };
-                    candidates.sort_by(|a, b| a.path.cmp(&b.path));
-                    for f in candidates {
-                        let Ok(raw) = std::fs::read_to_string(project_root.join(&f.path)) else { continue };
-                        let src = crate::claims::blank_comments(&raw, &f.language);
-                        let found = re.is_match(&src);
-                        if check.kind == "forbid_pattern" && found {
-                            let line = src.lines().position(|l| re.is_match(l)).map(|i| i + 1).unwrap_or(0);
-                            issues.push(VerifyIssue { severity: sev.clone(), source: "guardrail".into(), id: cid.clone(), message: check.message.clone().unwrap_or(format!("{}:{} matches forbidden pattern /{}/ — guardrail `{}`: {}", f.path, line, pat, g.id, g.statement)), files: vec![f.path.clone()], nodes: vec![], hint: g.reason.clone() });
-                        } else if check.kind == "require_pattern" && !found {
-                            issues.push(VerifyIssue { severity: sev.clone(), source: "guardrail".into(), id: cid.clone(), message: check.message.clone().unwrap_or(format!("{} lacks required pattern /{}/ — guardrail `{}`: {}", f.path, pat, g.id, g.statement)), files: vec![f.path.clone()], nodes: vec![], hint: g.reason.clone() });
-                        }
-                    }
+                let Some(cmd) = &check.run else { continue };
+                let when = check.when.as_deref().unwrap_or("files_changed_in_scope");
+                if when == "files_changed_in_scope" && scoped && touched.is_empty() {
+                    continue;
                 }
-                "require_file" => {
-                    if let Some(p) = &check.path {
-                        if !project_root.join(p).exists() {
-                            issues.push(VerifyIssue { severity: sev.clone(), source: "guardrail".into(), id: cid.clone(), message: check.message.clone().unwrap_or(format!("required file `{p}` is missing — guardrail `{}`: {}", g.id, g.statement)), files: vec![p.clone()], nodes: vec![], hint: g.reason.clone() });
-                        }
-                    }
+                ran.push(format!("command:{cid}"));
+                let touched_paths: Vec<String> = touched.iter().map(|f| f.path.clone()).collect();
+                let files_arg = touched_paths.join(" ");
+                let cmdline = cmd.replace("{files}", &files_arg);
+                let (ok, msg) = crate::intent::run_command(&cmdline, project_root, &touched_paths, 120);
+                if !ok {
+                    issues.push(VerifyIssue {
+                        severity: sev.clone(),
+                        source: "guardrail".into(),
+                        id: cid.clone(),
+                        message: check.message.clone().unwrap_or(format!("`{cmdline}` failed — guardrail `{}`: {}{}", g.id, g.statement, msg.map(|m| format!("\n{m}")).unwrap_or_default())),
+                        files: touched.iter().map(|f| f.path.clone()).collect(),
+                        nodes: scope_nodes.clone(),
+                        hint: g.reason.clone(),
+                    });
                 }
-                "command" => {
-                    if !opts.run_commands {
-                        continue;
-                    }
-                    let Some(cmd) = &check.run else { continue };
-                    let when = check.when.as_deref().unwrap_or("files_changed_in_scope");
-                    if when == "files_changed_in_scope" && scoped && touched.is_empty() {
-                        continue;
-                    }
-                    ran.push(format!("command:{cid}"));
-                    let touched_paths: Vec<String> = touched.iter().map(|f| f.path.clone()).collect();
-                    let files_arg = touched_paths.join(" ");
-                    let cmdline = cmd.replace("{files}", &files_arg);
-                    let (ok, msg) = crate::intent::run_command(&cmdline, project_root, &touched_paths, 120);
-                    if !ok {
+            } else {
+                let claim = check.to_claim();
+                let scope_paths: Vec<String> = if scoped {
+                    touched.iter().map(|f| f.path.clone()).collect()
+                } else {
+                    vec![]
+                };
+                match crate::claims::evaluate_scoped(&claim, snap, project_root, &scope_paths, scoped) {
+                    Ok(None) => {}
+                    Ok(Some(why)) => {
                         issues.push(VerifyIssue {
                             severity: sev.clone(),
                             source: "guardrail".into(),
                             id: cid.clone(),
-                            message: check.message.clone().unwrap_or(format!("`{cmdline}` failed — guardrail `{}`: {}{}", g.id, g.statement, msg.map(|m| format!("\n{m}")).unwrap_or_default())),
-                            files: touched.iter().map(|f| f.path.clone()).collect(),
+                            message: check.message.clone().unwrap_or_else(|| format!("{why} — guardrail `{}`: {}", g.id, g.statement)),
+                            files: if check.files.is_empty() { touched.iter().map(|f| f.path.clone()).collect() } else { check.files.clone() },
                             nodes: scope_nodes.clone(),
                             hint: g.reason.clone(),
                         });
                     }
+                    Err(e) => {
+                        issues.push(VerifyIssue {
+                            severity: "warn".into(),
+                            source: "guardrail".into(),
+                            id: cid.clone(),
+                            message: format!("guardrail check `{}` could not be evaluated: {e}", g.id),
+                            files: vec![],
+                            nodes: vec![],
+                            hint: None,
+                        });
+                    }
                 }
-                other => issues.push(VerifyIssue { severity: "warn".into(), source: "guardrail".into(), id: cid.clone(), message: format!("unknown check type `{other}` in guardrail `{}`", g.id), files: vec![], nodes: vec![], hint: None }),
             }
         }
     }

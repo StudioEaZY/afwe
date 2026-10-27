@@ -278,6 +278,11 @@ pub fn is_structural_claim(c: &AssumptionClaim) -> bool {
 /// Ok(None) = the claim holds; Ok(Some(why)) = it is violated.
 /// `scope` (code-root-relative files) is used when the claim names no files of its own.
 pub fn evaluate(c: &AssumptionClaim, snap: &Snapshot, root: &Path, scope: &[String]) -> Result<Option<String>> {
+    evaluate_scoped(c, snap, root, scope, false)
+}
+
+/// Evaluates a claim against code files, optionally restricting files to `scope` when `scoped` is true.
+pub fn evaluate_scoped(c: &AssumptionClaim, snap: &Snapshot, root: &Path, scope: &[String], scoped: bool) -> Result<Option<String>> {
     let table = &snap.table;
     let globs = if c.files.is_empty() { None } else { Some(build_globset(&c.files)?) };
     let candidates: Vec<&crate::model::FileInfo> = snap
@@ -285,7 +290,7 @@ pub fn evaluate(c: &AssumptionClaim, snap: &Snapshot, root: &Path, scope: &[Stri
         .files
         .iter()
         .filter(|f| match &globs {
-            Some(g) => g.is_match(&f.path),
+            Some(g) => g.is_match(&f.path) && (!scoped || scope.is_empty() || scope.contains(&f.path)),
             None => scope.is_empty() || scope.contains(&f.path),
         })
         .collect();

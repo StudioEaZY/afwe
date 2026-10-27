@@ -1,6 +1,6 @@
 id: deduplicate-verification-evaluator
 title: Deduplicate verification and command execution
-statement: verify.rs uses intent::run_command with timeout protection and changed files environment.
+statement: verify.rs reuses claims::evaluate_scoped for active guardrail AST and regex pattern checks
 status: active
 origin: human
 attaches:
@@ -8,10 +8,14 @@ attaches:
   - afwe-core
 from_turns:
 - t0035
+- t0039
 history:
 - turn: t0035
   ts: 2026-10-27T18:39:30Z
   statement: verify.rs uses intent::run_command with timeout protection and changed files environment.
+- turn: t0039
+  ts: 2026-10-27T21:36:15Z
+  statement: verify.rs reuses claims::evaluate_scoped for active guardrail AST and regex pattern checks
 created: 2026-10-27T18:39:30Z
-updated: 2026-10-27T18:50:26Z
+updated: 2026-10-27T21:36:15Z
 task: task-t0035

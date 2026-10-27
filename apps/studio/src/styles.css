@@ -1598,6 +1598,8 @@ pre.md.body { font-family: var(--sans); font-size: 13px; }
 .ex.bad rect, .ex.bad rect.nd { fill: var(--redbg); stroke: var(--red); }
 .ex.bidi rect.nd { stroke: var(--amber); stroke-dasharray: 4 2; }
 .ex text { fill: var(--ink); font-size: 12.5px; font-weight: 500; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.ex text.t-start { text-anchor: start; }
+.ex text.t-end { text-anchor: end; }
 .ex text.sub-t { fill: var(--mute); font-size: 10px; font-weight: 400; }
 .ex text.bt { fill: #fff; font-size: 10px; font-weight: 700; }
 .exp-pill { cursor: pointer; }

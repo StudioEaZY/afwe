@@ -169,6 +169,51 @@ pub fn scope_matches(scope: &Scope, snap: &Snapshot, chain: &[String], files: &[
     None
 }
 
+/// Matches an Attachment against an active node hierarchy and file scope.
+pub fn scope_matches_attachment(att: &Attachment, snap: &Snapshot, chain: &[String], files: &[String]) -> bool {
+    if att.is_empty() || att.global {
+        return true;
+    }
+    for r in &att.nodes {
+        if let Some(id) = snap.table.resolve(r) {
+            if chain.contains(&id) {
+                return true;
+            }
+        }
+    }
+    for f in files {
+        if glob_match(&att.files, f).is_some() {
+            return true;
+        }
+    }
+    false
+}
+
+/// Matches a memory item's metadata against an active node hierarchy, file scope, and tags.
+pub fn scope_matches_memory(meta: &MemoryMeta, snap: &Snapshot, chain: &[String], files: &[String]) -> bool {
+    if meta.applies_to.is_empty() && meta.files.is_empty() && meta.tags.is_empty() {
+        return false;
+    }
+    for r in &meta.applies_to {
+        if let Some(id) = snap.table.resolve(r) {
+            if chain.contains(&id) {
+                return true;
+            }
+        }
+    }
+    for f in files {
+        if glob_match(&meta.files, f).is_some() {
+            return true;
+        }
+    }
+    for t in &meta.tags {
+        if chain.iter().any(|c| snap.table.nodes.get(c).map(|n| n.tags.contains(t)).unwrap_or(false)) {
+            return true;
+        }
+    }
+    false
+}
+
 pub fn build_context(snap: &Snapshot, q: ContextQuery, sync: &str) -> ContextBundle {
     let mut warnings = vec![];
     let mut direct: Vec<(String, Vec<String>)> = vec![]; // node id, via

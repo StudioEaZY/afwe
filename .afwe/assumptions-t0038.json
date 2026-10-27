@@ -1,0 +1,43 @@
+{
+  "intents": [
+    {
+      "id": "fix-hand-pan-tool",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Unconditional Hand Pan Tool Event Bypass",
+      "statement": "Ensure Spacebar and Hand tool activate an unconditional pan mode across RadialMap, ConstellationMap, and TopologyMap where children set pointer-events: none, disabling child interception and stopPropagation."
+    },
+    {
+      "id": "fix-topology-layout-and-violations",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Topology Card Layout and Upward Violation Curves",
+      "statement": "Fix TopologyMap card geometry with left-aligned text, reasonable icon badges, upward red violation routing, and double-click deference to Constellation."
+    },
+    {
+      "id": "fix-constellation-violations-and-hitboxes",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Constellation Rule Violations and Line Hitboxes",
+      "statement": "Correctly attribute constraint violations to nodes and ancestors across dot and slash formats, render red alert badges and links, and add 14px transparent hitboxes for generous line selection."
+    },
+    {
+      "id": "fix-radial-text-and-icon-scaling",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Radial Text Scaling, Normal Icon Proportions, and Consistent Legend Data",
+      "statement": "Scale down normal domain icons in Radial, scale radial labels against available arc length and zoom level to prevent premature truncation, and synchronize shell violation counts."
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+id: fix-constellation-violations-and-hitboxes
+title: Constellation Rule Violations and Line Hitboxes
+statement: Correctly attribute constraint violations to nodes and ancestors across dot and slash formats, render red alert badges and links, and add 14px transparent hitboxes for generous line selection.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0038
+history:
+- turn: t0038
+  ts: 2026-10-27T21:34:59Z
+  statement: Correctly attribute constraint violations to nodes and ancestors across dot and slash formats, render red alert badges and links, and add 14px transparent hitboxes for generous line selection.
+created: 2026-10-27T21:34:59Z
+updated: 2026-10-27T21:34:59Z
+task: task-t0038

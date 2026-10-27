@@ -309,13 +309,10 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     let brief_files: Vec<String> = dedupe(brief_files).into_iter().take(60).collect();
 
     // ── briefing ──
+    let chain_list: Vec<String> = chain.iter().cloned().collect();
     let pins = engine.store.pins()?;
     let in_scope_pin = |p: &Pin| -> bool {
-        p.attaches.is_empty()
-            || p.attaches.global
-            || p.attaches.nodes.iter().filter_map(|n| table.resolve(n)).any(|n| chain.contains(&n))
-            || (!p.attaches.files.is_empty()
-                && build_globset(&p.attaches.files).map(|g| brief_files.iter().any(|f| g.is_match(f))).unwrap_or(false))
+        crate::context::scope_matches_attachment(&p.attaches, &snap, &chain_list, &brief_files)
     };
     let pin_json = |p: &Pin| json!({"id": p.id, "statement": p.statement, "kind": p.kind, "severity": p.severity, "intentional": p.intentional, "nodes": p.attaches.nodes});
     let active_pins: Vec<Value> = pins.iter().filter(|p| p.status == "active" && in_scope_pin(p)).map(pin_json).collect();
@@ -326,7 +323,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         .store
         .intents()?
         .into_iter()
-        .filter(|i| i.status != "archived" && i.attaches.nodes.iter().any(|n| chain.contains(n)))
+        .filter(|i| i.status != "archived" && crate::context::scope_matches_attachment(&i.attaches, &snap, &chain_list, &brief_files))
         .map(|i| json!({"id": i.id, "title": i.title, "statement": i.statement, "status": i.status}))
         .collect();
 
@@ -335,11 +332,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         .memory
         .iter()
         .filter(|m| m.meta.status.as_deref() != Some("superseded"))
-        .filter(|m| {
-            m.meta.applies_to.iter().filter_map(|r| table.resolve(r)).any(|n| chain.contains(&n))
-                || (!m.meta.files.is_empty()
-                    && build_globset(&m.meta.files).map(|g| brief_files.iter().any(|f| g.is_match(f))).unwrap_or(false))
-        })
+        .filter(|m| crate::context::scope_matches_memory(&m.meta, &snap, &chain_list, &brief_files))
         .map(|m| json!({"id": m.meta.id, "kind": m.meta.kind, "title": m.meta.title, "excerpt": truncate(&m.body.split_whitespace().collect::<Vec<_>>().join(" "), 240)}))
         .collect();
 
@@ -369,7 +362,6 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         })
         .collect();
 
-    let chain_list: Vec<String> = chain.iter().cloned().collect();
     let guardrails: Vec<Value> = snap
         .sources
         .guardrails

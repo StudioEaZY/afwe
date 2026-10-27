@@ -1110,6 +1110,25 @@ pub struct AssumptionClaim {
     pub include_comments: bool,
 }
 
+impl Check {
+    pub fn to_claim(&self) -> AssumptionClaim {
+        let mut files = self.files.clone();
+        if let Some(p) = &self.path {
+            if !files.contains(p) {
+                files.push(p.clone());
+            }
+        }
+        AssumptionClaim {
+            kind: self.kind.clone(),
+            pattern: self.pattern.clone(),
+            symbol: None,
+            files,
+            to_nodes: self.to_nodes.clone(),
+            include_comments: false,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Assumption {
     pub id: String,

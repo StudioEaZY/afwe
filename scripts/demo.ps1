@@ -8,7 +8,17 @@
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Split-Path -Parent $ScriptDir
-$AfweCmd = if ($env:AFWE) { $env:AFWE } else { "afwe" }
+$AfweCmd = if ($env:AFWE) {
+    $env:AFWE
+} elseif (Get-Command afwe -ErrorAction SilentlyContinue) {
+    "afwe"
+} elseif (Test-Path (Join-Path $RepoRoot "target\debug\afwe.exe")) {
+    Join-Path $RepoRoot "target\debug\afwe.exe"
+} elseif (Test-Path (Join-Path $RepoRoot "target\release\afwe.exe")) {
+    Join-Path $RepoRoot "target\release\afwe.exe"
+} else {
+    "afwe"
+}
 
 function Run-Cmd {
     param([string]$Command, [string[]]$Arguments)

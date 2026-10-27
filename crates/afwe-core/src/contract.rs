@@ -1,10 +1,8 @@
 //! Contracts: scoped instructions that tell the harness what AFWE needs it to do when
 //! work crosses an AFWE boundary. The Board tracks contract obligations per task.
 
-use crate::engine::Engine;
 use crate::model::*;
 use crate::util::{now, short_id};
-use anyhow::Result;
 
 pub fn default_contracts() -> Vec<Contract> {
     let step = |id: &str, phase: &str, action: &str, instruction: &str, optional: bool| ContractStep { id: id.into(), phase: phase.into(), action: action.into(), instruction: instruction.into(), optional };
@@ -118,29 +116,6 @@ pub fn render_agents_block(project: &str, _contracts: &[Contract]) -> String {
 }
 
 // ───────────────────────────── tasks & board ─────────────────────────────
-
-/// Mark a contract step done for a task (or for the most recent open task when `task` is None).
-pub fn mark_step(engine: &Engine, task: Option<&str>, action: &str) -> Result<Vec<String>> {
-    let mut board = engine.store.board()?;
-    let task_id = match task {
-        Some(t) => Some(t.to_string()),
-        None => board.tasks.iter().rev().find(|t| t.status == "open").map(|t| t.id.clone()),
-    };
-    let mut done = vec![];
-    if let Some(tid) = task_id {
-        for it in board.items.iter_mut() {
-            if it.task.as_deref() == Some(&tid) && it.action.as_deref() == Some(action) && it.status == "open" {
-                it.status = "done".into();
-                it.resolved = Some(now());
-                done.push(it.id.clone());
-            }
-        }
-        if !done.is_empty() {
-            engine.store.save_board(&board)?;
-        }
-    }
-    Ok(done)
-}
 
 /// Add or refresh a system board item (drift / proposal / sync / uncertain) keyed by `reference`.
 pub fn upsert_system_item(board: &mut Board, kind: &str, reference: &str, title: &str, detail: Option<String>) {

@@ -99,9 +99,6 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let snap = snapshot_for(engine, &q.files, b(&p, "refresh", false))?;
             let sync = engine.store.sync_state()?.last_sync.map(|t| format!("last sync {t}")).unwrap_or("never synced (run `afwe sync`)".into());
             let bundle = build_context(&snap, q, &sync);
-            if b(&p, "mark_step", true) {
-                let _ = contract::mark_step(engine, s(&p, "task").as_deref(), "afwe_context");
-            }
             j(bundle)
         }
         "verify" => {
@@ -110,17 +107,11 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let snap = snapshot_for(engine, &files, b(&p, "refresh", true))?;
             let root = engine.store.code_root(&snap.manifest);
             let report = verify(&snap, &root, &VerifyOptions { changed: files, run_commands: b(&p, "run_commands", true), include_drift: b(&p, "include_drift", true) });
-            if report.ok {
-                let _ = contract::mark_step(engine, s(&p, "task").as_deref(), "afwe_verify");
-            }
             engine.log(&origin(&p, default_origin), "verify", format!("verify: {} ({} errors, {} warnings)", if report.ok { "ok" } else { "failed" }, report.errors, report.warnings), None)?;
             j(report)
         }
         "sync" => {
             let (report, _) = sync(engine, &SyncOptions { dry_run: b(&p, "dry_run", false), origin: origin(&p, default_origin) })?;
-            if !b(&p, "dry_run", false) {
-                let _ = contract::mark_step(engine, s(&p, "task").as_deref(), "afwe_sync");
-            }
             j(report)
         }
         "drift" => {
@@ -314,15 +305,16 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let snap = engine.snapshot(false)?;
             let id = req(&p, "id")?;
             let action = s(&p, "action").unwrap_or("review".into());
-            if id.starts_with('t') && id.chars().skip(1).all(|c| c.is_ascii_digit()) {
+            let clean_id = id.strip_prefix("turn-").unwrap_or(&id);
+            if clean_id.starts_with('t') && clean_id.chars().skip(1).all(|c| c.is_ascii_digit()) {
                 match action.as_str() {
                     "accept" => {
-                        let res = turn::confirm(engine, &id, &origin(&p, default_origin))?;
-                        return Ok(json!({"id": id, "status": "accepted", "turn": res}));
+                        let res = turn::confirm(engine, clean_id, &origin(&p, default_origin))?;
+                        return Ok(json!({"id": clean_id, "status": "accepted", "turn": res}));
                     }
                     "revert" => {
-                        let res = turn::revert(engine, &id, &origin(&p, default_origin))?;
-                        return Ok(json!({"id": id, "status": "reverted", "turn": res}));
+                        let res = turn::revert(engine, clean_id, &origin(&p, default_origin))?;
+                        return Ok(json!({"id": clean_id, "status": "reverted", "turn": res}));
                     }
                     _ => {}
                 }
@@ -335,9 +327,6 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         "log.add" => {
             let e = LogEntry { ts: crate::util::now(), origin: origin(&p, default_origin), kind: s(&p, "kind").unwrap_or("note".into()), summary: req(&p, "message")?, confidence: None, uncertain: false, task: s(&p, "task"), details: p.get("details").cloned() };
             engine.log_entry(e.clone())?;
-            if s(&p, "kind").as_deref() == Some("complete") || b(&p, "complete", false) {
-                let _ = contract::mark_step(engine, s(&p, "task").as_deref(), "afwe_log");
-            }
             j(e)
         }
         "bootstrap" => {
