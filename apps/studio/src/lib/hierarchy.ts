@@ -774,8 +774,10 @@ export function buildDirectedEdges(
     const n = nodeMap.get(raw) || nodeMap.get(norm) || nodeMap.get(seg);
     if (n) {
       let cur: HierarchyNode = n;
-      while (cur.depth > 1 && cur.parent) {
-        cur = cur.parent;
+      while (cur.depth > 1 && cur.parentId && cur.parentId !== "root") {
+        const p = nodeMap.get(cur.parentId);
+        if (p) cur = p;
+        else break;
       }
       return cur.key.replace(/\./g, "/").split("/")[0];
     }

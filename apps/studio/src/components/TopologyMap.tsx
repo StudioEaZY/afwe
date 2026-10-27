@@ -364,12 +364,12 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
       : null;
 
   const badgeScale = computeBadgeInverseScale(zoom.k);
-  const hasUpwardViolations = activeEdges.some((e) => (livePos[e.a]?.tier || 0) > (livePos[e.b]?.tier || 0));
+  const hasUpwardViolations = activeEdges.some((e) => e.bad || (livePos[e.a]?.tier || 0) > (livePos[e.b]?.tier || 0));
 
   return (
     <div
       ref={stageRef}
-      className="stage-soft"
+      className={`stage-soft ${isPanMode ? "pan-active" : ""} ${dragStart ? "pan-dragging" : ""}`}
       style={{
         flex: 1,
         minHeight: compact ? 340 : 460,
@@ -378,9 +378,12 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
         cursor: cursorStyle || (dragStart ? "grabbing" : "default"),
       }}
       onPointerDown={(e) => {
-        if (!isPanMode && (e.target as HTMLElement).closest("button,.zctl,.ex")) return;
+        if (!isPanMode && (e.target as HTMLElement).closest("button,.zctl")) return;
         setDragStart({ x: e.clientX, y: e.clientY, zx: zoom.x, zy: zoom.y });
         setIsDraggingCanvas(true);
+        try {
+          (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        } catch (_) {}
       }}
       onPointerMove={(e) => {
         if (!dragStart) return;
@@ -390,7 +393,14 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
           y: dragStart.zy + (e.clientY - dragStart.y),
         }));
       }}
-      onPointerUp={() => {
+      onPointerUp={(e) => {
+        setDragStart(null);
+        setIsDraggingCanvas(false);
+        try {
+          (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      }}
+      onPointerCancel={() => {
         setDragStart(null);
         setIsDraggingCanvas(false);
       }}
@@ -513,15 +523,20 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
               const startX = p1.x + outOffset;
               const targetX = p2.x + inOffset;
               const up = p1.y > p2.y;
-              const startY = p1.y + (up ? -34 : 34);
-              const targetY = p2.y + (up ? 34 : -34);
+              const isViolating = Boolean(e.bad || p1.tier > p2.tier);
+              const startY = p1.y + (up ? -30 : 30);
+              const targetY = p2.y + (up ? 30 : -30);
 
               let dPath: string;
-              if (e.bad && up) {
+              if (isViolating && up) {
                 // Route upward rule violations cleanly around intermediate tiers via the lateral gutter
                 const isRight = (startX + targetX) >= 0;
                 const gutterX = isRight ? 350 : -350;
                 dPath = `M${startX},${startY} C${gutterX},${startY} ${gutterX},${targetY} ${targetX},${targetY}`;
+              } else if (isViolating) {
+                const midY = (startY + targetY) * 0.5;
+                const bowX = startX + (startX >= 0 ? 35 : -35);
+                dPath = `M${startX},${startY} C${bowX},${midY} ${targetX},${midY} ${targetX},${targetY}`;
               } else {
                 const midY = (startY + targetY) * 0.5;
                 dPath = `M${startX},${startY} C${startX},${midY} ${targetX},${midY} ${targetX},${targetY}`;
@@ -531,46 +546,58 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
               const isConnectedToHover =
                 hoveredKey !== null && (e.a === hoveredKey || e.b === hoveredKey);
               const dimmed =
-                hoveredKey !== null && !isConnectedToHover && !e.bad;
+                hoveredKey !== null && !isConnectedToHover && !isViolating;
 
               return (
-                <path
-                  key={`${e.a}->${e.b}-${idx}`}
-                  d={dPath}
-                  className={`edge ${e.bad ? "bad" : ""} ${
-                    isHoveredEdge || isConnectedToHover ? "hi" : ""
-                  }`}
-                  markerEnd={e.bad ? "url(#arr-top-bad)" : "url(#arr-top)"}
-                  style={dimmed ? { opacity: 0.14 } : undefined}
-                  onMouseMove={(ev) => {
-                    setHoveredEdgeIdx(idx);
-                    updateTipPos(
-                      ev,
-                      <div>
-                        <b className="serif">
-                          {e.a} → {e.b}
-                        </b>
-                        <div className="tm">
-                          Architectural dependency: <b>{e.a}</b> depends on <b>{e.b}</b>
-                        </div>
-                        {e.bad && (
-                          <div style={{ color: "var(--red)", fontWeight: 600 }}>
-                            Rule violation: upward dependency against layered architecture
+                <g key={`${e.a}->${e.b}-${idx}`}>
+                  {/* Invisible Generous Hitbox Path (14px clickable threshold) */}
+                  <path
+                    d={dPath}
+                    className="edge-hitbox"
+                    strokeWidth={14}
+                    style={{ pointerEvents: isPanMode ? "none" : "stroke" }}
+                    onMouseMove={(ev) => {
+                      setHoveredEdgeIdx(idx);
+                      updateTipPos(
+                        ev,
+                        <div>
+                          <b className="serif">
+                            {e.a} → {e.b}
+                          </b>
+                          <div className="tm">
+                            Architectural dependency: <b>{e.a}</b> depends on <b>{e.b}</b>
                           </div>
-                        )}
-                        <div className="tm">Click line to inspect details</div>
-                      </div>
-                    );
-                  }}
-                  onMouseLeave={() => {
-                    setHoveredEdgeIdx(null);
-                    setTip(null);
-                  }}
-                  onClick={(ev) => {
-                    ev.stopPropagation();
-                    handleSelectEdge(e);
-                  }}
-                />
+                          {isViolating && (
+                            <div style={{ color: "var(--red)", fontWeight: 600 }}>
+                              Rule violation: forbidden architectural dependency
+                            </div>
+                          )}
+                          <div className="tm">Click line to inspect details</div>
+                        </div>
+                      );
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredEdgeIdx(null);
+                      setTip(null);
+                    }}
+                    onClick={(ev) => {
+                      ev.stopPropagation();
+                      handleSelectEdge(e);
+                    }}
+                  />
+                  {/* Rendered Visible Edge */}
+                  <path
+                    d={dPath}
+                    className={`edge ${isViolating ? "bad" : ""} ${
+                      isHoveredEdge || isConnectedToHover ? "hi" : ""
+                    }`}
+                    markerEnd={isViolating ? "url(#arr-top-bad)" : "url(#arr-top)"}
+                    style={{
+                      pointerEvents: "none",
+                      opacity: dimmed ? 0.14 : undefined,
+                    }}
+                  />
+                </g>
               );
             })}
           </g>
@@ -611,7 +638,8 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                 transform={`translate(${p.x},${p.y + 6})`}
                 style={{
                   opacity: dimmed ? 0.25 : 1,
-                  cursor: draggingKey === k ? "grabbing" : "grab",
+                  cursor: isPanMode ? (dragStart ? "grabbing" : "grab") : draggingKey === k ? "grabbing" : "grab",
+                  pointerEvents: isPanMode ? "none" : undefined,
                 }}
                 onPointerDown={(ev) => handleNodePointerDown(ev, k)}
                 onPointerMove={handleNodePointerMove}
@@ -632,13 +660,13 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                           Pinned check active ({flags.pin})
                         </div>
                       )}
-                      {flags.viol > 0 && (
+                      {(flags.viol > 0 || n.hasViolation) && (
                         <div style={{ color: "var(--red)", fontWeight: 600 }}>
-                          Rule violation ({flags.viol})
+                          Rule violation ({Math.max(flags.viol, n.violationCount || 1)})
                         </div>
                       )}
                       <div className="tm">
-                        Click to inspect · Drag to reposition · double-click to open in Radial
+                        Click to inspect · Drag to reposition · double-click for Constellation
                       </div>
                     </div>
                   );
@@ -653,15 +681,15 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                 }}
                 onDoubleClick={(ev) => {
                   ev.stopPropagation();
-                  handleOpenInRadial(n.id);
+                  handleOpenConstellation(n.key);
                 }}
               >
                 <rect
-                  x={-118}
-                  y={-34}
-                  width={236}
-                  height={68}
-                  rx={14}
+                  x={-112}
+                  y={-29}
+                  width={224}
+                  height={58}
+                  rx={12}
                   fill={fillFor(st)}
                   stroke={
                     n.hasViolation || isDiffViolated
@@ -683,24 +711,24 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                 />
 
                 {/* Left Avatar Icon Container Badge with Integrated Status Dot */}
-                <g transform="translate(-104, -20)">
+                <g transform="translate(-98, -16)">
                   <rect
                     x={0}
                     y={0}
-                    width={34}
-                    height={34}
-                    rx={8}
+                    width={32}
+                    height={32}
+                    rx={7}
                     fill="var(--panel)"
                     stroke="var(--line)"
                     strokeWidth={1}
                   />
-                  <g transform="translate(5, 5) scale(0.85)">
+                  <g transform="translate(4, 4) scale(0.68)">
                     <SvgDomainIcon iconKey={n.icon} stroke="var(--ink)" strokeWidth={1.8} />
                   </g>
                   <circle
-                    cx={30}
+                    cx={28}
                     cy={4}
-                    r={3.5}
+                    r={3.2}
                     fill={dotColorFor(st)}
                     stroke="var(--panel)"
                     strokeWidth={1.2}
@@ -709,9 +737,11 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
                 {/* Primary Domain Name */}
                 <text
-                  x={-60}
-                  y={-6}
-                  fontSize="14"
+                  x={-56}
+                  y={-4}
+                  className="t-start"
+                  textAnchor="start"
+                  fontSize="13.5"
                   fontWeight="600"
                   fill="var(--ink)"
                   dominantBaseline="central"
@@ -720,20 +750,20 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                 </text>
 
                 {/* File Count Soft Pill on Right */}
-                <g transform="translate(68, -16)">
+                <g transform="translate(62, -11)">
                   <rect
                     x={0}
                     y={0}
                     width={38}
-                    height={20}
-                    rx={5}
+                    height={22}
+                    rx={6}
                     fill="var(--side)"
                     stroke="var(--line)"
                     strokeWidth={0.8}
                   />
                   <text
                     x={19}
-                    y={10}
+                    y={11}
                     textAnchor="middle"
                     dominantBaseline="central"
                     fontSize="10.5"
@@ -747,8 +777,10 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                 {/* Submodules Preview Line (Hidden at low zoom for Google Maps LOD) */}
                 {showSubnames && (
                   <text
-                    x={-60}
-                    y={15}
+                    x={-56}
+                    y={13}
+                    className="t-start sub-t"
+                    textAnchor="start"
                     fontSize="9.5"
                     fill="var(--mute)"
                     dominantBaseline="central"
@@ -759,7 +791,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
                 {/* Pin Badge */}
                 {n.hasPin && (
-                  <g transform={`translate(108, -28) scale(${badgeScale})`}>
+                  <g transform={`translate(100, -25) scale(${badgeScale})`}>
                     <circle r={7} fill="var(--panel)" stroke="var(--ink)" strokeWidth="1.1" />
                     <SvgMiniLock stroke="var(--ink)" />
                   </g>
@@ -767,7 +799,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
 
                 {/* Violation Badge */}
                 {n.hasViolation && (
-                  <g transform={`translate(-108, -28) scale(${badgeScale})`}>
+                  <g transform={`translate(-100, -25) scale(${badgeScale})`}>
                     <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
                   </g>
                 )}

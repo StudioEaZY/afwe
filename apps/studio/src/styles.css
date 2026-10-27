@@ -1651,6 +1651,23 @@ pre.md.body { font-family: var(--sans); font-size: 13px; }
 .edge.gh { stroke-dasharray: 1 5; stroke-linecap: round; opacity: 0.9; }
 .edge.del { stroke: var(--red); }
 .edge.add { stroke: var(--accent); stroke-width: 2.6; opacity: 1; }
+.edge-hitbox {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  cursor: pointer;
+  pointer-events: stroke;
+}
+.edge-hitbox:hover + .edge {
+  stroke: var(--ink);
+  opacity: 1;
+  stroke-width: 2.6;
+}
+.edge-hitbox:hover + .edge.bad {
+  stroke: var(--red);
+  opacity: 1;
+  stroke-width: 2.6;
+}
 .ex:hover .edge { stroke: var(--ink); opacity: 1; stroke-width: 2.6; }
 .ex.bad:hover .edge { stroke: var(--red); }
 .dot { fill: var(--ink); stroke: var(--panel); stroke-width: 2; }

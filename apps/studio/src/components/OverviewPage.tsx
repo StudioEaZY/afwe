@@ -138,31 +138,27 @@ export const OverviewPage: React.FC = () => {
   const indicatorCounts = useMemo(() => {
     let pinCount = 0;
     let propCount = 0;
-    let violCount = 0;
     let legacyCount = 0;
 
     const countNode = (n: HierarchyNode) => {
       if ((n.birth || 0) > overviewTimelineT) return;
       if (n.hasPin) pinCount++;
       if (n.hasProposal) propCount++;
-      if (n.hasViolation) violCount++;
       if (n.state === "legacy") legacyCount++;
       (n.children || []).forEach(countNode);
     };
     countNode(rootHierarchy);
 
-    const violEdgeCount = (domainEdges || []).filter(
-      (e) => e.bad && e.birth <= overviewTimelineT && (e.death === null || e.death > overviewTimelineT)
-    ).length;
-    violCount += violEdgeCount;
+    // Canonical violation count matching TopBar shell
+    const violationsCount = (graph?.code_edges || []).filter((e: any) => Boolean(e.violation)).length;
 
     return {
       pins: pinCount,
       proposals: propCount,
-      violations: violCount,
+      violations: violationsCount,
       legacy: legacyCount,
     };
-  }, [rootHierarchy, domainEdges, overviewTimelineT]);
+  }, [rootHierarchy, graph, overviewTimelineT]);
 
   const selectedNode =
     selectedEntity && selectedEntity.kind !== "edge"

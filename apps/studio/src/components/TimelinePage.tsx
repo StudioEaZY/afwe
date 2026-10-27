@@ -835,11 +835,43 @@ export const TimelinePage: React.FC = () => {
                 </div>
 
                 <h2 className="serif" style={{ fontSize: "16px", fontWeight: 700, margin: "10px 0 4px 0", color: "var(--ink)" }}>
-                  {turnData?.summary || turnData?.prompt || `Turn #${selectedTurn?.id}`}
+                  {turnData?.summary || (turnData?.prompt ? turnData.prompt.split("\n")[0] : `Turn #${selectedTurn?.id}`)}
                 </h2>
-                <div style={{ fontSize: "12px", color: "var(--mute)", lineHeight: "1.45" }}>
-                  {turnData?.prompt || "Architecture state verification and gated changes."}
-                </div>
+
+                {/* Original Captured Prompt Card */}
+                {turnData?.prompt && (
+                  <div
+                    style={{
+                      background: "var(--side)",
+                      border: "1px solid var(--line)",
+                      borderRadius: "8px",
+                      padding: "8px 10px",
+                      marginTop: "8px",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                      <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--mute)" }}>
+                        Verbatim Prompt (.afwe/turns/{selectedTurn?.id}.yaml)
+                      </span>
+                      <button
+                        type="button"
+                        className="btn-soft"
+                        style={{ padding: "1px 6px", fontSize: "10px", cursor: "pointer" }}
+                        onClick={() => {
+                          if (turnData?.prompt) {
+                            navigator.clipboard.writeText(turnData.prompt);
+                            notify("Prompt copied to clipboard");
+                          }
+                        }}
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <div style={{ fontSize: "11.5px", color: "var(--ink)", whiteSpace: "pre-wrap", lineHeight: "1.4" }}>
+                      "{turnData.prompt}"
+                    </div>
+                  </div>
+                )}
 
                 {/* Author / Origin */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "12px" }}>

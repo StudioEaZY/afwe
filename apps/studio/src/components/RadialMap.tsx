@@ -276,7 +276,7 @@ export const RadialMap: React.FC<Props> = ({
   return (
     <div
       ref={stageRef}
-      className="stage-soft"
+      className={`stage-soft ${isPanMode ? "pan-active" : ""} ${dragStart ? "pan-dragging" : ""}`}
       style={{
         flex: 1,
         minHeight: 460,
@@ -284,9 +284,12 @@ export const RadialMap: React.FC<Props> = ({
         cursor: cursorStyle || (dragStart ? "grabbing" : "default"),
       }}
       onPointerDown={(e) => {
-        if (!isPanMode && (e.target as HTMLElement).closest("button,.zctl,.cell,.sect")) return;
+        if (!isPanMode && (e.target as HTMLElement).closest("button,.zctl")) return;
         setDragStart({ x: e.clientX, y: e.clientY, zx: zoom.x, zy: zoom.y });
         setIsDraggingCanvas(true);
+        try {
+          (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        } catch (_) {}
       }}
       onPointerMove={(e) => {
         if (!dragStart) return;
@@ -296,7 +299,14 @@ export const RadialMap: React.FC<Props> = ({
           y: dragStart.zy + (e.clientY - dragStart.y),
         }));
       }}
-      onPointerUp={() => {
+      onPointerUp={(e) => {
+        setDragStart(null);
+        setIsDraggingCanvas(false);
+        try {
+          (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      }}
+      onPointerCancel={() => {
         setDragStart(null);
         setIsDraggingCanvas(false);
       }}
@@ -428,7 +438,8 @@ export const RadialMap: React.FC<Props> = ({
                       style={{
                         opacity: dimmed ? 0.22 : 1,
                         transition: "opacity 0.15s ease",
-                        cursor: "pointer",
+                        cursor: isPanMode ? (dragStart ? "grabbing" : "grab") : "pointer",
+                        pointerEvents: isPanMode ? "none" : undefined,
                       }}
                       onMouseEnter={(ev) => {
                         setHoveredKey(n.key);
@@ -504,6 +515,7 @@ export const RadialMap: React.FC<Props> = ({
                         setTip(null);
                       }}
                       onPointerDown={(ev) => {
+                        if (isPanMode) return;
                         ev.stopPropagation();
                       }}
                       onClick={(ev) => {
@@ -540,12 +552,12 @@ export const RadialMap: React.FC<Props> = ({
                         <g style={{ pointerEvents: "none" }}>
                           {n.icon && (
                             <g
-                              transform={`translate(${(lx - 10).toFixed(1)},${(ly - 20).toFixed(
+                              transform={`translate(${(lx - 8).toFixed(1)},${(ly - 18).toFixed(
                                 1
-                              )}) scale(0.82)`}
-                              opacity={0.78}
+                              )}) scale(0.64)`}
+                              opacity={0.82}
                             >
-                              <SvgDomainIcon iconKey={n.icon} stroke="var(--ink)" strokeWidth={1.7} />
+                              <SvgDomainIcon iconKey={n.icon} stroke="var(--ink)" strokeWidth={1.8} />
                             </g>
                           )}
                           <text
@@ -561,16 +573,19 @@ export const RadialMap: React.FC<Props> = ({
                         </g>
                       ) : (
                         (() => {
-                          // Google Maps style Level-of-Detail (LOD)
-                          // Suppress Ring 3 & 4 labels when zoomed out to prevent text collision
-                          if (i >= 2 && zoom.k < 1.05) return null;
-                          const arcLen = span * midR * zoom.k;
-                          if (arcLen < 28 || r1 - r0 < 14) return null;
-                          const maxC = Math.max(3, Math.floor((r1 - r0 - 6) / 5.2));
-                          const txt =
-                            n.label.length > maxC ? `${n.label.slice(0, maxC - 1)}…` : n.label;
+                          // Space-aware text scaling: expand character budget as zoom increases
+                          const arcLen = span * midR;
+                          const physicalArc = arcLen * zoom.k;
+                          if (physicalArc < 24 || r1 - r0 < 12) return null;
+                          if (i >= 2 && physicalArc < 36) return null;
                           const baseSize = i === 0 ? 12 : i === 1 ? 10.5 : 9.5;
-                          const scaledFont = Math.max(8.5, Math.min(13, baseSize / Math.pow(zoom.k, 0.35)));
+                          const scaledFont = Math.max(8.5, Math.min(13, baseSize / Math.pow(zoom.k, 0.3)));
+                          const charWidth = scaledFont * 0.56;
+                          const maxChars = Math.max(3, Math.floor((physicalArc - 6) / charWidth));
+                          const txt =
+                            n.label.length > maxChars
+                              ? `${n.label.slice(0, Math.max(2, maxChars - 1))}…`
+                              : n.label;
                           return (
                             <text
                               x={lx.toFixed(1)}

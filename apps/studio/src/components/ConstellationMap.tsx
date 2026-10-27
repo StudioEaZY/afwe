@@ -543,7 +543,7 @@ export const ConstellationMap: React.FC<Props> = ({
   return (
     <div
       ref={stageRef}
-      className="stage-soft"
+      className={`stage-soft ${isPanMode ? "pan-active" : ""} ${dragStart ? "pan-dragging" : ""}`}
       style={{
         flex: 1,
         minHeight: 460,
@@ -551,9 +551,12 @@ export const ConstellationMap: React.FC<Props> = ({
         cursor: cursorStyle || (dragStart ? "grabbing" : "default"),
       }}
       onPointerDown={(e) => {
-        if (!isPanMode && (e.target as HTMLElement).closest("button,.zctl,.exp-pill,.br-btn,.ex")) return;
+        if (!isPanMode && (e.target as HTMLElement).closest("button,.zctl,.exp-pill,.br-btn")) return;
         setDragStart({ x: e.clientX, y: e.clientY, zx: zoom.x, zy: zoom.y });
         setIsDraggingCanvas(true);
+        try {
+          (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        } catch (_) {}
       }}
       onPointerMove={(e) => {
         if (!dragStart) return;
@@ -563,7 +566,14 @@ export const ConstellationMap: React.FC<Props> = ({
           y: dragStart.zy + (e.clientY - dragStart.y),
         }));
       }}
-      onPointerUp={() => {
+      onPointerUp={(e) => {
+        setDragStart(null);
+        setIsDraggingCanvas(false);
+        try {
+          (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      }}
+      onPointerCancel={() => {
         setDragStart(null);
         setIsDraggingCanvas(false);
       }}
@@ -815,59 +825,71 @@ export const ConstellationMap: React.FC<Props> = ({
               }
 
               return (
-                <path
-                  key={`${e.a}->${e.b}-${idx}`}
-                  d={dPath}
-                  className={cls}
-                  markerEnd={marker}
-                  style={isDimmedByHover ? { opacity: 0.14 } : undefined}
-                  onMouseMove={(ev) => {
-                    setHoveredEdgeIdx(idx);
-                    updateTipPos(
-                      ev,
-                      <div>
-                        <b className="serif">
-                          {shortLabel(e.a)} → {shortLabel(e.b)}
-                        </b>
-                        <div className="tm">
-                          {granularity === "node"
-                            ? "Node-level dependency"
-                            : "Domain-level dependency"}
-                          : <b>{e.a}</b> depends on <b>{e.b}</b>
+                <g key={`${e.a}->${e.b}-${idx}`}>
+                  {/* Invisible Generous Hitbox (14px clickable threshold) */}
+                  <path
+                    d={dPath}
+                    className="edge-hitbox"
+                    strokeWidth={14}
+                    style={{ pointerEvents: isPanMode ? "none" : "stroke" }}
+                    onMouseMove={(ev) => {
+                      setHoveredEdgeIdx(idx);
+                      updateTipPos(
+                        ev,
+                        <div>
+                          <b className="serif">
+                            {shortLabel(e.a)} → {shortLabel(e.b)}
+                          </b>
+                          <div className="tm">
+                            {granularity === "node"
+                              ? "Node-level dependency"
+                              : "Domain-level dependency"}
+                            : <b>{e.a}</b> depends on <b>{e.b}</b>
+                          </div>
+                          {isMutual && involvesAnchor && (
+                            <div style={{ color: "var(--amber)", fontWeight: 600 }}>
+                              Mutual dependency (depends on &amp; used by {effectiveNode.label})
+                            </div>
+                          )}
+                          {e.bad && (
+                            <div style={{ color: "var(--red)", fontWeight: 600 }}>
+                              Rule violation: forbidden direction ({e.a} must not depend on {e.b})
+                            </div>
+                          )}
+                          {two && inB && !inA && (
+                            <div style={{ color: "var(--accent)" }}>
+                              Added after {Math.round(compareT * 100)}%
+                            </div>
+                          )}
+                          {two && !inB && inA && (
+                            <div style={{ color: "var(--amber)" }}>
+                              Removed before {Math.round(timelineT * 100)}%
+                            </div>
+                          )}
+                          <div className="tm">Click line to inspect details</div>
                         </div>
-                        {isMutual && involvesAnchor && (
-                          <div style={{ color: "var(--amber)", fontWeight: 600 }}>
-                            Mutual dependency (depends on &amp; used by {effectiveNode.label})
-                          </div>
-                        )}
-                        {e.bad && (
-                          <div style={{ color: "var(--red)", fontWeight: 600 }}>
-                            Rule violation: forbidden direction ({e.a} must not depend on {e.b})
-                          </div>
-                        )}
-                        {two && inB && !inA && (
-                          <div style={{ color: "var(--accent)" }}>
-                            Added after {Math.round(compareT * 100)}%
-                          </div>
-                        )}
-                        {two && !inB && inA && (
-                          <div style={{ color: "var(--amber)" }}>
-                            Removed before {Math.round(timelineT * 100)}%
-                          </div>
-                        )}
-                        <div className="tm">Click line to inspect details</div>
-                      </div>
-                    );
-                  }}
-                  onMouseLeave={() => {
-                    setHoveredEdgeIdx(null);
-                    setTip(null);
-                  }}
-                  onClick={(ev) => {
-                    ev.stopPropagation();
-                    handleSelectEdge(e);
-                  }}
-                />
+                      );
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredEdgeIdx(null);
+                      setTip(null);
+                    }}
+                    onClick={(ev) => {
+                      ev.stopPropagation();
+                      handleSelectEdge(e);
+                    }}
+                  />
+                  {/* Visible Rendered Edge */}
+                  <path
+                    d={dPath}
+                    className={cls}
+                    markerEnd={marker}
+                    style={{
+                      pointerEvents: "none",
+                      opacity: isDimmedByHover ? 0.14 : undefined,
+                    }}
+                  />
+                </g>
               );
             })}
           </g>
@@ -914,7 +936,8 @@ export const ConstellationMap: React.FC<Props> = ({
                 transform={`translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`}
                 style={{
                   opacity: dimmed ? 0.22 : 1,
-                  cursor: draggingKey === k ? "grabbing" : "grab",
+                  cursor: isPanMode ? (dragStart ? "grabbing" : "grab") : draggingKey === k ? "grabbing" : "grab",
+                  pointerEvents: isPanMode ? "none" : undefined,
                 }}
                 onPointerDown={(ev) => handleNodePointerDown(ev, k)}
                 onPointerMove={handleNodePointerMove}
@@ -1174,7 +1197,7 @@ export const ConstellationMap: React.FC<Props> = ({
 
           {/* Center Anchor Hub (r=64 dark disc + perched parent pill) */}
           <g
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", pointerEvents: isPanMode ? "none" : undefined }}
             onClick={(ev) => {
               ev.stopPropagation();
               handleSelectNode(requestedNode);
@@ -1183,10 +1206,16 @@ export const ConstellationMap: React.FC<Props> = ({
             <circle
               r={64}
               fill="var(--ink)"
-              stroke="var(--panel)"
-              strokeWidth={4}
+              stroke={effectiveNode.hasViolation || requestedNode.hasViolation ? "var(--red)" : "var(--panel)"}
+              strokeWidth={effectiveNode.hasViolation || requestedNode.hasViolation ? 4.5 : 4}
               style={{ filter: "drop-shadow(0 8px 18px var(--shadow))" }}
             />
+
+            {(effectiveNode.hasViolation || requestedNode.hasViolation) && (
+              <g transform="translate(42, -42) scale(1.15)">
+                <SvgMiniAlertTriangle stroke="#fff" fill="var(--red)" />
+              </g>
+            )}
 
             {/* Perched Parent Context Pill above center disc when viewing a subnode */}
             {effectiveNode.depth > 1 && (
