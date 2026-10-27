@@ -1,0 +1,17 @@
+id: restore-board-cli-inspection
+title: Restore board inspection and dismissal
+statement: board.get and board.dismiss allow inspecting and dismissing system board items.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0035
+history:
+- turn: t0035
+  ts: 2026-10-27T18:39:30Z
+  statement: board.get and board.dismiss allow inspecting and dismissing system board items.
+created: 2026-10-27T18:39:30Z
+updated: 2026-10-27T18:50:26Z
+task: task-t0035

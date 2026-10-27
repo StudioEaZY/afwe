@@ -7,7 +7,6 @@ use crate::engine::Snapshot;
 use crate::model::*;
 use std::collections::HashSet;
 use std::path::Path;
-use std::process::Command;
 
 pub struct VerifyOptions {
     pub changed: Vec<String>,
@@ -160,18 +159,20 @@ pub fn verify(snap: &Snapshot, project_root: &Path, opts: &VerifyOptions) -> Ver
                         continue;
                     }
                     ran.push(format!("command:{cid}"));
-                    let files_arg = touched.iter().map(|f| f.path.clone()).collect::<Vec<_>>().join(" ");
+                    let touched_paths: Vec<String> = touched.iter().map(|f| f.path.clone()).collect();
+                    let files_arg = touched_paths.join(" ");
                     let cmdline = cmd.replace("{files}", &files_arg);
-                    let output = if cfg!(windows) { Command::new("cmd").args(["/C", &cmdline]).current_dir(project_root).output() } else { Command::new("sh").args(["-c", &cmdline]).current_dir(project_root).output() };
-                    match output {
-                        Ok(o) if o.status.success() => {}
-                        Ok(o) => {
-                            let mut out = String::from_utf8_lossy(&o.stdout).to_string();
-                            out.push_str(&String::from_utf8_lossy(&o.stderr));
-                            let tail: String = out.lines().rev().take(15).collect::<Vec<_>>().into_iter().rev().collect::<Vec<_>>().join("\n");
-                            issues.push(VerifyIssue { severity: sev.clone(), source: "guardrail".into(), id: cid.clone(), message: check.message.clone().unwrap_or(format!("`{cmdline}` failed (exit {}) — guardrail `{}`: {}\n{tail}", o.status.code().unwrap_or(-1), g.id, g.statement)), files: touched.iter().map(|f| f.path.clone()).collect(), nodes: scope_nodes.clone(), hint: g.reason.clone() });
-                        }
-                        Err(e) => issues.push(VerifyIssue { severity: "warn".into(), source: "guardrail".into(), id: cid.clone(), message: format!("could not run `{cmdline}`: {e}"), files: vec![], nodes: vec![], hint: None }),
+                    let (ok, msg) = crate::intent::run_command(&cmdline, project_root, &touched_paths, 120);
+                    if !ok {
+                        issues.push(VerifyIssue {
+                            severity: sev.clone(),
+                            source: "guardrail".into(),
+                            id: cid.clone(),
+                            message: check.message.clone().unwrap_or(format!("`{cmdline}` failed — guardrail `{}`: {}{}", g.id, g.statement, msg.map(|m| format!("\n{m}")).unwrap_or_default())),
+                            files: touched.iter().map(|f| f.path.clone()).collect(),
+                            nodes: scope_nodes.clone(),
+                            hint: g.reason.clone(),
+                        });
                     }
                 }
                 other => issues.push(VerifyIssue { severity: "warn".into(), source: "guardrail".into(), id: cid.clone(), message: format!("unknown check type `{other}` in guardrail `{}`", g.id), files: vec![], nodes: vec![], hint: None }),

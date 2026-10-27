@@ -215,15 +215,28 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             Ok(json!({"ok": true}))
         }
 
-        // ───────── workflows (retired; delegated to intents) ─────────
+        // ───────── workflows (persisted as living intent graphs) ─────────
         "workflow.list" => {
             let ws = engine.store.workflows()?;
             Ok(json!(ws.iter().map(|w| json!({"id": w.id, "title": w.title, "status": w.status, "origin": w.origin, "nodes": w.nodes.len(), "edges": w.edges.len(), "targets": w.targets, "updated": w.updated, "task": w.task})).collect::<Vec<_>>()))
         }
         "workflow.get" => j(engine.store.workflow(&req(&p, "id")?)?),
-        "workflow.new" | "workflow.add_node" | "workflow.link" | "workflow.set" | "workflow.upsert" | "workflow.remove" | "workflow.promote" => {
-            Err(anyhow!("Legacy v1 workflows have been retired. Use Living Intents (.afwe/intents/) or the turn protocol (turn begin -> assume -> commit)."))
+        "workflow.new" => j(ops::workflow_new(engine, &req(&p, "title")?, s(&p, "id"), s(&p, "description"), s(&p, "prompt"), list(&p, "targets"), s(&p, "task"), &origin(&p, default_origin))?),
+        "workflow.add_node" => {
+            let (w, n) = ops::workflow_add_node(engine, ops::WfAddNode { workflow: req(&p, "workflow")?, kind: s(&p, "kind").unwrap_or("step".into()), title: req(&p, "title")?, text: s(&p, "text"), after: s(&p, "after"), edge_kind: s(&p, "edge_kind"), id: s(&p, "id"), position: p.get("position").and_then(|v| serde_json::from_value(v.clone()).ok()) }, &origin(&p, default_origin))?;
+            Ok(json!({"workflow": w, "node": n}))
         }
+        "workflow.link" => j(ops::workflow_link(engine, &req(&p, "workflow")?, &req(&p, "from")?, &req(&p, "to")?, &s(&p, "kind").unwrap_or("then".into()), b(&p, "remove", false), &origin(&p, default_origin))?),
+        "workflow.set" => j(ops::workflow_set(engine, &req(&p, "workflow")?, s(&p, "node").as_deref(), p.get("patch").unwrap_or(&p), &origin(&p, default_origin))?),
+        "workflow.upsert" => {
+            let w: Workflow = serde_json::from_value(p.get("workflow").cloned().ok_or_else(|| anyhow!("missing `workflow`"))?)?;
+            j(ops::workflow_upsert(engine, w, &origin(&p, default_origin))?)
+        }
+        "workflow.remove" => {
+            ops::workflow_remove(engine, &req(&p, "id")?, &origin(&p, default_origin))?;
+            Ok(json!({"ok": true}))
+        }
+        "workflow.promote" => j(ops::workflow_promote(engine, &req(&p, "id")?, s(&p, "parent").as_deref(), &origin(&p, default_origin))?),
 
         // ───────── lenses ─────────
         "lens.list" => j(engine.store.lenses()?),
@@ -242,7 +255,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             Ok(json!({"ok": true}))
         }
 
-        // ───────── contracts / tasks / board (retired; delegated to turn protocol) ─────────
+        // ───────── contracts / tasks / board ─────────
         "contract.list" => j(engine.store.contracts()?),
         "contract.get" => {
             let cs = engine.store.contracts()?;
@@ -253,19 +266,68 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let cs = engine.store.contracts()?;
             Ok(json!({"markdown": contract::render_agents_block(&m.project.name, &cs)}))
         }
-        "task.start" | "task.done" | "task.step" | "board.get" | "board.dismiss" => {
-            Ok(json!({"status": "retired", "message": "Task and Board obligation tracking has been superseded by the Turn protocol (turns/tNNNN.yaml)."}))
+        "board.get" => {
+            let board = engine.store.board()?;
+            let open = board.items.iter().filter(|i| i.status == "open").count();
+            Ok(json!({"open": open, "tasks": board.tasks, "items": board.items}))
+        }
+        "board.dismiss" => {
+            let mut board = engine.store.board()?;
+            let id = req(&p, "id")?;
+            let it = board.items.iter_mut().find(|i| i.id == id || i.reference.as_deref() == Some(&id)).ok_or_else(|| anyhow!("board item `{id}` not found"))?;
+            it.status = "dismissed".into();
+            it.resolved = Some(crate::util::now());
+            let out_id = it.id.clone();
+            engine.store.save_board(&board)?;
+            Ok(json!({"ok": true, "id": out_id}))
+        }
+        "task.start" | "task.done" | "task.step" => {
+            Ok(json!({"status": "retired", "message": "Task obligation tracking has been superseded by the Turn protocol (turns/tNNNN.yaml)."}))
         }
 
         // ───────── proposals ─────────
         "proposals.list" => {
             let pr = engine.store.proposals()?;
             let all = b(&p, "all", false);
-            Ok(json!(pr.proposals.iter().filter(|x| all || x.status == "pending").collect::<Vec<_>>()))
+            let mut items: Vec<Value> = pr.proposals.iter().filter(|x| all || x.status == "pending").map(|x| serde_json::to_value(x).unwrap_or_default()).collect();
+            let turns = engine.store.turns().unwrap_or_default();
+            for t in turns.into_iter().filter(|t| all || t.status == "staged") {
+                items.push(json!({
+                    "id": t.id,
+                    "created": t.ts,
+                    "status": t.status,
+                    "finding": {
+                        "id": format!("turn-{}", t.id),
+                        "kind": "turn_staged",
+                        "severity": "warn",
+                        "confidence": t.confidence,
+                        "summary": t.summary.clone().unwrap_or_else(|| crate::util::truncate(t.prompt.lines().next().unwrap_or("").trim(), 90)),
+                        "evidence": t.touched.files,
+                        "nodes": t.touched.nodes,
+                        "files": t.touched.files,
+                    }
+                }));
+            }
+            Ok(json!(items))
         }
         "proposal.resolve" => {
             let snap = engine.snapshot(false)?;
-            drift::resolve_proposal(engine, &snap, &req(&p, "id")?, &s(&p, "action").unwrap_or("review".into()), &origin(&p, default_origin))
+            let id = req(&p, "id")?;
+            let action = s(&p, "action").unwrap_or("review".into());
+            if id.starts_with('t') && id.chars().skip(1).all(|c| c.is_ascii_digit()) {
+                match action.as_str() {
+                    "accept" => {
+                        let res = turn::confirm(engine, &id, &origin(&p, default_origin))?;
+                        return Ok(json!({"id": id, "status": "accepted", "turn": res}));
+                    }
+                    "revert" => {
+                        let res = turn::revert(engine, &id, &origin(&p, default_origin))?;
+                        return Ok(json!({"id": id, "status": "reverted", "turn": res}));
+                    }
+                    _ => {}
+                }
+            }
+            drift::resolve_proposal(engine, &snap, &id, &action, &origin(&p, default_origin))
         }
 
         // ───────── log ─────────

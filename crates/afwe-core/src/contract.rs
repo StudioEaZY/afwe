@@ -4,7 +4,7 @@
 use crate::engine::Engine;
 use crate::model::*;
 use crate::util::{now, short_id};
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 
 pub fn default_contracts() -> Vec<Contract> {
     let step = |id: &str, phase: &str, action: &str, instruction: &str, optional: bool| ContractStep { id: id.into(), phase: phase.into(), action: action.into(), instruction: instruction.into(), optional };
@@ -112,34 +112,6 @@ pub fn render_agents_block(project: &str, _contracts: &[Contract]) -> String {
 
 // ───────────────────────────── tasks & board ─────────────────────────────
 
-pub struct TaskStart {
-    pub title: String,
-    pub kind: String,
-    pub files: Vec<String>,
-    pub nodes: Vec<String>,
-    pub origin: String,
-    pub workflow: Option<String>,
-}
-
-pub fn task_start(engine: &Engine, contracts: &[Contract], t: TaskStart) -> Result<(Task, Vec<BoardItem>)> {
-    let contract = select_contract(contracts, &t.kind).ok_or_else(|| anyhow!("no contracts defined"))?;
-    let mut board = engine.store.board()?;
-    let id = short_id("task");
-    let task = Task { id: id.clone(), title: t.title.clone(), kind: t.kind.clone(), contract: contract.id.clone(), status: "open".into(), files: t.files, nodes: t.nodes, origin: Some(t.origin.clone()), workflow: t.workflow, created: now(), completed: None };
-    let mut items = vec![];
-    for st in &contract.steps {
-        if st.action == "harness" {
-            continue;
-        }
-        items.push(BoardItem { id: format!("{id}:{}", st.id), kind: "contract_step".into(), title: format!("{} — {}", st.action, t.title), status: "open".into(), task: Some(id.clone()), action: Some(st.action.clone()), detail: Some(st.instruction.clone()), reference: Some(contract.id.clone()), created: now(), resolved: None });
-    }
-    board.tasks.push(task.clone());
-    board.items.extend(items.clone());
-    engine.store.save_board(&board)?;
-    engine.log(&t.origin, "task_start", format!("Task started: {} [{}] under contract {}", t.title, t.kind, contract.id), Some(serde_json::json!({"task": id})))?;
-    Ok((task, items))
-}
-
 /// Mark a contract step done for a task (or for the most recent open task when `task` is None).
 pub fn mark_step(engine: &Engine, task: Option<&str>, action: &str) -> Result<Vec<String>> {
     let mut board = engine.store.board()?;
@@ -161,40 +133,6 @@ pub fn mark_step(engine: &Engine, task: Option<&str>, action: &str) -> Result<Ve
         }
     }
     Ok(done)
-}
-
-pub fn task_done(engine: &Engine, task: Option<&str>, message: Option<&str>, origin: &str) -> Result<TaskDone> {
-    let mut board = engine.store.board()?;
-    let idx = match task {
-        Some(t) => board.tasks.iter().position(|x| x.id == t || x.title == t),
-        None => board.tasks.iter().rposition(|t| t.status == "open"),
-    }
-    .ok_or_else(|| anyhow!("no open task found"))?;
-    board.tasks[idx].status = "done".into();
-    board.tasks[idx].completed = Some(now());
-    let tid = board.tasks[idx].id.clone();
-    let mut unfulfilled = vec![];
-    for it in board.items.iter_mut() {
-        if it.task.as_deref() == Some(&tid) && it.status == "open" {
-            if it.action.as_deref() == Some("afwe_log") {
-                it.status = "done".into();
-            } else {
-                it.status = "skipped".into();
-                unfulfilled.push(it.action.clone().unwrap_or_default());
-            }
-            it.resolved = Some(now());
-        }
-    }
-    let t = board.tasks[idx].clone();
-    engine.store.save_board(&board)?;
-    engine.log(origin, "task_done", format!("Task completed: {}{}{}", t.title, message.map(|m| format!(" — {m}")).unwrap_or_default(), if unfulfilled.is_empty() { String::new() } else { format!(" (unfulfilled contract steps: {})", unfulfilled.join(", ")) }), Some(serde_json::json!({"task": tid, "unfulfilled_steps": unfulfilled})))?;
-    Ok(TaskDone { task: t, unfulfilled })
-}
-
-#[derive(Debug, Clone, serde::Serialize)]
-pub struct TaskDone {
-    pub task: Task,
-    pub unfulfilled: Vec<String>,
 }
 
 /// Add or refresh a system board item (drift / proposal / sync / uncertain) keyed by `reference`.

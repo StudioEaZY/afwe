@@ -1,0 +1,20 @@
+id: t0035-a2
+title: scope_matches is exported from context.rs
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-core
+  - crates
+  files:
+  - crates/afwe-core/src/context.rs
+claim:
+  type: export_exists
+  symbol: scope_matches
+  files:
+  - crates/afwe-core/src/context.rs
+status: active
+origin: afwe:checkgen
+created: 2026-10-27T18:51:06Z
+created_from: t0035
+provenance: confirmed

@@ -118,7 +118,7 @@ pub struct ContextBundle {
     pub markdown: String,
 }
 
-fn glob_match(patterns: &[String], file: &str) -> Option<String> {
+pub fn glob_match(patterns: &[String], file: &str) -> Option<String> {
     for p in patterns {
         let p = p.trim_start_matches("./");
         if p == file {
@@ -137,7 +137,7 @@ fn glob_match(patterns: &[String], file: &str) -> Option<String> {
     None
 }
 
-fn scope_matches(scope: &Scope, snap: &Snapshot, chain: &[String], files: &[String]) -> Option<String> {
+pub fn scope_matches(scope: &Scope, snap: &Snapshot, chain: &[String], files: &[String]) -> Option<String> {
     if scope.global {
         return Some("global".into());
     }

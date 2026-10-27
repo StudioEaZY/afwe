@@ -368,12 +368,13 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         })
         .collect();
 
+    let chain_list: Vec<String> = chain.iter().cloned().collect();
     let guardrails: Vec<Value> = snap
         .sources
         .guardrails
         .iter()
         .filter(|g| g.mode == "passive")
-        .filter(|g| g.scope.global || g.scope.nodes.iter().filter_map(|n| table.resolve(n)).any(|n| chain.contains(&n)))
+        .filter(|g| crate::context::scope_matches(&g.scope, &snap, &chain_list, &brief_files).is_some())
         .map(|g| json!({"id": g.id, "statement": g.statement, "reason": g.reason}))
         .collect();
 

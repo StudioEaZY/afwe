@@ -1,0 +1,22 @@
+id: prune-dead-contract-tasks
+title: Prune dead task functions in contract.rs
+statement: Remove dead task_start and task_done functions in contract.rs.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  files:
+  - crates/afwe-core/src/contract.rs
+from_turns:
+- t0035
+history:
+- turn: t0035
+  ts: 2026-10-27T18:39:30Z
+  statement: Remove dead task_start and task_done functions.
+- turn: t0035
+  ts: 2026-10-27T18:50:26Z
+  statement: Remove dead task_start and task_done functions in contract.rs.
+created: 2026-10-27T18:39:30Z
+updated: 2026-10-27T18:50:26Z
+task: task-t0035
