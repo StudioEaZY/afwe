@@ -6,12 +6,14 @@
 pub mod langs;
 
 use crate::model::*;
-use crate::util::{hash_bytes, hash_str, normalise_code, to_unix};
-use anyhow::Result;
+use crate::util::{hash_bytes, hash_str, normalise_code, normalize_crlf, to_unix};
+use anyhow::{Context, Result};
 use globset::{Glob, GlobSet, GlobSetBuilder};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fs;
+use std::io::{BufRead, BufReader, Read, Write};
 use std::path::{Path, PathBuf};
+use std::process::{Command, Stdio};
 use tree_sitter::{Node, Parser};
 
 pub struct Analyzer {
@@ -69,13 +71,88 @@ impl Analyzer {
     }
 
     pub fn analyze_files(&self, files: &[String]) -> Result<CodeModel> {
+        self.analyze_with_provider(files, |rel| {
+            let abs = self.root.join(rel);
+            let bytes = fs::read(&abs).ok()?;
+            Some(normalize_crlf(&bytes))
+        })
+    }
+
+    pub fn analyze_overlay(&self, head: &str, claimed: &[String]) -> Result<CodeModel> {
+        if head.is_empty() || head == "EMPTY" {
+            let files = self.list_files()?;
+            return self.analyze_files(&files);
+        }
+
+        let ignore = build_globset(&self.cfg.ignore)?;
+        let include = if self.cfg.include.is_empty() { None } else { Some(build_globset(&self.cfg.include)?) };
+
+        let tracked = list_tracked_files(&self.root, head).unwrap_or_default();
+        let claimed_set: HashSet<String> = claimed.iter().cloned().collect();
+
+        let mut candidate_set: HashSet<String> = HashSet::new();
+
+        // Include tracked files passing filters
+        for rel in tracked {
+            if rel.starts_with(".afwe/") || ignore.is_match(&rel) {
+                continue;
+            }
+            if let Some(inc) = &include {
+                if !inc.is_match(&rel) {
+                    continue;
+                }
+            }
+            candidate_set.insert(rel);
+        }
+
+        // Include claimed files that pass filters and exist on disk
+        for rel in claimed {
+            if rel.starts_with(".afwe/") || ignore.is_match(rel) {
+                continue;
+            }
+            if let Some(inc) = &include {
+                if !inc.is_match(rel) {
+                    continue;
+                }
+            }
+            if self.root.join(rel).exists() {
+                candidate_set.insert(rel.clone());
+            } else {
+                // If claimed file was deleted on disk, remove it from candidates
+                candidate_set.remove(rel);
+            }
+        }
+
+        let mut candidate_files: Vec<String> = candidate_set.into_iter().collect();
+        candidate_files.sort();
+
+        // Files that need to be read from git HEAD
+        let unclaimed_files: Vec<String> = candidate_files
+            .iter()
+            .filter(|f| !claimed_set.contains(*f))
+            .cloned()
+            .collect();
+
+        let head_tree = HeadTree::load(&self.root, head, &unclaimed_files)?;
+        let overlay = OverlaySource {
+            root: &self.root,
+            head_tree: &head_tree,
+            claimed_files: &claimed_set,
+        };
+
+        self.analyze_with_provider(&candidate_files, |rel| overlay.read_bytes(rel))
+    }
+
+    pub fn analyze_with_provider<F>(&self, files: &[String], mut read_fn: F) -> Result<CodeModel>
+    where
+        F: FnMut(&str) -> Option<Vec<u8>>,
+    {
         let mut parsers: HashMap<&'static str, Parser> = HashMap::new();
         let mut infos = vec![];
         let mut languages: BTreeMap<String, usize> = BTreeMap::new();
         let allowed: HashSet<&str> = self.cfg.languages.iter().map(|s| s.as_str()).collect();
         for rel in files {
-            let abs = self.root.join(rel);
-            let Ok(bytes) = fs::read(&abs) else { continue };
+            let Some(bytes) = read_fn(rel) else { continue };
             if looks_binary(&bytes) {
                 continue;
             }
@@ -140,6 +217,106 @@ impl Analyzer {
         }
         let joined = infos.iter().map(|f| format!("{}={}", f.path, f.hash)).collect::<Vec<_>>().join("\n");
         Ok(CodeModel { fingerprint: hash_str(&joined), files: infos, languages })
+    }
+}
+
+pub struct HeadTree {
+    pub commit_sha: String,
+    pub files: HashMap<String, Vec<u8>>,
+}
+
+impl HeadTree {
+    pub fn load(repo_root: &Path, commit_sha: &str, paths: &[String]) -> Result<Self> {
+        if paths.is_empty() {
+            return Ok(Self {
+                commit_sha: commit_sha.to_string(),
+                files: HashMap::new(),
+            });
+        }
+
+        let mut child = Command::new("git")
+            .arg("-C")
+            .arg(repo_root)
+            .args(["cat-file", "--batch"])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .spawn()
+            .context("failed to spawn git cat-file --batch")?;
+
+        let mut stdin = child.stdin.take().expect("stdin");
+        let stdout = child.stdout.take().expect("stdout");
+
+        let paths_vec: Vec<String> = paths.to_vec();
+        let commit_sha_owned = commit_sha.to_string();
+        std::thread::spawn(move || {
+            for p in &paths_vec {
+                let _ = writeln!(stdin, "{commit_sha_owned}:{p}");
+            }
+        });
+
+        let mut reader = BufReader::new(stdout);
+        let mut files = HashMap::new();
+
+        for p in paths {
+            let mut header = String::new();
+            if reader.read_line(&mut header)? == 0 {
+                break;
+            }
+            let header = header.trim();
+            if header.ends_with("missing") {
+                continue;
+            }
+            let parts: Vec<&str> = header.split_whitespace().collect();
+            if parts.len() >= 3 && parts[1] == "blob" {
+                if let Ok(size) = parts[2].parse::<usize>() {
+                    let mut buf = vec![0u8; size];
+                    reader.read_exact(&mut buf)?;
+                    let mut trailing = [0u8; 1];
+                    let _ = reader.read_exact(&mut trailing);
+                    files.insert(p.clone(), buf);
+                }
+            }
+        }
+
+        let _ = child.wait();
+        Ok(Self {
+            commit_sha: commit_sha.to_string(),
+            files,
+        })
+    }
+}
+
+pub fn list_tracked_files(repo_root: &Path, commit_sha: &str) -> Result<Vec<String>> {
+    let out = Command::new("git")
+        .arg("-C")
+        .arg(repo_root)
+        .args(["ls-tree", "-r", "--name-only", "-z", commit_sha])
+        .output()
+        .context("git ls-tree failed")?;
+    if !out.status.success() {
+        return Ok(vec![]);
+    }
+    let s = String::from_utf8_lossy(&out.stdout);
+    let files: Vec<String> = s.split('\0').filter(|p| !p.is_empty()).map(|p| p.to_string()).collect();
+    Ok(files)
+}
+
+pub struct OverlaySource<'a> {
+    pub root: &'a Path,
+    pub head_tree: &'a HeadTree,
+    pub claimed_files: &'a HashSet<String>,
+}
+
+impl<'a> OverlaySource<'a> {
+    pub fn read_bytes(&self, rel: &str) -> Option<Vec<u8>> {
+        if self.claimed_files.contains(rel) {
+            let abs = self.root.join(rel);
+            let bytes = fs::read(&abs).ok()?;
+            Some(normalize_crlf(&bytes))
+        } else {
+            self.head_tree.files.get(rel).map(|b| normalize_crlf(b))
+        }
     }
 }
 

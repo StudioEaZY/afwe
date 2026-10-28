@@ -279,6 +279,8 @@ pub fn restore(engine: &Engine, feature: &str, apply: bool, origin: &str) -> Res
             targets: merged_out.iter().map(|(f, _)| f.clone()).collect(),
             refines: vec![good_t.id.clone()],
             kind: "code".into(),
+            parent: None,
+            claims: vec![],
         },
     )?;
     let tid = begun["turn"].as_str().unwrap_or_default().to_string();

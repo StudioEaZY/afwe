@@ -31,6 +31,7 @@ tree-sitter-java = "0.23"
 clap = { version = "4", features = ["derive"] }
 tiny_http = "0.12"
 open = "5"
+fs2 = "0.4"
 
 [profile.release]
 lto = "thin"

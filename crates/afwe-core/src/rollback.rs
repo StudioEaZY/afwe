@@ -46,6 +46,12 @@ pub fn reconcile(engine: &Engine) -> Result<Vec<RollbackEvent>> {
             let text = String::from_utf8_lossy(&o.stdout);
             for line in text.lines() {
                 if let Some(trailer) = line.trim().strip_prefix("AFWE-Turn:") {
+                    let val = trailer.trim();
+                    let alias = val.split_whitespace().next().unwrap_or(val);
+                    git_trailers.insert(alias.to_string());
+                    git_trailers.insert(val.to_string());
+                }
+                if let Some(trailer) = line.trim().strip_prefix("AFWE-Turn-Hash:") {
                     git_trailers.insert(trailer.trim().to_string());
                 }
             }
@@ -59,7 +65,11 @@ pub fn reconcile(engine: &Engine) -> Result<Vec<RollbackEvent>> {
         let mut reason = String::new();
 
         // 1. Check if git commit trailer disappeared from git log
-        if vcs_active && !git_trailers.contains(&turn.id) {
+        let has_trailer = git_trailers.contains(&turn.id)
+            || turn.alias.as_ref().map(|a| git_trailers.contains(a)).unwrap_or(false)
+            || (!turn.turn_hash.is_empty() && git_trailers.contains(&turn.turn_hash));
+
+        if vcs_active && !has_trailer {
             reverted = true;
             reason = format!("commit trailer AFWE-Turn: {} not found in recent git history", turn.id);
         } else if !turn.post_hashes.is_empty() {

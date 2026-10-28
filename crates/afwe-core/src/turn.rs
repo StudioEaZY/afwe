@@ -18,10 +18,11 @@ use crate::contract::{self, TaskStart};
 use crate::engine::{Engine, Snapshot};
 use crate::gate::{self, ConfidenceInput, Decision, GateInput};
 use crate::intent::{self, PinSpec};
+use crate::lease;
 use crate::mapping::NodeTable;
 use crate::model::*;
 use crate::sync::{sync, SyncOptions};
-use crate::util::{hash_bytes, hash_str, now, slug, truncate};
+use crate::util::{hash_bytes, hash_str, now, short_id, slug, truncate};
 use crate::vcs;
 use crate::verify::{verify, VerifyOptions};
 use anyhow::{anyhow, Result};
@@ -57,6 +58,8 @@ pub struct BeginRequest {
     pub targets: Vec<String>,
     pub refines: Vec<String>,
     pub kind: String,
+    pub parent: Option<String>,
+    pub claims: Vec<String>,
 }
 
 pub struct AssumeRequest {
@@ -65,6 +68,8 @@ pub struct AssumeRequest {
     pub removes: Vec<String>,
     pub overrides: Vec<PinOverride>,
     pub origin: String,
+    pub token: Option<String>,
+    pub claims: Vec<String>,
 }
 
 #[derive(Default)]
@@ -76,6 +81,39 @@ pub struct CommitRequest {
     pub overrides: Vec<PinOverride>,
     pub origin: String,
     pub confirmed: bool,
+    pub token: Option<String>,
+    pub force: bool,
+    pub parent: Option<String>,
+}
+
+pub fn verify_token(engine: &Engine, turn: &Turn, token: Option<&str>, caller_origin: &str) -> Result<()> {
+    if turn.token_hash.is_empty() {
+        return Ok(());
+    }
+    // Humans never need to provide machine bearer tokens
+    if caller_origin == "human" && token.is_none() {
+        return Ok(());
+    }
+    if let Ok(env_tok) = std::env::var("AFWE_TURN_TOKEN") {
+        if blake3::hash(env_tok.as_bytes()).to_hex().as_str() == turn.token_hash {
+            return Ok(());
+        }
+    }
+    if let Some(tok) = token {
+        if blake3::hash(tok.as_bytes()).to_hex().as_str() == turn.token_hash {
+            return Ok(());
+        }
+    }
+    // If only this turn is open (single-agent / serial mode), allow mutation without token
+    let open_count = engine.store.turns().unwrap_or_default().iter().filter(|t| t.status == "open").count();
+    if open_count <= 1 && token.is_none() {
+        return Ok(());
+    }
+    Err(anyhow!(
+        "unauthorized: valid turn token required to mutate turn {} ({})",
+        turn.alias.as_deref().unwrap_or(&turn.turn_hash),
+        &turn.turn_hash[..8.min(turn.turn_hash.len())]
+    ))
 }
 
 // ───────────────────────────── shared helpers (also used by timeline/onboard) ─────────────────────────────
@@ -265,7 +303,18 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     let table = &snap.table;
     let prefix = code_prefix(&snap.manifest);
     let root = engine.store.project_root.clone();
-    let id = engine.store.next_turn_id()?;
+    let ts = now();
+    let nonce = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0);
+    let parent_hash = req.parent.clone();
+    let parent_str = parent_hash.as_deref().unwrap_or("");
+    let turn_hash_raw = blake3::hash(format!("{}{ts}{nonce}{parent_str}", req.prompt).as_bytes());
+    let turn_hash = format!("turn-{}", &turn_hash_raw.to_hex()[..12]);
+    let raw_token = format!("afwe_tok_{}", &blake3::hash(format!("{nonce}{}{ts}", req.prompt).as_bytes()).to_hex()[..32]);
+    let token_hash = blake3::hash(raw_token.as_bytes()).to_hex().to_string();
+
+    let vcs_prov = vcs::open(&snap.manifest.vcs.provider);
+    let base_head = vcs_prov.head(&root).unwrap_or_else(|| "EMPTY".to_string());
+    let id = engine.store.next_display_alias(parent_hash.as_deref()).unwrap_or_else(|_| turn_hash.clone());
 
     // ── scope: explicit targets, then the nodes and files the prompt names ──
     let mut nodes: Vec<String> = vec![];
@@ -424,10 +473,30 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         .map(|c| c.steps.iter().map(|s| json!({"step": s.id, "action": s.action, "instruction": s.instruction})).collect())
         .unwrap_or_default();
 
+    let mut initial_claims: Vec<FileClaim> = vec![];
+    if !req.claims.is_empty() {
+        if let Some((p, other_turn)) = lease::check_file_contention(&engine.store, &turn_hash, &req.claims)? {
+            return Err(anyhow!("CONTENTION: file `{p}` is already claimed by open turn {other_turn}"));
+        }
+        for p in &req.claims {
+            let base_blob = vcs_prov.blob_hash(&root, &base_head, p);
+            let node = snap.mapping.primary(p).map(|s| s.to_string());
+            initial_claims.push(FileClaim::new(p.clone(), base_blob, node));
+        }
+    }
+
     // ── record + baseline (captured after the log entry so the engine's own writes are not attributed) ──
     let turn = Turn {
         id: id.clone(),
-        ts: now(),
+        turn_hash: turn_hash.clone(),
+        alias: Some(id.clone()),
+        epoch_id: short_id("epoch"),
+        parent_hash,
+        token_hash: token_hash.clone(),
+        claims: initial_claims,
+        base_head: base_head.clone(),
+        last_activity: ts.clone(),
+        ts,
         origin: req.origin.clone(),
         agent: req.agent.clone(),
         prompt: req.prompt.clone(),
@@ -437,11 +506,11 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         targets: req.targets.clone(),
         scope: TurnScope { nodes: nodes.clone(), files: files.iter().map(|f| format!("{prefix}{f}")).collect() },
         status: "open".into(),
-        turn_token: Some(hash_str(&format!("{id}:{}:{}", req.prompt, now()))),
+        turn_token: Some(raw_token.clone()),
         ..Default::default()
     };
     engine.store.save_turn(&turn)?;
-    engine.log(&req.origin, "turn_begin", format!("{id} begun: {}", truncate(&title, 100)), Some(json!({"turn": id, "task": task.id, "nodes": nodes})))?;
+    engine.log(&req.origin, "turn_begin", format!("{id} begun: {}", truncate(&title, 100)), Some(json!({"turn": id, "hash": turn_hash, "task": task.id, "nodes": nodes})))?;
     let mut guard_fps = BTreeMap::new();
     for p in &pins {
         guard_fps.insert(format!("pin:{}", p.id), format!("{}:{}:{}", p.status, p.severity, hash_str(&p.statement)));
@@ -450,7 +519,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         guard_fps.insert(format!("constraint:{}", c.id), format!("{}:{}", c.severity, c.phase.as_deref().unwrap_or("active")));
     }
     let baseline = Baseline {
-        head: vcs::open(&snap.manifest.vcs.provider).head(&root),
+        head: vcs_prov.head(&root),
         files: tree_hashes(engine, &snap),
         symbols: symbol_map(&snap),
         implements: implements_map(&snap, &prefix),
@@ -460,8 +529,14 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
 
     Ok(json!({
         "turn": id,
-        "status": "open",
+        "turn_hash": turn.turn_hash,
         "turn_token": turn.turn_token,
+        "token": raw_token,
+        "epoch_id": turn.epoch_id,
+        "parent_hash": turn.parent_hash,
+        "base_head": turn.base_head,
+        "claims": turn.claims,
+        "status": "open",
         "reconciled_rollbacks": rollback_events,
         "task": task.id,
         "scope": {"nodes": nodes, "files": brief_files},
@@ -495,12 +570,31 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
 
 pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
     let mut turn = load(engine, id)?;
+    verify_token(engine, &turn, req.token.as_deref(), &req.origin)?;
     if !matches!(turn.status.as_str(), "open" | "ready" | "staged") {
         return Err(anyhow!("turn {id} is {}; start a new turn for further work", turn.status));
     }
     let snap = engine.snapshot(false)?;
     let table = &snap.table;
     let mut errs: Vec<(String, String)> = vec![];
+
+    // ── file claims & contention check ──
+    if !req.claims.is_empty() {
+        if let Some((p, other_turn)) = lease::check_file_contention(&engine.store, &turn.turn_hash, &req.claims)? {
+            errs.push(("CONTENTION".into(), format!("file `{p}` is already claimed by open turn {other_turn}")));
+        } else {
+            let root = engine.store.project_root.clone();
+            let vcs_prov = vcs::open(&snap.manifest.vcs.provider);
+            let base_head = if turn.base_head.is_empty() { "HEAD" } else { &turn.base_head };
+            for p in &req.claims {
+                if !turn.claims.iter().any(|c| &c.path == p) {
+                    let base_blob = vcs_prov.blob_hash(&root, base_head, p);
+                    let node = snap.mapping.primary(p).map(|s| s.to_string());
+                    turn.claims.push(FileClaim::new(p.clone(), base_blob, node));
+                }
+            }
+        }
+    }
 
     let mut seen = BTreeSet::new();
     for it in &req.intents {
@@ -601,10 +695,18 @@ pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
         }
     }
 
+    // ── advisory node overlap check ──
+    let claimed_nodes: Vec<String> = turn.claims.iter().filter_map(|c| c.node.clone()).collect();
+    if let Ok(overlap_warns) = lease::check_node_overlap(&engine.store, &turn.turn_hash, &claimed_nodes) {
+        for w in overlap_warns {
+            notices.push(w);
+        }
+    }
+
     if !errs.is_empty() {
         return Ok(json!({
             "status": "redo",
-            "turn": id,
+            "turn": turn.alias.clone().unwrap_or(turn.id.clone()),
             "error_code": errs[0].0,
             "errors": errs.iter().map(|(c, m)| json!({"code": c, "message": m})).collect::<Vec<_>>(),
             "required_action": "revise the intents/assumptions and call turn.assume again; nothing was registered",
@@ -648,7 +750,7 @@ pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
     )?;
     Ok(json!({
         "status": "accepted",
-        "turn": id,
+        "turn": turn.alias.clone().unwrap_or(turn.id.clone()),
         "intents": registered,
         "claims": turn.assumptions.iter().filter(|a| a.claim.is_some()).map(|a| a.id.clone()).collect::<Vec<_>>(),
         "notices": notices,
@@ -661,28 +763,116 @@ pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
 
 pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     let mut turn = load(engine, id)?;
+    verify_token(engine, &turn, req.token.as_deref(), &req.origin)?;
     if !matches!(turn.status.as_str(), "open" | "ready" | "staged") {
         return Err(anyhow!("turn {id} is already {}; nothing to commit", turn.status));
     }
+    let all_turns = engine.store.turns().unwrap_or_default();
+
+    // Check child sub-agents ordering
+    for t in &all_turns {
+        if t.status == "open" {
+            let is_child = t.parent_hash.as_deref() == Some(&turn.turn_hash)
+                || t.parent_hash.as_deref() == Some(&turn.id)
+                || (turn.alias.is_some() && t.parent_hash.as_deref() == turn.alias.as_deref());
+            if is_child {
+                return Err(anyhow!(
+                    "CHILD_TURNS_OPEN: child turn {} ({}) is still open. Children must commit before parent.",
+                    t.id,
+                    &t.turn_hash[..8.min(t.turn_hash.len())]
+                ));
+            }
+        }
+    }
+
     let m = engine.store.manifest()?;
     let vcs = vcs::open(&m.vcs.provider);
-    let snap = engine.snapshot(true)?;
     let root = engine.store.project_root.clone();
+    let base_head = if turn.base_head.is_empty() { vcs.head(&root).unwrap_or_else(|| "HEAD".to_string()) } else { turn.base_head.clone() };
+
+    let disk_snap = engine.snapshot(true)?;
+    let disk_hashes = tree_hashes(engine, &disk_snap);
+    let base = engine.store.baseline(id)?;
+    let disk_changed = match &base {
+        Some(b) => changed_paths(&b.files, &disk_hashes),
+        None => BTreeSet::new(),
+    };
+
+    let peer_open_turns = all_turns.iter().filter(|t| t.status == "open" && t.turn_hash != turn.turn_hash && t.id != turn.id).count();
+    let mut claimed_paths: Vec<String> = turn.claims.iter().map(|c| c.path.clone()).collect();
+    if !req.touched.is_empty() {
+        if let Some((p, other_turn)) = lease::check_file_contention(&engine.store, &turn.turn_hash, &req.touched)? {
+            return Err(anyhow!("CONTENTION: extra touched file `{p}` is already claimed by open turn {other_turn}"));
+        }
+        for p in &req.touched {
+            if !claimed_paths.contains(p) {
+                claimed_paths.push(p.clone());
+            }
+        }
+    }
+
+    let mut attributed_files: Vec<String> = if !claimed_paths.is_empty() {
+        claimed_paths.clone()
+    } else {
+        // Collect peer claims to exclude
+        let mut peer_claimed = std::collections::HashSet::new();
+        for ot in &all_turns {
+            if ot.status == "open" && ot.turn_hash != turn.turn_hash && ot.id != turn.id {
+                for c in &ot.claims {
+                    peer_claimed.insert(c.path.clone());
+                }
+            }
+        }
+        disk_changed
+            .iter()
+            .filter(|f| !peer_claimed.contains(*f) && !f.starts_with(".afwe/"))
+            .cloned()
+            .collect()
+    };
+    attributed_files.sort();
+    attributed_files.dedup();
+
+    // ── Snapshot: virtual overlay if parallel peers exist, else fresh ──
+    let snap = if peer_open_turns > 0 && base_head != "EMPTY" {
+        engine.snapshot_overlay(&base_head, &attributed_files).unwrap_or_else(|_| disk_snap)
+    } else {
+        disk_snap
+    };
     let table = &snap.table;
     let prefix = code_prefix(&snap.manifest);
-    let base = engine.store.baseline(id)?;
     let now_hashes = tree_hashes(engine, &snap);
 
     let mut blocking: Vec<String> = vec![];
     let mut notices: Vec<String> = vec![];
     let mut confirm: Vec<String> = vec![];
 
+    // Lost update check outside lock (Phase A)
+    for c in &turn.claims {
+        if let Some(base_blob) = &c.base_blob {
+            if base_head != "EMPTY" {
+                let cur = vcs.blob_hash(&root, &base_head, &c.path);
+                if cur.is_some() && cur.as_ref() != Some(base_blob) {
+                    blocking.push(format!(
+                        "LOST_UPDATE: `{}` was modified concurrently (baseline blob: {}, current: {})",
+                        c.path,
+                        base_blob,
+                        cur.unwrap()
+                    ));
+                }
+            }
+        }
+    }
+
     // ── 1. attribution: what changed since turn.begin, plus declared extras and folded proposals ──
-    let mut attributed: BTreeSet<String> = match &base {
-        Some(b) => changed_paths(&b.files, &now_hashes),
-        None => {
-            notices.push("NO_BASELINE: the turn was not begun with `turn.begin`; only declared files are attributed".into());
-            BTreeSet::new()
+    let mut attributed: BTreeSet<String> = if !attributed_files.is_empty() {
+        attributed_files.into_iter().collect()
+    } else {
+        match &base {
+            Some(b) => changed_paths(&b.files, &now_hashes),
+            None => {
+                notices.push("NO_BASELINE: the turn was not begun with `turn.begin`; only declared files are attributed".into());
+                BTreeSet::new()
+            }
         }
     };
     for t in &req.touched {
@@ -782,6 +972,7 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         for i in report.issues.iter().filter(|i| i.severity == "warn") {
             notices.push(format!("WARN {}: {}", i.id, i.message));
         }
+        let ran_against = if peer_open_turns > 0 { "virtual_overlay" } else { "working_copy" };
         results.push(CheckResult {
             id: "afwe-verify".into(),
             title: "constraints and active guardrails".into(),
@@ -790,13 +981,27 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
             passed: report.ok,
             message: if report.ok { None } else { Some(format!("{} error(s)", report.errors)) },
             blocking: true,
+            ran_against: Some(ran_against.into()),
+            strength: Some("deterministic".into()),
+            note: None,
         });
         if let Some(cmd) = &m.vcs.test_command {
             let (ok, msg) = intent::run_command(cmd, &root, &code_rel, 600);
             if !ok {
                 blocking.push(format!("PROJECT_TESTS_FAILED: `{cmd}` — {}", msg.clone().unwrap_or_default()));
             }
-            results.push(CheckResult { id: "project-tests".into(), title: cmd.clone(), trust: CheckTrust::Deterministic, authored_by: "human".into(), passed: ok, message: msg, blocking: true });
+            results.push(CheckResult {
+                id: "project-tests".into(),
+                title: cmd.clone(),
+                trust: CheckTrust::Deterministic,
+                authored_by: "human".into(),
+                passed: ok,
+                message: msg,
+                blocking: true,
+                ran_against: Some("working_copy".into()),
+                strength: Some("deterministic".into()),
+                note: None,
+            });
         }
     }
 
@@ -844,7 +1049,18 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
             a.status = "failed".into();
             blocking.push(format!("CLAIM_FAILED: {} — {}", a.id, msg.clone().unwrap_or_default()));
         }
-        results.push(CheckResult { id: format!("claim:{}", a.id), title: a.text.clone(), trust: CheckTrust::Deterministic, authored_by: "agent".into(), passed, message: msg, blocking: true });
+        results.push(CheckResult {
+            id: format!("claim:{}", a.id),
+            title: a.text.clone(),
+            trust: CheckTrust::Deterministic,
+            authored_by: "agent".into(),
+            passed,
+            message: msg,
+            blocking: true,
+            ran_against: Some("virtual_overlay".into()),
+            strength: Some("deterministic".into()),
+            note: None,
+        });
     }
 
     // ── 7. registered checks (the gate's registry): every relevant one must pass ──
@@ -949,7 +1165,7 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         engine.log(&req.origin, "turn_redo", format!("{id} REDO: {} blocking issue(s)", blocking.len()), Some(json!({"turn": id, "blocking": blocking})))?;
         return Ok(json!({
             "status": "redo",
-            "turn": id,
+            "turn": turn.alias.clone().unwrap_or(turn.id.clone()),
             "strength": strength,
             "confidence": confidence,
             "confidence_parts": parts,
@@ -979,7 +1195,7 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         engine.log(&req.origin, kind, format!("{id} {}: {summary} ({:.0}%)", turn.status, confidence * 100.0), Some(json!({"turn": id, "reasons": reasons})))?;
         return Ok(json!({
             "status": turn.status,
-            "turn": id,
+            "turn": turn.alias.clone().unwrap_or(turn.id.clone()),
             "strength": strength,
             "confidence": confidence,
             "confidence_parts": parts,
@@ -994,7 +1210,33 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         }));
     }
 
-    // ── 11. commit: settle the record, run the registry's generators, then write git ──
+    // ── 11. commit: fold proposals, sync, and write git under exclusive advisory lock ──
+    let _lock = engine.store.acquire_commit_lock(30)?;
+    let head1 = vcs.head(&root).unwrap_or_else(|| "EMPTY".to_string());
+
+    if head1 != base_head && head1 != "EMPTY" && base_head != "EMPTY" {
+        for c in &turn.claims {
+            if let Some(base_blob) = &c.base_blob {
+                let cur = vcs.blob_hash(&root, &head1, &c.path);
+                if cur.is_some() && cur.as_ref() != Some(base_blob) {
+                    turn.status = "open".into();
+                    turn.gate.reasons.push(format!("LOST_UPDATE: `{}` was modified concurrently by another commit in HEAD ({})", c.path, cur.unwrap()));
+                    engine.store.save_turn(&turn)?;
+                    return Err(anyhow!("LOST_UPDATE: `{}` was modified concurrently by another commit in HEAD", c.path));
+                }
+            }
+        }
+    }
+
+    let parent_alias = turn.parent_hash.as_deref().and_then(|p| engine.store.turn(p).ok().flatten().and_then(|t| t.alias));
+    let alias = if let Some(a) = &turn.alias {
+        a.clone()
+    } else {
+        engine.store.next_display_alias(parent_alias.as_deref())?
+    };
+    turn.alias = Some(alias.clone());
+    turn.id = alias.clone();
+
     turn.status = "committed".into();
     turn.committed_at = Some(now());
     for a in turn.assumptions.iter_mut() {
@@ -1005,7 +1247,7 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     for s in &folded {
         let mut s2 = engine.store.turn(&s.id)?.unwrap_or_else(|| s.clone());
         s2.status = "folded".into();
-        s2.folded_into = Some(id.to_string());
+        s2.folded_into = Some(alias.clone());
         engine.store.save_turn(&s2)?;
         turn.folded.push(s.id.clone());
     }
@@ -1016,13 +1258,13 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
             let pin = intent::propose_pin(
                 engine,
                 PinSpec {
-                    statement: format!("{} (from {id}): {}", if kind == "intentional" { "Intentional" } else { "Keep" }, truncate(turn.prompt.lines().next().unwrap_or("").trim(), 160)),
+                    statement: format!("{} (from {alias}): {}", if kind == "intentional" { "Intentional" } else { "Keep" }, truncate(turn.prompt.lines().next().unwrap_or("").trim(), 160)),
                     kind: kind.into(),
                     severity: sev.into(),
                     attaches: Attachment { nodes, ..Default::default() },
                     reason: Some("keep-phrase in the prompt".into()),
                     origin: "afwe:detect".into(),
-                    created_from: Some(id.to_string()),
+                    created_from: Some(alias.to_string()),
                     intentional: kind == "intentional",
                 },
             )?;
@@ -1047,30 +1289,41 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     }
     let (sync_report, _) = sync(engine, &SyncOptions { dry_run: false, origin: req.origin.clone() })?;
 
-    // git: scoped commit with the trailer. A failed commit leaves the turn `ready`, never half-committed.
-    let trailer = format!("AFWE-Turn: {id}");
+    // git: isolated plumbed commit with trailers. Unrelated staged work stays untouched.
+    let mut trailer = format!("AFWE-Turn: {alias}\nAFWE-Turn-Hash: {}\nAFWE-Epoch: {}", turn.turn_hash, turn.epoch_id);
+    if let Some(pa) = &parent_alias {
+        trailer.push_str(&format!("\nAFWE-Parent: {pa}"));
+    }
     let mut commit_info = Value::Null;
     if vcs_active {
         let mut paths: Vec<String> = attributed.iter().cloned().collect();
         paths.extend(AFWE_SOURCE_DIRS.iter().map(|s| s.to_string()));
         let subject = truncate(&summary, 72);
         let msg = format!("{subject}\n\n{trailer}\nAFWE-Strength: {}\nAFWE-Confidence: {:.2}", strength_name(strength), confidence);
-        match vcs.commit_paths(&root, &paths, &msg) {
+        match vcs.commit_isolated(&root, &paths, &msg, Some(&head1)) {
             Ok(Some(sha)) => {
                 commit_info = json!({"sha": sha, "trailer": trailer});
+                turn.commit_sha = Some(sha.clone());
+                engine.store.save_turn(&turn)?;
+                if let Some(p_hash) = &turn.parent_hash {
+                    if let Ok(Some(mut parent_turn)) = engine.store.turn(p_hash) {
+                        parent_turn.child_commits.push(sha);
+                        let _ = engine.store.save_turn(&parent_turn);
+                    }
+                }
             }
             Ok(None) => reasons.push("NOTHING_TO_COMMIT: attributed files already match HEAD".into()),
             Err(e) => {
                 turn.status = "ready".into();
                 turn.gate.reasons.push(format!("GIT_COMMIT_FAILED: {e:#}"));
                 engine.store.save_turn(&turn)?;
-                return Ok(json!({"status": "ready", "turn": id, "error": format!("{e:#}"), "next": "fix git (see error), then commit with the trailer `AFWE-Turn: {id}`"}));
+                return Ok(json!({"status": "ready", "turn": alias, "error": format!("{e:#}"), "next": "fix git (see error), then commit again"}));
             }
         }
     }
 
     let mut board = engine.store.board()?;
-    for it in board.items.iter_mut().filter(|i| i.kind == "turn" && i.status == "open" && (i.reference.as_deref() == Some(id) || folded.iter().any(|f| Some(f.id.as_str()) == i.reference.as_deref()))) {
+    for it in board.items.iter_mut().filter(|i| i.kind == "turn" && i.status == "open" && (i.reference.as_deref() == Some(&alias) || folded.iter().any(|f| Some(f.id.as_str()) == i.reference.as_deref()))) {
         it.status = "done".into();
         it.resolved = Some(now());
     }
@@ -1078,14 +1331,14 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     engine.log(
         &req.origin,
         "turn_commit",
-        format!("{id} committed: {summary} [{} {:.0}%]", strength_name(strength), confidence * 100.0),
-        Some(json!({"turn": id, "commit": commit_info, "folded": turn.folded, "checkgen": made_checks})),
+        format!("{alias} committed: {summary} [{} {:.0}%]", strength_name(strength), confidence * 100.0),
+        Some(json!({"turn": alias, "hash": turn.turn_hash, "commit": commit_info, "folded": turn.folded, "checkgen": made_checks})),
     )?;
 
-    let badge = format!("✔ AFWE Turn {id} {} [Confidence: {:.0}% · Strength: {}]", if vcs_active { "committed" } else { "recorded" }, confidence * 100.0, strength_name(strength));
+    let badge = format!("✔ AFWE Turn {alias} {} [Confidence: {:.0}% · Strength: {}]", if vcs_active { "committed" } else { "recorded" }, confidence * 100.0, strength_name(strength));
     Ok(json!({
         "status": "committed",
-        "turn": id,
+        "turn": turn.alias.clone().unwrap_or(turn.id.clone()),
         "summary": summary,
         "commit": commit_info,
         "strength": strength,
@@ -1188,6 +1441,87 @@ pub fn get(engine: &Engine, id: &str) -> Result<Turn> {
 
 pub fn list(engine: &Engine) -> Result<Vec<Turn>> {
     engine.store.turns()
+}
+
+/// Reset working tree changes made during this turn back to baseline while keeping the turn open.
+/// This allows an agent or developer to cleanly redo their attempt without abandoning the turn.
+pub fn redo(engine: &Engine, id: &str, token: Option<&str>, origin: &str) -> Result<Value> {
+    let mut t = load(engine, id)?;
+    verify_token(engine, &t, token, origin)?;
+    if !matches!(t.status.as_str(), "open" | "staged" | "ready") {
+        return Err(anyhow!("turn {id} is {}; only open, staged or ready turns can be redone", t.status));
+    }
+    let m = engine.store.manifest()?;
+    let vcs = vcs::open(&m.vcs.provider);
+    let root = engine.store.project_root.clone();
+    let snap = engine.snapshot(true)?;
+    let base = engine.store.baseline(id)?;
+    let changed: Vec<String> = match &base {
+        Some(b) => changed_paths(&b.files, &tree_hashes(engine, &snap)).into_iter().collect(),
+        None => t.touched.files.clone(),
+    };
+
+    // Safe redo: back up affected files to .afwe/backups/<turn_hash>/
+    let backup_dir = engine.store.afwe_dir.join("backups").join(&t.turn_hash);
+    for f in &changed {
+        let abs = root.join(f);
+        if abs.exists() {
+            let dest = backup_dir.join(f);
+            if let Some(parent) = dest.parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+            let _ = std::fs::copy(&abs, &dest);
+        }
+    }
+
+    let mut restored = vec![];
+    let mut deleted = vec![];
+    for f in &changed {
+        let head = vcs.show(&root, "HEAD", f);
+        let base_hash = base.as_ref().and_then(|b| b.files.get(f).cloned());
+        match (head, base_hash) {
+            (Some(c), Some(bh)) if hash_bytes(c.as_bytes()) == bh => {
+                let _ = std::fs::write(root.join(f), c);
+                restored.push(f.clone());
+            }
+            (None, None) => {
+                if root.join(f).exists() {
+                    let _ = std::fs::remove_file(root.join(f));
+                }
+                deleted.push(f.clone());
+            }
+            _ => {}
+        }
+    }
+    t.status = "open".into();
+    t.gate = GateRecord::default();
+    engine.store.save_turn(&t)?;
+    engine.log(origin, "turn_redo", format!("{id} reset for redo: {} restored, {} deleted", restored.len(), deleted.len()), Some(json!({"turn": id})))?;
+    Ok(json!({
+        "status": "open",
+        "turn": t.alias.clone().unwrap_or(t.id.clone()),
+        "restored": restored,
+        "deleted": deleted,
+        "next": "turn is open and clean; modify code and call turn.commit again"
+    }))
+}
+
+pub fn abandon(engine: &Engine, id: &str, token: Option<&str>, origin: &str) -> Result<Value> {
+    let mut t = load(engine, id)?;
+    verify_token(engine, &t, token, origin)?;
+    if t.status == "committed" {
+        return Err(anyhow!("cannot abandon committed turn {id}; use `afwe turn undo` instead"));
+    }
+    t.status = "abandoned".into();
+    t.gate = GateRecord { decision: "abandoned".into(), reasons: vec!["turn explicitly abandoned".into()] };
+    engine.store.save_turn(&t)?;
+    engine.log(origin, "turn_abandon", format!("{} abandoned", t.id), Some(json!({"turn": t.id, "hash": t.turn_hash})))?;
+    Ok(json!({
+        "status": "abandoned",
+        "turn": t.id,
+        "turn_hash": t.turn_hash,
+        "message": format!("Turn {} ({}) abandoned. Claims released.", t.id, &t.turn_hash[..8.min(t.turn_hash.len())]),
+    }))
 }
 
 #[cfg(test)]

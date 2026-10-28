@@ -329,7 +329,16 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         }
         // ───────── v2: turns (the protocol: begin → assume → commit) ─────────
         "turn.begin" => {
-            let mut res = turn::begin(engine, turn::BeginRequest { prompt: req(&p, "prompt")?, origin: origin(&p, default_origin), agent: s(&p, "agent"), targets: list(&p, "targets"), refines: list(&p, "refines"), kind: s(&p, "kind").unwrap_or("code".into()) })?;
+            let mut res = turn::begin(engine, turn::BeginRequest {
+                prompt: req(&p, "prompt")?,
+                origin: origin(&p, default_origin),
+                agent: s(&p, "agent"),
+                targets: list(&p, "targets"),
+                refines: list(&p, "refines"),
+                kind: s(&p, "kind").unwrap_or("code".into()),
+                parent: s(&p, "parent"),
+                claims: list(&p, "claims"),
+            })?;
             if let Some(t) = res.get("turn").and_then(|v| v.as_str()) {
                 res["header"] = json!(crate::header::render(engine, Some(t)).unwrap_or_default());
             }
@@ -337,18 +346,39 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         }
         "turn.assume" => {
             let turn_id = req(&p, "turn")?;
-            let mut res = turn::assume(engine, &turn_id, turn::AssumeRequest { intents: parse_vec(&p, "intents")?, assumptions: parse_vec(&p, "assumptions")?, removes: list(&p, "removes"), overrides: parse_vec(&p, "overrides")?, origin: origin(&p, default_origin) })?;
+            let mut res = turn::assume(engine, &turn_id, turn::AssumeRequest {
+                intents: parse_vec(&p, "intents")?,
+                assumptions: parse_vec(&p, "assumptions")?,
+                removes: list(&p, "removes"),
+                overrides: parse_vec(&p, "overrides")?,
+                origin: origin(&p, default_origin),
+                token: s(&p, "token"),
+                claims: list(&p, "claims"),
+            })?;
             res["header"] = json!(crate::header::render(engine, Some(&turn_id)).unwrap_or_default());
             Ok(res)
         }
         "turn.commit" => {
             let turn_id = req(&p, "turn")?;
-            let mut res = turn::commit(engine, &turn_id, turn::CommitRequest { summary: s(&p, "summary"), footer_shown: b(&p, "footer_shown", false), removes: list(&p, "removes"), touched: list(&p, "touched"), overrides: parse_vec(&p, "overrides")?, origin: origin(&p, default_origin), confirmed: b(&p, "confirmed", false) })?;
+            let mut res = turn::commit(engine, &turn_id, turn::CommitRequest {
+                summary: s(&p, "summary"),
+                footer_shown: b(&p, "footer_shown", false),
+                removes: list(&p, "removes"),
+                touched: list(&p, "touched"),
+                overrides: parse_vec(&p, "overrides")?,
+                origin: origin(&p, default_origin),
+                confirmed: b(&p, "confirmed", false),
+                token: s(&p, "token"),
+                force: b(&p, "force", false),
+                parent: s(&p, "parent"),
+            })?;
             res["header"] = json!(crate::header::render(engine, Some(&turn_id)).unwrap_or_default());
             Ok(res)
         }
         "turn.confirm" => turn::confirm(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
         "turn.revert" => turn::revert(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
+        "turn.redo" => turn::redo(engine, &req(&p, "turn")?, s(&p, "token").as_deref(), &origin(&p, default_origin)),
+        "turn.abandon" => turn::abandon(engine, &req(&p, "turn")?, s(&p, "token").as_deref(), &origin(&p, default_origin)),
         "turn.undo" => crate::rollback::undo_turn(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
         "rollback.reconcile" => j(crate::rollback::reconcile(engine)?),
         "turn.get" => j(turn::get(engine, &req(&p, "turn")?)?),
@@ -497,7 +527,7 @@ pub const OPS: &[&str] = &[
     "lens.list", "lens.get", "lens.save", "lens.remove",
     "contract.list", "contract.get", "contract.render", "task.start", "task.done", "task.step", "board.get", "board.dismiss",
     "proposals.list", "proposal.resolve", "log.get", "log.add", "bootstrap", "ops",
-    "turn.begin", "turn.assume", "turn.commit", "turn.confirm", "turn.revert", "turn.undo", "rollback.reconcile", "turn.get", "turn.list", "gate",
+    "turn.begin", "turn.assume", "turn.commit", "turn.confirm", "turn.revert", "turn.redo", "turn.abandon", "turn.undo", "rollback.reconcile", "turn.get", "turn.list", "gate",
     "intent.list", "intent.get", "pin.list", "pin.get", "pin.propose", "pin.accept", "pin.retire", "pin.budget",
     "check.list", "check.add", "check.remove", "escalation.list", "escalation.approve", "escalation.reject",
     "timeline.list", "timeline.get", "timeline.diff", "timeline.search", "timeline.losses", "timeline.restore",
@@ -703,11 +733,13 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_proposals", op: "proposals.list", description: "Pending architecture proposals (<50% confidence changes AFWE will not apply on its own).", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_proposal_resolve", op: "proposal.resolve", description: "accept | revert | review a proposal (review = impact on memory, guardrails, constraints, files).", schema: obj(json!({"id": {"type": "string"}, "action": {"type": "string"}}), &["id", "action"]) },
         ToolSpec { name: "afwe_log", op: "log.add", description: "Append a note to the change log (kind: note|complete|decision).", schema: obj(json!({"message": {"type": "string"}, "kind": {"type": "string"}, "task": {"type": "string"}}), &["message"]) },
-        ToolSpec { name: "afwe_turn_begin", op: "turn.begin", description: "START every prompt here. Stores the prompt verbatim as a turn and returns the briefing: scope, active pins (do not change what they protect), intentional markers, intents, memory, constraints, registered checks, unresolved proposals and the footer you must show. Then call afwe_turn_assume.", schema: obj(json!({"prompt": {"type": "string"}, "targets": strs, "refines": strs, "kind": {"type": "string"}, "agent": {"type": "string"}}), &["prompt"]) },
-        ToolSpec { name: "afwe_turn_assume", op: "turn.assume", description: "BEFORE writing code: declare intents (action + targets) and assumption claims (regex/import/symbol checks). Returns REDO with error codes when the schema is wrong or a pin would be broken; then revise and call again. Pin overrides need a reason.", schema: obj(json!({"turn": {"type": "string"}, "intents": {"type": "array"}, "assumptions": {"type": "array"}, "removes": strs, "overrides": {"type": "array"}}), &["turn"]) },
-        ToolSpec { name: "afwe_turn_commit", op: "turn.commit", description: "AFTER writing code: AFWE attributes the changes, runs verify, pins, collateral-loss detection, claims and registered checks, then commits (with an AFWE-Turn trailer), stages a proposal, or returns REDO with the failures. Nothing is committed on REDO. Set footer_shown=true once the proposal notice is in your reply.", schema: obj(json!({"turn": {"type": "string"}, "summary": {"type": "string"}, "footer_shown": {"type": "boolean"}, "removes": strs, "touched": strs, "overrides": {"type": "array"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_begin", op: "turn.begin", description: "START every prompt here. Stores the prompt verbatim as a turn and returns the briefing: scope, active pins (do not change what they protect), intentional markers, intents, memory, constraints, registered checks, unresolved proposals and the footer you must show. Then call afwe_turn_assume.", schema: obj(json!({"prompt": {"type": "string"}, "targets": strs, "refines": strs, "kind": {"type": "string"}, "agent": {"type": "string"}, "parent": {"type": "string"}, "claims": strs}), &["prompt"]) },
+        ToolSpec { name: "afwe_turn_assume", op: "turn.assume", description: "BEFORE writing code: declare intents (action + targets) and assumption claims (regex/import/symbol checks). Returns REDO with error codes when the schema is wrong or a pin would be broken; then revise and call again. Pin overrides need a reason.", schema: obj(json!({"turn": {"type": "string"}, "intents": {"type": "array"}, "assumptions": {"type": "array"}, "removes": strs, "overrides": {"type": "array"}, "token": {"type": "string"}, "claims": strs}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_commit", op: "turn.commit", description: "AFTER writing code: AFWE attributes the changes, runs verify, pins, collateral-loss detection, claims and registered checks, then commits (with an AFWE-Turn trailer), stages a proposal, or returns REDO with the failures. Nothing is committed on REDO. Set footer_shown=true once the proposal notice is in your reply.", schema: obj(json!({"turn": {"type": "string"}, "summary": {"type": "string"}, "footer_shown": {"type": "boolean"}, "removes": strs, "touched": strs, "overrides": {"type": "array"}, "token": {"type": "string"}, "force": {"type": "boolean"}, "parent": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_confirm", op: "turn.confirm", description: "Human confirmation of a staged proposal: commits it through the gate.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_revert", op: "turn.revert", description: "Undo a turn as far as that is safe (files clean at turn.begin go back to HEAD; the rest becomes a Board item).", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_redo", op: "turn.redo", description: "Reset uncommitted changes made during a turn back to its baseline, keeping the turn open for clean rework.", schema: obj(json!({"turn": {"type": "string"}, "token": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_abandon", op: "turn.abandon", description: "Abandon an open turn, cleanly releasing all held file claims and lock reservations without committing.", schema: obj(json!({"turn": {"type": "string"}, "token": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_undo", op: "turn.undo", description: "Undo a committed turn explicitly, reverting its git commit and pruning generated checks.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_rollback_reconcile", op: "rollback.reconcile", description: "Reconcile AFWE ledger with external undos (git reset/revert or Ctrl+Z) by detecting missing git trailers or pre-commit hash matches.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_turn_get", op: "turn.get", description: "Read one turn: prompt, intents, assumptions, checks, strength, confidence and gate reasons.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },

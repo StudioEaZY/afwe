@@ -143,3 +143,4 @@
 {"ts":"2026-10-15T10:51:27Z","origin":"human","kind":"turn_begin","summary":"t0018 begun: Phase 5: External undo detection, automated pruning, and rollback reconciliation","details":{"turn":"t0018","task":"task-309d04","nodes":[]}}
 {"ts":"2026-10-15T10:51:50Z","origin":"human","kind":"turn_assume","summary":"t0018: 1 intent(s), 2 assumption(s) registered","details":{"turn":"t0018"}}
 {"ts":"2026-10-15T11:05:07Z","origin":"human","kind":"turn_ready","summary":"t0018 ready: Phase 5: External undo detection, automated pruning, and rollback reconciliation (100%)","details":{"turn":"t0018","reasons":["OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): 100% deterministic code without LLM model calls in core engine"]}}
+{"ts":"2026-10-28T04:38:47Z","origin":"human","kind":"gate","summary":"gate passed: 0 failure(s)"}

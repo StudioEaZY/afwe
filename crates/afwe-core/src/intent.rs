@@ -331,7 +331,7 @@ pub fn run_check(c: &CheckSpec, snap: &Snapshot, root: &Path, scope: &[String]) 
     } else {
         (false, Some("check has neither command nor claim".into()))
     };
-    CheckResult { id: c.id.clone(), title: c.title.clone(), trust: c.trust, authored_by: c.authored_by.clone(), passed, message, blocking }
+    CheckResult::new(c.id.clone(), c.title.clone(), c.trust, c.authored_by.clone(), passed, message, blocking)
 }
 
 /// checkgen (default app): every *confirmed* assumption claim becomes a standing deterministic check

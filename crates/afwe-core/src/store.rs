@@ -99,10 +99,16 @@ impl Store {
         Ok(Some(v))
     }
     pub fn write_yaml<T: serde::Serialize>(&self, rel: &str, v: &T) -> Result<()> {
+        self.write_yaml_atomic(rel, v)
+    }
+    pub fn write_yaml_atomic<T: serde::Serialize>(&self, rel: &str, v: &T) -> Result<()> {
         let path = self.p(rel);
         ensure_parent(&path)?;
+        let tmp = path.with_extension(format!("tmp.{}", crate::util::short_id("tmp")));
         let s = serde_yaml::to_string(v)?;
-        fs::write(&path, s).with_context(|| format!("write {}", path.display()))
+        fs::write(&tmp, s)?;
+        fs::rename(&tmp, &path).with_context(|| format!("rename {} to {}", tmp.display(), path.display()))?;
+        Ok(())
     }
     pub fn read_json<T: serde::de::DeserializeOwned>(&self, rel: &str) -> Result<Option<T>> {
         let path = self.p(rel);
@@ -550,8 +556,12 @@ fn load_dir<T: serde::de::DeserializeOwned>(store: &Store, dir: &str) -> Result<
     let mut out = vec![];
     for path in list_files(&store.p(dir), "yaml") {
         let rel = rel_to(&store.afwe_dir, &path);
-        if let Some(v) = store.read_yaml::<T>(&rel)? {
-            out.push(v);
+        match store.read_yaml::<T>(&rel) {
+            Ok(Some(v)) => out.push(v),
+            Ok(None) => {},
+            Err(e) => {
+                eprintln!("afwe: warning: skipping unreadable record {}: {e}", path.display());
+            }
         }
     }
     Ok(out)
@@ -615,11 +625,34 @@ impl Store {
         out.sort_by(|a, b| a.id.cmp(&b.id));
         Ok(out)
     }
-    pub fn turn(&self, id: &str) -> Result<Option<Turn>> {
-        self.read_yaml(&format!("turns/{id}.yaml"))
+    pub fn turn(&self, identifier: &str) -> Result<Option<Turn>> {
+        if let Some(t) = self.read_yaml::<Turn>(&format!("turns/{identifier}.yaml"))? {
+            return Ok(Some(t));
+        }
+        let all = self.turns().unwrap_or_default();
+        Ok(all.into_iter().find(|t| {
+            t.turn_hash == identifier
+                || (!identifier.is_empty() && t.turn_hash.starts_with(identifier))
+                || t.id == identifier
+                || t.alias.as_deref() == Some(identifier)
+        }))
     }
     pub fn save_turn(&self, t: &Turn) -> Result<()> {
-        self.write_yaml(&format!("turns/{}.yaml", t.id), t)
+        let key = if !t.turn_hash.is_empty() {
+            &t.turn_hash
+        } else {
+            &t.id
+        };
+        self.write_yaml_atomic(&format!("turns/{key}.yaml"), t)?;
+        if let Some(alias) = &t.alias {
+            if alias != key {
+                let _ = self.write_yaml_atomic(&format!("turns/{alias}.yaml"), t);
+            }
+        }
+        if !t.id.is_empty() && t.id != *key && t.alias.as_deref() != Some(&t.id) {
+            let _ = self.write_yaml_atomic(&format!("turns/{}.yaml", t.id), t);
+        }
+        Ok(())
     }
     pub fn next_turn_id(&self) -> Result<String> {
         let max = list_files(&self.p("turns"), "yaml")
@@ -628,6 +661,51 @@ impl Store {
             .max()
             .unwrap_or(0);
         Ok(format!("t{:04}", max + 1))
+    }
+    pub fn next_display_alias(&self, parent_alias: Option<&str>) -> Result<String> {
+        let turns = self.turns().unwrap_or_default();
+        if let Some(pa) = parent_alias {
+            let prefix = format!("{pa}.");
+            let count = turns.iter().filter(|t| t.alias.as_ref().map(|a| a.starts_with(&prefix)).unwrap_or(false)).count();
+            return Ok(format!("{pa}.{}", count + 1));
+        }
+        let max = turns
+            .iter()
+            .filter_map(|t| {
+                let s = t.alias.as_ref().unwrap_or(&t.id);
+                s.strip_prefix('t').and_then(|n| n.parse::<u64>().ok())
+            })
+            .max()
+            .unwrap_or(0);
+        Ok(format!("t{:04}", max + 1))
+    }
+    pub fn acquire_commit_lock(&self, timeout_s: u64) -> Result<fs::File> {
+        use fs2::FileExt;
+        use std::time::{Duration, Instant};
+
+        let lock_path = self.p("state/commit.lock");
+        ensure_parent(&lock_path)?;
+        let file = fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(&lock_path)
+            .with_context(|| format!("open lock file {}", lock_path.display()))?;
+
+        let start = Instant::now();
+        let timeout = Duration::from_secs(timeout_s);
+        loop {
+            match file.try_lock_exclusive() {
+                Ok(()) => return Ok(file),
+                Err(_) => {
+                    if start.elapsed() > timeout {
+                        return Err(anyhow!("timed out after {}s waiting for commit lock on {}", timeout_s, lock_path.display()));
+                    }
+                    std::thread::sleep(Duration::from_millis(25));
+                }
+            }
+        }
     }
 
     // ── baselines (derived; never committed) ──

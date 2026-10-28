@@ -1098,6 +1098,28 @@ pub struct TurnTouched {
     pub symbols: Vec<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+pub struct FileClaim {
+    pub path: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base_blob: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub node: Option<String>,
+    #[serde(default)]
+    pub claimed_at: String,
+}
+
+impl FileClaim {
+    pub fn new(path: impl Into<String>, base_blob: Option<String>, node: Option<String>) -> Self {
+        Self {
+            path: path.into(),
+            base_blob,
+            node,
+            claimed_at: crate::util::now(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CheckResult {
     pub id: String,
@@ -1110,6 +1132,37 @@ pub struct CheckResult {
     /// Does a failure stop the commit?
     #[serde(default)]
     pub blocking: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ran_against: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub strength: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
+}
+
+impl CheckResult {
+    pub fn new(
+        id: impl Into<String>,
+        title: impl Into<String>,
+        trust: CheckTrust,
+        authored_by: impl Into<String>,
+        passed: bool,
+        message: Option<String>,
+        blocking: bool,
+    ) -> Self {
+        Self {
+            id: id.into(),
+            title: title.into(),
+            trust,
+            authored_by: authored_by.into(),
+            passed,
+            message,
+            blocking,
+            ran_against: None,
+            strength: None,
+            note: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1134,6 +1187,24 @@ pub struct RestoreRecord {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Turn {
     pub id: String,
+    #[serde(default)]
+    pub turn_hash: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alias: Option<String>,
+    #[serde(default)]
+    pub epoch_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub parent_hash: Option<String>,
+    #[serde(default)]
+    pub token_hash: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub claims: Vec<FileClaim>,
+    #[serde(default)]
+    pub base_head: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub child_commits: Vec<String>,
+    #[serde(default)]
+    pub last_activity: String,
     pub ts: String,
     #[serde(default)]
     pub origin: String,
@@ -1196,6 +1267,8 @@ pub struct Turn {
     /// Associated mission id when executed as part of an autonomous mission
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mission: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub commit_sha: Option<String>,
     /// Post-commit hashes of touched files, used for automated rollback / external undo reconciliation.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub post_hashes: BTreeMap<String, String>,

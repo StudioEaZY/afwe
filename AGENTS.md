@@ -10,9 +10,9 @@ Always activate the `afwe` skill (`.afwe/skills/afwe/SKILL.md`) or use the conne
 - **`AFWE-Client`** (consumer projects): The scaffolds, templates, and files generated into `.afwe/` when end users run `afwe init` or `afwe onboard`. Always ensure generator templates and contracts reference `.afwe/docs/TUTORIAL.md`, never root `docs/`.
 
 ## Mandatory Turn Protocol & Rules
-1. `afwe turn begin "<prompt>" --target <files>` (MCP `afwe_turn_begin`) → read briefing pack & pins.
-2. `afwe turn assume <turn> --file <json>` (MCP `afwe_turn_assume`) → declare intents & claims BEFORE writing code.
-3. `afwe turn commit <turn> --summary "…"` (MCP `afwe_turn_commit`) → gated commit AFTER code is written.
+1. `afwe turn begin "<prompt>" --target <files> [--claim <files>]` (MCP `afwe_turn_begin`) → read briefing pack & pins (claims reserved).
+2. `afwe turn assume <turn> --file <json> [--claim <files>]` (MCP `afwe_turn_assume`) → declare intents & claims BEFORE writing code.
+3. `afwe turn commit <turn> --summary "…"` (MCP `afwe_turn_commit`) → gated commit AFTER code is written (isolated git plumbing).
 4. **Post-Turn Documentation, Skills & MCP Synchronization**:
    - Whenever an update changes AFWE behavior, CLI flags, schema, or capabilities:
      - **MCP Tools**: Update the MCP tool definitions in `crates/afwe-cli/src/mcp.rs` and engine specs in `crates/afwe-core/src/api.rs` if tool schemas or capabilities expanded.

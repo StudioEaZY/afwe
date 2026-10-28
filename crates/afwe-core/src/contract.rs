@@ -62,14 +62,16 @@ This project uses AFWE to deterministically govern architecture and prevent agen
 When interacting with this codebase:
 
 1. **Before Touching Code**:
-   - Call `afwe turn begin "<prompt>" --target <files>` (or MCP tool `afwe_turn_begin`).
-   - Read the briefing: inspect in-scope architectural nodes, locked pins, memory, and proposals.
-   - Call `afwe turn assume <turn> --file <json>` (or MCP tool `afwe_turn_assume`) to declare your intents and pre-generation claims.
-   - If REDO is returned, revise assumptions according to the schema before proceeding.
+   - Call `afwe turn begin "<prompt>" --target <files> [--claim <files>] [--parent <turn>]` (or MCP tool `afwe_turn_begin`). In multi-agent sessions, reserve claimed files upfront.
+   - Read the briefing: inspect in-scope architectural nodes, locked pins, memory, and proposals. Note your assigned `turn_hash` and bearer `token`.
+   - Call `afwe turn assume <turn> --file <json> [--token <tok>] [--claim <files>]` (or MCP tool `afwe_turn_assume`) to declare your intents and pre-generation claims before touching files.
+   - If REDO or CONTENTION is returned, revise claims or assumptions according to the schema before proceeding.
 
 2. **While Editing**:
    - Retrieve micro-context via `afwe context <files>` (or MCP `afwe_context`).
    - Obey active pins; never delete pinned behavior without an explicit override.
+   - Use `afwe turn redo <turn> [--token <tok>]` to safely reset working tree changes back to baseline if needed.
+   - Use `afwe turn abandon <turn> [--token <tok>]` if abandoning an open attempt to release all file claims.
 
 3. **After Editing (Verification & Mandatory Documentation, Skill & MCP Sync)**:
    - Run verification via `afwe verify --changed <files>` (or MCP `afwe_verify`).
@@ -78,7 +80,7 @@ When interacting with this codebase:
      - Update skill instructions (`.afwe/skills/afwe/SKILL.md`) with generalized examples.
      - Update MCP tool specs and handlers (`mcp.rs`, `api.rs`) whenever tool capabilities expand.
      - Persist non-obvious design choices via `afwe memory add --kind decision ...` (or `afwe_memory_add`).
-   - Commit the turn via `afwe turn commit <turn> --summary "..."` (or MCP `afwe_turn_commit`).
+   - Commit the turn via `afwe turn commit <turn> --summary "..." [--token <tok>]` (or MCP `afwe_turn_commit`). Commits are isolated via plumbing git trees with CAS verification and commit locks.
    - If proposals are pending, include the AFWE reminder footer in your reply.
 "#;
 
@@ -89,9 +91,9 @@ pub fn render_agents_block(project: &str, _contracts: &[Contract]) -> String {
     s.push_str("This project is architecturally governed by AFWE (`.afwe/`).\n");
     s.push_str("Always activate the `afwe` skill (`.afwe/skills/afwe/SKILL.md`) or use the connected AFWE MCP tools (`afwe_turn_begin`, `afwe_turn_assume`, `afwe_turn_commit`).\n\n");
     s.push_str("## Turn Protocol Summary\n");
-    s.push_str("1. `afwe turn begin \"<prompt>\" --target <files>` (MCP `afwe_turn_begin`) → read briefing pack & pins.\n");
-    s.push_str("2. `afwe turn assume <turn> --file <json>` (MCP `afwe_turn_assume`) → declare intents & claims BEFORE writing code.\n");
-    s.push_str("3. `afwe turn commit <turn> --summary \"…\"` (MCP `afwe_turn_commit`) → gated commit AFTER code is written.\n");
+    s.push_str("1. `afwe turn begin \"<prompt>\" --target <files> [--claim <files>]` (MCP `afwe_turn_begin`) → read briefing pack & pins (claims reserved).\n");
+    s.push_str("2. `afwe turn assume <turn> --file <json> [--claim <files>]` (MCP `afwe_turn_assume`) → declare intents & claims BEFORE writing code.\n");
+    s.push_str("3. `afwe turn commit <turn> --summary \"…\"` (MCP `afwe_turn_commit`) → gated commit AFTER code is written (isolated git plumbing).\n");
     s.push_str("4. **Documentation Sync**: Update relevant `.afwe/docs/` or skills after each update when architecture or behavior changes.\n\n");
     s.push_str("If skills or MCP are unavailable in your harness, execute the CLI commands above directly via terminal.\n");
     s.push_str("Consult `.afwe/docs/TUTORIAL.md` for complete protocol instructions and `.afwe/docs/WALKTHROUGH.md` for real-world case studies.\n");
