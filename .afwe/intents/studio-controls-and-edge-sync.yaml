@@ -1,0 +1,17 @@
+id: studio-controls-and-edge-sync
+title: Centralized Canvas Controls, Edge Routing Sync, and Blueprint Rewind
+statement: Centralize floating zoom/hand controls on mid-left canvas, eliminate spacebar viewport reset, add legend icons and routing controls across all visualizers, wire timeline rewind into Blueprint, and fix null pointer on dragging in Topology.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0043
+history:
+- turn: t0043
+  ts: 2026-10-28T07:16:43Z
+  statement: Centralize floating zoom/hand controls on mid-left canvas, eliminate spacebar viewport reset, add legend icons and routing controls across all visualizers, wire timeline rewind into Blueprint, and fix null pointer on dragging in Topology.
+created: 2026-10-28T07:16:43Z
+updated: 2026-10-28T07:16:43Z
+task: task-t0043

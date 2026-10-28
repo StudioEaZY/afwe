@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ReactFlow,
   Background,
-  Controls,
   MiniMap,
   Handle,
   Position,
@@ -17,10 +16,10 @@ import {
   ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Hand } from "lucide-react";
+import { Hand, Plus, Minus, RotateCcw, Shield, Lock, AlertTriangle } from "lucide-react";
 import { useStore, kindIcon } from "../store";
 import { api, Graph } from "../api";
-import { buildHierarchyTree, findNodeById } from "../lib/hierarchy";
+import { buildHierarchyTree, findNodeById, hashStr } from "../lib/hierarchy";
 import { useSpacebarPan } from "../lib/semanticZoomEngine";
 
 // ───────── model: what is visible right now (main blueprint or a lens) ─────────
@@ -45,12 +44,26 @@ const FILE_H = 34;
 const GAP_X = 26;
 const GAP_Y = 96;
 
-function buildModel(graph: Graph, lensId: string | null, expanded: Set<string>, showImpl: boolean): { nodes: Map<string, VNode>; roots: string[] } {
+function buildModel(
+  graph: Graph,
+  lensId: string | null,
+  expanded: Set<string>,
+  showImpl: boolean,
+  effectiveT: number = 1
+): { nodes: Map<string, VNode>; roots: string[] } {
+  const rootH = buildHierarchyTree(graph);
   const byId = new Map(graph.nodes.map((n) => [n.id, n]));
   const nodes = new Map<string, VNode>();
   const addBp = (id: string, depth: number): string | null => {
     const n = byId.get(id);
     if (!n) return null;
+
+    // Filter node by timeline rewind birth timestamp
+    const hNode = findNodeById(rootH, id);
+    if (hNode && (hNode.birth || 0) > effectiveT) {
+      return null;
+    }
+
     const open = expanded.has(id);
     const v: VNode = { id, name: n.name, kind: n.kind, virtual: false, file: false, bp: id, children: [], depth, hasChildren: n.children.length > 0, data: n };
     nodes.set(id, v);
@@ -79,19 +92,24 @@ function buildModel(graph: Graph, lensId: string | null, expanded: Set<string>, 
   const roots: string[] = [];
   const lens = lensId ? graph.lenses.find((l) => l.id === lensId) : null;
   if (lens) {
-    const addGroup = (g: any, depth: number): string => {
+    const addGroup = (g: any, depth: number): string | null => {
       const v: VNode = { id: g.id, name: g.name, kind: "group", virtual: true, file: false, children: [], depth, hasChildren: true, data: g };
       nodes.set(g.id, v);
       for (const c of g.children || []) {
-        if (c.virtual) v.children.push(addGroup(c, depth + 1));
-        else {
+        if (c.virtual) {
+          const cid = addGroup(c, depth + 1);
+          if (cid) v.children.push(cid);
+        } else {
           const id = addBp(c.id, depth + 1);
           if (id) v.children.push(id);
         }
       }
       return g.id;
     };
-    for (const g of lens.view.groups || []) roots.push(addGroup(g, 0));
+    for (const g of lens.view.groups || []) {
+      const gid = addGroup(g, 0);
+      if (gid) roots.push(gid);
+    }
   } else {
     for (const n of graph.nodes.filter((n) => !n.parent)) {
       const id = addBp(n.id, 0);
@@ -305,13 +323,18 @@ function BlueprintNodeView({ data, selected }: NodeProps) {
         {!v.virtual && <span title="files">{n.files} f</span>}
         {!v.virtual && n.memory?.length > 0 && <span title="memory entries">{n.memory.length} m</span>}
         {gov && gov.pins_count > 0 && (
-          <span className="slot-badge pin" title={gov.pin_ids.join(", ")}>
-            ⛨ {gov.pins_count}
+          <span className="slot-badge pin" title={gov.pin_ids.join(", ")} style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+            <Shield size={10} strokeWidth={2.2} /> {gov.pins_count}
           </span>
         )}
         {lease && lease.is_locked && (
-          <span className="slot-badge lease" title={`Leased by ${lease.agent}`}>
-            🔒
+          <span className="slot-badge lease" title={`Leased by ${lease.agent}`} style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+            <Lock size={10} strokeWidth={2.2} />
+          </span>
+        )}
+        {d.violation && (
+          <span className="slot-badge violation" title="Architecture boundary violation" style={{ display: "inline-flex", alignItems: "center", gap: "3px", color: "var(--red)" }}>
+            <AlertTriangle size={10} strokeWidth={2.2} />
           </span>
         )}
         {delta && delta.status !== "unchanged" && (
@@ -330,9 +353,14 @@ const nodeTypes = { bp: BlueprintNodeView };
 
 // ───────── graph ─────────
 
-function GraphViewInner() {
+export interface GraphViewProps {
+  timelineT?: number;
+}
+
+function GraphViewInner({ timelineT }: GraphViewProps) {
   const {
     graph,
+    overviewTimelineT,
     expanded,
     toggle,
     select,
@@ -352,10 +380,15 @@ function GraphViewInner() {
   const [isHandToolActive, setIsHandToolActive] = useState(false);
   const { isPanMode, cursorStyle } = useSpacebarPan(isHandToolActive);
 
+  const effectiveT = timelineT ?? overviewTimelineT ?? 1;
+
   const model = useMemo(
-    () => (graph ? buildModel(graph, lens, expanded, showImpl) : null),
-    [graph, lens, expanded, showImpl]
+    () => (graph ? buildModel(graph, lens, expanded, showImpl, effectiveT) : null),
+    [graph, lens, expanded, showImpl, effectiveT]
   );
+
+  const hasFittedRef = useRef(false);
+  const prevLensRef = useRef(lens);
 
   useEffect(() => {
     if (!graph || !model) return;
@@ -386,9 +419,12 @@ function GraphViewInner() {
       const a = toVisible(r.from);
       const b = toVisible(r.to);
       if (!a || !b || a === b) continue;
+      if (!model.nodes.has(a) || !model.nodes.has(b)) continue;
       const key = `r:${a}->${b}`;
       if (seen.has(key)) continue;
       seen.add(key);
+      const edgeH = 0.03 + (hashStr(`${a}>${b}`) % 280) / 1000;
+      if (edgeH > effectiveT) continue;
       es.push({
         id: key,
         source: a,
@@ -406,6 +442,9 @@ function GraphViewInner() {
       const a = toVisible(ce.from);
       const b = toVisible(ce.to);
       if (!a || !b || a === b) continue;
+      if (!model.nodes.has(a) || !model.nodes.has(b)) continue;
+      const edgeH = 0.03 + (hashStr(`${a}>${b}`) % 280) / 1000;
+      if (edgeH > effectiveT) continue;
       if (ce.violation) {
         violations.add(a);
         violations.add(b);
@@ -446,16 +485,22 @@ function GraphViewInner() {
     const ns: Node[] = [...model.nodes.values()].map((v) => ({
       id: v.id,
       type: "bp",
-      position: pos.get(v.id)!,
+      position: pos.get(v.id) || { x: 0, y: 0 },
       data: { v, expanded: expanded.has(v.id), toggle: () => toggle(v.id), violation: violations.has(v.id), unmapped: v.file && v.data.path && unmapped.has(v.data.path), nested: nested.has(v.id) },
-      draggable: !isPanMode && !v.virtual && !v.file,
+      draggable: !v.virtual && !v.file,
       selected: v.id === selected,
       style: v.file ? { width: FILE_W, height: FILE_H } : { width: NODE_W, height: NODE_H },
     }));
     setNodes(ns);
     setEdges(es);
-    setTimeout(() => rf.fitView({ padding: 0.12, duration: 300 }), 30);
-  }, [graph, model, edgeMode, edgeRouting, isPanMode]);
+
+    // Initial fit once on load or when switching lens; never re-fit unconditionally on spacebar pan
+    if (!hasFittedRef.current || prevLensRef.current !== lens) {
+      hasFittedRef.current = true;
+      prevLensRef.current = lens;
+      setTimeout(() => rf.fitView({ padding: 0.12, duration: 300 }), 40);
+    }
+  }, [graph, model, edgeMode, edgeRouting, effectiveT]);
 
   useEffect(() => {
     setNodes((ns) => ns.map((n) => ({ ...n, selected: n.id === selected })));
@@ -580,7 +625,6 @@ function GraphViewInner() {
         elevateNodesOnSelect
       >
         <Background variant={BackgroundVariant.Dots} gap={22} size={1} color={isDark ? "#3A3832" : "#D4CEBE"} />
-        <Controls showInteractive={false} />
         <MiniMap
           pannable
           zoomable
@@ -588,35 +632,89 @@ function GraphViewInner() {
           maskColor="rgba(0,0,0,0.4)"
         />
       </ReactFlow>
-      <div className="legend" style={{ position: "absolute", bottom: 12, left: 16, zIndex: 10, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+
+      {/* Synchronized Floating Zoom & Hand Controls (Canvas Left-Mid) */}
+      <div className="zctl">
         <button
           type="button"
-          onClick={() => setIsHandToolActive(!isHandToolActive)}
+          className={isHandToolActive ? "active" : ""}
           title="Hand tool (Hold Spacebar to pan)"
           style={{
-            background: isHandToolActive ? "var(--ink)" : "var(--panel)",
-            color: isHandToolActive ? "var(--panel)" : "var(--ink)",
-            border: "1px solid var(--line)",
-            borderRadius: "6px",
-            padding: "3px 8px",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "4px",
-            fontSize: "11px",
-            cursor: "pointer",
-            fontWeight: 600,
+            background: isHandToolActive ? "var(--ink)" : undefined,
+            color: isHandToolActive ? "var(--panel)" : undefined,
           }}
+          onClick={() => setIsHandToolActive(!isHandToolActive)}
         >
-          <Hand size={12} />
-          <span>Hand</span>
+          <Hand size={13} />
         </button>
+        <button
+          type="button"
+          title="Zoom in"
+          onClick={() => rf.zoomIn({ duration: 250 })}
+        >
+          <Plus size={14} />
+        </button>
+        <button
+          type="button"
+          title="Zoom out"
+          onClick={() => rf.zoomOut({ duration: 250 })}
+        >
+          <Minus size={14} />
+        </button>
+        <button
+          type="button"
+          title="Reset view"
+          onClick={() => rf.fitView({ padding: 0.12, duration: 300 })}
+        >
+          <RotateCcw size={13} />
+        </button>
+      </div>
+
+      {/* Legend & Routing Controls in Bottom Card */}
+      <div
+        className="legend"
+        style={{
+          position: "absolute",
+          bottom: 12,
+          left: 16,
+          zIndex: 10,
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          flexWrap: "wrap",
+          background: "var(--panel)",
+          border: "1px solid var(--line)",
+          borderRadius: "6px",
+          padding: "5px 12px",
+          boxShadow: "0 2px 8px var(--shadow)",
+          fontSize: "11px",
+          color: "var(--mute)",
+        }}
+      >
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+          <Shield size={12} color="var(--accent)" />
+          <span>Pinned</span>
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+          <Lock size={11} color="var(--ink)" />
+          <span>Leased</span>
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "var(--red)" }}>
+          <AlertTriangle size={12} color="var(--red)" />
+          <span>Violation</span>
+        </span>
 
         <span className="l declared">declared</span>
         <span className="l inferred">inferred</span>
-        <span className="l undeclared">undeclared (code only)</span>
-        <span className="l violation">violation</span>
+        <span className="l undeclared">undeclared</span>
+
         <label style={{ marginLeft: 4, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
-          <input type="checkbox" checked={edgeMode === "all"} onChange={(e) => setEdgeMode(e.target.checked ? "all" : "declared")} /> show code-only
+          <input
+            type="checkbox"
+            checked={edgeMode === "all"}
+            onChange={(e) => setEdgeMode(e.target.checked ? "all" : "declared")}
+          />
+          code-only
         </label>
 
         <div style={{ marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 4, fontSize: "11px" }}>
@@ -645,10 +743,10 @@ function GraphViewInner() {
   );
 }
 
-export function GraphView() {
+export function GraphView({ timelineT }: GraphViewProps) {
   return (
     <ReactFlowProvider>
-      <GraphViewInner />
+      <GraphViewInner timelineT={timelineT} />
     </ReactFlowProvider>
   );
 }

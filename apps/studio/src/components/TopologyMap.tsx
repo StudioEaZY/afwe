@@ -5,6 +5,7 @@ import {
   ArrowDown,
   AlertTriangle,
   Lock,
+  Shield,
   Plus,
   Minus,
   RotateCcw,
@@ -158,6 +159,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
   const [tip, setTip] = useState<{ x: number; y: number; html: React.ReactNode } | null>(null);
 
   const [isHandToolActive, setIsHandToolActive] = useState(false);
+  const [edgeRouting, setEdgeRouting] = useState<"curved" | "stepped" | "direct">("curved");
   const { isPanMode, cursorStyle, setIsDraggingCanvas } = useSpacebarPan(isHandToolActive);
 
   // Drag-and-drop node offsets state
@@ -358,18 +360,22 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
       initX: customOffsets[key]?.x || 0,
       initY: customOffsets[key]?.y || 0,
     };
-    (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
+    try {
+      (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
+    } catch (_) {}
   };
 
   const handleNodePointerMove = (ev: React.PointerEvent) => {
     if (!draggingKey || !dragNodeStartRef.current) return;
-    const dx = (ev.clientX - dragNodeStartRef.current.clientX) / zoom.k;
-    const dy = (ev.clientY - dragNodeStartRef.current.clientY) / zoom.k;
+    const start = dragNodeStartRef.current;
+    if (!start) return;
+    const dx = (ev.clientX - start.clientX) / zoom.k;
+    const dy = (ev.clientY - start.clientY) / zoom.k;
     setCustomOffsets((prev) => ({
       ...prev,
       [draggingKey]: {
-        x: dragNodeStartRef.current!.initX + dx,
-        y: dragNodeStartRef.current!.initY + dy,
+        x: (start.initX || 0) + dx,
+        y: (start.initY || 0) + dy,
       },
     }));
   };
@@ -594,14 +600,32 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                 const isRight = (startX + targetX) >= 0;
                 // Add unique offset per violation index so multiple violations don't share the exact gutter path
                 const gutterX = (isRight ? 360 : -360) + (outOffset * 0.4);
-                dPath = `M${startX},${startY} C${gutterX},${startY} ${gutterX},${targetY} ${targetX},${targetY}`;
+                if (edgeRouting === "direct") {
+                  dPath = `M${startX},${startY} L${gutterX},${(startY + targetY) * 0.5} L${targetX},${targetY}`;
+                } else if (edgeRouting === "stepped") {
+                  dPath = `M${startX},${startY} H${gutterX} V${targetY} H${targetX}`;
+                } else {
+                  dPath = `M${startX},${startY} C${gutterX},${startY} ${gutterX},${targetY} ${targetX},${targetY}`;
+                }
               } else if (isViolating) {
                 const midY = (startY + targetY) * 0.5;
                 const bowX = startX + (startX >= 0 ? 45 : -45) + outOffset * 0.3;
-                dPath = `M${startX},${startY} C${bowX},${midY} ${targetX},${midY} ${targetX},${targetY}`;
+                if (edgeRouting === "direct") {
+                  dPath = `M${startX},${startY} L${targetX},${targetY}`;
+                } else if (edgeRouting === "stepped") {
+                  dPath = `M${startX},${startY} V${midY} H${targetX} V${targetY}`;
+                } else {
+                  dPath = `M${startX},${startY} C${bowX},${midY} ${targetX},${midY} ${targetX},${targetY}`;
+                }
               } else {
                 const midY = (startY + targetY) * 0.5;
-                dPath = `M${startX},${startY} C${startX},${midY} ${targetX},${midY} ${targetX},${targetY}`;
+                if (edgeRouting === "direct") {
+                  dPath = `M${startX},${startY} L${targetX},${targetY}`;
+                } else if (edgeRouting === "stepped") {
+                  dPath = `M${startX},${startY} V${midY} H${targetX} V${targetY}`;
+                } else {
+                  dPath = `M${startX},${startY} C${startX},${midY} ${targetX},${midY} ${targetX},${targetY}`;
+                }
               }
 
               const isHoveredEdge = hoveredEdgeIdx === idx;
@@ -766,6 +790,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                 onPointerDown={(ev) => handleNodePointerDown(ev, k)}
                 onPointerMove={handleNodePointerMove}
                 onPointerUp={handleNodePointerUp}
+                onPointerCancel={handleNodePointerUp}
                 onMouseMove={(ev) => {
                   setHoveredKey(k);
                   updateTipPos(
@@ -931,7 +956,7 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
         </g>
       </svg>
 
-      {/* Arrow Legend in Bottom Bar */}
+      {/* Arrow Legend & Routing Controls in Bottom Bar */}
       {!compact && (
         <div
           style={{
@@ -948,6 +973,8 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
             fontSize: "11px",
             color: "var(--mute)",
             boxShadow: "0 2px 8px var(--shadow)",
+            flexWrap: "wrap",
+            zIndex: 10,
           }}
         >
           <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
@@ -960,6 +987,41 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
               Forbidden upward violation
             </span>
           )}
+
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <Shield size={12} color="var(--accent)" />
+            <span>Pinned</span>
+          </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <Lock size={11} color="var(--ink)" />
+            <span>Leased</span>
+          </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "var(--red)" }}>
+            <AlertTriangle size={12} color="var(--red)" />
+            <span>Violation</span>
+          </span>
+
+          <div style={{ marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 4, fontSize: "11px" }}>
+            <span style={{ color: "var(--mute)" }}>Routing:</span>
+            {(["curved", "stepped", "direct"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setEdgeRouting(mode)}
+                style={{
+                  background: edgeRouting === mode ? "var(--ink)" : "var(--panel)",
+                  color: edgeRouting === mode ? "var(--panel)" : "var(--mute)",
+                  border: "1px solid var(--line)",
+                  borderRadius: "4px",
+                  padding: "2px 6px",
+                  fontSize: "10.5px",
+                  cursor: "pointer",
+                }}
+              >
+                {mode === "curved" ? "Curved" : mode === "stepped" ? "Stepped" : "Direct"}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

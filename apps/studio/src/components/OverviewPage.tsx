@@ -617,7 +617,7 @@ export const OverviewPage: React.FC = () => {
               background: "var(--bg)",
             }}
           >
-            <GraphView />
+            <GraphView timelineT={overviewTimelineT} />
           </div>
         )}
 

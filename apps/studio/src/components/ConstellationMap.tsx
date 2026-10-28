@@ -4,6 +4,8 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowLeftRight,
+  Lock,
+  Shield,
   Plus,
   Minus,
   RotateCcw,
@@ -89,6 +91,7 @@ export const ConstellationMap: React.FC<Props> = ({
   const [tip, setTip] = useState<{ x: number; y: number; html: React.ReactNode } | null>(null);
 
   const [isHandToolActive, setIsHandToolActive] = useState(false);
+  const [edgeRouting, setEdgeRouting] = useState<"curved" | "direct">("curved");
   const { isPanMode, cursorStyle, setIsDraggingCanvas } = useSpacebarPan(isHandToolActive);
 
   // Drag-and-drop node offsets state
@@ -106,18 +109,22 @@ export const ConstellationMap: React.FC<Props> = ({
       initX: customOffsets[key]?.x || 0,
       initY: customOffsets[key]?.y || 0,
     };
-    (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
+    try {
+      (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
+    } catch (_) {}
   };
 
   const handleNodePointerMove = (ev: React.PointerEvent) => {
     if (!draggingKey || !dragNodeStartRef.current) return;
-    const dx = (ev.clientX - dragNodeStartRef.current.clientX) / zoom.k;
-    const dy = (ev.clientY - dragNodeStartRef.current.clientY) / zoom.k;
+    const start = dragNodeStartRef.current;
+    if (!start) return;
+    const dx = (ev.clientX - start.clientX) / zoom.k;
+    const dy = (ev.clientY - start.clientY) / zoom.k;
     setCustomOffsets((prev) => ({
       ...prev,
       [draggingKey]: {
-        x: dragNodeStartRef.current!.initX + dx,
-        y: dragNodeStartRef.current!.initY + dy,
+        x: (start.initX || 0) + dx,
+        y: (start.initY || 0) + dy,
       },
     }));
   };
@@ -813,9 +820,12 @@ export const ConstellationMap: React.FC<Props> = ({
               const bow = baseBow + pairOffset;
               const mx = (x1 + x2) * 0.5 - uy * bow;
               const my = (y1 + y2) * 0.5 + ux * bow;
-              const dPath = `M${x1.toFixed(1)},${y1.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(
-                1
-              )} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+              const dPath =
+                edgeRouting === "direct"
+                  ? `M${x1.toFixed(1)},${y1.toFixed(1)} L${x2.toFixed(1)},${y2.toFixed(1)}`
+                  : `M${x1.toFixed(1)},${y1.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(
+                      1
+                    )} ${x2.toFixed(1)},${y2.toFixed(1)}`;
 
               let cls = "edge";
               let marker = "url(#arr)";
@@ -963,6 +973,7 @@ export const ConstellationMap: React.FC<Props> = ({
                 onPointerDown={(ev) => handleNodePointerDown(ev, k)}
                 onPointerMove={handleNodePointerMove}
                 onPointerUp={handleNodePointerUp}
+                onPointerCancel={handleNodePointerUp}
                 onMouseMove={(ev) => {
                   setHoveredKey(k);
                   const roleLabel =
@@ -1313,6 +1324,70 @@ export const ConstellationMap: React.FC<Props> = ({
           </g>
         </g>
       </svg>
+
+      {/* Legend & Routing Controls in Bottom Card */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "12px",
+          left: "16px",
+          background: "var(--panel)",
+          border: "1px solid var(--line)",
+          borderRadius: "6px",
+          padding: "5px 12px",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "12px",
+          fontSize: "11px",
+          color: "var(--mute)",
+          boxShadow: "0 2px 8px var(--shadow)",
+          flexWrap: "wrap",
+          zIndex: 10,
+        }}
+      >
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+          <ArrowLeft size={12} color="var(--accent)" />
+          <span>Dependencies (Left)</span>
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+          <ArrowRight size={12} color="var(--ink)" />
+          <span>Consumers (Right)</span>
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+          <ArrowLeftRight size={12} color="var(--amber)" />
+          <span>Mutual</span>
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "var(--red)" }}>
+          <AlertTriangle size={12} color="var(--red)" />
+          <span>Violation</span>
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+          <Lock size={11} color="var(--ink)" />
+          <span>Leased</span>
+        </span>
+
+        <div style={{ marginLeft: 6, display: "inline-flex", alignItems: "center", gap: 4, fontSize: "11px" }}>
+          <span style={{ color: "var(--mute)" }}>Routing:</span>
+          {(["curved", "direct"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setEdgeRouting(mode)}
+              style={{
+                background: edgeRouting === mode ? "var(--ink)" : "var(--panel)",
+                color: edgeRouting === mode ? "var(--panel)" : "var(--mute)",
+                border: "1px solid var(--line)",
+                borderRadius: "4px",
+                padding: "2px 6px",
+                fontSize: "10.5px",
+                cursor: "pointer",
+              }}
+            >
+              {mode === "curved" ? "Curved Arcs" : "Direct Vectors"}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Zoom Controls (Lucide Icons) */}
       <div className="zctl">
