@@ -94,7 +94,7 @@ export const Sidebar: React.FC = () => {
     {
       key: "overview",
       label: "Codebase Overview",
-      sub: "Radial · Constellation · Topology",
+      sub: "Radial · Constellation · Topology · Blueprint",
       icon: <Compass size={15} />,
     },
     {

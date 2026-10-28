@@ -1,8 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ReactFlow, Background, Controls, MiniMap, Handle, Position, MarkerType, useReactFlow, Node, Edge, NodeProps, useNodesState, useEdgesState, BackgroundVariant } from "@xyflow/react";
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  Handle,
+  Position,
+  MarkerType,
+  useReactFlow,
+  Node,
+  Edge,
+  NodeProps,
+  useNodesState,
+  useEdgesState,
+  BackgroundVariant,
+  ReactFlowProvider,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useStore, kindIcon } from "../store";
 import { api, Graph } from "../api";
+import { buildHierarchyTree, findNodeById } from "../lib/hierarchy";
 
 // ───────── model: what is visible right now (main blueprint or a lens) ─────────
 
@@ -177,10 +194,28 @@ function BlueprintNodeView({ data, selected }: NodeProps) {
   const { scene } = useStore();
   if (v.file) {
     return (
-      <div className={`fnode ${selected ? "sel" : ""} ${d.unmapped ? "unmapped" : ""} ${d.nested ? "nested" : ""}`} title={v.data.path || ""}>
+      <div
+        className={`fnode ${selected ? "sel" : ""} ${d.unmapped ? "unmapped" : ""} ${d.nested ? "nested" : ""}`}
+        title={v.data.path || ""}
+        style={{
+          background: "var(--panel)",
+          border: selected ? "1px solid var(--accent)" : "1px solid var(--line)",
+          borderRadius: "6px",
+          color: "var(--ink)",
+          fontFamily: "var(--font-mono, monospace)",
+          padding: "4px 8px",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          fontSize: "11px",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+        }}
+      >
         <Handle type="target" position={Position.Top} id="top" />
         <Handle type="target" position={Position.Left} id="left" />
-        <span className="fname">{v.name}</span>
+        <span className="fname" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {v.name}
+        </span>
       </div>
     );
   }
@@ -193,22 +228,37 @@ function BlueprintNodeView({ data, selected }: NodeProps) {
   return (
     <div
       className={`bnode ${selected ? "sel" : ""} ${v.virtual ? "virtual" : ""} ${d.violation ? "violation" : ""} ${n.status && n.status !== "active" ? n.status : ""} ${delta ? `delta-${delta.status}` : ""}`}
+      style={{
+        background: "var(--panel)",
+        border: selected ? "2px solid var(--accent)" : d.violation ? "2px solid var(--red)" : "1px solid var(--line)",
+        borderRadius: "10px",
+        padding: "8px 12px",
+        color: "var(--ink)",
+        fontFamily: "'IBM Plex Sans', sans-serif",
+        boxShadow: selected ? "0 4px 16px rgba(0,0,0,0.12)" : "0 2px 8px rgba(0,0,0,0.06)",
+      }}
     >
       <Handle type="target" position={Position.Top} id="top" />
       <Handle type="target" position={Position.Left} id="left" />
-      <div className="bhead">
-        <span className="bicon">{kindIcon(v.kind)}</span>
-        <span className="bname" title={sceneNode?.dot_path || n.path || n.name}>
-          {v.name}
-        </span>
+      <div className="bhead" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
+          <span className="bicon" style={{ display: "inline-flex", color: "var(--accent)" }}>{kindIcon(v.kind)}</span>
+          <span className="bname" style={{ fontWeight: 600, fontSize: "13px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={sceneNode?.dot_path || n.path || n.name}>
+            {v.name}
+          </span>
+        </div>
         {v.hasChildren && (
-          <span className={`bchev ${d.expanded ? "open" : ""}`} onClick={(e) => { e.stopPropagation(); d.toggle(); }}>
-            ▸
+          <span
+            className={`bchev ${d.expanded ? "open" : ""}`}
+            style={{ cursor: "pointer", padding: "2px 6px", borderRadius: "4px", background: "var(--bg)", fontSize: "11px", fontWeight: "bold" }}
+            onClick={(e) => { e.stopPropagation(); d.toggle(); }}
+          >
+            {d.expanded ? "▾" : "▸"}
           </span>
         )}
       </div>
-      <div className="bmeta">
-        <span className="kind">{v.kind}</span>
+      <div className="bmeta" style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "6px", fontSize: "11px", color: "var(--mute)" }}>
+        <span className="kind" style={{ textTransform: "uppercase", fontSize: "9.5px", letterSpacing: "0.5px" }}>{v.kind}</span>
         {!v.virtual && <span title="files">{n.files} f</span>}
         {!v.virtual && n.memory?.length > 0 && <span title="memory entries">{n.memory.length} m</span>}
         {gov && gov.pins_count > 0 && (
@@ -237,14 +287,29 @@ const nodeTypes = { bp: BlueprintNodeView };
 
 // ───────── graph ─────────
 
-export function GraphView() {
-  const { graph, expanded, toggle, select, selected, selectFile, showImpl, lens, run, notify } = useStore();
+function GraphViewInner() {
+  const {
+    graph,
+    expanded,
+    toggle,
+    select,
+    selected,
+    selectEntity,
+    selectFile,
+    showImpl,
+    lens,
+    run,
+    notify,
+  } = useStore();
   const rf = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [edgeMode, setEdgeMode] = useState<"declared" | "all">("all");
 
-  const model = useMemo(() => (graph ? buildModel(graph, lens, expanded, showImpl) : null), [graph, lens, expanded, showImpl]);
+  const model = useMemo(
+    () => (graph ? buildModel(graph, lens, expanded, showImpl) : null),
+    [graph, lens, expanded, showImpl]
+  );
 
   useEffect(() => {
     if (!graph || !model) return;
@@ -327,14 +392,35 @@ export function GraphView() {
     return () => window.removeEventListener("afwe:fit", fit);
   }, []);
 
-  const onNodeClick = useCallback((_: any, n: Node) => {
-    const v: VNode = (n.data as any).v;
-    if (v.file) {
-      select(v.data.node);
-      if (v.data.path) selectFile(v.data.path);
-    } else if (!v.virtual) select(v.id);
-    else toggle(v.id);
-  }, []);
+  const onNodeClick = useCallback(
+    (_: any, n: Node) => {
+      const v: VNode = (n.data as any).v;
+      if (v.file) {
+        select(v.data.node);
+        if (v.data.path) selectFile(v.data.path);
+      } else if (!v.virtual) {
+        select(v.id);
+        if (graph) {
+          const rootH = buildHierarchyTree(graph);
+          const hNode = findNodeById(rootH, v.id);
+          if (hNode) {
+            selectEntity({
+              id: hNode.id,
+              key: hNode.key,
+              kind: hNode.kind,
+              label: hNode.label,
+              path: hNode.path,
+              status: hNode.hasViolation ? "violation" : "mapped",
+              state: hNode.state,
+              fileCount: hNode.fileCount,
+              node: hNode,
+            });
+          }
+        }
+      } else toggle(v.id);
+    },
+    [graph, select, selectFile, selectEntity, toggle]
+  );
 
   const onNodeDoubleClick = useCallback((_: any, n: Node) => {
     const v: VNode = (n.data as any).v;
@@ -388,8 +474,10 @@ export function GraphView() {
   );
 
   if (!graph) return null;
+  const isDark = typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark";
+
   return (
-    <section className="canvas">
+    <section className="canvas" style={{ width: "100%", height: "100%", minHeight: 620, position: "relative" }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -400,26 +488,43 @@ export function GraphView() {
         onNodeDoubleClick={onNodeDoubleClick}
         onNodeDragStop={onNodeDragStop}
         onConnect={onConnect}
-        onPaneClick={() => selectFile(null)}
+        onPaneClick={() => {
+          selectFile(null);
+          select(null);
+          selectEntity(null);
+        }}
         fitView
         minZoom={0.1}
         proOptions={{ hideAttribution: true }}
         nodesConnectable
         elevateNodesOnSelect
       >
-        <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="#2a2f3a" />
+        <Background variant={BackgroundVariant.Dots} gap={22} size={1} color={isDark ? "#3A3832" : "#D4CEBE"} />
         <Controls showInteractive={false} />
-        <MiniMap pannable zoomable nodeColor={(n) => ((n.data as any).v?.file ? "#3a3f4b" : (n.data as any).violation ? "#c0392b" : "#4b5563")} maskColor="rgba(10,12,16,0.7)" />
+        <MiniMap
+          pannable
+          zoomable
+          nodeColor={(n) => ((n.data as any).v?.file ? "var(--line)" : (n.data as any).violation ? "var(--red)" : "var(--panel)")}
+          maskColor="rgba(0,0,0,0.4)"
+        />
       </ReactFlow>
-      <div className="legend">
+      <div className="legend" style={{ position: "absolute", bottom: 12, left: 16, zIndex: 10 }}>
         <span className="l declared">declared</span>
         <span className="l inferred">inferred</span>
         <span className="l undeclared">undeclared (code only)</span>
         <span className="l violation">violation</span>
-        <label>
+        <label style={{ marginLeft: 8, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
           <input type="checkbox" checked={edgeMode === "all"} onChange={(e) => setEdgeMode(e.target.checked ? "all" : "declared")} /> show code-only edges
         </label>
       </div>
     </section>
+  );
+}
+
+export function GraphView() {
+  return (
+    <ReactFlowProvider>
+      <GraphViewInner />
+    </ReactFlowProvider>
   );
 }

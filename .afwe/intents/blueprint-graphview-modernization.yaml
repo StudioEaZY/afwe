@@ -1,0 +1,17 @@
+id: blueprint-graphview-modernization
+title: Modernize GraphView DAG Canvas with ReBorn Styling
+statement: 'Integrate GraphView into OverviewPage wrapped with ReactFlowProvider, updating styling with theme tokens (#FAF8F4 / #191816), IBM Plex Sans, Lucide badges, spacebar pan, and showImpl file leaf disclosure.'
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0041
+history:
+- turn: t0041
+  ts: 2026-10-28T05:08:39Z
+  statement: 'Integrate GraphView into OverviewPage wrapped with ReactFlowProvider, updating styling with theme tokens (#FAF8F4 / #191816), IBM Plex Sans, Lucide badges, spacebar pan, and showImpl file leaf disclosure.'
+created: 2026-10-28T05:08:39Z
+updated: 2026-10-28T05:26:48Z
+task: task-t0041

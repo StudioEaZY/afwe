@@ -1,0 +1,42 @@
+{
+  "intents": [
+    {
+      "id": "unified-4-lens-overview",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Unified 4-Lens Overview with Compact Icon-Segmented Switcher",
+      "statement": "Integrate Radial, Constellation, Topology, and Blueprint into OverviewPage using a compact segmented switcher where inactive items collapse to clean icons and the active item displays its label, with zero star icons."
+    },
+    {
+      "id": "blueprint-graphview-modernization",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Modernize GraphView DAG Canvas with ReBorn Styling",
+      "statement": "Integrate GraphView into OverviewPage wrapped with ReactFlowProvider, updating styling with theme tokens (#FAF8F4 / #191816), IBM Plex Sans, Lucide badges, spacebar pan, and showImpl file leaf disclosure."
+    },
+    {
+      "id": "topology-capability-bridges",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Topology Concrete Capability Bridges and Upward Violation Tooltips",
+      "statement": "Decorate Topology edges with top cross-tier entrypoint symbols and display exact offending file and symbol paths on upward red violation curves."
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "zero model calls added; studio overview and topology capability bridges are 100% deterministic"
+    }
+  ]
+}

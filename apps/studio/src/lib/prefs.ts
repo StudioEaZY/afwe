@@ -1,7 +1,7 @@
 // apps/studio/src/lib/prefs.ts
 // Local persistence for Studio user preferences (default start view, bookmarks, lens preference, color palettes, and quarantine grace timer).
 
-export type MapLens = "radial" | "constellation" | "topology";
+export type MapLens = "radial" | "constellation" | "topology" | "blueprint";
 
 export interface StudioBookmark {
   id: string;
@@ -40,7 +40,9 @@ export function getStudioPrefs(): StudioPrefs {
     return {
       defaultStartNodeId: parsed.defaultStartNodeId || null,
       defaultLens:
-        parsed.defaultLens === "topology" || parsed.defaultLens === "constellation"
+        parsed.defaultLens === "topology" ||
+        parsed.defaultLens === "constellation" ||
+        parsed.defaultLens === "blueprint"
           ? parsed.defaultLens
           : "radial",
       bookmarks: Array.isArray(parsed.bookmarks) ? parsed.bookmarks : [],

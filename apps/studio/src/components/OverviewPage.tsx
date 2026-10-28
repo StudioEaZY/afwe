@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Lock, AlertTriangle } from "lucide-react";
+import { Lock, AlertTriangle, Disc3, Layers, Boxes } from "lucide-react";
 import { useStore, FilterMode, ConstellationScope } from "../store";
 import {
   buildHierarchyTree,
@@ -11,7 +11,9 @@ import {
 import { RadialMap } from "./RadialMap";
 import { ConstellationMap } from "./ConstellationMap";
 import { TopologyMap } from "./TopologyMap";
+import { GraphView } from "./GraphView";
 import { NodeInspector } from "./NodeInspector";
+import { ConstellationGlyph } from "../lib/lucideSvgPaths";
 
 const CURATED_ANCHOR_OPTIONS: { group: string; items: { value: string; label: string }[] }[] = [
   {
@@ -70,6 +72,8 @@ export const OverviewPage: React.FC = () => {
     setScope,
     selectEntity,
     setFilterMode,
+    showImpl,
+    setShowImpl,
   } = useStore();
 
   // Radial-specific view controls matching AFWE Codebase Atlas
@@ -171,7 +175,9 @@ export const OverviewPage: React.FC = () => {
       ? "What's inside this part of the codebase?"
       : activeLens === "constellation"
       ? "What does this part depend on, and what depends on it?"
-      : "How does the architecture flow, and where are the forbidden paths?";
+      : activeLens === "topology"
+      ? "How does the architecture flow, and where are the forbidden paths?"
+      : "What is the complete component tree DAG, and what files implement each domain?";
 
   // Dynamic subtitle (#sub)
   const subtitle = useMemo(() => {
@@ -199,7 +205,10 @@ export const OverviewPage: React.FC = () => {
       }
       return `Domain-level dependency field for ${eff.label}. Left = dependencies; Right = consumers. Click any node to inspect or double-click to centre here.`;
     }
-    return "Layered architectural flow from Presentation (top) down to Foundation (bottom). Red upward arrows highlight forbidden dependencies that violate tier boundaries.";
+    if (activeLens === "topology") {
+      return "Layered architectural flow from Presentation (top) down to Foundation (bottom). Red upward arrows highlight forbidden dependencies that violate tier boundaries.";
+    }
+    return "Complete architectural component DAG. Tree layout with leaf file inspection (showImpl), drag-and-drop reparenting, and constraint wiring.";
   }, [activeLens, focusNode, constellationHeaderCtx]);
 
   // Check if current constellation anchor is in CURATED_ANCHOR_OPTIONS
@@ -282,9 +291,13 @@ export const OverviewPage: React.FC = () => {
           {activeLens === "topology" && (
             <span>Architectural Topology · 4-Tier Layered View</span>
           )}
+
+          {activeLens === "blueprint" && (
+            <span>Architectural Blueprint · Full Component Tree DAG</span>
+          )}
         </div>
 
-        {/* Headline Row + 3-Mode Segmented Switcher */}
+        {/* Headline Row + 4-Mode Compact Icon-Segmented Switcher */}
         <div className="headline">
           <div className="title-block">
             <h1 className="serif">Codebase Overview</h1>
@@ -292,32 +305,58 @@ export const OverviewPage: React.FC = () => {
           </div>
 
           <div className="seg" role="tablist" aria-label="View mode">
-            <button
-              type="button"
-              className={activeLens === "radial" ? "on" : ""}
-              onClick={() => setActiveLens("radial")}
-            >
-              Radial
-            </button>
-            <button
-              type="button"
-              className={activeLens === "constellation" ? "on" : ""}
-              onClick={() => {
-                if (selectedNode) {
-                  setConstellationAnchor(selectedNode.key);
-                }
-                setActiveLens("constellation");
-              }}
-            >
-              Constellation
-            </button>
-            <button
-              type="button"
-              className={activeLens === "topology" ? "on" : ""}
-              onClick={() => setActiveLens("topology")}
-            >
-              Topology
-            </button>
+            {[
+              {
+                id: "radial" as const,
+                label: "Radial",
+                icon: <Disc3 size={14} strokeWidth={2} />,
+              },
+              {
+                id: "constellation" as const,
+                label: "Constellation",
+                icon: <ConstellationGlyph size={14} />,
+              },
+              {
+                id: "topology" as const,
+                label: "Topology",
+                icon: <Layers size={14} strokeWidth={2} />,
+              },
+              {
+                id: "blueprint" as const,
+                label: "Blueprint",
+                icon: <Boxes size={14} strokeWidth={2} />,
+              },
+            ].map((item) => {
+              const isActive = activeLens === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={isActive ? "on" : ""}
+                  onClick={() => {
+                    if (item.id === "constellation" && selectedNode) {
+                      setConstellationAnchor(selectedNode.key);
+                    }
+                    setActiveLens(item.id);
+                  }}
+                  title={`${item.label} view`}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: isActive ? "6px" : "0px",
+                    padding: isActive ? "5px 12px" : "5px 9px",
+                    transition: "all 0.16s ease-in-out",
+                  }}
+                >
+                  {item.icon}
+                  {isActive && (
+                    <span style={{ fontWeight: 600, fontSize: "12px", whiteSpace: "nowrap" }}>
+                      {item.label}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -497,6 +536,20 @@ export const OverviewPage: React.FC = () => {
               </button>
             </div>
           )}
+
+          {/* Blueprint-Only Controls (#bpCtl) */}
+          {activeLens === "blueprint" && (
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                className={`ctl toggle ${showImpl ? "on" : ""}`}
+                onClick={() => setShowImpl(!showImpl)}
+                title="Reveal implementing files underneath each domain and subsystem node"
+              >
+                Show Implementation: <b>{showImpl ? "On" : "Off"}</b>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Active Map Stage */}
@@ -550,6 +603,22 @@ export const OverviewPage: React.FC = () => {
             }}
             onOpenConstellation={(nodeKey) => openConstellationFor(nodeKey)}
           />
+        )}
+
+        {activeLens === "blueprint" && (
+          <div
+            style={{
+              height: "640px",
+              width: "100%",
+              borderRadius: "10px",
+              overflow: "hidden",
+              border: "1px solid var(--line)",
+              position: "relative",
+              background: "var(--bg)",
+            }}
+          >
+            <GraphView />
+          </div>
         )}
 
         {/* Bottom Legend & Rewind Timeline Scrubber (.foot) */}

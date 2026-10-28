@@ -11,11 +11,13 @@ AFWE combines Code Knowledge Graphing, Intent Memory, and Structural Tripwires i
 When interacting with this codebase:
 
 1. **Phase 0: Pre-Planning & Research (Before Planning)**:
-   - Call `afwe turn begin "<prompt>" --target <files>` (or MCP tool `afwe_turn_begin`) **immediately upon receiving the prompt**, before researching or authoring a plan (`/plan`).
-   - Read the briefing pack: inspect in-scope architectural nodes, locked pins, active guardrails, probing guides (`[GUIDE - ADVISORY]`), and ambiguity questions. Use this briefing to shape the implementation plan.
+   - Call `afwe turn begin "<prompt>" --target <files> [--claim <files>] [--parent <turn>]` (or MCP tool `afwe_turn_begin`) **immediately upon receiving the prompt**, before researching or authoring a plan (`/plan`).
+   - In parallel multi-agent sessions, declare file claims upfront with `--claim <files>` to prevent lost-update races.
+   - Read the briefing pack: inspect in-scope architectural nodes, locked pins, active guardrails, probing guides (`[GUIDE - ADVISORY]`), and ambiguity questions. Note your assigned `turn_hash` and bearer `token`.
+   - If `CONTENTION` is returned, another agent holds that file. Do not edit conflicting files concurrently in the same directory.
 
 2. **Phase 1: Pre-Code Declaration (After Plan Approval)**:
-   - Call `afwe turn assume <turn> --file <json>` (or MCP tool `afwe_turn_assume`) to declare your intents and pre-generation claims BEFORE writing any code.
+   - Call `afwe turn assume <turn> --file <json> [--token <tok>] [--claim <files>]` (or MCP tool `afwe_turn_assume`) to declare your intents and pre-generation claims BEFORE writing any code.
      Supported claims include:
      - `forbid_import`: forbid cross-module imports (e.g. `to_nodes: ["ui"]`).
      - `forbid_symbol`: forbid disallowed AST symbols (e.g. `symbol: "danger_fn"`).
@@ -24,7 +26,8 @@ When interacting with this codebase:
      - `pattern`: regex AST/file pattern check (with automatic comment blanking).
      - `command`: shell verification command.
    - If refactoring or replacing existing capabilities, declare explicit removals in `removes` or intents with `action: remove` / `replace` (following Rust's strict compiler philosophy: unforgiving by default with explicit declarations).
-   - If REDO is returned, call `afwe turn redo <turn>` to cleanly reset to baseline or revise assumptions.
+   - If REDO is returned, call `afwe turn redo <turn> [--token <tok>]` to safely reset working tree changes back to baseline (backed up in `.afwe/backups/<turn_hash>/`).
+   - If abandoning an open attempt, call `afwe turn abandon <turn> [--token <tok>]` to release all file claims immediately.
 
 3. **Phase 2: While Editing**:
    - Retrieve micro-context via `afwe context <files>` (or MCP `afwe_context`).
@@ -39,7 +42,8 @@ When interacting with this codebase:
      - Update skill instructions (`.afwe/skills/afwe/SKILL.md`) with generalized examples.
      - Update MCP tool specs and handlers (`mcp.rs`, `api.rs`) whenever tool capabilities expand.
      - Persist non-obvious design choices via `afwe memory add --kind decision ...` (or `afwe_memory_add`).
-   - Commit the turn via `afwe turn commit <turn> --summary "..."` (or MCP `afwe_turn_commit`).
+   - Commit the turn via `afwe turn commit <turn> --summary "..." [--token <tok>]` (or MCP `afwe_turn_commit`).
+     Commits are isolated via Git plumbing trees with CAS verification and OS advisory commit locks (`flock`/`LockFileEx`), preventing dirty workspace leakage.
      The commit gate deterministically enforces capability and governance ratchets:
      - `DROPPED_CAPABILITY`: intra-file export dropped without declared remove/replace intent.
      - `SEVERED_CAPABILITY`: cross-module caller severance dropping inbound references from >0 to 0.

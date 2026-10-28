@@ -1,0 +1,17 @@
+id: topology-capability-bridges
+title: Topology Concrete Capability Bridges and Upward Violation Tooltips
+statement: Decorate Topology edges with top cross-tier entrypoint symbols and display exact offending file and symbol paths on upward red violation curves.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0041
+history:
+- turn: t0041
+  ts: 2026-10-28T05:08:39Z
+  statement: Decorate Topology edges with top cross-tier entrypoint symbols and display exact offending file and symbol paths on upward red violation curves.
+created: 2026-10-28T05:08:39Z
+updated: 2026-10-28T05:26:48Z
+task: task-t0041

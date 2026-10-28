@@ -16,10 +16,10 @@ import {
   ChevronRight,
   X,
   FileCode,
-  Sparkles,
-  Disc,
+  Disc3,
   Layers,
 } from "lucide-react";
+import { ConstellationGlyph } from "../lib/lucideSvgPaths";
 import { useStore } from "../store";
 import { api, SceneData } from "../api";
 import { TimelineDualScrubber, TimelineTurnItem } from "./TimelineDualScrubber";
@@ -369,66 +369,50 @@ export const TimelinePage: React.FC = () => {
                 gap: "2px",
               }}
             >
-              <button
-                type="button"
-                onClick={() => setDiffViewMode("constellation")}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  fontSize: "12px",
-                  fontWeight: diffViewMode === "constellation" ? 600 : 500,
-                  padding: "4px 10px",
-                  borderRadius: "6px",
-                  border: "none",
-                  background: diffViewMode === "constellation" ? "var(--ink)" : "transparent",
-                  color: diffViewMode === "constellation" ? "var(--panel)" : "var(--mute)",
-                  cursor: "pointer",
-                }}
-              >
-                <Sparkles size={12} />
-                Constellation
-              </button>
-              <button
-                type="button"
-                onClick={() => setDiffViewMode("radial")}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  fontSize: "12px",
-                  fontWeight: diffViewMode === "radial" ? 600 : 500,
-                  padding: "4px 10px",
-                  borderRadius: "6px",
-                  border: "none",
-                  background: diffViewMode === "radial" ? "var(--ink)" : "transparent",
-                  color: diffViewMode === "radial" ? "var(--panel)" : "var(--mute)",
-                  cursor: "pointer",
-                }}
-              >
-                <Disc size={12} />
-                Radial
-              </button>
-              <button
-                type="button"
-                onClick={() => setDiffViewMode("topology")}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  fontSize: "12px",
-                  fontWeight: diffViewMode === "topology" ? 600 : 500,
-                  padding: "4px 10px",
-                  borderRadius: "6px",
-                  border: "none",
-                  background: diffViewMode === "topology" ? "var(--ink)" : "transparent",
-                  color: diffViewMode === "topology" ? "var(--panel)" : "var(--mute)",
-                  cursor: "pointer",
-                }}
-              >
-                <Layers size={12} />
-                Topology
-              </button>
+              {[
+                {
+                  id: "constellation" as const,
+                  label: "Constellation",
+                  icon: <ConstellationGlyph size={13} />,
+                },
+                {
+                  id: "radial" as const,
+                  label: "Radial",
+                  icon: <Disc3 size={13} strokeWidth={2} />,
+                },
+                {
+                  id: "topology" as const,
+                  label: "Topology",
+                  icon: <Layers size={13} strokeWidth={2} />,
+                },
+              ].map((item) => {
+                const isActive = diffViewMode === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setDiffViewMode(item.id)}
+                    title={`${item.label} diff`}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: isActive ? "5px" : "0px",
+                      fontSize: "12px",
+                      fontWeight: isActive ? 600 : 500,
+                      padding: isActive ? "4px 10px" : "4px 8px",
+                      borderRadius: "6px",
+                      border: "none",
+                      background: isActive ? "var(--ink)" : "transparent",
+                      color: isActive ? "var(--panel)" : "var(--mute)",
+                      cursor: "pointer",
+                      transition: "all 0.16s ease-in-out",
+                    }}
+                  >
+                    {item.icon}
+                    {isActive && <span>{item.label}</span>}
+                  </button>
+                );
+              })}
             </div>
           </div>
           <span style={{ fontSize: "11px", color: "var(--mute)" }}>

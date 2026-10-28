@@ -140,7 +140,13 @@ const EdgeInspectorView: React.FC<EdgeInspectorViewProps> = ({
           <div>
             <b>Rule violation</b>
             <br />
-            {e.a} must not depend on {e.b}.<br />
+            {e.a} must not depend on {e.b}.
+            {e.bridge?.violationDetail && (
+              <div style={{ marginTop: 4, fontWeight: 600 }}>
+                Violation: {e.bridge.violationDetail}
+              </div>
+            )}
+            <br />
             <span style={{ opacity: 0.85 }}>
               Suggested fix: invert dependency via an event or move shared types into Shared.
             </span>
@@ -154,6 +160,25 @@ const EdgeInspectorView: React.FC<EdgeInspectorViewProps> = ({
             rationale={`${e.a} must not depend on ${e.b}`}
             suggestedAction="Invert the dependency via an interface or move shared types behind an allowed boundary."
           />
+        </div>
+      )}
+
+      {e.bridge && e.bridge.entrypoints && e.bridge.entrypoints.length > 0 && (
+        <div className="sec">
+          <h3>Concrete Capability Bridges ({e.bridge.entrypoints.length})</h3>
+          {e.bridge.entrypoints.map((ep: string, idx: number) => (
+            <div
+              key={idx}
+              className="row"
+              style={{
+                fontFamily: "var(--font-mono, monospace)",
+                fontSize: "11px",
+                color: e.bad ? "var(--red)" : "var(--ink)",
+              }}
+            >
+              <span>• {ep}</span>
+            </div>
+          ))}
         </div>
       )}
 

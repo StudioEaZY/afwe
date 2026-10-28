@@ -53,6 +53,60 @@ export interface TopologyMapProps {
   onOpenConstellation?: (nodeKey: string) => void;
 }
 
+export interface CapabilityBridge {
+  sourceFiles: string[];
+  targetFiles: string[];
+  entrypoints: string[];
+  violationDetail?: string;
+}
+
+export function getEdgeCapabilityBridge(
+  graph: any,
+  sourceDomain: string,
+  targetDomain: string,
+  isViolating: boolean
+): CapabilityBridge {
+  const srcNorm = sourceDomain.toLowerCase();
+  const tgtNorm = targetDomain.toLowerCase();
+
+  const matchingCodeEdges = (graph?.code_edges || []).filter((ce: any) => {
+    const fromMatches = ce.from?.toLowerCase().includes(srcNorm);
+    const toMatches = ce.to?.toLowerCase().includes(tgtNorm);
+    return fromMatches && toMatches;
+  });
+
+  const entrypoints: string[] = [];
+  const sourceFiles: string[] = [];
+  const targetFiles: string[] = [];
+  let violationDetail: string | undefined;
+
+  for (const ce of matchingCodeEdges) {
+    if (ce.violation && !violationDetail) {
+      violationDetail = ce.violation;
+    }
+    if (ce.from && !sourceFiles.includes(ce.from)) sourceFiles.push(ce.from);
+    if (ce.to && !targetFiles.includes(ce.to)) targetFiles.push(ce.to);
+  }
+
+  const allFiles = graph?.files || [];
+  for (const f of allFiles) {
+    const fNode = (f.node || f.path || "").toLowerCase();
+    if (fNode.includes(srcNorm)) {
+      for (const imp of f.imports || []) {
+        if (imp.toLowerCase().includes(tgtNorm)) {
+          if (!sourceFiles.includes(f.path)) sourceFiles.push(f.path);
+          if (!targetFiles.includes(imp)) targetFiles.push(imp);
+          const cleanSrc = f.path.split("/").slice(-2).join("/");
+          const cleanImp = imp.split("/").slice(-2).join("/");
+          entrypoints.push(`${cleanSrc} → ${cleanImp}`);
+        }
+      }
+    }
+  }
+
+  return { sourceFiles, targetFiles, entrypoints, violationDetail };
+}
+
 const TIER_NAMES = [
   "Tier 1 · Presentation Layer",
   "Tier 2 · Application & Services",
@@ -256,6 +310,8 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
   };
 
   const handleSelectEdge = (e: DirectedEdge) => {
+    const isViolating = Boolean(e.bad);
+    const bridge = getEdgeCapabilityBridge(graph, e.a, e.b, isViolating);
     const ent: SelectedEntity = {
       id: `${e.a}->${e.b}`,
       key: `${e.a}->${e.b}`,
@@ -263,7 +319,12 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
       label: `${shortLabel(e.a)} → ${shortLabel(e.b)}`,
       path: `${e.a} → ${e.b}`,
       status: e.bad ? "violation" : "mapped",
-      edgeData: e,
+      purpose: e.bad
+        ? `Rule violation: ${bridge.violationDetail || "forbidden upward dependency"}`
+        : `Architectural dependency (${bridge.entrypoints.length || e.count || 1} calls)`,
+      description:
+        bridge.entrypoints.length > 0 ? bridge.entrypoints.slice(0, 5).join(", ") : undefined,
+      edgeData: { ...e, bridge },
     };
     if (onSelectEntity) onSelectEntity(ent);
     else selectEntity(ent);
@@ -558,21 +619,81 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
                     style={{ pointerEvents: isPanMode ? "none" : "stroke" }}
                     onMouseMove={(ev) => {
                       setHoveredEdgeIdx(idx);
+                      const bridge = getEdgeCapabilityBridge(graph, e.a, e.b, isViolating);
                       updateTipPos(
                         ev,
-                        <div>
-                          <b className="serif">
+                        <div style={{ maxWidth: 360 }}>
+                          <b className="serif" style={{ fontSize: "14px" }}>
                             {e.a} → {e.b}
                           </b>
-                          <div className="tm">
+                          <div className="tm" style={{ marginTop: "3px" }}>
                             Architectural dependency: <b>{e.a}</b> depends on <b>{e.b}</b>
                           </div>
                           {isViolating && (
-                            <div style={{ color: "var(--red)", fontWeight: 600 }}>
-                              Rule violation: forbidden architectural dependency
+                            <div
+                              style={{
+                                color: "var(--red)",
+                                fontWeight: 600,
+                                marginTop: "6px",
+                                background: "var(--redbg)",
+                                padding: "4px 8px",
+                                borderRadius: "4px",
+                                fontSize: "12px",
+                              }}
+                            >
+                              ⚠️ Upward Tier Violation
+                              {bridge.violationDetail ? `: ${bridge.violationDetail}` : " (inverted layer rule)"}
                             </div>
                           )}
-                          <div className="tm">Click line to inspect details</div>
+                          {(bridge.entrypoints.length > 0 || bridge.sourceFiles.length > 0) && (
+                            <div
+                              style={{
+                                marginTop: "8px",
+                                borderTop: "1px solid var(--line)",
+                                paddingTop: "6px",
+                                fontSize: "11px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  color: "var(--mute)",
+                                  fontWeight: 600,
+                                  textTransform: "uppercase",
+                                  fontSize: "9.5px",
+                                  letterSpacing: "0.5px",
+                                }}
+                              >
+                                Concrete Call Bridges:
+                              </div>
+                              {bridge.entrypoints.slice(0, 3).map((ep, i) => (
+                                <div
+                                  key={i}
+                                  style={{
+                                    fontFamily: "var(--font-mono, monospace)",
+                                    color: isViolating ? "var(--red)" : "var(--ink)",
+                                    marginTop: "2px",
+                                  }}
+                                >
+                                  • {ep}
+                                </div>
+                              ))}
+                              {bridge.entrypoints.length === 0 && bridge.sourceFiles[0] && (
+                                <div
+                                  style={{
+                                    fontFamily: "var(--font-mono, monospace)",
+                                    color: isViolating ? "var(--red)" : "var(--ink)",
+                                    marginTop: "2px",
+                                  }}
+                                >
+                                  • {bridge.sourceFiles[0]?.split("/").slice(-2).join("/")} →{" "}
+                                  {bridge.targetFiles[0]?.split("/").slice(-2).join("/") || e.b}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          <div className="tm" style={{ marginTop: "6px", opacity: 0.75, fontSize: "10.5px" }}>
+                            Click line to inspect details in side panel
+                          </div>
                         </div>
                       );
                     }}

@@ -1,0 +1,17 @@
+id: unified-4-lens-overview
+title: Unified 4-Lens Overview with Compact Icon-Segmented Switcher
+statement: Integrate Radial, Constellation, Topology, and Blueprint into OverviewPage using a compact segmented switcher where inactive items collapse to clean icons and the active item displays its label, with zero star icons.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0041
+history:
+- turn: t0041
+  ts: 2026-10-28T05:08:39Z
+  statement: Integrate Radial, Constellation, Topology, and Blueprint into OverviewPage using a compact segmented switcher where inactive items collapse to clean icons and the active item displays its label, with zero star icons.
+created: 2026-10-28T05:08:39Z
+updated: 2026-10-28T05:26:48Z
+task: task-t0041

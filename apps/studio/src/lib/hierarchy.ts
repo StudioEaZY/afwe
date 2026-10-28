@@ -25,6 +25,7 @@ export interface DirectedEdge {
   bad: boolean;
   count?: number;
   status?: string;
+  bridge?: any;
 }
 
 export interface SelectedEntity {
