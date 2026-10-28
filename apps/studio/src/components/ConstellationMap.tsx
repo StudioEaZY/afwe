@@ -450,6 +450,24 @@ export const ConstellationMap: React.FC<Props> = ({
     });
   }, [activeEdges, livePos, effKey, scope, timelineT, compareT]);
 
+  // Group pairs of connected nodes to bow parallel / mutual arcs apart cleanly
+  const edgePairOffsets = useMemo(() => {
+    const pairCounts: Record<string, number> = {};
+    visibleEdges.forEach((e) => {
+      const pairKey = [e.a, e.b].sort().join("::");
+      pairCounts[pairKey] = (pairCounts[pairKey] || 0) + 1;
+    });
+    const pairIdx: Record<string, number> = {};
+    return visibleEdges.map((e) => {
+      const pairKey = [e.a, e.b].sort().join("::");
+      const total = pairCounts[pairKey] || 1;
+      const idx = pairIdx[pairKey] || 0;
+      pairIdx[pairKey] = idx + 1;
+      const offset = total > 1 ? (idx - (total - 1) * 0.5) * 22 : 0;
+      return { total, idx, offset };
+    });
+  }, [visibleEdges]);
+
   // Check if filter mode matches a node
   const passFilter = (n: HierarchyNode): boolean => {
     if (filterMode === "all") return true;
@@ -790,8 +808,11 @@ export const ConstellationMap: React.FC<Props> = ({
               const x2 = p2.x - ux * endR;
               const y2 = p2.y - uy * endR;
 
-              const mx = (x1 + x2) * 0.5 - uy * (involvesAnchor ? 14 : 24);
-              const my = (y1 + y2) * 0.5 + ux * (involvesAnchor ? 14 : 24);
+              const pairOffset = edgePairOffsets[idx]?.offset || 0;
+              const baseBow = involvesAnchor ? 14 : 24;
+              const bow = baseBow + pairOffset;
+              const mx = (x1 + x2) * 0.5 - uy * bow;
+              const my = (y1 + y2) * 0.5 + ux * bow;
               const dPath = `M${x1.toFixed(1)},${y1.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(
                 1
               )} ${x2.toFixed(1)},${y2.toFixed(1)}`;

@@ -1,0 +1,17 @@
+id: edge-geometry-and-disambiguation
+title: Edge Geometry Options and Tight Line Disambiguation
+statement: Add perimeter port distribution and click-to-cycle selection across tight edge bundles, and provide tuned routing geometry options.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0042
+history:
+- turn: t0042
+  ts: 2026-10-28T06:19:47Z
+  statement: Add perimeter port distribution and click-to-cycle selection across tight edge bundles, and provide tuned routing geometry options.
+created: 2026-10-28T06:19:47Z
+updated: 2026-10-28T06:19:47Z
+task: task-t0042

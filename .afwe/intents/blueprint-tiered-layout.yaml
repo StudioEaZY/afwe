@@ -1,0 +1,17 @@
+id: blueprint-tiered-layout
+title: Blueprint Tiered Strata Layout and Spacebar Pan
+statement: Replace single-row y=0 root horizontal placement with balanced tiered strata packing, perimeter port attachments, and seamless spacebar hand pan.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0042
+history:
+- turn: t0042
+  ts: 2026-10-28T06:19:47Z
+  statement: Replace single-row y=0 root horizontal placement with balanced tiered strata packing, perimeter port attachments, and seamless spacebar hand pan.
+created: 2026-10-28T06:19:47Z
+updated: 2026-10-28T06:19:47Z
+task: task-t0042

@@ -17,9 +17,11 @@ import {
   ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { Hand } from "lucide-react";
 import { useStore, kindIcon } from "../store";
 import { api, Graph } from "../api";
 import { buildHierarchyTree, findNodeById } from "../lib/hierarchy";
+import { useSpacebarPan } from "../lib/semanticZoomEngine";
 
 // ───────── model: what is visible right now (main blueprint or a lens) ─────────
 
@@ -178,11 +180,52 @@ function layout(model: { nodes: Map<string, VNode>; roots: string[] }): { pos: M
       cy += e.h + STACK_GAP;
     }
   };
-  let x = 0;
+
+  // Group roots into balanced architectural tiers rather than one infinite horizontal line at y=0.
+  // Tier 0: Presentation (Web, Mobile, Client, UI, Frontend)
+  // Tier 1: Application / Services (Backend, Services, API, Workers, Jobs)
+  // Tier 2: Domain / Core (Core, Domain, Models, Business)
+  // Tier 3: Foundation / Data / Platform (Data, Shared, Infrastructure, DB, Storage, Lib)
+  const tierOfRoot = (id: string): number => {
+    const name = (model.nodes.get(id)?.name || id).toLowerCase();
+    const tags = ((model.nodes.get(id)?.data?.tags as string[]) || []).map((t) => t.toLowerCase());
+    for (const t of tags) {
+      if (t.includes("tier:0") || t.includes("tier:presentation")) return 0;
+      if (t.includes("tier:1") || t.includes("tier:app") || t.includes("tier:service")) return 1;
+      if (t.includes("tier:2") || t.includes("tier:core") || t.includes("tier:domain")) return 2;
+      if (t.includes("tier:3") || t.includes("tier:data") || t.includes("tier:foundation")) return 3;
+    }
+    if (/web|mobile|client|ui|frontend|app|presentation/i.test(name)) return 0;
+    if (/service|api|worker|job|gateway/i.test(name)) return 1;
+    if (/core|domain|model|entity|business/i.test(name)) return 2;
+    if (/backend/i.test(name)) return 1;
+    if (/data|shared|infra|db|storage|platform|foundation|common|util/i.test(name)) return 3;
+    return 1;
+  };
+
+  const rootsByTier: Map<number, string[]> = new Map();
   for (const r of model.roots) {
-    place(r, x, 0);
-    x += geom(r).w + GAP_X * 2;
+    const t = tierOfRoot(r);
+    if (!rootsByTier.has(t)) rootsByTier.set(t, []);
+    rootsByTier.get(t)!.push(r);
   }
+
+  // Sort present tiers in logical top-down architectural order
+  const activeTiers = Array.from(rootsByTier.keys()).sort((a, b) => a - b);
+  let curY = 0;
+  for (const tierIdx of activeTiers) {
+    const tierRoots = rootsByTier.get(tierIdx)!;
+    let curX = 0;
+    let maxHInTier = 0;
+    for (const r of tierRoots) {
+      place(r, curX, curY);
+      const g = geom(r);
+      curX += g.w + GAP_X * 2;
+      if (g.h > maxHInTier) maxHInTier = g.h;
+    }
+    curY += maxHInTier + GAP_Y * 1.5;
+  }
+
   return { pos, stacked, nested };
 }
 
@@ -305,6 +348,9 @@ function GraphViewInner() {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [edgeMode, setEdgeMode] = useState<"declared" | "all">("all");
+  const [edgeRouting, setEdgeRouting] = useState<"smoothstep" | "default" | "straight">("smoothstep");
+  const [isHandToolActive, setIsHandToolActive] = useState(false);
+  const { isPanMode, cursorStyle } = useSpacebarPan(isHandToolActive);
 
   const model = useMemo(
     () => (graph ? buildModel(graph, lens, expanded, showImpl) : null),
@@ -343,7 +389,17 @@ function GraphViewInner() {
       const key = `r:${a}->${b}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      es.push({ id: key, source: a, target: b, targetHandle: "top", type: "default", className: r.status === "inferred" ? "e-inferred" : "e-declared", label: r.kind === "depends_on" ? undefined : r.kind, markerEnd: { type: MarkerType.ArrowClosed }, data: { rationale: r.rationale } });
+      es.push({
+        id: key,
+        source: a,
+        target: b,
+        targetHandle: "top",
+        type: edgeRouting,
+        className: r.status === "inferred" ? "e-inferred" : "e-declared",
+        label: r.kind === "depends_on" ? undefined : r.kind,
+        markerEnd: { type: MarkerType.ArrowClosed },
+        data: { rationale: r.rationale },
+      });
     }
     // code edges: undeclared + violations
     for (const ce of graph.code_edges) {
@@ -356,7 +412,17 @@ function GraphViewInner() {
         const key = `v:${a}->${b}`;
         if (!seen.has(key)) {
           seen.add(key);
-          es.push({ id: key, source: a, target: b, targetHandle: "top", className: "e-violation", label: `✗ ${ce.violation}`, markerEnd: { type: MarkerType.ArrowClosed }, animated: true });
+          es.push({
+            id: key,
+            source: a,
+            target: b,
+            targetHandle: "top",
+            type: edgeRouting,
+            className: "e-violation",
+            label: `✗ ${ce.violation}`,
+            markerEnd: { type: MarkerType.ArrowClosed },
+            animated: true,
+          });
         }
         continue;
       }
@@ -364,7 +430,16 @@ function GraphViewInner() {
         const key = `u:${a}->${b}`;
         if (!seen.has(key)) {
           seen.add(key);
-          es.push({ id: key, source: a, target: b, targetHandle: "top", className: "e-undeclared", label: `${ce.count}× undeclared`, markerEnd: { type: MarkerType.ArrowClosed } });
+          es.push({
+            id: key,
+            source: a,
+            target: b,
+            targetHandle: "top",
+            type: edgeRouting,
+            className: "e-undeclared",
+            label: `${ce.count}× undeclared`,
+            markerEnd: { type: MarkerType.ArrowClosed },
+          });
         }
       }
     }
@@ -373,14 +448,14 @@ function GraphViewInner() {
       type: "bp",
       position: pos.get(v.id)!,
       data: { v, expanded: expanded.has(v.id), toggle: () => toggle(v.id), violation: violations.has(v.id), unmapped: v.file && v.data.path && unmapped.has(v.data.path), nested: nested.has(v.id) },
-      draggable: !v.virtual && !v.file,
+      draggable: !isPanMode && !v.virtual && !v.file,
       selected: v.id === selected,
       style: v.file ? { width: FILE_W, height: FILE_H } : { width: NODE_W, height: NODE_H },
     }));
     setNodes(ns);
     setEdges(es);
     setTimeout(() => rf.fitView({ padding: 0.12, duration: 300 }), 30);
-  }, [graph, model, edgeMode]);
+  }, [graph, model, edgeMode, edgeRouting, isPanMode]);
 
   useEffect(() => {
     setNodes((ns) => ns.map((n) => ({ ...n, selected: n.id === selected })));
@@ -477,7 +552,7 @@ function GraphViewInner() {
   const isDark = typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark";
 
   return (
-    <section className="canvas" style={{ width: "100%", height: "100%", minHeight: 620, position: "relative" }}>
+    <section className="canvas" style={{ width: "100%", height: "100%", minHeight: 620, position: "relative", cursor: cursorStyle }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -488,6 +563,11 @@ function GraphViewInner() {
         onNodeDoubleClick={onNodeDoubleClick}
         onNodeDragStop={onNodeDragStop}
         onConnect={onConnect}
+        panOnDrag={isPanMode ? true : [1, 2]}
+        selectionOnDrag={false}
+        panOnScroll={true}
+        zoomOnScroll={true}
+        nodesDraggable={!isPanMode}
         onPaneClick={() => {
           selectFile(null);
           select(null);
@@ -496,7 +576,7 @@ function GraphViewInner() {
         fitView
         minZoom={0.1}
         proOptions={{ hideAttribution: true }}
-        nodesConnectable
+        nodesConnectable={!isPanMode}
         elevateNodesOnSelect
       >
         <Background variant={BackgroundVariant.Dots} gap={22} size={1} color={isDark ? "#3A3832" : "#D4CEBE"} />
@@ -508,14 +588,58 @@ function GraphViewInner() {
           maskColor="rgba(0,0,0,0.4)"
         />
       </ReactFlow>
-      <div className="legend" style={{ position: "absolute", bottom: 12, left: 16, zIndex: 10 }}>
+      <div className="legend" style={{ position: "absolute", bottom: 12, left: 16, zIndex: 10, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <button
+          type="button"
+          onClick={() => setIsHandToolActive(!isHandToolActive)}
+          title="Hand tool (Hold Spacebar to pan)"
+          style={{
+            background: isHandToolActive ? "var(--ink)" : "var(--panel)",
+            color: isHandToolActive ? "var(--panel)" : "var(--ink)",
+            border: "1px solid var(--line)",
+            borderRadius: "6px",
+            padding: "3px 8px",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "4px",
+            fontSize: "11px",
+            cursor: "pointer",
+            fontWeight: 600,
+          }}
+        >
+          <Hand size={12} />
+          <span>Hand</span>
+        </button>
+
         <span className="l declared">declared</span>
         <span className="l inferred">inferred</span>
         <span className="l undeclared">undeclared (code only)</span>
         <span className="l violation">violation</span>
-        <label style={{ marginLeft: 8, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
-          <input type="checkbox" checked={edgeMode === "all"} onChange={(e) => setEdgeMode(e.target.checked ? "all" : "declared")} /> show code-only edges
+        <label style={{ marginLeft: 4, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
+          <input type="checkbox" checked={edgeMode === "all"} onChange={(e) => setEdgeMode(e.target.checked ? "all" : "declared")} /> show code-only
         </label>
+
+        <div style={{ marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 4, fontSize: "11px" }}>
+          <span style={{ color: "var(--mute)" }}>Routing:</span>
+          {(["smoothstep", "default", "straight"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setEdgeRouting(mode)}
+              style={{
+                background: edgeRouting === mode ? "var(--ink)" : "var(--panel)",
+                color: edgeRouting === mode ? "var(--panel)" : "var(--mute)",
+                border: "1px solid var(--line)",
+                borderRadius: "4px",
+                padding: "2px 6px",
+                fontSize: "10.5px",
+                cursor: "pointer",
+              }}
+            >
+              {mode === "smoothstep" ? "Stepped" : mode === "default" ? "Bezier" : "Direct"}
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );

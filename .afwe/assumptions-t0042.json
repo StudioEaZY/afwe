@@ -1,0 +1,35 @@
+{
+  "intents": [
+    {
+      "id": "blueprint-tiered-layout",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Blueprint Tiered Strata Layout and Spacebar Pan",
+      "statement": "Replace single-row y=0 root horizontal placement with balanced tiered strata packing, perimeter port attachments, and seamless spacebar hand pan."
+    },
+    {
+      "id": "edge-geometry-and-disambiguation",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Edge Geometry Options and Tight Line Disambiguation",
+      "statement": "Add perimeter port distribution and click-to-cycle selection across tight edge bundles, and provide tuned routing geometry options."
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "zero model calls added; pure frontend visual layout and edge math tuning"
+    }
+  ]
+}

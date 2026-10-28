@@ -243,9 +243,9 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
       const inI = incomingIdx[e.b] || 0;
       incomingIdx[e.b] = inI + 1;
 
-      // Distribute ports across +/- 55px of the card width (236px)
-      const outOffset = outTotal > 1 ? -50 + (outI / (outTotal - 1)) * 100 : 0;
-      const inOffset = inTotal > 1 ? -50 + (inI / (inTotal - 1)) * 100 : 0;
+      // Distribute ports generously across +/- 80px of the card width (224px card)
+      const outOffset = outTotal > 1 ? -80 + (outI / (outTotal - 1)) * 160 : (outI - (outTotal - 1) * 0.5) * 28;
+      const inOffset = inTotal > 1 ? -80 + (inI / (inTotal - 1)) * 160 : (inI - (inTotal - 1) * 0.5) * 28;
 
       return { outOffset, inOffset };
     });
@@ -592,11 +592,12 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
               if (isViolating && up) {
                 // Route upward rule violations cleanly around intermediate tiers via the lateral gutter
                 const isRight = (startX + targetX) >= 0;
-                const gutterX = isRight ? 350 : -350;
+                // Add unique offset per violation index so multiple violations don't share the exact gutter path
+                const gutterX = (isRight ? 360 : -360) + (outOffset * 0.4);
                 dPath = `M${startX},${startY} C${gutterX},${startY} ${gutterX},${targetY} ${targetX},${targetY}`;
               } else if (isViolating) {
                 const midY = (startY + targetY) * 0.5;
-                const bowX = startX + (startX >= 0 ? 35 : -35);
+                const bowX = startX + (startX >= 0 ? 45 : -45) + outOffset * 0.3;
                 dPath = `M${startX},${startY} C${bowX},${midY} ${targetX},${midY} ${targetX},${targetY}`;
               } else {
                 const midY = (startY + targetY) * 0.5;
