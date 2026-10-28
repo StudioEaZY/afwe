@@ -184,7 +184,7 @@ export const api = {
   proposal: (id: string, action: "accept" | "revert" | "review") => call("proposal.resolve", { id, action }),
   log: (tail = 50) => call("log.get", { tail }),
 
-  // ── Governance: Pins, Checks, Calibration, Materialize, Explore Mode ──
+  // ── Governance: Pins, Checks, Calibration, Materialize, Explore Mode, Escalations ──
   pin: {
     list: () => call("pin.list"),
     propose: (p: Json) => call("pin.propose", p),
@@ -196,6 +196,13 @@ export const api = {
     list: (all = false) => call("check.list", { all }),
     remove: (id: string) => call("check.remove", { id }),
   },
+  escalation: {
+    list: (): Promise<EscalationItem[]> => call("escalation.list"),
+    approve: (id: string): Promise<EscalationItem> => call("escalation.approve", { id, origin: "human" }, "human"),
+    reject: (id: string): Promise<EscalationItem> => call("escalation.reject", { id, origin: "human" }, "human"),
+  },
+  stats: (): Promise<EngineStats> => call("stats"),
+  header: (turn?: string): Promise<{ header: string; symbol: string }> => call("header", { turn }),
   calibration: {
     guides: (all = false) => call("guide.list", { all }),
     confirmGuide: (id: string) => call("guide.confirm", { id }),
@@ -284,4 +291,47 @@ export interface TimelineFrame {
   touched_files: string[];
   pin_proposals: number;
   checks_count: number;
+}
+
+export interface EscalationItem {
+  id: string;
+  created_at: string;
+  op: string;
+  description: string;
+  params: any;
+  origin: string;
+  turn?: string | null;
+  status: "pending" | "approved" | "rejected";
+  decided_by?: string | null;
+  decided_at?: string | null;
+}
+
+export interface EngineStats {
+  project?: string;
+  explore_mode?: boolean;
+  graduation_require_human?: boolean;
+  blueprint?: {
+    total_nodes: number;
+    active_nodes: number;
+    planned_nodes: number;
+    relations: number;
+  };
+  governance?: {
+    active_pins: number;
+    proposed_pins: number;
+    active_checks: number;
+    superseded_checks: number;
+  };
+  calibration?: {
+    probing_guides: number;
+    ready_guides: number;
+    graduated_guides: number;
+    open_questions: number;
+    models?: Record<string, any>;
+  };
+  turns?: {
+    total: number;
+    open: number;
+    committed: number;
+  };
 }

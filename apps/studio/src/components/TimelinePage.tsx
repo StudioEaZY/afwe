@@ -100,40 +100,19 @@ export const TimelinePage: React.FC = () => {
         : [];
 
       // Normalize turn records so id is always defined whether backend sends 'turn' or 'id'
-      const list = fetched.length > 0
-        ? fetched.map((t: any, idx: number) => ({
-            ...t,
-            id: t.id || t.turn || `t${String(idx + 1).padStart(4, "0")}`,
-          }))
-        : [
-            { id: "t0001", date: "Jun 10", prompt: "Initial project setup and architecture boundary definition", status: "committed" },
-            { id: "t0002", date: "Jun 12", prompt: "Add auth service and session verification token engine", status: "committed", hasPin: true },
-            { id: "t0003", date: "Jun 18", prompt: "Refactor shared types and validation schemas", status: "committed" },
-            {
-              id: "t0004",
-              date: "Jun 26",
-              title: "Checkout flow improvement",
-              prompt: "Checkout flow improvement: refactor payment logic into Services, and updates related UI components.",
-              status: "committed",
-              author: "Alex",
-              hasPin: true,
-              hasViolation: true,
-              beforeCommit: "a3f9c2",
-              afterCommit: "b7e1d4",
-              beforeTime: "Jun 25, 2025 · 22:14",
-              afterTime: "Jun 26, 2025 · 14:32",
-            },
-            { id: "t0005", date: "Jun 28", prompt: "Implement Stripe and PayPal payment processors", status: "committed" },
-            { id: "t0006", date: "Jul 01", prompt: "Introduce real-time notification queue for webhooks", status: "staged", hasViolation: true },
-            { id: "t0007", date: "Jul 06", prompt: "Lock billing invariant pins and enforce deterministic checks", status: "committed", hasPin: true },
-            { id: "t0008", date: "Jul 09", prompt: "Promote verified tripwires and update GitHub Actions CI", status: "committed" },
-          ];
+      const list = fetched.map((t: any, idx: number) => ({
+        ...t,
+        id: t.id || t.turn || t.turn_hash || `t${String(idx + 1).padStart(4, "0")}`,
+        turn_hash: t.turn_hash || t.id,
+      }));
 
       setRawTurns(list);
 
-      const targetId = activeTurn || (list.length > 3 ? list[3].id : list[0]?.id || "t0004");
+      const targetId = activeTurn || (list.length > 0 ? list[list.length - 1].id : null);
       setSelectedTurnId(targetId);
-      loadTurnDetails(targetId, list);
+      if (targetId) {
+        loadTurnDetails(targetId, list);
+      }
     } catch (e: any) {
       notify(`Could not load timeline: ${e.message || e}`);
     }
@@ -769,7 +748,12 @@ export const TimelinePage: React.FC = () => {
         }}
       >
         {/* Drawer Header with Turn ID and Status Badge */}
-        {(() => {
+        {!selectedTurn ? (
+          <div style={{ padding: "40px 20px", textAlign: "center", color: "var(--mute)", fontSize: "12px" }}>
+            No turn selected or recorded yet.<br /><br />
+            Run <code style={{ color: "var(--ink)" }}>afwe turn begin &quot;&lt;prompt&gt;&quot; --target &lt;files&gt;</code> to create a turn.
+          </div>
+        ) : (() => {
           const turnData = turnRecord?.turn || selectedTurn;
           const touchedFiles: string[] = turnData?.touched?.files || turnData?.files || [];
           const turnIntents: any[] = turnData?.intents || [];
@@ -814,6 +798,24 @@ export const TimelinePage: React.FC = () => {
                     />
                   )}
                 </div>
+                {turnData?.turn_hash && (
+                  <div style={{ fontSize: "10.5px", color: "var(--mute)", fontFamily: "monospace", display: "flex", gap: "6px", alignItems: "center", marginTop: "3px", flexWrap: "wrap" }}>
+                    <span>Hash: {turnData.turn_hash.slice(0, 10)}</span>
+                    {turnData.alias && <span style={{ background: "var(--side)", padding: "1px 5px", borderRadius: "4px" }}>Alias: {turnData.alias}</span>}
+                    {turnData.parent_hash && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const pTurn = rawTurns.find((t) => t.turn_hash === turnData.parent_hash || t.id === turnData.parent_hash);
+                          if (pTurn) handleSelectTurn(pTurn.id);
+                        }}
+                        style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", fontSize: "10.5px", textDecoration: "underline", padding: 0 }}
+                      >
+                        Parent: {turnData.parent_hash.slice(0, 8)}
+                      </button>
+                    )}
+                  </div>
+                )}
                 <div style={{ fontSize: "11px", color: "var(--mute)", marginTop: "4px" }}>
                   {turnData?.ts ? new Date(turnData.ts).toLocaleString() : selectedTurn?.afterTime || "Committed turn"}
                 </div>
@@ -942,6 +944,27 @@ export const TimelinePage: React.FC = () => {
                       </div>
                     </div>
 
+                    {/* Active File Claims Section */}
+                    {turnData?.claims && turnData.claims.length > 0 && (
+                      <div>
+                        <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                          Active Claims ({turnData.claims.length})
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                          {turnData.claims.map((c: any, i: number) => (
+                            <div key={i} style={{ background: "var(--side)", padding: "6px 8px", borderRadius: "6px", border: "1px solid var(--line)" }}>
+                              <div style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--ink)" }}>{c.path}</div>
+                              {c.base_blob && (
+                                <div style={{ fontSize: "10px", color: "var(--mute)", fontFamily: "monospace", marginTop: "2px" }}>
+                                  Blob: {c.base_blob.slice(0, 8)} {c.node ? `· Node: ${c.node}` : ""}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Intent & Rationale Section */}
                     <div>
                       <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
@@ -984,6 +1007,22 @@ export const TimelinePage: React.FC = () => {
                         {gateReasons.length === 0 && (
                           <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--accent)", fontSize: "11.5px" }}>
                             <CheckCircle2 size={13} /> All architectural invariant checks passed.
+                          </div>
+                        )}
+
+                        {/* CheckGen Generated Records */}
+                        {turnData?.checkgen && turnData.checkgen.length > 0 && (
+                          <div style={{ marginTop: "6px" }}>
+                            <div style={{ fontSize: "10.5px", fontWeight: 700, color: "var(--mute)", textTransform: "uppercase", marginBottom: "4px" }}>
+                              CheckGen Records ({turnData.checkgen.length})
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                              {turnData.checkgen.map((cg: any, i: number) => (
+                                <div key={i} style={{ fontSize: "11px", color: "var(--ink)", background: "var(--side)", padding: "4px 6px", borderRadius: "4px", fontFamily: "monospace" }}>
+                                  {cg.check_id || cg.id || (typeof cg === "string" ? cg : JSON.stringify(cg))}
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>

@@ -16,6 +16,7 @@ import {
   stateDescription,
   hashStr,
   seededRand,
+  isLineageMatch,
 } from "../lib/hierarchy";
 import { SvgDomainIcon, SvgMiniLock, SvgMiniAlertTriangle } from "../lib/lucideSvgPaths";
 import { FilterMode } from "../store";
@@ -79,14 +80,6 @@ function fillFor(state: NodeState): string {
   return "url(#hatch-radial)";
 }
 
-function isLineageMatch(candidateKey: string, targetKey: string): boolean {
-  return (
-    candidateKey === targetKey ||
-    candidateKey.startsWith(targetKey + "/") ||
-    targetKey.startsWith(candidateKey + "/")
-  );
-}
-
 export const RadialMap: React.FC<Props> = ({
   root,
   focusNode,
@@ -124,13 +117,13 @@ export const RadialMap: React.FC<Props> = ({
         const count = 2 + Math.floor(r() * 2);
         return subNames.slice(0, count).map((sub, idx) => {
           const fc = Math.max(2, Math.round(n.fileCount / count));
-          const key = `${n.key}/${sub}`;
+          const key = `${n.key}.${sub}`;
           return {
             ...n,
             id: key,
             key,
             label: sub,
-            path: `${n.path}/${sub}`,
+            path: `${n.path}.${sub}`,
             breadcrumbLabels: [...n.breadcrumbLabels, sub],
             fileCount: fc,
             mappedCount: n.state === "unmapped" ? 0 : fc,

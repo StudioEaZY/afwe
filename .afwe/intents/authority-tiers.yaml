@@ -4,15 +4,22 @@ statement: Introduce authority tiers, escalation pipeline, and anti-tamper turn 
 status: active
 origin: human
 attaches:
+  nodes:
+  - studio-shell
   files:
   - crates/afwe-core/src/model.rs
   - crates/afwe-core/src/turn.rs
 from_turns:
 - t0014
+- t0044
 history:
 - turn: t0014
   ts: 2026-10-15T07:50:59Z
   statement: Introduce authority tiers, escalation pipeline, and anti-tamper turn verification
+- turn: t0044
+  ts: 2026-10-28T08:06:03Z
+  statement: Introduce authority tiers, escalation pipeline, and anti-tamper turn verification
+  rationale: Expose Human Escalation queue review modal and telemetry in TopBar and BottomBar
 created: 2026-10-15T07:50:59Z
-updated: 2026-10-15T07:50:59Z
+updated: 2026-10-28T08:06:03Z
 task: task-2f5fe6

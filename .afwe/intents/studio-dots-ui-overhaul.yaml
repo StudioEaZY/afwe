@@ -6,11 +6,15 @@ origin: human
 attaches:
   nodes:
   - studio
+  - studio-maps
+  - studio-shell
+  - studio-timeline
 from_turns:
 - t0020
 - t0024
 - t0026
 - t0027
+- t0044
 history:
 - turn: t0020
   ts: 2026-10-16T12:39:53Z
@@ -24,6 +28,10 @@ history:
 - turn: t0027
   ts: 2026-10-26T16:04:05Z
   statement: Implement Two-Tier Undo & Quarantine Architecture (10s quarantine before dispatching fixes to AI agents, modifying source files via 3-way restore/revert, or materializing hooks, because codebase actions ripple outward; instant apply + persistent undo for local actions); overhaul Timeline & Turns into unified visual diff workstation matching screenshot; build separate color engines for Radial and Topology with Settings; add deep-links to Checks; create Blueprint page; implement multi-lobe organic Topology hulls.
+- turn: t0044
+  ts: 2026-10-28T08:06:03Z
+  statement: Implement Two-Tier Undo & Quarantine Architecture (10s quarantine before dispatching fixes to AI agents, modifying source files via 3-way restore/revert, or materializing hooks, because codebase actions ripple outward; instant apply + persistent undo for local actions); overhaul Timeline & Turns into unified visual diff workstation matching screenshot; build separate color engines for Radial and Topology with Settings; add deep-links to Checks; create Blueprint page; implement multi-lobe organic Topology hulls.
+  rationale: Native dot notation unification for Studio maps and ReBorn engine capabilities integration without legacy conversion shims
 created: 2026-10-16T12:39:53Z
-updated: 2026-10-26T16:04:05Z
+updated: 2026-10-28T08:06:03Z
 task: task-f90086

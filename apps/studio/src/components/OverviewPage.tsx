@@ -15,41 +15,6 @@ import { GraphView } from "./GraphView";
 import { NodeInspector } from "./NodeInspector";
 import { ConstellationGlyph } from "../lib/lucideSvgPaths";
 
-const CURATED_ANCHOR_OPTIONS: { group: string; items: { value: string; label: string }[] }[] = [
-  {
-    group: "Subnodes (Direct Node-Level Links)",
-    items: [
-      { value: "Backend/events/models", label: "Backend › events › models (Rich hub)" },
-      { value: "Services/jobs/auth", label: "Services › jobs › auth" },
-      { value: "Data/schema", label: "Data › schema (Cycle + Violation)" },
-      { value: "Web/views", label: "Web › views (Violation)" },
-      { value: "Web/views/checkout", label: "Web › views › checkout" },
-      { value: "Backend/api/routes", label: "Backend › api › routes" },
-      { value: "Backend/auth", label: "Backend › auth" },
-    ],
-  },
-  {
-    group: "Subnodes (Parent-Level Fallback)",
-    items: [
-      { value: "Backend/billing/webhooks", label: "Backend › billing › webhooks (Fallback demo)" },
-      { value: "Data/legacy_etl", label: "Data › legacy_etl (Unmapped fallback)" },
-    ],
-  },
-  {
-    group: "Top-Level Domains",
-    items: [
-      { value: "Backend", label: "Backend (Domain)" },
-      { value: "Services", label: "Services (Domain)" },
-      { value: "Data", label: "Data (Domain)" },
-      { value: "Core", label: "Core (Domain)" },
-      { value: "Web", label: "Web (Domain)" },
-      { value: "Mobile", label: "Mobile (Domain)" },
-      { value: "Shared", label: "Shared (Domain)" },
-      { value: "Infrastructure", label: "Infrastructure (Domain)" },
-    ],
-  },
-];
-
 export const OverviewPage: React.FC = () => {
   const {
     graph,
@@ -115,7 +80,7 @@ export const OverviewPage: React.FC = () => {
   const constellationHeaderCtx = useMemo(() => {
     const req =
       findNodeById(rootHierarchy, constellationAnchorKey) ||
-      findNodeById(rootHierarchy, "Backend/events/models") ||
+      findNodeById(rootHierarchy, "Backend.events.models") ||
       rootHierarchy.children[0] ||
       rootHierarchy;
     const isDom = req.depth <= 1;
@@ -211,11 +176,56 @@ export const OverviewPage: React.FC = () => {
     return "Complete architectural component DAG. Tree layout with leaf file inspection (showImpl), drag-and-drop reparenting, and constraint wiring.";
   }, [activeLens, focusNode, constellationHeaderCtx]);
 
-  // Check if current constellation anchor is in CURATED_ANCHOR_OPTIONS
+  // Dynamically generated curated anchors from current hierarchy
+  const curatedAnchorOptions = useMemo(() => {
+    if (!rootHierarchy) return [];
+    const domains = (rootHierarchy.children || []).map((c) => ({
+      value: c.key,
+      label: `${c.label} (Domain)`,
+    }));
+
+    const allSubnodes: HierarchyNode[] = [];
+    const collect = (n: HierarchyNode) => {
+      if (n.depth >= 2) allSubnodes.push(n);
+      for (const child of n.children || []) collect(child);
+    };
+    collect(rootHierarchy);
+
+    // Nodes with code edges / violations / pins
+    const richNodes = allSubnodes
+      .filter((n) => n.hasViolation || n.hasPin || n.fileCount >= 3)
+      .slice(0, 10)
+      .map((n) => ({
+        value: n.key,
+        label: `${n.breadcrumbLabels.join(" › ")}${n.hasViolation ? " (Violation)" : n.hasPin ? " (Pinned)" : ""}`,
+      }));
+
+    const otherNodes = allSubnodes
+      .filter((n) => !richNodes.some((r) => r.value === n.key))
+      .slice(0, 6)
+      .map((n) => ({
+        value: n.key,
+        label: n.breadcrumbLabels.join(" › "),
+      }));
+
+    const groups: { group: string; items: { value: string; label: string }[] }[] = [];
+    if (richNodes.length > 0) {
+      groups.push({ group: "Subnodes (Direct Node-Level Links)", items: richNodes });
+    }
+    if (otherNodes.length > 0) {
+      groups.push({ group: "Subnodes (Structural & Fallback)", items: otherNodes });
+    }
+    if (domains.length > 0) {
+      groups.push({ group: "Top-Level Domains", items: domains });
+    }
+    return groups;
+  }, [rootHierarchy]);
+
+  // Check if current constellation anchor is in curated options
   const isAnchorInPresetList = useMemo(() => {
     const key = constellationHeaderCtx.req.key;
-    return CURATED_ANCHOR_OPTIONS.some((g) => g.items.some((item) => item.value === key));
-  }, [constellationHeaderCtx]);
+    return curatedAnchorOptions.some((g) => g.items.some((item) => item.value === key));
+  }, [constellationHeaderCtx, curatedAnchorOptions]);
 
   const handleToggleLayer4Splits = () => {
     const next = !denseL4;
@@ -503,7 +513,7 @@ export const OverviewPage: React.FC = () => {
                       </option>
                     </optgroup>
                   )}
-                  {CURATED_ANCHOR_OPTIONS.map((grp) => (
+                  {curatedAnchorOptions.map((grp) => (
                     <optgroup key={grp.group} label={grp.group}>
                       {grp.items.map((it) => (
                         <option key={it.value} value={it.value}>

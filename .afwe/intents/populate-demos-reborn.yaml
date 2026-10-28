@@ -8,9 +8,12 @@ attaches:
   - demo-project
   - examples
   - studio
+  - studio-maps
+  - studio-timeline
 from_turns:
 - t0025
 - t0029
+- t0044
 history:
 - turn: t0025
   ts: 2026-10-26T11:11:42Z
@@ -18,6 +21,10 @@ history:
 - turn: t0029
   ts: 2026-10-27T04:17:24Z
   statement: Enforce 100% Lucide icons across Studio. Fix root wrapper collapse, canonical hierarchical keys, hover lineage, power-law sector weighting, and rich tooltips in RadialMap. Build dedicated ConstellationMap with node-level vs parent-level fallback, directional 3-hop BFS, bidirectional cycle detection, progressive disclosure badges, and clickable edges. Reformat examples/demo-project so the backend serves all 8 domains, 4 layers, 4 states, node-level edges, and violations natively.
+- turn: t0044
+  ts: 2026-10-28T08:06:03Z
+  statement: Enforce 100% Lucide icons across Studio. Fix root wrapper collapse, canonical hierarchical keys, hover lineage, power-law sector weighting, and rich tooltips in RadialMap. Build dedicated ConstellationMap with node-level vs parent-level fallback, directional 3-hop BFS, bidirectional cycle detection, progressive disclosure badges, and clickable edges. Reformat examples/demo-project so the backend serves all 8 domains, 4 layers, 4 states, node-level edges, and violations natively.
+  rationale: Render concurrent turn v4 metadata, real checkgen links, and eliminate fictional mock timeline items
 created: 2026-10-26T11:11:42Z
-updated: 2026-10-27T04:17:24Z
+updated: 2026-10-28T08:06:03Z
 task: task-t0025

@@ -1255,7 +1255,7 @@ export const ConstellationMap: React.FC<Props> = ({
                 transform="translate(0, -76)"
                 onClick={(ev) => {
                   ev.stopPropagation();
-                  const parentKey = effectiveNode.key.split("/").slice(0, -1).join("/");
+                  const parentKey = effectiveNode.key.split(".").slice(0, -1).join(".");
                   if (parentKey) onSetAnchor(parentKey);
                 }}
               >

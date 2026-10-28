@@ -1,0 +1,58 @@
+{
+  "intents": [
+    {
+      "id": "studio-dots-ui-overhaul",
+      "targets": ["studio-maps", "studio-shell", "studio-timeline"],
+      "action": "refine",
+      "rationale": "Native dot notation unification for Studio maps and ReBorn engine capabilities integration without legacy conversion shims"
+    },
+    {
+      "id": "dots-scene-graph",
+      "targets": ["studio-maps"],
+      "action": "refine",
+      "rationale": "Directly align frontend hierarchy tree and lineage matching with dots scene graph registry notation"
+    },
+    {
+      "id": "populate-demos-reborn",
+      "targets": ["studio-maps", "studio-timeline"],
+      "action": "refine",
+      "rationale": "Render concurrent turn v4 metadata, real checkgen links, and eliminate fictional mock timeline items"
+    },
+    {
+      "id": "authority-tiers",
+      "targets": ["studio-shell"],
+      "action": "refine",
+      "rationale": "Expose Human Escalation queue review modal and telemetry in TopBar and BottomBar"
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "kind": "ast",
+      "scope": "apps/studio/src/lib/hierarchy.ts",
+      "description": "hierarchy.ts constructs canonical dot keys",
+      "require_pattern": "parentKey \\? `\\${parentKey}\\.\\${label}` : label"
+    },
+    {
+      "id": "c2",
+      "kind": "ast",
+      "scope": "apps/studio/src/api.ts",
+      "description": "api.ts exposes escalation list, approve, and reject endpoints",
+      "require_pattern": "escalation: \\{"
+    },
+    {
+      "id": "c3",
+      "kind": "ast",
+      "scope": "apps/studio/src/store.ts",
+      "description": "store.ts tracks escalation queue items",
+      "require_pattern": "escalations: EscalationItem\\[\\]"
+    },
+    {
+      "id": "c4",
+      "kind": "ast",
+      "scope": "apps/studio/src/components/TimelinePage.tsx",
+      "description": "TimelinePage displays active turn claims and turn_hash",
+      "require_pattern": "turn_hash"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { api, Graph, GraphNode } from "./api";
+import { api, Graph, GraphNode, EscalationItem, EngineStats } from "./api";
 import {
   getStudioPrefs,
   setStartView as persistStartView,
@@ -7,6 +7,7 @@ import {
   removeBookmark as persistRemoveBookmark,
   setPalettes as persistPalettes,
   setGraceSeconds as persistGraceSeconds,
+  setIgnoreGlobs as persistIgnoreGlobs,
   StudioPrefs,
   StudioBookmark,
   MapLens,
@@ -117,6 +118,13 @@ interface State {
   consequenceModal: ConsequenceModalData | null;
   codePreviewTarget: CodePreviewTarget | null;
 
+  // ── Engine Telemetry & Governance ──
+  escalations: EscalationItem[];
+  engineStats: EngineStats | null;
+  engineHeader: string | null;
+  approveEscalation: (id: string) => Promise<void>;
+  rejectEscalation: (id: string) => Promise<void>;
+
   refresh: () => Promise<void>;
   refreshScene: () => Promise<void>;
   scrubToTurn: (turn: string | null, toTurn?: string) => Promise<void>;
@@ -154,6 +162,7 @@ interface State {
   setRadialPalette: (p: string) => void;
   setTopologyPalette: (p: string) => void;
   setGraceSeconds: (s: number) => void;
+  setIgnoreGlobs: (globs: string[]) => void;
 
   // ── Deep Links ──
   jumpToNodeOnMap: (nodeId: string) => void;
@@ -206,8 +215,8 @@ export const useStore = create<State>((set, get) => ({
   // Map state
   activeLens: initialPrefs.defaultLens || "radial",
   currentScopeId: initialPrefs.defaultStartNodeId || null,
-  currentDepth: initialPrefs.defaultStartNodeId ? initialPrefs.defaultStartNodeId.split("/").length : 0,
-  constellationAnchorKey: "Backend/events/models",
+  currentDepth: initialPrefs.defaultStartNodeId ? initialPrefs.defaultStartNodeId.split(".").length : 0,
+  constellationAnchorKey: "Backend.events.models",
   constellationScope: "map",
   forceParentFallback: false,
   overviewTimelineT: 1,
@@ -222,6 +231,25 @@ export const useStore = create<State>((set, get) => ({
   quarantineIntervalId: null,
   consequenceModal: null,
   codePreviewTarget: null,
+
+  // Engine Telemetry & Governance
+  escalations: [],
+  engineStats: null,
+  engineHeader: null,
+
+  approveEscalation: async (id: string) => {
+    await get().run(`Approving escalation ${id}`, async () => {
+      await api.escalation.approve(id);
+      get().notify(`Escalation ${id} approved`);
+    });
+  },
+
+  rejectEscalation: async (id: string) => {
+    await get().run(`Rejecting escalation ${id}`, async () => {
+      await api.escalation.reject(id);
+      get().notify(`Escalation ${id} rejected`);
+    });
+  },
 
   refreshScene: async () => {
     try {
@@ -269,9 +297,30 @@ export const useStore = create<State>((set, get) => ({
       if (graph.nodes) {
         graph.nodes.filter((n) => n.depth <= 1).forEach((n) => next.add(n.id));
       }
+
+      // Fetch escalations, engine stats & header in parallel with graceful fallbacks
+      let escalations: EscalationItem[] = [];
+      let engineStats: EngineStats | null = null;
+      let engineHeader: string | null = null;
+      try {
+        const [escList, statsData, headerData] = await Promise.allSettled([
+          api.escalation.list(),
+          api.stats(),
+          api.header(),
+        ]);
+        if (escList.status === "fulfilled") escalations = escList.value || [];
+        if (statsData.status === "fulfilled") engineStats = statsData.value || null;
+        if (headerData.status === "fulfilled") engineHeader = headerData.value?.header || null;
+      } catch (err) {
+        console.warn("Could not load telemetry/escalations:", err);
+      }
+
       set({
         graph,
         loading: false,
+        escalations,
+        engineStats,
+        engineHeader,
         expanded: next,
         selected:
           prevSelected && graph.nodes.some((n) => n.id === prevSelected)
@@ -350,7 +399,7 @@ export const useStore = create<State>((set, get) => ({
     if (lens === "constellation") {
       const curSel = get().selectedEntity;
       const curScope = get().currentScopeId;
-      let anchor = get().constellationAnchorKey || "Backend/events/models";
+      let anchor = get().constellationAnchorKey || "Backend.events.models";
       if (curSel && curSel.kind !== "edge" && curSel.id !== "root") {
         anchor = curSel.key || curSel.id;
       } else if (curScope && curScope !== "root") {
@@ -381,7 +430,7 @@ export const useStore = create<State>((set, get) => ({
 
   drillDown: (nodeId: string) => {
     const clean = nodeId === "root" ? null : nodeId;
-    const nextDepth = clean ? clean.split("/").length : 0;
+    const nextDepth = clean ? clean.split(".").length : 0;
     set({
       currentScopeId: clean,
       currentDepth: nextDepth,
@@ -393,11 +442,11 @@ export const useStore = create<State>((set, get) => ({
   drillUp: () => {
     const cur = get().currentScopeId;
     if (!cur) return;
-    const parts = cur.split("/");
+    const parts = cur.split(".");
     if (parts.length <= 1) {
       set({ currentScopeId: null, currentDepth: 0 });
     } else {
-      const parentKey = parts.slice(0, -1).join("/");
+      const parentKey = parts.slice(0, -1).join(".");
       set({ currentScopeId: parentKey, currentDepth: parts.length - 1 });
     }
   },
@@ -406,7 +455,7 @@ export const useStore = create<State>((set, get) => ({
     const clean = !nodeId || nodeId === "root" ? null : nodeId;
     set({
       currentScopeId: clean,
-      currentDepth: clean ? clean.split("/").length : 0,
+      currentDepth: clean ? clean.split(".").length : 0,
     });
   },
 
@@ -454,6 +503,11 @@ export const useStore = create<State>((set, get) => ({
     const updated = persistGraceSeconds(graceSeconds);
     set({ prefs: updated });
     get().notify(`Quarantine grace timer set to ${graceSeconds}s`);
+  },
+
+  setIgnoreGlobs: (globs: string[]) => {
+    const updated = persistIgnoreGlobs(globs);
+    set({ prefs: updated });
   },
 
   // ── Deep Links ──

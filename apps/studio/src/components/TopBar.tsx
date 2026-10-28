@@ -9,11 +9,13 @@ import {
   Search,
   RefreshCw,
   FolderOpen,
+  ShieldAlert,
 } from "lucide-react";
 import { useStore } from "../store";
 import { api, isTauri, openProjectDialog } from "../api";
 import { getStudioPrefs, setTheme, applyTheme } from "../lib/prefs";
 import { buildHierarchyTree, HierarchyNode } from "../lib/hierarchy";
+import { EscalationModal } from "./EscalationModal";
 
 export const TopBar: React.FC = () => {
   const {
@@ -35,12 +37,15 @@ export const TopBar: React.FC = () => {
     selectEntity,
     drillDown,
     setConstellationAnchor,
+    escalations,
+    engineHeader,
   } = useStore();
 
   const [syncing, setSyncing] = useState(false);
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [escalationModalOpen, setEscalationModalOpen] = useState(false);
   const searchWrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,24 +91,15 @@ export const TopBar: React.FC = () => {
   const searchHits = useMemo(() => {
     const raw = searchQuery.trim();
     if (!raw) {
-      // When input is focused but empty, show curated suggestions
-      const presets = [
-        "Backend/events/models",
-        "Services/jobs/auth",
-        "Data/schema",
-        "Web/views/checkout",
-        "Backend/api/routes",
-        "Backend",
-        "Services",
-        "Data",
-        "Web",
-      ];
-      return allHierarchyNodes
-        .filter((n) => presets.includes(n.key))
-        .slice(0, 8);
+      // When input is focused but empty, show top domains & active nodes dynamically
+      const topDomains = allHierarchyNodes.filter((n) => n.depth === 1);
+      const activeSubnodes = allHierarchyNodes.filter(
+        (n) => n.depth > 1 && (n.hasViolation || n.hasPin || n.fileCount >= 3)
+      );
+      return [...topDomains, ...activeSubnodes].slice(0, 8);
     }
-    // Clean query: strip noise/punctuation
-    const q = raw.toLowerCase().replace(/[^a-z0-9_\-\/]/g, "").trim();
+    // Clean query: strip noise/punctuation, allow dot notation
+    const q = raw.toLowerCase().replace(/[^a-z0-9_\-\/\.]/g, "").trim();
     if (!q) return [];
     return allHierarchyNodes
       .filter(
@@ -354,6 +350,30 @@ export const TopBar: React.FC = () => {
           </span>
         </div>
 
+        {/* Human Escalation Pending Review Pill */}
+        {(escalations || []).filter((e) => e.status === "pending").length > 0 && (
+          <button
+            type="button"
+            onClick={() => setEscalationModalOpen(true)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              background: "rgba(239, 68, 68, 0.12)",
+              border: "1px solid var(--red)",
+              borderRadius: "8px",
+              padding: "4px 8px",
+              color: "var(--red)",
+              fontSize: "11px",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            <ShieldAlert size={13} />
+            <span>⛨ {(escalations || []).filter((e) => e.status === "pending").length} Escalation(s)</span>
+          </button>
+        )}
+
         {/* Reversible Actions Session Pill */}
         {undoStack.length > 0 && (
           <div
@@ -459,6 +479,10 @@ export const TopBar: React.FC = () => {
           {currentTheme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
         </button>
       </div>
+
+      {escalationModalOpen && (
+        <EscalationModal onClose={() => setEscalationModalOpen(false)} />
+      )}
     </header>
   );
 };

@@ -52,10 +52,10 @@ export interface SelectedEntity {
 
 export interface HierarchyNode {
   id: string;
-  key: string; // Canonical "/" separated path from domain to node (e.g. "Backend/events/models")
+  key: string; // Canonical "." separated path from domain to node (e.g. "Backend.events.models")
   label: string;
   kind: EntityKind;
-  path: string; // Lowercase display path (e.g. "backend/events/models")
+  path: string; // Lowercase display path (e.g. "backend.events.models")
   breadcrumbLabels: string[]; // ["Backend", "events", "models"]
   state: NodeState;
   isCharted: boolean;
@@ -268,11 +268,22 @@ export function stateDescription(state: NodeState, node?: HierarchyNode | null):
 }
 
 /**
- * Format a key like "Backend/events/models" as "Backend›models"
+ * Format a key like "Backend.events.models" as "Backend›models"
  */
 export function shortLabel(key: string): string {
-  const parts = key.split("/");
+  const parts = key.split(".");
   return parts.length > 1 ? `${parts[0]}›${parts[parts.length - 1]}` : key;
+}
+
+/**
+ * Check if candidate node is in direct lineage (ancestor or descendant) of target.
+ */
+export function isLineageMatch(candidateKey: string, targetKey: string): boolean {
+  return (
+    candidateKey === targetKey ||
+    candidateKey.startsWith(targetKey + ".") ||
+    targetKey.startsWith(candidateKey + ".")
+  );
 }
 
 /**
@@ -280,7 +291,7 @@ export function shortLabel(key: string): string {
  */
 export function getDomainNode(root: HierarchyNode, node: HierarchyNode): HierarchyNode {
   if (node.depth <= 1) return node;
-  const topKey = node.key.split("/")[0];
+  const topKey = node.key.split(".")[0];
   return root.children.find((c) => c.key === topKey || c.id === topKey || c.label === topKey) || node;
 }
 
@@ -359,28 +370,21 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
     }
   }
 
-  // Violations by node - indexed across dot, slash, and ancestral segments
+  // Violations by node - indexed across dot notation and ancestral segments
   const violationsByNode = new Map<string, string[]>();
   const addViolation = (nodeId: string, msg: string) => {
     if (!nodeId) return;
-    const slashId = nodeId.replace(/\./g, "/");
-    const dotId = nodeId.replace(/\//g, ".");
-    for (const id of [nodeId, slashId, dotId]) {
-      if (!violationsByNode.has(id)) violationsByNode.set(id, []);
-      if (!violationsByNode.get(id)!.includes(msg)) {
-        violationsByNode.get(id)!.push(msg);
-      }
+    if (!violationsByNode.has(nodeId)) violationsByNode.set(nodeId, []);
+    if (!violationsByNode.get(nodeId)!.includes(msg)) {
+      violationsByNode.get(nodeId)!.push(msg);
     }
-    // Also bubble up violation messages to parent modules and domain ancestors
-    const parts = slashId.split("/");
+    // Bubble up violation messages to parent modules and domain ancestors
+    const parts = nodeId.split(".");
     for (let i = 1; i < parts.length; i++) {
-      const ancSlash = parts.slice(0, i).join("/");
-      const ancDot = parts.slice(0, i).join(".");
-      for (const id of [ancSlash, ancDot]) {
-        if (!violationsByNode.has(id)) violationsByNode.set(id, []);
-        if (!violationsByNode.get(id)!.includes(msg)) {
-          violationsByNode.get(id)!.push(msg);
-        }
+      const anc = parts.slice(0, i).join(".");
+      if (!violationsByNode.has(anc)) violationsByNode.set(anc, []);
+      if (!violationsByNode.get(anc)!.includes(msg)) {
+        violationsByNode.get(anc)!.push(msg);
       }
     }
   };
@@ -429,7 +433,7 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
       const pNodes = prop.finding?.nodes || [];
       for (const pn of pNodes) proposalsByNode.add(pn);
       if (prop.finding?.change?.parent && prop.finding?.change?.name) {
-        proposalsByNode.add(`${prop.finding.change.parent}/${prop.finding.change.name}`);
+        proposalsByNode.add(`${prop.finding.change.parent}.${prop.finding.change.name}`);
       }
     }
   }
@@ -460,10 +464,10 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
     parentBreadcrumbs: string[],
     parentBirth: number
   ): HierarchyNode {
-    const label = bn.name || bn.id.split("/").pop() || bn.id;
-    const key = parentKey ? `${parentKey}/${label}` : label;
+    const label = bn.name || bn.id.split(".").pop() || bn.id;
+    const key = parentKey ? `${parentKey}.${label}` : label;
     const breadcrumbs = [...parentBreadcrumbs, label];
-    const displayPath = breadcrumbs.join("/").toLowerCase();
+    const displayPath = breadcrumbs.join(".").toLowerCase();
 
     // Determine state accurately without conflating violations with legacy
     const rawStatus = (bn.status || "active").toLowerCase();
@@ -496,17 +500,9 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
         ? mappedChildren.reduce((acc, c) => acc + c.mappedCount, 0)
         : fileCount;
 
-    const slashId = bn.id.replace(/\./g, "/");
-    const dotId = bn.id.replace(/\//g, ".");
-    const slashKey = key.replace(/\./g, "/");
-    const dotKey = key.replace(/\//g, ".");
     const directViolations = [
       ...(violationsByNode.get(bn.id) || []),
-      ...(violationsByNode.get(key) || []),
-      ...(violationsByNode.get(slashId) || []),
-      ...(violationsByNode.get(dotId) || []),
-      ...(violationsByNode.get(slashKey) || []),
-      ...(violationsByNode.get(dotKey) || []),
+      ...(bn.id !== key ? violationsByNode.get(key) || [] : []),
     ];
     const vList = Array.from(new Set(directViolations));
     const childHasViolation = mappedChildren.some((c) => c.hasViolation);
@@ -745,20 +741,18 @@ export function buildDirectedEdges(
   const constraints: any[] = graph.constraints || [];
 
   const isForbiddenPair = (fromKey: string, toKey: string): boolean => {
-    const fSlash = fromKey.replace(/\./g, "/");
-    const tSlash = toKey.replace(/\./g, "/");
-    const fromDom = fSlash.split("/")[0];
-    const toDom = tSlash.split("/")[0];
+    const fromDom = fromKey.split(".")[0];
+    const toDom = toKey.split(".")[0];
     for (const c of constraints) {
       if (c.rule !== "must_not_depend") continue;
-      const cFrom = (c.from || "").replace(/\./g, "/");
-      const cFromDom = cFrom.split("/")[0];
-      const targets: string[] = (c.to || []).map((t: string) => t.replace(/\./g, "/"));
-      const targetDoms = targets.map((t: string) => t.split("/")[0]);
+      const cFrom = c.from || "";
+      const cFromDom = cFrom.split(".")[0];
+      const targets: string[] = c.to || [];
+      const targetDoms = targets.map((t: string) => t.split(".")[0]);
 
       if (
-        (cFrom === fSlash || cFrom === fromDom || cFromDom === fromDom) &&
-        (targets.includes(tSlash) || targets.includes(toDom) || targetDoms.includes(toDom))
+        (cFrom === fromKey || cFrom === fromDom || cFromDom === fromDom) &&
+        (targets.includes(toKey) || targets.includes(toDom) || targetDoms.includes(toDom))
       ) {
         return true;
       }
@@ -770,9 +764,8 @@ export function buildDirectedEdges(
   const nodeEdgeMap = new Map<string, DirectedEdge>();
 
   const extractDomainKey = (raw: string): string => {
-    const norm = raw.replace(/\./g, "/");
-    const seg = norm.split("/")[0];
-    const n = nodeMap.get(raw) || nodeMap.get(norm) || nodeMap.get(seg);
+    const seg = raw.split(".")[0];
+    const n = nodeMap.get(raw) || nodeMap.get(seg);
     if (n) {
       let cur: HierarchyNode = n;
       while (cur.depth > 1 && cur.parentId && cur.parentId !== "root") {
@@ -780,14 +773,14 @@ export function buildDirectedEdges(
         if (p) cur = p;
         else break;
       }
-      return cur.key.replace(/\./g, "/").split("/")[0];
+      return cur.key.split(".")[0];
     }
     return seg;
   };
 
   const registerEdge = (rawFrom: string, rawTo: string, badFlag: boolean, count = 1, status = "declared") => {
-    const nFrom = nodeMap.get(rawFrom) || nodeMap.get(rawFrom.replace(/\./g, "/"));
-    const nTo = nodeMap.get(rawTo) || nodeMap.get(rawTo.replace(/\./g, "/"));
+    const nFrom = nodeMap.get(rawFrom);
+    const nTo = nodeMap.get(rawTo);
     const fromKey = nFrom ? nFrom.key : rawFrom;
     const toKey = nTo ? nTo.key : rawTo;
     if (!fromKey || !toKey || fromKey === toKey) return;
@@ -796,8 +789,8 @@ export function buildDirectedEdges(
     const h = hashStr(`${fromKey}>${toKey}`);
     const birth = 0.03 + (h % 280) / 1000;
 
-    const fromDepth = nFrom ? nFrom.depth : fromKey.replace(/\./g, "/").split("/").length;
-    const toDepth = nTo ? nTo.depth : toKey.replace(/\./g, "/").split("/").length;
+    const fromDepth = nFrom ? nFrom.depth : fromKey.split(".").length;
+    const toDepth = nTo ? nTo.depth : toKey.split(".").length;
 
     if (fromDepth === 1 && toDepth === 1) {
       const k = `${fromKey}>${toKey}`;

@@ -15,18 +15,15 @@ export const SettingsPage: React.FC = () => {
     setRadialPalette,
     setTopologyPalette,
     setGraceSeconds,
+    setIgnoreGlobs: setStoreIgnoreGlobs,
     scheduleQuarantineAction,
   } = useStore();
 
   const [exploreMode, setExploreMode] = useState<boolean>(!!graph?.policy?.explore_mode);
   const [materializeOutput, setMaterializeOutput] = useState<any | null>(null);
-  const [ignoreGlobs, setIgnoreGlobs] = useState<string[]>([
-    "dist/**",
-    "target/**",
-    "node_modules/**",
-    "**/*.spec.ts",
-    "**/*.test.tsx",
-  ]);
+  const [ignoreGlobs, setIgnoreGlobs] = useState<string[]>(
+    prefs.ignoreGlobs || ["dist/**", "target/**", "node_modules/**", "**/*.spec.ts", "**/*.test.tsx"]
+  );
   const [newGlob, setNewGlob] = useState("");
 
   const handleToggleExplore = async () => {
@@ -82,7 +79,9 @@ export const SettingsPage: React.FC = () => {
 
   const handleAddGlob = () => {
     if (newGlob.trim()) {
-      setIgnoreGlobs([...ignoreGlobs, newGlob.trim()]);
+      const updated = [...ignoreGlobs, newGlob.trim()];
+      setIgnoreGlobs(updated);
+      setStoreIgnoreGlobs(updated);
       setNewGlob("");
       notify(`Added ignore glob: ${newGlob.trim()}`);
     }
@@ -91,6 +90,7 @@ export const SettingsPage: React.FC = () => {
   const handleRemoveGlob = (idx: number) => {
     const updated = ignoreGlobs.filter((_, i) => i !== idx);
     setIgnoreGlobs(updated);
+    setStoreIgnoreGlobs(updated);
   };
 
   const modelProfiles = graph?.calibration?.models || {};

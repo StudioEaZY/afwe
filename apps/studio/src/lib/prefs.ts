@@ -18,9 +18,10 @@ export interface StudioPrefs {
   topologyPalette: string;
   graceSeconds: number;
   theme: "system" | "light" | "dark";
+  ignoreGlobs: string[];
 }
 
-const PREFS_STORAGE_KEY = "afwe.studio.prefs.v2.7";
+const PREFS_STORAGE_KEY = "afwe.studio.prefs.v2.8";
 
 const DEFAULT_PREFS: StudioPrefs = {
   defaultStartNodeId: null,
@@ -30,6 +31,7 @@ const DEFAULT_PREFS: StudioPrefs = {
   topologyPalette: "cartographic",
   graceSeconds: 10,
   theme: "system",
+  ignoreGlobs: ["dist/**", "target/**", "node_modules/**", "**/*.spec.ts", "**/*.test.tsx"],
 };
 
 export function getStudioPrefs(): StudioPrefs {
@@ -50,10 +52,15 @@ export function getStudioPrefs(): StudioPrefs {
       topologyPalette: parsed.topologyPalette || "cartographic",
       graceSeconds: typeof parsed.graceSeconds === "number" ? parsed.graceSeconds : 10,
       theme: parsed.theme === "dark" || parsed.theme === "light" ? parsed.theme : "system",
+      ignoreGlobs: Array.isArray(parsed.ignoreGlobs) ? parsed.ignoreGlobs : DEFAULT_PREFS.ignoreGlobs,
     };
   } catch {
     return DEFAULT_PREFS;
   }
+}
+
+export function setIgnoreGlobs(globs: string[]): StudioPrefs {
+  return saveStudioPrefs({ ignoreGlobs: globs });
 }
 
 export function saveStudioPrefs(prefs: Partial<StudioPrefs>): StudioPrefs {

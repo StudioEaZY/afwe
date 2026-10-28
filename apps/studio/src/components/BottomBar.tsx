@@ -3,7 +3,7 @@ import { api } from "../api";
 
 /** Bottom bar lives outside the ReactFlowProvider, so zoom-to-fit is dispatched via a custom event. */
 export function BottomBar() {
-  const { graph, expandAll, collapseAll, showImpl, setShowImpl, run, notify } = useStore();
+  const { graph, expandAll, collapseAll, showImpl, setShowImpl, run, notify, engineStats } = useStore();
   if (!graph) return null;
   const violations = graph.code_edges.filter((e) => e.violation).length;
   const undeclared = graph.code_edges.filter((e) => !e.declared && !e.violation).length;
@@ -24,12 +24,20 @@ export function BottomBar() {
         </button>
       </div>
       <div className="stats">
-        <span>{graph.nodes.length} nodes</span>
+        <span>{engineStats?.blueprint?.total_nodes ?? graph.nodes.length} nodes</span>
         <span>{graph.files.length} files</span>
         <span>{graph.unmapped.length > 0 ? <span className="warn">{graph.unmapped.length} unmapped</span> : "all files mapped"}</span>
         <span>{graph.relations.length} declared relations</span>
         {undeclared > 0 && <span className="warn">{undeclared} undeclared code edges</span>}
         {violations > 0 && <span className="bad">{violations} constraint violations</span>}
+        {engineStats?.governance && (
+          <span>
+            {engineStats.governance.active_pins} pin(s) · {engineStats.governance.active_checks} check(s)
+          </span>
+        )}
+        {engineStats?.calibration && engineStats.calibration.open_questions > 0 && (
+          <span className="warn">{engineStats.calibration.open_questions} question(s) open</span>
+        )}
       </div>
       <div className="group">
         <button
