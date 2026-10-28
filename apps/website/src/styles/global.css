@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --bg-canvas: #F5F3ED;
+    --bg-canvas: #eef4f4;
     --bg-surface: #FFFFFF;
-    --bg-subtle: #EBE7DD;
-    --border-subtle: #DDD9D0;
-    --border-strong: #C7C4BB;
+    --bg-subtle: #E2ECEC;
+    --border-subtle: #D4E2E2;
+    --border-strong: #BDCCC4;
     --text-primary: #292D2B;
     --text-secondary: #3D4340;
     --text-muted: #5C5850;
@@ -19,6 +19,15 @@
     --brand-amber: #B45309;
     --brand-crimson: #B91C1C;
     --brand-cyan: #0E7490;
+
+    --accent: #758477;
+    --accent-ink: #FFFFFF;
+    --pass: #15803D;
+    --fail: #B91C1C;
+
+    --ink: #1A1D1B;
+    --ink-fg: #F5F8F6;
+    --ink-muted: #8E9E95;
   }
 
   .dark {
@@ -37,6 +46,15 @@
     --brand-amber: #FBBF24;
     --brand-crimson: #F87171;
     --brand-cyan: #22D3EE;
+
+    --accent: #8D9B8F;
+    --accent-ink: #0E1110;
+    --pass: #22C55E;
+    --fail: #F87171;
+
+    --ink: #070A0E;
+    --ink-fg: #F5F8F6;
+    --ink-muted: #8E9E95;
   }
 
   /* Universal high-contrast keyboard focus visibility */
@@ -63,6 +81,45 @@
     font-family: 'IBM Plex Sans', Inter, system-ui, -apple-system, sans-serif;
     letter-spacing: -0.02em;
   }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    padding: .65rem 1.1rem; border-radius: .5rem;
+    font-size: .875rem; font-weight: 600; line-height: 1.25;
+    border: 1px solid transparent; cursor: pointer;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    transition: background-color .15s, border-color .15s, opacity .15s;
+  }
+  .btn-primary { background: #292D2B; color: #FFFFFF; }
+  .btn-primary:hover { background: #1A1D1B; }
+  .dark .btn-primary { background: #FFFFFF; color: #292D2B; }
+  .dark .btn-primary:hover { background: #EBE7DD; }
+
+  .btn-quiet { border-color: var(--border-strong); color: var(--text-primary); background: transparent; }
+  .btn-quiet:hover { border-color: var(--text-primary); background: var(--bg-subtle); }
+
+  .btn-on-ink { background: #FFFFFF; color: #1A1D1B; }
+  .btn-on-ink:hover { background: #EBE7DD; }
+
+  .code-panel { background: var(--ink); color: var(--ink-fg); border-radius: .75rem; }
+}
+
+@layer utilities {
+  .text-fg   { color: var(--text-primary); }
+  .text-fg-2 { color: var(--text-secondary); }
+  .text-fg-3 { color: var(--text-muted); }
+  .text-accent { color: var(--accent); }
+  .text-pass { color: var(--pass); }
+  .text-fail { color: var(--fail); }
+  .bg-canvas  { background-color: var(--bg-canvas); }
+  .bg-surface { background-color: var(--bg-surface); }
+  .bg-subtle  { background-color: var(--bg-subtle); }
+  .bg-accent  { background-color: var(--accent); color: var(--accent-ink); }
+  .bg-line    { background-color: var(--border-subtle); }
+  .border-line { border-color: var(--border-subtle); }
+  .border-line-strong { border-color: var(--border-strong); }
 }
 
 /* Localized architectural dot grid - ONLY used inside designated diagram containers */

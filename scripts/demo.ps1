@@ -56,6 +56,7 @@ New-Item -ItemType Directory -Path $TempDir -Force | Out-Null
 New-Item -ItemType Directory -Path $WorkDir -Force | Out-Null
 
 Copy-Item -Path "$DemoDir\*" -Destination $TempDir -Recurse -Force
+Remove-Item -Path "$TempDir\.afwe\turns\*" -Force
 Push-Location $TempDir
 
 try {
@@ -159,8 +160,33 @@ try {
     } catch {
         Write-Host "(DEAD_ON_ARRIVAL intercepted: new export born with 0 callers)" -ForegroundColor Green
     }
+    # Reset checkout.ts for clean state
+    $CleanCheckout = "import { User } from '../identity/user';`nexport function checkout(user: User) { return 42; }`n"
+    [System.IO.File]::WriteAllText((Join-Path $TempDir "src\payments\checkout.ts"), $CleanCheckout)
+    Run-Cmd $AfweCmd @("turn", "abandon", "t0004")
 
-    Step-Header "5. What the history now says"
+    Step-Header "5. Concurrent turn architecture: file claims & contention hard-stop"
+    Write-Host "Simulating Agent A claiming src/payments/charge.ts..." -ForegroundColor DarkGray
+    Run-Cmd $AfweCmd @("turn", "begin", "Agent A: Refactor charge helper", "--target", "payments", "--claim", "src/payments/charge.ts")
+
+    Write-Host "`nSimulating Agent B attempting to claim the SAME file concurrently..." -ForegroundColor DarkGray
+    try {
+        & $AfweCmd turn begin "Agent B: Conflicting edits to charge" --target payments --claim src/payments/charge.ts
+    } catch {
+        Write-Host "(CONTENTION intercepted: hard stop prevents two agents writing one file)" -ForegroundColor Green
+    }
+
+    Write-Host "`nSimulating Agent B claiming a DISJOINT file in parallel..." -ForegroundColor DarkGray
+    Run-Cmd $AfweCmd @("turn", "begin", "Agent B: Add receipts module", "--target", "payments", "--claim", "src/payments/receipt.ts")
+
+    # Agent B writes receipts in parallel
+    [System.IO.File]::WriteAllText((Join-Path $TempDir "src\payments\receipt.ts"), "export function printReceipt(id: string) { return id; }`n")
+    Run-Cmd $AfweCmd @("turn", "commit", "t0005", "--summary", "Agent B added receipts concurrently")
+
+    # Clean up Agent A
+    Run-Cmd $AfweCmd @("turn", "commit", "t0004", "--summary", "Agent A finished charge refactor")
+
+    Step-Header "6. What the history now says"
     Run-Cmd $AfweCmd @("timeline")
     Run-Cmd $AfweCmd @("timeline", "losses")
     Run-Cmd $AfweCmd @("board")

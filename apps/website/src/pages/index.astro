@@ -146,76 +146,101 @@ import { Copy, Check, FileText, Code2, ShieldCheck, ArrowRight, Sparkles, Refres
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Staged List Arrangement with Syntax-Highlighted Semantic Code Panels -->
+      <ol class="divide-y divide-stone-300 dark:divide-obsidian-800 border-y border-stone-300 dark:border-obsidian-800">
         <!-- Step 1: Begin -->
-        <div class="rounded-2xl border border-stone-400/70 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between shadow-xs hover:border-graphite/50 transition-all">
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <span class="size-7 rounded-full bg-graphite text-white dark:bg-stone-200 dark:text-graphite font-mono text-xs font-bold flex items-center justify-center">
-                1
-              </span>
-              <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-                <FileText class="size-5" />
+        <li class="grid grid-cols-1 lg:grid-cols-12 gap-6 py-8 items-center">
+          <div class="lg:col-span-1 flex lg:justify-center">
+            <span class="size-11 rounded-2xl bg-survey/15 dark:bg-survey/20 border border-survey/40 text-survey dark:text-survey-light font-mono text-lg font-bold flex items-center justify-center shadow-xs">
+              01
+            </span>
+          </div>
+          <div class="lg:col-span-6 space-y-2">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-survey dark:text-survey-light">Briefing Pack</span>
+              <span class="size-1 rounded-full bg-stone-400"></span>
+              <span class="text-xs font-mono text-graphite/60 dark:text-stone-400">Baseline Phase</span>
+            </div>
+            <h3 class="text-xl font-bold text-graphite dark:text-white">Begin: Capture Codebase State</h3>
+            <p class="text-sm text-graphite/80 dark:text-stone-300 leading-relaxed max-w-prose">
+              Captures a BLAKE3 cryptographic digest and AST symbol baseline. Supplies your AI agent with scoped context: active block pins, living intents, architectural constraints, and advisory probing guides.
+            </p>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="rounded-xl bg-graphite-900 dark:bg-obsidian-950 border border-stone-700 dark:border-obsidian-800 px-4 py-3.5 font-mono text-xs shadow-md overflow-x-auto">
+              <div class="flex items-center justify-between text-[10px] text-stone-500 mb-2 border-b border-stone-800 pb-1.5">
+                <span>PHASE 0 · SCOPING</span>
+                <span class="text-survey-light">read-only</span>
+              </div>
+              <div class="leading-relaxed whitespace-nowrap">
+                <span class="text-stone-500 select-none">$ </span><span class="text-emerald-400 font-bold">afwe</span> <span class="text-stone-200">turn begin</span> <span class="text-amber-300">"refactor session storage"</span> <span class="text-survey-light">--target</span> <span class="text-stone-300">src/auth/*</span>
               </div>
             </div>
-            <div>
-              <h3 class="text-lg font-bold text-graphite dark:text-white">1. Begin: Briefing Pack</h3>
-              <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed mt-2 font-sans">
-                Captures a BLAKE3 and AST symbol baseline. Supplies the agent with scoped context: active block pins, living intents, memory records, constraints, and advisory probing guides.
-              </p>
-            </div>
           </div>
-          <div class="mt-6 pt-3 border-t border-stone-300 dark:border-obsidian-800 font-mono text-[11px] text-survey-600 dark:text-survey-light">
-            afwe turn begin "&lt;prompt&gt;" --target &lt;files&gt;
-          </div>
-        </div>
+        </li>
 
         <!-- Step 2: Assume -->
-        <div class="rounded-2xl border border-stone-400/70 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between shadow-xs hover:border-graphite/50 transition-all">
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <span class="size-7 rounded-full bg-graphite text-white dark:bg-stone-200 dark:text-graphite font-mono text-xs font-bold flex items-center justify-center">
-                2
-              </span>
-              <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-                <Code2 class="size-5" />
+        <li class="grid grid-cols-1 lg:grid-cols-12 gap-6 py-8 items-center">
+          <div class="lg:col-span-1 flex lg:justify-center">
+            <span class="size-11 rounded-2xl bg-amber-500/15 dark:bg-amber-500/20 border border-amber-500/40 text-amber-700 dark:text-amber-300 font-mono text-lg font-bold flex items-center justify-center shadow-xs">
+              02
+            </span>
+          </div>
+          <div class="lg:col-span-6 space-y-2">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">Pre-Code Claims</span>
+              <span class="size-1 rounded-full bg-stone-400"></span>
+              <span class="text-xs font-mono text-graphite/60 dark:text-stone-400">Intent Phase</span>
+            </div>
+            <h3 class="text-xl font-bold text-graphite dark:text-white">Assume: Contract Before Code</h3>
+            <p class="text-sm text-graphite/80 dark:text-stone-300 leading-relaxed max-w-prose">
+              The agent declares exact Tree-Sitter AST claims (forbid imports, forbidden regex, symbol invariants) before editing any source file. If claims conflict with human pins, AFWE triggers an instant redo before corrupting your codebase.
+            </p>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="rounded-xl bg-graphite-900 dark:bg-obsidian-950 border border-stone-700 dark:border-obsidian-800 px-4 py-3.5 font-mono text-xs shadow-md overflow-x-auto">
+              <div class="flex items-center justify-between text-[10px] text-stone-500 mb-2 border-b border-stone-800 pb-1.5">
+                <span>PHASE 1 · INTENT CLAIMS</span>
+                <span class="text-amber-400">ast contracts</span>
+              </div>
+              <div class="leading-relaxed whitespace-nowrap">
+                <span class="text-stone-500 select-none">$ </span><span class="text-emerald-400 font-bold">afwe</span> <span class="text-stone-200">turn assume</span> <span class="text-cyan-300">t0042</span> <span class="text-survey-light">--file</span> <span class="text-stone-300">assumptions.json</span>
               </div>
             </div>
-            <div>
-              <h3 class="text-lg font-bold text-graphite dark:text-white">2. Assume: Pre-Code Claims</h3>
-              <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed mt-2 font-sans">
-                The agent declares intents and verifiable Tree-Sitter AST claims (forbid imports, forbidden patterns, symbol requirements) before modifying code. Pin conflicts trigger immediate REDO.
-              </p>
-            </div>
           </div>
-          <div class="mt-6 pt-3 border-t border-stone-300 dark:border-obsidian-800 font-mono text-[11px] text-survey-600 dark:text-survey-light">
-            afwe turn assume &lt;turn&gt; --file assumptions.json
-          </div>
-        </div>
+        </li>
 
         <!-- Step 3: Commit -->
-        <div class="rounded-2xl border border-stone-400/70 dark:border-obsidian-700 bg-white/70 dark:bg-obsidian-900 p-6 flex flex-col justify-between shadow-xs hover:border-graphite/50 transition-all">
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <span class="size-7 rounded-full bg-graphite text-white dark:bg-stone-200 dark:text-graphite font-mono text-xs font-bold flex items-center justify-center">
-                3
-              </span>
-              <div class="size-10 rounded-xl bg-stone-200/60 dark:bg-obsidian-800 flex items-center justify-center text-graphite dark:text-stone-200">
-                <ShieldCheck class="size-5" />
+        <li class="grid grid-cols-1 lg:grid-cols-12 gap-6 py-8 items-center">
+          <div class="lg:col-span-1 flex lg:justify-center">
+            <span class="size-11 rounded-2xl bg-emerald-500/15 dark:bg-emerald-500/20 border border-emerald-500/40 text-emerald-700 dark:text-emerald-400 font-mono text-lg font-bold flex items-center justify-center shadow-xs">
+              03
+            </span>
+          </div>
+          <div class="lg:col-span-6 space-y-2">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Gated Verification</span>
+              <span class="size-1 rounded-full bg-stone-400"></span>
+              <span class="text-xs font-mono text-graphite/60 dark:text-stone-400">Commit Phase</span>
+            </div>
+            <h3 class="text-xl font-bold text-graphite dark:text-white">Commit: Deterministic Gating</h3>
+            <p class="text-sm text-graphite/80 dark:text-stone-300 leading-relaxed max-w-prose">
+              Attributes all diffs against the BLAKE3 baseline, verifies AST claims against comment-blanked code, detects undeclared feature loss, and writes an isolated Git plumbing commit with an audit receipt trailer.
+            </p>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="rounded-xl bg-graphite-900 dark:bg-obsidian-950 border border-stone-700 dark:border-obsidian-800 px-4 py-3.5 font-mono text-xs shadow-md overflow-x-auto">
+              <div class="flex items-center justify-between text-[10px] text-stone-500 mb-2 border-b border-stone-800 pb-1.5">
+                <span>PHASE 2 · CAS GATING</span>
+                <span class="text-emerald-400">verified audit</span>
+              </div>
+              <div class="leading-relaxed whitespace-nowrap">
+                <span class="text-stone-500 select-none">$ </span><span class="text-emerald-400 font-bold">afwe</span> <span class="text-stone-200">turn commit</span> <span class="text-cyan-300">t0042</span> <span class="text-survey-light">--summary</span> <span class="text-stone-300">"Verified session claim"</span>
               </div>
             </div>
-            <div>
-              <h3 class="text-lg font-bold text-graphite dark:text-white">3. Commit: Gated Verification</h3>
-              <p class="text-xs text-graphite/80 dark:text-stone-300 leading-relaxed mt-2 font-sans">
-                Attributes changes against baseline, checks for undeclared feature loss, runs comment-blanked AST claims, and commits atomically with an AFWE-Turn receipt trailer.
-              </p>
-            </div>
           </div>
-          <div class="mt-6 pt-3 border-t border-stone-300 dark:border-obsidian-800 font-mono text-[11px] text-survey-600 dark:text-survey-light">
-            afwe turn commit &lt;turn&gt; --summary "..."
-          </div>
-        </div>
-      </div>
+        </li>
+      </ol>
     </section>
 
     <!-- ========================================================================= -->

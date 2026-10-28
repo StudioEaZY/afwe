@@ -35,6 +35,7 @@ step "2. The turn protocol on a throw-away git copy"
 TMP="$(mktemp -d)"
 WORK="$(mktemp -d)"            # helper files live outside the project, so they are not part of any turn
 cp -r "$ROOT/examples/demo-project/." "$TMP/"
+rm -rf "$TMP/.afwe/turns"/*
 cd "$TMP" || exit 1
 git init -q
 git add -A
@@ -100,7 +101,28 @@ export function zombieFunction(x: number) { return x * 999; }
 TS
 run $AFWE turn commit t0004 || echo "(DEAD_ON_ARRIVAL intercepted — exit $? — new export born with 0 references)"
 
-step "5. What the history now says"
+# Reset checkout.ts and abandon t0004
+cat > src/payments/checkout.ts <<'TS'
+import { User } from '../identity/user';
+export function checkout(user: User) { return 42; }
+TS
+run $AFWE turn abandon t0004
+
+step "5. Concurrent turn architecture: file claims & contention hard-stop"
+echo "Simulating Agent A claiming src/payments/charge.ts..."
+run $AFWE turn begin "Agent A: Refactor charge helper" --target payments --claim src/payments/charge.ts
+
+echo "Simulating Agent B attempting to claim the SAME file concurrently..."
+run $AFWE turn begin "Agent B: Conflicting edits to charge" --target payments --claim src/payments/charge.ts || echo "(CONTENTION intercepted: hard stop prevents two agents writing one file)"
+
+echo "Simulating Agent B claiming a DISJOINT file in parallel..."
+run $AFWE turn begin "Agent B: Add receipts module" --target payments --claim src/payments/receipt.ts
+
+echo 'export function printReceipt(id: string) { return id; }' > src/payments/receipt.ts
+run $AFWE turn commit t0005 --summary "Agent B added receipts concurrently"
+run $AFWE turn commit t0004 --summary "Agent A finished charge refactor"
+
+step "6. What the history now says"
 run $AFWE timeline
 run $AFWE timeline losses
 run $AFWE board

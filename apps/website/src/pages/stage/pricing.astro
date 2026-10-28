@@ -1,0 +1,326 @@
+---
+// stage/pricing.astro - Staged 4-Tier Recognition & Community Seat Pool Matrix
+import StageLayout from '../../layouts/StageLayout.astro';
+import {
+  ArrowDownToLine,
+  Eye,
+  Scale,
+  Users,
+  Check,
+  Code,
+  Building2,
+  Palette as PaletteIcon,
+  Sparkles,
+  Gamepad2,
+  Star,
+  ShieldCheck
+} from '@lucide/astro';
+
+// Instant static baseline - 0ms server blocking!
+const baselineAllocation = {
+  total_seats: 1000,
+  claimed_seats: 5,
+  available_seats: 995
+};
+
+const principles = [
+  { Icon: ArrowDownToLine, text: 'Same access for everyone' },
+  { Icon: Eye, text: 'Transparent availability' },
+  { Icon: Scale, text: 'Fair contribution model' },
+  { Icon: Users, text: 'Open source always' }
+];
+
+const tiers = [
+  {
+    name: 'Community',
+    label: 'Free',
+    price: 'Free',
+    seats: '',
+    headline: 'Full access. No limits.',
+    blurb: 'Everything you need to use AFWE, including local customization, and the baseline monthly points.',
+    features: ['Full AFWE functionality', 'Local customization', 'Monthly points (baseline)', 'Community support'],
+    preview: { Icon: Code, name: 'AFWE', role: 'Community Member', line: 'Open source. Built together.', tone: '' },
+    cta: { href: '/docs/getting-started/quick-start', label: 'Get started' }
+  },
+  {
+    name: 'Presence',
+    label: 'Tier 01',
+    price: '$29',
+    seats: '50 seats',
+    headline: 'Be seen. On your terms.',
+    blurb: 'Control how you are recognized. Choose your name, brand and logo in the AFWE experience.',
+    features: ['Everything in Community', 'Custom name & logo', 'Visibility preferences', 'Standard styling options'],
+    preview: { Icon: Building2, name: 'Nova Works', role: 'Sustaining AFWE', line: 'Building better tools, together.', tone: '' },
+    cta: { label: 'Choose Presence' }
+  },
+  {
+    name: 'Palette',
+    label: 'Most popular',
+    price: '$79',
+    seats: '150 seats',
+    featured: true,
+    headline: 'More style. More expression.',
+    blurb: 'Add your colors and a richer display style to make your support stand out in the AFWE experience.',
+    features: ['Everything in Presence', 'Custom colors & palette', 'Advanced styling options', 'Priority in recognition queue'],
+    preview: { Icon: PaletteIcon, name: 'Etheral Labs', role: 'Sustaining AFWE', line: 'Better infrastructure. Brighter futures.', tone: 'preview-warm' },
+    cta: { label: 'Choose Palette' }
+  },
+  {
+    name: 'Motion',
+    label: 'Tier 03',
+    price: '$199',
+    seats: '500 seats',
+    headline: 'Bring it to life.',
+    blurb: 'Add subtle micro-animations and advanced visual treatments for the fullest expression of your support.',
+    features: ['Everything in Palette', 'Micro-animations (AFWE UI)', 'Enhanced visual effects', 'Top-tier recognition placement'],
+    preview: { Icon: Sparkles, name: 'Vertex Studio', role: 'Sustaining AFWE', line: 'Ideas. Code. Impact.', tone: 'preview-green' },
+    cta: { label: 'Choose Motion' }
+  }
+];
+
+const extras = [
+  { Icon: Gamepad2, title: 'The recognition experience', body: 'Your support shapes how you are seen: from your name and logo to colors, styling and more. It is a simple way to stand out while helping AFWE grow.' },
+  { Icon: Star, title: 'Points & community influence', body: 'Everyone receives monthly points. Sustainers get 3x the allocation, giving you more influence on the roadmap and support priorities.' },
+  { Icon: ShieldCheck, title: 'Transparent & fair', body: 'The rules are public, the process is open, and you can opt out of the recognition experience at any time. AFWE always runs, with or without it.' }
+];
+
+const seatCells = Array.from({ length: 1000 }, (_, i) => i);
+const claimedCells = Math.round((baselineAllocation.claimed_seats / baselineAllocation.total_seats) * 1000);
+---
+
+<StageLayout
+  title="Pricing · The Product is Free. The Recognition is Your Choice"
+  description="AFWE's core functionality is open to everyone. Your contribution helps sustain development, unlocks greater recognition options, and gives you a bigger voice in what comes next."
+  activeNav="pricing"
+  currentEquivalent="/pricing"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-24">
+
+    <!-- HERO: the seat pool is the visual -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+      <div class="lg:col-span-5 space-y-7">
+        <h1 class="text-4xl sm:text-5xl lg:text-[3.25rem] font-semibold text-fg leading-[1.08]">
+          The product is free. The recognition is your choice.
+        </h1>
+        <p class="text-base sm:text-lg text-fg-2 leading-relaxed max-w-md">
+          AFWE's core functionality is open to everyone. Your contribution helps sustain development, unlocks greater recognition options, and gives you a bigger voice in what comes next.
+        </p>
+        <ul class="border-t border-line-strong max-w-md">
+          {principles.map(({ Icon, text }) => (
+            <li class="flex items-center gap-3 py-3 border-b border-line text-fg font-medium">
+              <Icon class="size-4 text-accent shrink-0" aria-hidden="true" />
+              <span>{text}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="lg:col-span-7 bg-surface border border-line rounded-lg p-5 sm:p-7 space-y-6">
+        <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+          <div>
+            <p class="text-sm font-semibold text-fg-3">Current allocation</p>
+            <p id="allocation-count" role="status" class="mono text-2xl sm:text-3xl font-semibold text-fg">
+              {baselineAllocation.available_seats.toLocaleString()} / {baselineAllocation.total_seats.toLocaleString()} available
+            </p>
+          </div>
+          <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-pass">
+            <Check class="size-4" aria-hidden="true" /> Available
+          </span>
+        </div>
+
+        <div id="seat-grid" class="seat-grid" aria-hidden="true">
+          {seatCells.map((i) => <span class={`seat${i < claimedCells ? ' is-claimed' : ''}`}></span>)}
+        </div>
+
+        <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-fg-3">
+          <span class="inline-flex items-center gap-2"><span class="seat-key"></span> Open seat</span>
+          <span class="inline-flex items-center gap-2"><span class="seat-key is-claimed"></span> Claimed</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 pt-5 border-t border-line">
+          <p class="text-sm text-fg-2 leading-relaxed">
+            A limited number of seats are currently available for new users. Once they are gone, the <strong class="font-semibold text-fg">free tier will not be accessible from the website</strong>.
+          </p>
+          <div class="text-sm space-y-1">
+            <p class="font-semibold text-fg">Already have access?</p>
+            <p class="text-fg-2">You can still use AFWE via the open source repo (MIT License).</p>
+            <a href="https://github.com/StudioEaZY/afwe" target="_blank" rel="noopener noreferrer" class="inline-block font-semibold text-accent underline underline-offset-4 decoration-2">View on GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIERS: one table, four columns -->
+    <section class="space-y-8">
+      <div class="space-y-3 max-w-2xl">
+        <h2 class="text-3xl sm:text-4xl font-semibold text-fg">Choose your level of recognition.</h2>
+        <p class="text-base text-fg-2 leading-relaxed">
+          Each tier unlocks more control over how your support is displayed across the AFWE experience. The core product remains the same for everyone.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line rounded-lg overflow-hidden">
+        {tiers.map((t) => {
+          const PreviewIcon = t.preview.Icon;
+          return (
+            <article class={`flex flex-col p-6 gap-6 ${t.featured ? 'bg-subtle border-t-4 border-t-[color:var(--accent)]' : 'bg-surface'}`}>
+              <header class="space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <h3 class="text-xl font-semibold text-fg">{t.name}</h3>
+                  <span class={`text-xs font-semibold px-2 py-1 rounded ${t.featured ? 'bg-accent' : 'bg-subtle text-fg-2'}`}>{t.label}</span>
+                </div>
+                <div>
+                  <p class="text-3xl font-semibold text-fg leading-none">
+                    {t.price}{t.seats && <span class="text-base font-medium text-fg-3">/mo</span>}
+                  </p>
+                  <p class="text-sm text-fg-3 mt-1 min-h-5">{t.seats}</p>
+                </div>
+              </header>
+
+              <div class="space-y-1">
+                <p class="font-semibold text-fg">{t.headline}</p>
+                <p class="text-sm text-fg-2 leading-relaxed">{t.blurb}</p>
+              </div>
+
+              <ul class="space-y-2 text-sm text-fg-2 pt-4 border-t border-line">
+                {t.features.map((f) => (
+                  <li class="flex items-start gap-2">
+                    <Check class="size-4 text-pass shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div class="mt-auto space-y-4 pt-4 border-t border-line">
+                <div class={`preview rounded-md border border-line p-3 space-y-2 ${t.preview.tone}`}>
+                  <div class="flex items-center gap-2.5">
+                    <span class="preview-icon size-7 rounded-full flex items-center justify-center"><PreviewIcon class="size-3.5" aria-hidden="true" /></span>
+                    <div>
+                      <p class="text-sm font-semibold text-fg leading-none">{t.preview.name}</p>
+                      <p class="text-xs text-fg-3 mt-1">{t.preview.role}</p>
+                    </div>
+                  </div>
+                  <p class="text-xs text-fg-2 italic">{t.preview.line}</p>
+                </div>
+
+                {t.cta.href ? (
+                  <a href={t.cta.href} class="btn btn-quiet w-full">{t.cta.label}</a>
+                ) : (
+                  <button type="button" data-tier={t.name} class={`tier-btn btn w-full ${t.featured ? 'btn-primary' : 'btn-quiet'}`}>{t.cta.label}</button>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- MORE THAN JUST A TIER -->
+    <section class="space-y-8">
+      <h2 class="text-3xl sm:text-4xl font-semibold text-fg">More than just a tier.</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-8">
+        {extras.map(({ Icon, title, body }) => (
+          <div class="border-t-2 border-line-strong pt-5 space-y-2">
+            <h3 class="text-lg font-semibold text-fg flex items-center gap-2.5">
+              <Icon class="size-5 text-accent shrink-0" aria-hidden="true" /> {title}
+            </h3>
+            <p class="text-base text-fg-2 leading-relaxed">{body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- BIGGER PICTURE -->
+    <section class="code-panel p-8 sm:p-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-7 space-y-4">
+          <h2 class="text-3xl sm:text-4xl font-semibold text-white">A sustainable future, together.</h2>
+          <p class="text-base text-[#D7DEE7] max-w-xl leading-relaxed">
+            Your contribution helps keep AFWE free, open, and evolving with more features, better support, and a stronger community.
+          </p>
+          <a href="/blog/the-sponsored-seat-pool" class="btn btn-on-ink mt-2">Read the full blog</a>
+        </div>
+
+        <dl class="lg:col-span-5 border-t border-white/15 text-[#D7DEE7]">
+          <div class="py-3 border-b border-white/15">
+            <dt class="font-semibold text-white">Intent</dt>
+            <dd class="text-sm text-[#93A0AE]">What the code is supposed to be.</dd>
+          </div>
+          <div class="py-3 border-b border-white/15">
+            <dt class="font-semibold text-white">Implementation</dt>
+            <dd class="text-sm text-[#93A0AE]">What the code actually does.</dd>
+          </div>
+          <div class="py-3 border-b border-white/15">
+            <dt class="font-semibold text-white">Structure</dt>
+            <dd class="text-sm text-[#93A0AE]">How it all fits together and evolves.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </div>
+
+  <style>
+    .seat-grid {
+      display: grid;
+      grid-template-columns: repeat(40, 1fr);
+      gap: 3px;
+    }
+    .seat {
+      aspect-ratio: 1;
+      border-radius: 1px;
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+    }
+    .seat.is-claimed { background: var(--accent); box-shadow: none; }
+    .seat-key {
+      width: 12px; height: 12px; border-radius: 2px; display: inline-block;
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+    }
+    .seat-key.is-claimed { background: var(--accent); box-shadow: none; }
+
+    .preview { background: var(--bg-canvas); }
+    .preview-icon { background: var(--bg-subtle); color: var(--text-primary); }
+    .preview-warm { background: color-mix(in srgb, var(--brand-amber) 12%, var(--bg-surface)); }
+    .preview-warm .preview-icon { background: color-mix(in srgb, var(--brand-amber) 25%, transparent); }
+    .preview-green .preview-icon { background: color-mix(in srgb, var(--brand-emerald) 22%, transparent); box-shadow: 0 0 0 1px var(--brand-emerald); }
+  </style>
+
+  <script>
+    // Placeholder checkout until Phase 4 billing ships
+    document.querySelectorAll<HTMLButtonElement>('.tier-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        alert(`${btn.dataset.tier} Tier sponsorship checkout will connect when Phase 4 Community billing launches.`);
+      });
+    });
+
+    // Lazyload Supabase telemetry: non-blocking background fetch
+    async function refreshSeatTelemetry() {
+      try {
+        const { supabase } = await import('../../lib/supabase');
+        const { data, error } = await supabase
+          .from('seat_pool')
+          .select('total_seats, claimed_seats')
+          .eq('id', 1)
+          .maybeSingle();
+
+        if (data && !error) {
+          const available = Math.max(0, data.total_seats - data.claimed_seats);
+          const countEl = document.getElementById('allocation-count');
+          if (countEl) {
+            countEl.textContent = `${available.toLocaleString()} / ${data.total_seats.toLocaleString()} available`;
+          }
+          const cells = document.querySelectorAll('#seat-grid .seat');
+          const claimed = Math.round((data.claimed_seats / data.total_seats) * cells.length);
+          cells.forEach((el, i) => el.classList.toggle('is-claimed', i < claimed));
+        }
+      } catch (e) {
+        // Fallback baseline remains displayed with zero disruption
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      setTimeout(refreshSeatTelemetry, 150);
+    } else {
+      window.addEventListener('load', () => setTimeout(refreshSeatTelemetry, 150));
+    }
+  </script>
+</StageLayout>

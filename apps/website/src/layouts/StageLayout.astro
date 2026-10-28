@@ -1,0 +1,191 @@
+---
+// StageLayout.astro - Master Layout for Staged Website Redesign (Cool Grey-Blue Palette)
+import SearchModal from '../components/SearchModal.astro';
+import AfweWordmark from '../components/AfweWordmark.astro';
+import { Search, Sun, Moon, ArrowRight, Eye, Sparkles } from '@lucide/astro';
+import '../styles/stage-global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  activeNav?: 'home' | 'docs' | 'roadmap' | 'pricing' | 'blog';
+  currentEquivalent?: string;
+}
+
+const {
+  title,
+  description = "AFWE: The Intent Layer For Your Codebase. Double-entry bookkeeping for autonomous coding.",
+  activeNav = 'home',
+  currentEquivalent = '/'
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title} · AFWE (Staged)</title>
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script is:inline>
+    (function () {
+      try {
+        const stored = localStorage.getItem('theme');
+        const dark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+
+<body class="min-h-screen bg-canvas text-fg font-sans selection:bg-[var(--accent)] selection:text-white">
+  <!-- Skip to Content -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--ink)] focus:text-white focus:rounded font-mono text-xs font-bold">
+    Skip to main content
+  </a>
+
+  <!-- Staging Switcher Banner -->
+  <div class="bg-[var(--accent)] text-white text-xs font-mono py-2 px-4 shadow-sm">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2 truncate">
+        <Sparkles class="size-3.5 shrink-0 animate-pulse" />
+        <span class="font-bold">STAGED PREVIEW:</span>
+        <span class="hidden sm:inline">Cool Grey-Blue Palette & Unified Components</span>
+      </div>
+      <a 
+        href={currentEquivalent}
+        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white text-[var(--accent)] hover:bg-[#E1E6EC] font-bold text-[11px] transition-colors shrink-0"
+      >
+        <span>Switch to Current Live Page</span>
+        <ArrowRight class="size-3" />
+      </a>
+    </div>
+  </div>
+
+  <!-- Master Horizontal Navigation Bar -->
+  <header class="sticky top-0 z-40 w-full border-b border-line bg-surface/90 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
+      <!-- Left: Logo & Wordmark -->
+      <a href="/stage" class="flex items-center gap-3 group focus-visible:ring-2 focus-visible:ring-[var(--accent)]">
+        <AfweWordmark class="h-5 sm:h-6 w-auto" />
+        <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-accent text-[var(--accent-ink)]">STAGE</span>
+      </a>
+
+      <!-- Center: Navigation Links -->
+      <nav class="hidden md:flex items-center gap-1 font-mono text-xs">
+        <a 
+          href="/stage" 
+          class={`px-3 py-1.5 rounded transition-colors ${activeNav === 'home' ? 'font-bold text-fg bg-subtle' : 'text-fg-2 hover:text-fg hover:bg-subtle/50'}`}
+        >
+          Home
+        </a>
+        <a 
+          href="/docs" 
+          class={`px-3 py-1.5 rounded transition-colors ${activeNav === 'docs' ? 'font-bold text-fg bg-subtle' : 'text-fg-2 hover:text-fg hover:bg-subtle/50'}`}
+        >
+          Docs
+        </a>
+        <a 
+          href="/stage/roadmap" 
+          class={`px-3 py-1.5 rounded transition-colors ${activeNav === 'roadmap' ? 'font-bold text-fg bg-subtle' : 'text-fg-2 hover:text-fg hover:bg-subtle/50'}`}
+        >
+          Roadmap
+        </a>
+        <a 
+          href="/stage/pricing" 
+          class={`px-3 py-1.5 rounded transition-colors ${activeNav === 'pricing' ? 'font-bold text-fg bg-subtle' : 'text-fg-2 hover:text-fg hover:bg-subtle/50'}`}
+        >
+          Pricing
+        </a>
+        <a 
+          href="/blog" 
+          class={`px-3 py-1.5 rounded transition-colors ${activeNav === 'blog' ? 'font-bold text-fg bg-subtle' : 'text-fg-2 hover:text-fg hover:bg-subtle/50'}`}
+        >
+          Blog
+        </a>
+      </nav>
+
+      <!-- Right: Search, Theme Toggle, CTA -->
+      <div class="flex items-center gap-3">
+        <!-- Search Button (Cmd+K) -->
+        <button 
+          data-open-search 
+          class="flex items-center gap-2 px-3 py-1.5 rounded border border-line bg-surface hover:border-line-strong text-xs font-mono text-fg-3 transition-all cursor-pointer"
+          title="Search documentation (⌘K)"
+        >
+          <Search class="size-3.5" />
+          <span class="hidden lg:inline">Search...</span>
+          <kbd class="hidden sm:inline-block rounded px-1.5 py-0.5 text-[10px] bg-subtle text-fg-2 border border-line font-mono">⌘K</kbd>
+        </button>
+
+        <!-- Theme Switcher -->
+        <button 
+          id="theme-toggle" 
+          title="Toggle theme" 
+          class="p-2 rounded border border-line hover:bg-subtle text-fg transition-colors cursor-pointer"
+          aria-label="Toggle light/dark theme"
+        >
+          <Sun class="size-4 hidden dark:block" />
+          <Moon class="size-4 block dark:hidden" />
+        </button>
+
+        <!-- Get Started Primary CTA -->
+        <a 
+          href="/docs/getting-started/quick-start" 
+          class="btn btn-primary text-xs"
+        >
+          <span>Get started</span>
+          <ArrowRight class="size-3" />
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Viewport -->
+  <main id="main-content">
+    <slot />
+  </main>
+
+  <!-- Master Marketing Footer -->
+  <footer class="mt-28 border-t border-line bg-surface py-12 text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-line">
+        <div class="flex items-center gap-3">
+          <AfweWordmark class="h-5 w-auto" />
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-subtle text-fg-2">STAGED</span>
+        </div>
+        <div class="flex items-center gap-6 text-fg-2">
+          <a href="/stage" class="hover:text-fg transition-colors">Home</a>
+          <a href="/docs" class="hover:text-fg transition-colors">Docs</a>
+          <a href="/stage/roadmap" class="hover:text-fg transition-colors">Roadmap</a>
+          <a href="/stage/pricing" class="hover:text-fg transition-colors">Pricing</a>
+          <a href="/blog" class="hover:text-fg transition-colors">Blog</a>
+          <a href="https://github.com/StudioEaZY/afwe" target="_blank" rel="noopener noreferrer" class="hover:text-fg transition-colors">GitHub</a>
+        </div>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-fg-3 text-[11px]">
+        <div>
+          Open source under the MIT License. Zero telemetry. Your code stays local.
+        </div>
+        <div>
+          Built for developers. Sustained by the community.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Search Modal Component -->
+  <SearchModal />
+
+  <script>
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      });
+    }
+  </script>
+</body>
+</html>

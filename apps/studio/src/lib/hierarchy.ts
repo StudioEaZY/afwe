@@ -303,7 +303,7 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
     return {
       id: "root",
       key: "root",
-      label: "Codebase",
+      label: "untitled",
       kind: "project",
       path: "",
       breadcrumbLabels: [],
@@ -634,7 +634,7 @@ export function buildHierarchyTree(graph: any): HierarchyNode {
   return {
     id: "root",
     key: "root",
-    label: graph.project?.name || "Acme App",
+    label: graph.project?.name || "untitled",
     kind: "project",
     path: "",
     breadcrumbLabels: [],

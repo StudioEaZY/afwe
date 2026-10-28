@@ -92,14 +92,23 @@ sequenceDiagram
 ```
 
 ### Step 1: `afwe turn begin`
-Before writing code, the harness calls `turn begin`. AFWE returns a **Briefing Pack** containing:
+Before writing code, the harness calls `turn begin`:
+```bash
+afwe turn begin "<prompt>" --target <files> [--claim <files>] [--parent <turn>]
+```
+AFWE returns a **Briefing Pack** containing:
 - In-scope architectural nodes and files.
 - **Active Pins**: Human decisions locked against modification.
 - **Memory & Rules**: Relevant architectural decisions, terminology, and constraints.
 - **Unresolved Proposals**: Pending staged changes.
+- **Turn Hash & Token**: An in-flight random hash (`turn-a8f3c2...`) and bearer token for isolated multi-agent concurrency.
+- **Claims & Contention**: Declaring `--claim <files>` reserves files. If another active turn holds a claimed file, AFWE halts immediately with `CONTENTION` to prevent lost updates in the shared directory.
 
 ### Step 2: `afwe turn assume`
 The harness declares what it intends to touch and its pre-generation claims:
+```bash
+afwe turn assume <turn> --file <json> [--token <tok>] [--claim <files>]
+```
 ```json
 {
   "intents": [
@@ -124,10 +133,16 @@ The harness declares what it intends to touch and its pre-generation claims:
 }
 ```
 If an assumption violates a locked Pin or has an invalid schema, AFWE returns **REDO** ("Hell Nah") and stops the harness before any code is generated.
+- **Safe Redo**: Call `afwe turn redo <turn>` to cleanly reset touched files back to baseline. Affected files are automatically backed up to `.afwe/backups/<turn_hash>/`.
+- **Abandon Turn**: Call `afwe turn abandon <turn>` to release all reserved claims and mark the turn abandoned.
 
 ### Step 3: `afwe turn commit`
-After writing code, the harness calls `turn commit`.
-AFWE's gate executes the deterministic commit engine:
+After writing code, the harness calls `turn commit`:
+```bash
+afwe turn commit <turn> --summary "..." [--token <tok>]
+```
+AFWE executes the deterministic commit engine:
+- **Virtual Index Overlay (Dirty Workspace Immunity)**: In multi-agent sessions, static analysis evaluates claimed files from disk while streaming out-of-scope files directly from Git HEAD in memory. In-progress typing from peer agents cannot poison the commit gate.
 - **Parser & Constraint Checks**: Verifies AST boundaries (`forbid_import`, `require_pattern`).
 - **Assumption Verification**: Evaluates all claims declared in `turn assume`.
 - **Intra-file Dropped Capabilities (`DROPPED_CAPABILITY`)**: Detects exported functions/types dropped from touched files.
@@ -135,9 +150,10 @@ AFWE's gate executes the deterministic commit engine:
 - **Dead-on-Arrival Detection (`DEAD_ON_ARRIVAL`)**: Flags new exported functions born with 0 callers unless tested in `tests/` or declared in `turn assume`.
 - **Decision-to-Code Link Ratchet (`ORPHANED_DECISION` / `ORPHANED_PIN`)**: Blocks if an architectural decision or pin loses its anchored node, file, or symbol without an explicit update or supersede declaration.
 - **Documentation Drift (`DOCS_DRIFT`)**: Blocks if doc files contain broken links to missing project code.
+- **Private Plumbing Commit**: Commits are written via private Git index trees (`GIT_INDEX_FILE`), verified via CAS (`git update-ref`), and protected by an OS advisory commit lock (`flock`/`LockFileEx`). Only attributed files are committed—peer agents' dirty files are never swept in.
 
 - If any check fails: **REDO** — nothing is committed to git.
-- If all checks pass: The change is committed with trailer `AFWE-Turn: tXXXX`.
+- If all checks pass: The change is committed with trailer `AFWE-Turn: tXXXX` and `AFWE-Turn-Hash: turn-XXXX`.
 
 > [!NOTE]
 > **"Rust for Project Intent"**:

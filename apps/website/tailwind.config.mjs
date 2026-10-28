@@ -7,11 +7,11 @@ export default {
       colors: {
         // Official Light Mode Brand Tokens
         paper: {
-          DEFAULT: '#F5F3ED',
-          50: '#FAF8F3',
-          100: '#F5F3ED',
-          200: '#EBE7DD',
-          300: '#E0DBD0',
+          DEFAULT: '#eef4f4',
+          50: '#F7FAFA',
+          100: '#eef4f4',
+          200: '#E2ECEC',
+          300: '#D4E2E2',
         },
         graphite: {
           DEFAULT: '#292D2B',
@@ -40,14 +40,14 @@ export default {
         },
         // Existing Extended Parchment & Obsidian tokens
         parchment: {
-          50: '#FAF8F3',
-          100: '#F5F3ED',
-          200: '#EBE7DD',
-          300: '#DDD9D0',
-          400: '#C7C4BB',
-          500: '#9E9A90',
-          600: '#5C5850',
-          700: '#3D3A34',
+          50: '#F7FAFA',
+          100: '#eef4f4',
+          200: '#E2ECEC',
+          300: '#D4E2E2',
+          400: '#BDCCC4',
+          500: '#8E9E95',
+          600: '#525A56',
+          700: '#3D4340',
           800: '#292D2B',
           900: '#1A1D1B',
         },

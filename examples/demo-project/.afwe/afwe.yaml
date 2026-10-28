@@ -1,7 +1,7 @@
 format: afwe/2
 project:
-  name: "Acme App"
-  description: Tiny multi-language app used to demonstrate AFWE
+  name: "demo-project"
+  description: Multi-tier demo application used to demonstrate AFWE architecture governance
   root: .
 analyzer:
   include: []

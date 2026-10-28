@@ -1,0 +1,396 @@
+---
+// stage/roadmap.astro - Staged Phased Roadmap & Community Upvoting
+import StageLayout from '../../layouts/StageLayout.astro';
+import { BookOpen, Check, Clock, Circle, ChevronUp } from '@lucide/astro';
+
+// Instant static baseline - 0ms server blocking!
+const editorVotes = 1240;
+const teamVotes = 892;
+const analyticsVotes = 437;
+
+const status = {
+  live: { label: 'Live', Icon: Check, text: 'text-pass' },
+  progress: { label: 'In Progress', Icon: Clock, text: 'text-[color:var(--brand-amber)]' },
+  planned: { label: 'Planned', Icon: Circle, text: 'text-fg-3' }
+};
+
+const promises = [
+  'More powerful tooling for real codebases.',
+  'A thriving community of builders.',
+  'Long-term sustainability without feature gates.'
+];
+
+const legend = [
+  { key: 'live', label: 'Live', note: 'Available now' },
+  { key: 'progress', label: 'In Progress', note: 'Actively being built' },
+  { key: 'planned', label: 'Planned', note: 'Designed, not yet started' },
+  { key: 'exploring', label: 'Exploring', note: 'Early research' }
+];
+
+const phases = [
+  {
+    n: 'Phase 0', name: 'Foundation', status: 'live', tagline: 'The core AFWE engine.',
+    items: ['Core architecture', 'CLI (57 MCP tools)', 'Tree-sitter integration', 'Local documentation', 'Cross-platform support'],
+    href: '/docs/concepts/core-concepts'
+  },
+  {
+    n: 'Phase 1', name: 'Studio', status: 'live', tagline: 'Understand your codebase.',
+    items: ['Visual Codebase Atlas', 'Components & structure', 'Interactive exploration', 'Search & filters', 'Local customization'],
+    href: '/docs'
+  },
+  {
+    n: 'Phase 2', name: 'Governance', status: 'live', tagline: 'Keep your architecture intact.',
+    items: ['Constraints as geometry', 'Turn system (begin to commit)', 'Intent verification', 'Tripwires & BLAKE3', 'Probing guides & rubric'],
+    href: '/docs/concepts/core-concepts'
+  },
+  {
+    n: 'Phase 3', name: 'Ecosystem', status: 'live', tagline: 'Extend AFWE everywhere.',
+    items: ['All 57 MCP tools', 'Editor integrations', 'CI & automation', 'API & SDK architecture', 'Community contributions'],
+    href: '/docs/reference/mcp'
+  },
+  {
+    n: 'Phase 4', name: 'Community', status: 'progress', tagline: 'Sustain and grow AFWE.',
+    items: ['Sustainer recognition', 'Seat pool system', 'Monthly points (3:1)', 'Roadmap voting', 'Open support knowledge'],
+    href: '/stage/pricing'
+  },
+  {
+    n: 'Phase 5+', name: 'Beyond', status: 'planned', tagline: 'A bigger AFWE.',
+    items: ['Advanced analytics', 'Enterprise tooling', 'Deeper integrations', 'Global community hub', 'Long-term ecosystem'],
+    href: ''
+  }
+];
+
+const nextUp = [
+  { title: 'Sustainer Gate (v1)', status: 'progress', phase: 'Phase 4', pct: 60, href: '/stage/pricing',
+    body: 'First-launch recognition experience with customizable display options, opt-out control and reliable fallback.' },
+  { title: 'Monthly Points System', status: 'progress', phase: 'Phase 4', pct: 45, href: '/blog/the-sponsored-seat-pool',
+    body: 'Baseline points for all users, 3x for sustainers. Used for roadmap votes and community support requests.' },
+  { title: 'Expanded Integrations', status: 'planned', phase: 'Phase 5', pct: 20, href: '/docs/reference/mcp',
+    body: 'More editor plugins, CI providers and agent platform integrations to make AFWE easier to adopt everywhere.' }
+];
+
+const proposals = [
+  { id: 'editor-support', title: 'Better editor support', desc: 'VS Code, Cursor, JetBrains plugins', votes: editorVotes },
+  { id: 'team-collab', title: 'Team collaboration', desc: 'Shared rule registry & lease sync', votes: teamVotes },
+  { id: 'advanced-analytics', title: 'Advanced analytics', desc: 'Architectural drift velocity metrics', votes: analyticsVotes }
+];
+---
+
+<StageLayout
+  title="Roadmap · A Clear Path for a Stronger AFWE"
+  description="AFWE evolves in phases. Each phase expands the ecosystem while keeping the core experience stable, open, and consistent for everyone."
+  activeNav="roadmap"
+  currentEquivalent="/roadmap"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-20 sm:space-y-28">
+
+    <!-- HERO: headline + the whole timeline as a status track -->
+    <section class="space-y-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 lg:items-end">
+        <div class="lg:col-span-7 space-y-7">
+          <h1 class="text-4xl sm:text-5xl lg:text-[3.5rem] font-semibold text-fg leading-[1.06]">
+            A clear path for a stronger AFWE.
+          </h1>
+          <p class="text-base sm:text-lg text-fg-2 leading-relaxed max-w-xl">
+            AFWE evolves in phases. Each phase expands the ecosystem while keeping the core experience stable, open, and consistent for everyone.
+          </p>
+          <div class="flex flex-wrap items-center gap-3">
+            <a href="#phases" class="btn btn-primary">Explore what is live</a>
+            <a href="/docs" class="btn btn-quiet"><BookOpen class="size-4" aria-hidden="true" /> Read the roadmap guide</a>
+          </div>
+        </div>
+
+        <ul class="lg:col-span-5 border-t border-line-strong text-sm text-fg-2">
+          {promises.map((p) => (
+            <li class="flex items-center gap-3 py-3 border-b border-line">
+              <span class="size-1.5 rounded-full bg-[var(--accent)] shrink-0" aria-hidden="true"></span>
+              <span>{p}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Live status strip: one bar per phase, color = status -->
+      <div class="bg-surface border border-line rounded-lg p-5 sm:p-7 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 text-xs">
+          <span class="mono font-semibold text-fg uppercase tracking-wider">Current trajectory</span>
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-fg-3">
+            {legend.map((l) => (
+              <span class="inline-flex items-center gap-2">
+                <span class={`swatch bar-${l.key}`}></span>
+                <span class="text-fg font-medium">{l.label}</span>
+                <span class="text-fg-3">({l.note})</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <ol class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
+          {phases.map((p) => (
+            <li class="space-y-2">
+              <div class={`bar bar-${p.status}`} aria-hidden="true"></div>
+              <div class="flex items-baseline justify-between gap-1">
+                <span class="mono text-xs font-semibold text-fg">{p.n}</span>
+                <span class="text-[11px] font-medium text-fg-3 capitalize">{p.status}</span>
+              </div>
+              <p class="text-sm font-semibold text-fg leading-tight">{p.name}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- WHAT'S IN EACH PHASE -->
+    <section id="phases" class="space-y-8 scroll-mt-20">
+      <div class="flex flex-wrap items-end justify-between gap-4 border-b border-line-strong pb-4">
+        <div class="space-y-1">
+          <h2 class="text-3xl sm:text-4xl font-semibold text-fg">What is in each phase?</h2>
+          <p class="text-base text-fg-2">A high-level overview of what is included, what is next, and how it all fits together.</p>
+        </div>
+        <a href="/docs" class="font-semibold text-accent underline underline-offset-4 decoration-2 text-sm">View detailed roadmap</a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {phases.map((p) => {
+          const st = status[p.status as keyof typeof status] || status.planned;
+          const StatusIcon = st.Icon;
+          return (
+            <article class="bg-surface border border-line rounded-lg p-6 flex flex-col justify-between gap-6">
+              <div class="space-y-4">
+                <header class="flex items-center justify-between gap-2">
+                  <span class="mono text-xs font-semibold text-fg-3 uppercase tracking-wider">{p.n}</span>
+                  <span class={`inline-flex items-center gap-1.5 text-xs font-semibold ${st.text}`}>
+                    <StatusIcon class="size-3.5" aria-hidden="true" /> {st.label}
+                  </span>
+                </header>
+
+                <div>
+                  <h3 class="text-xl font-semibold text-fg">{p.name}</h3>
+                  <p class="text-sm text-fg-3 mt-0.5">{p.tagline}</p>
+                </div>
+
+                <ul class="space-y-2 text-sm text-fg-2 pt-4 border-t border-line">
+                  {p.items.map((it) => (
+                    <li class="flex items-start gap-2">
+                      {p.status === 'live' ? (
+                        <Check class="size-4 text-pass shrink-0 mt-0.5" aria-hidden="true" />
+                      ) : (
+                        <Circle class="size-3 text-fg-3 shrink-0 mt-1" aria-hidden="true" />
+                      )}
+                      <span>{it}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {p.href && (
+                <div class="pt-4 border-t border-line">
+                  <a href={p.href} class="font-semibold text-accent underline underline-offset-4 decoration-2 text-sm">View details</a>
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- WHAT'S NEXT -->
+    <section class="space-y-8">
+      <div class="space-y-1">
+        <h2 class="text-3xl sm:text-4xl font-semibold text-fg">What is next?</h2>
+        <p class="text-base text-fg-2">A closer look at the features and systems currently in development.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {nextUp.map((n) => (
+          <article class="bg-surface border border-line rounded-lg p-6 space-y-4 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="mono text-xs font-semibold uppercase tracking-wider text-[color:var(--brand-amber)]">In progress</span>
+                <span class="mono text-xs text-fg-3">{n.phase}</span>
+              </div>
+              <h3 class="text-lg font-semibold text-fg">{n.title}</h3>
+              <p class="text-sm text-fg-2 leading-relaxed">{n.body}</p>
+            </div>
+
+            <div class="space-y-2 pt-4 border-t border-line">
+              <div class="flex justify-between mono text-xs text-fg-3">
+                <span>Progress</span>
+                <span class="font-semibold text-fg">{n.pct}%</span>
+              </div>
+              <div class="track" aria-hidden="true">
+                <div class={`fill fill-${n.status}`} style={`width: ${n.pct}%`}></div>
+              </div>
+              <a href={n.href} class="inline-block pt-2 font-semibold text-accent underline underline-offset-4 decoration-2 text-sm">Learn more</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- FEEDBACK & VOTING -->
+    <section class="code-panel p-8 sm:p-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-6 space-y-4">
+          <p class="text-sm font-semibold opacity-80 uppercase tracking-wider text-[#8CA6FF]">Help shape what comes next</p>
+          <h2 class="text-3xl sm:text-4xl font-semibold text-white">Your feedback matters.</h2>
+          <p class="text-base text-[#D7DEE7] max-w-md leading-relaxed">
+            Use your monthly points to upvote features, suggest ideas and help prioritize what we build next.
+          </p>
+          <a href="#proposals" class="btn btn-on-ink">View roadmap & vote</a>
+        </div>
+
+        <ul id="proposals" class="lg:col-span-6 space-y-3">
+          {proposals.map((p) => (
+            <li class="bg-[#070A0E] border border-white/10 rounded-lg p-4 flex items-center justify-between gap-4">
+              <div>
+                <p class="font-semibold text-white text-base">{p.title}</p>
+                <p class="text-xs text-[#93A0AE] mt-0.5">{p.desc}</p>
+              </div>
+              <button
+                type="button"
+                data-item={p.id}
+                class="vote-btn btn bg-white/10 hover:bg-white/20 text-white mono text-xs font-semibold shrink-0"
+                aria-label={`Upvote ${p.title}`}
+              >
+                <ChevronUp class="size-4" aria-hidden="true" />
+                <span id={`vote-count-${p.id}`}>{p.votes.toLocaleString()}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- 2-Tier Account Claim Modal (prompted when voting) -->
+  <div id="auth-modal" class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <div class="w-full max-w-md rounded-lg bg-surface border border-line p-6 sm:p-8 space-y-6 shadow-2xl">
+      <div class="space-y-3">
+        <p class="text-sm font-semibold text-accent">Community governance</p>
+        <h3 id="auth-modal-title" class="text-2xl font-semibold text-fg">Claim your community account</h3>
+        <p class="text-base text-fg-2 leading-relaxed">
+          AFWE is free to use without sign-up. To allocate monthly points to roadmap items and prevent automated spam, please verify your account with GitHub or email.
+        </p>
+      </div>
+      <div class="flex flex-col gap-3">
+        <button id="claim-github-btn" type="button" class="btn btn-primary w-full">Claim with GitHub</button>
+        <button id="close-modal-btn" type="button" class="btn btn-quiet w-full">Maybe later</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .bar { height: .625rem; border-radius: 2px; }
+    .bar-live { background: var(--pass); }
+    .bar-progress {
+      background: repeating-linear-gradient(135deg, var(--brand-amber) 0 5px, transparent 5px 10px);
+      box-shadow: inset 0 0 0 1.5px var(--brand-amber);
+    }
+    .bar-planned { border: 2px dashed var(--border-strong); }
+    .bar-exploring { border: 2px dotted var(--border-strong); }
+    .swatch { width: 1.75rem; height: .625rem; border-radius: 2px; flex-shrink: 0; }
+
+    .track { height: .5rem; border-radius: 2px; background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--border-subtle); overflow: hidden; }
+    .fill { height: 100%; }
+    .fill-progress { background: var(--brand-amber); }
+    .fill-planned { background: var(--border-strong); }
+  </style>
+
+  <!-- Client-side upvoting & lazyload: non-blocking background fetch -->
+  <script>
+    // 2-Tier Identity: retrieve or generate persistent anonymous session voter ID
+    let voterId = localStorage.getItem('afwe_voter_id');
+    if (!voterId) {
+      voterId = 'voter_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+      localStorage.setItem('afwe_voter_id', voterId);
+    }
+
+    let isClaimed = localStorage.getItem('afwe_account_claimed') === 'true';
+
+    const modal = document.getElementById('auth-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const claimGithubBtn = document.getElementById('claim-github-btn');
+    let pendingProposalId: string | null = null;
+    let lastTrigger: HTMLElement | null = null;
+
+    function closeModal() {
+      modal?.classList.add('hidden');
+      lastTrigger?.focus();
+    }
+
+    closeModalBtn?.addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeModal();
+    });
+
+    claimGithubBtn?.addEventListener('click', () => {
+      isClaimed = true;
+      localStorage.setItem('afwe_account_claimed', 'true');
+      modal?.classList.add('hidden');
+      if (pendingProposalId) {
+        castVote(pendingProposalId);
+      }
+      lastTrigger?.focus();
+    });
+
+    async function castVote(itemId: string) {
+      const countEl = document.getElementById(`vote-count-${itemId}`);
+      if (!countEl) return;
+
+      const currentVal = parseInt(countEl.textContent?.replace(/,/g, '') || '0', 10);
+      countEl.textContent = (currentVal + 1).toLocaleString();
+
+      const { upvoteProposal } = await import('../../lib/supabase');
+      const res = await upvoteProposal(itemId, voterId, isClaimed);
+      if (res && res.votes) {
+        countEl.textContent = res.votes.toLocaleString();
+      }
+    }
+
+    document.querySelectorAll('.vote-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const itemId = target.getAttribute('data-item');
+        if (!itemId) return;
+
+        if (!isClaimed) {
+          pendingProposalId = itemId;
+          lastTrigger = target;
+          modal?.classList.remove('hidden');
+          claimGithubBtn?.focus();
+        } else {
+          castVote(itemId);
+        }
+      });
+    });
+
+    // Background lazyload: fetch updated vote counts after page is switched/idle
+    async function refreshVotes() {
+      try {
+        const { supabase } = await import('../../lib/supabase');
+        const { data, error } = await supabase
+          .from('roadmap_proposals')
+          .select('id, votes_count');
+
+        if (data && !error) {
+          for (const item of data) {
+            const countEl = document.getElementById(`vote-count-${item.id}`);
+            if (countEl && item.votes_count) {
+              countEl.textContent = item.votes_count.toLocaleString();
+            }
+          }
+        }
+      } catch (e) {
+        // Fallback baseline remains displayed
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      setTimeout(refreshVotes, 150);
+    } else {
+      window.addEventListener('load', () => setTimeout(refreshVotes, 150));
+    }
+  </script>
+</StageLayout>
