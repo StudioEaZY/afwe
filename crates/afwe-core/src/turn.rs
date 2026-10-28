@@ -29,6 +29,7 @@ use crate::verify::{verify, VerifyOptions};
 use anyhow::{anyhow, Result};
 use serde_json::{json, Value};
 use std::collections::{BTreeMap, BTreeSet};
+use std::io::Write;
 
 /// Directories whose changes are never attributed to a turn: derived state and the engine's own
 /// records (the log and the turn ledger). They are always staged with a commit instead.
@@ -1045,6 +1046,8 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
             true,
         ));
         if let Some(cmd) = &m.vcs.test_command {
+            eprintln!("⛨ Running project tests (`{cmd}`)...");
+            let _ = std::io::stderr().flush();
             let (ok, msg) = intent::run_command(cmd, &root, &code_rel, 600);
             let peers_open = all_turns.iter().any(|t| t.status == "open" && t.turn_hash != turn.turn_hash && t.id != turn.id);
             if !ok {
@@ -1918,6 +1921,8 @@ pub fn gate_now(engine: &Engine, origin: &str) -> Result<Value> {
         results.push(r);
     }
     if let Some(cmd) = &snap.manifest.vcs.test_command {
+        eprintln!("⛨ Running project tests (`{cmd}`)...");
+        let _ = std::io::stderr().flush();
         let (ok, msg) = intent::run_command(cmd, &code_root, &all, 600);
         if !ok {
             failures.push(format!("project tests `{cmd}` — {}", msg.unwrap_or_default()));

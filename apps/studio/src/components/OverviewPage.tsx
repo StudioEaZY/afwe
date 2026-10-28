@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Lock, AlertTriangle, Disc3, Layers, Boxes } from "lucide-react";
 import { useStore, FilterMode, ConstellationScope } from "../store";
 import {
@@ -13,11 +13,14 @@ import { ConstellationMap } from "./ConstellationMap";
 import { TopologyMap } from "./TopologyMap";
 import { GraphView } from "./GraphView";
 import { NodeInspector } from "./NodeInspector";
+import { TimelineDualScrubber, TimelineTurnItem } from "./TimelineDualScrubber";
 import { ConstellationGlyph } from "../lib/lucideSvgPaths";
 
 export const OverviewPage: React.FC = () => {
   const {
     graph,
+    timelineFrames,
+    refreshScene,
     activeLens,
     currentScopeId,
     constellationAnchorKey,
@@ -40,6 +43,10 @@ export const OverviewPage: React.FC = () => {
     showImpl,
     setShowImpl,
   } = useStore();
+
+  useEffect(() => {
+    refreshScene();
+  }, [refreshScene]);
 
   // Radial-specific view controls matching AFWE Codebase Atlas
   const [radialDepth, setRadialDepth] = useState<number>(3);
@@ -245,6 +252,60 @@ export const OverviewPage: React.FC = () => {
       : `-${Math.round((1 - overviewTimelineT) * 90)}d`;
   }, [activeLens, constellationScope, compareT, overviewTimelineT]);
 
+  // Map timeline frames to TimelineTurnItem list for TimelineDualScrubber
+  const scrubberItems: TimelineTurnItem[] = useMemo(() => {
+    if (timelineFrames && timelineFrames.length > 0) {
+      return timelineFrames.map((f, idx) => ({
+        id: f.turn,
+        number: idx + 1,
+        label: f.summary || f.prompt || `Turn #${f.turn}`,
+        date: f.ts ? new Date(f.ts).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : `Turn ${idx + 1}`,
+        status: (f.status === "failed" ? "failed" : f.status === "ready" || f.status === "staged" ? "staged" : "committed") as any,
+        hasPin: f.pin_proposals > 0,
+        hasViolation: f.checks_count > 0,
+      }));
+    }
+    return [
+      { id: "t0001", number: 1, label: "Initial Architecture", date: "Start", status: "committed" },
+      { id: "t0010", number: 2, label: "Core Services", date: "Core", status: "committed", hasPin: true },
+      { id: "t0020", number: 3, label: "API & Data Layers", date: "Data", status: "committed" },
+      { id: "t0030", number: 4, label: "Presentation & Web", date: "Web", status: "committed", hasViolation: true },
+      { id: "t0040", number: 5, label: "Current Head", date: "Now", status: "committed" },
+    ] as TimelineTurnItem[];
+  }, [timelineFrames]);
+
+  const activeTurnId = useMemo(() => {
+    if (scrubberItems.length === 0) return null;
+    const idx = Math.min(
+      scrubberItems.length - 1,
+      Math.max(0, Math.round(overviewTimelineT * (scrubberItems.length - 1)))
+    );
+    return scrubberItems[idx]?.id || null;
+  }, [scrubberItems, overviewTimelineT]);
+
+  const handleSelectTurn = (turnId: string) => {
+    const idx = scrubberItems.findIndex((t) => t.id === turnId);
+    if (idx >= 0 && scrubberItems.length > 1) {
+      setOverviewTimelineT(idx / (scrubberItems.length - 1));
+    }
+  };
+
+  const scrubberRange: [number, number] = useMemo(() => {
+    if (activeLens === "constellation" && constellationScope === "two") {
+      return [compareT, overviewTimelineT];
+    }
+    return [Math.max(0, overviewTimelineT - 0.2), overviewTimelineT];
+  }, [activeLens, constellationScope, compareT, overviewTimelineT]);
+
+  const handleRangeChange = (newRange: [number, number]) => {
+    if (activeLens === "constellation" && constellationScope === "two") {
+      setCompareT(newRange[0]);
+      setOverviewTimelineT(newRange[1]);
+    } else {
+      setOverviewTimelineT(newRange[1]);
+    }
+  };
+
   return (
     <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
       {/* Main Center Stage Column */}
@@ -375,29 +436,6 @@ export const OverviewPage: React.FC = () => {
 
         {/* Unified Filter & Mode Controls Bar (.bar) */}
         <div className="bar">
-          {(
-            [
-              { id: "all", label: "All" },
-              { id: "mapped", label: "Mapped" },
-              { id: "inferred", label: "Inferred" },
-              { id: "unmapped", label: "Unmapped" },
-              { id: "legacy", label: "Legacy" },
-            ] as { id: FilterMode; label: string }[]
-          ).map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              className={`chip ${
-                filterMode === f.id || (f.id === "unmapped" && filterMode === "uncharted")
-                  ? "on"
-                  : ""
-              }`}
-              onClick={() => setFilterMode(f.id)}
-            >
-              {f.label}
-            </button>
-          ))}
-
           {/* Up One Level button when zoomed into Radial */}
           {activeLens === "radial" && focusNode.depth > 0 && (
             <button type="button" className="chip" onClick={drillUp}>
@@ -420,8 +458,6 @@ export const OverviewPage: React.FC = () => {
                 Open map
               </button>
             )}
-
-          <div className="sp" style={{ flex: 1 }} />
 
           {/* Radial-Only Controls (#radCtl) */}
           {activeLens === "radial" && (
@@ -560,6 +596,34 @@ export const OverviewPage: React.FC = () => {
               </button>
             </div>
           )}
+
+          <div className="sp" style={{ flex: 1 }} />
+
+          {/* Right-Aligned Filter Mode Chips (positioned under the View switcher) */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            {(
+              [
+                { id: "all", label: "All" },
+                { id: "mapped", label: "Mapped" },
+                { id: "inferred", label: "Inferred" },
+                { id: "unmapped", label: "Unmapped" },
+                { id: "legacy", label: "Legacy" },
+              ] as { id: FilterMode; label: string }[]
+            ).map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                className={`chip ${
+                  filterMode === f.id || (f.id === "unmapped" && filterMode === "uncharted")
+                    ? "on"
+                    : ""
+                }`}
+                onClick={() => setFilterMode(f.id)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Active Map Stage */}
@@ -631,8 +695,20 @@ export const OverviewPage: React.FC = () => {
           </div>
         )}
 
-        {/* Bottom Legend & Rewind Timeline Scrubber (.foot) */}
-        <div className="foot">
+        {/* Unified Interactive Dual Timeline Scrubber */}
+        <div style={{ marginTop: "12px", marginBottom: "4px" }}>
+          <TimelineDualScrubber
+            turns={scrubberItems}
+            selectedTurnId={activeTurnId}
+            onSelectTurn={handleSelectTurn}
+            range={scrubberRange}
+            onRangeChange={handleRangeChange}
+            compact={true}
+          />
+        </div>
+
+        {/* Bottom Legend (.foot) */}
+        <div className="foot" style={{ marginTop: "4px" }}>
           <span className="leg" title="Files mapped to declared blueprint domains with verified boundaries and rules">
             <i className="sw" style={{ background: "var(--mapped)" }} />
             Mapped
@@ -704,28 +780,9 @@ export const OverviewPage: React.FC = () => {
             </span>
           )}
 
-          <div className="tl">
-            {activeLens === "constellation" && constellationScope === "two" && (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                Compare from
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={Math.round(compareT * 100)}
-                  onChange={(e) => setCompareT(Number(e.target.value) / 100)}
-                />
-              </span>
-            )}
-            <span>Rewind</span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={Math.round(overviewTimelineT * 100)}
-              onChange={(e) => setOverviewTimelineT(Number(e.target.value) / 100)}
-            />
-            <b style={{ minWidth: 38, color: "var(--ink)" }}>{timelineLabel}</b>
+          <div style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: "11px", color: "var(--mute)" }}>Point in time:</span>
+            <b style={{ minWidth: 38, color: "var(--ink)", fontSize: "11px" }}>{timelineLabel}</b>
           </div>
         </div>
       </main>

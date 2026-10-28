@@ -8,7 +8,7 @@ import {
   Shield,
   Plus,
   Minus,
-  RotateCcw,
+  Maximize2,
   Hand,
 } from "lucide-react";
 import {
@@ -98,6 +98,7 @@ export const ConstellationMap: React.FC<Props> = ({
   const [customOffsets, setCustomOffsets] = useState<Record<string, { x: number; y: number }>>({});
   const [draggingKey, setDraggingKey] = useState<string | null>(null);
   const dragNodeStartRef = useRef<{ clientX: number; clientY: number; initX: number; initY: number } | null>(null);
+  const posRef = useRef<Record<string, any>>({});
 
   const handleNodePointerDown = (ev: React.PointerEvent, key: string) => {
     if (isPanMode) return;
@@ -120,10 +121,26 @@ export const ConstellationMap: React.FC<Props> = ({
     if (!start) return;
     const dx = (ev.clientX - start.clientX) / zoom.k;
     const dy = (ev.clientY - start.clientY) / zoom.k;
+
+    // Spatial clamping: dependencies cannot cross into consumer hemisphere and vice versa
+    const basePos = posRef.current[draggingKey];
+    let clampedDx = dx;
+    if (basePos) {
+      if (basePos.side === "dep") {
+        // dep nodes stay on left: basePos.x + (start.initX + clampedDx) <= -36
+        const maxOffset = -36 - basePos.x;
+        clampedDx = Math.min(dx, maxOffset - (start.initX || 0));
+      } else if (basePos.side === "con") {
+        // con nodes stay on right: basePos.x + (start.initX + clampedDx) >= 36
+        const minOffset = 36 - basePos.x;
+        clampedDx = Math.max(dx, minOffset - (start.initX || 0));
+      }
+    }
+
     setCustomOffsets((prev) => ({
       ...prev,
       [draggingKey]: {
-        x: (start.initX || 0) + dx,
+        x: (start.initX || 0) + clampedDx,
         y: (start.initY || 0) + dy,
       },
     }));
@@ -432,6 +449,7 @@ export const ConstellationMap: React.FC<Props> = ({
   ]);
 
   const { pos, depFiltered, conFiltered, hasHop2, R1, R2 } = layout;
+  posRef.current = pos;
 
   const livePos = useMemo(() => {
     const res: typeof pos = {};
@@ -1425,13 +1443,13 @@ export const ConstellationMap: React.FC<Props> = ({
         </button>
         <button
           type="button"
-          title="Reset view & layout"
+          title="Fit view to frame (Reset zoom & layout)"
           onClick={() => {
             setZoom({ k: 1, x: 0, y: 0 });
             setCustomOffsets({});
           }}
         >
-          <RotateCcw size={13} />
+          <Maximize2 size={13} />
         </button>
       </div>
 

@@ -8,7 +8,7 @@ import {
   Shield,
   Plus,
   Minus,
-  RotateCcw,
+  Maximize2,
   Move,
   Hand,
 } from "lucide-react";
@@ -371,11 +371,14 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
     if (!start) return;
     const dx = (ev.clientX - start.clientX) / zoom.k;
     const dy = (ev.clientY - start.clientY) / zoom.k;
+    // Spatial clamping: limit vertical movement so nodes stay within their architectural tier row (+/- 45px)
+    const rawY = (start.initY || 0) + dy;
+    const clampedY = Math.max(-45, Math.min(45, rawY));
     setCustomOffsets((prev) => ({
       ...prev,
       [draggingKey]: {
         x: (start.initX || 0) + dx,
-        y: (start.initY || 0) + dy,
+        y: clampedY,
       },
     }));
   };
@@ -1061,13 +1064,13 @@ export const TopologyMap: React.FC<TopologyMapProps> = ({
         </button>
         <button
           type="button"
-          title="Reset view & layout"
+          title="Fit view to frame (Reset zoom & layout)"
           onClick={() => {
             setZoom({ k: 1, x: 0, y: 0 });
             setCustomOffsets({});
           }}
         >
-          <RotateCcw size={13} />
+          <Maximize2 size={13} />
         </button>
       </div>
 

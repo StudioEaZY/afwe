@@ -1,7 +1,7 @@
 // apps/studio/src/components/TimelineDualScrubber.tsx
 // Interactive dual timeline scrubber with mouse-wheel zoom/pan, draggable handles, and upper wave curve
 import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2 } from "lucide-react";
 import { SvgMiniLock, SvgMiniAlertTriangle } from "../lib/lucideSvgPaths";
 
 export interface TimelineTurnItem {
@@ -14,16 +14,22 @@ export interface TimelineTurnItem {
   hasViolation?: boolean;
 }
 
-interface TimelineDualScrubberProps {
+export interface TimelineDualScrubberProps {
   turns: TimelineTurnItem[];
   selectedTurnId: string | null;
   onSelectTurn: (turnId: string) => void;
+  range?: [number, number];
+  onRangeChange?: (range: [number, number]) => void;
+  compact?: boolean;
 }
 
 export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
   turns,
   selectedTurnId,
   onSelectTurn,
+  range: externalRange,
+  onRangeChange,
+  compact = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const upperSvgRef = useRef<SVGSVGElement>(null);
@@ -32,20 +38,30 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
   const totalCount = Math.max(1, turns.length);
 
   // Range window in fractional coordinates [0..1]
-  const [range, setRange] = useState<[number, number]>([
+  const [internalRange, setInternalRange] = useState<[number, number]>([
     Math.max(0, 1 - 12 / totalCount),
     1,
   ]);
+  const range = externalRange !== undefined ? externalRange : internalRange;
+
+  const setRange = useCallback(
+    (next: [number, number] | ((prev: [number, number]) => [number, number])) => {
+      const val = typeof next === "function" ? next(range) : next;
+      setInternalRange(val);
+      if (onRangeChange) onRangeChange(val);
+    },
+    [range, onRangeChange]
+  );
 
   // Keep range updated if turns count changes drastically
   useEffect(() => {
-    if (turns.length > 0) {
-      setRange((prev) => {
+    if (turns.length > 0 && externalRange === undefined) {
+      setInternalRange((prev) => {
         const span = Math.max(0.08, Math.min(1, prev[1] - prev[0]));
         return [Math.max(0, 1 - span), 1];
       });
     }
-  }, [turns.length]);
+  }, [turns.length, externalRange]);
 
   // Dragging interaction state
   type DragTarget = "left-handle" | "right-handle" | "window-body" | null;
@@ -214,8 +230,8 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
         flexDirection: "column",
         background: "var(--panel)",
         border: "1px solid var(--line)",
-        borderRadius: "16px",
-        padding: "8px 16px 12px 16px",
+        borderRadius: compact ? "12px" : "16px",
+        padding: compact ? "6px 14px 8px 14px" : "8px 16px 12px 16px",
         boxShadow: "0 1px 0 var(--glow) inset, 0 12px 24px -16px var(--shadow)",
         userSelect: "none",
         gap: "4px",
@@ -306,9 +322,8 @@ export const TimelineDualScrubber: React.FC<TimelineDualScrubberProps> = ({
                 {isSelected ? (
                   <g transform={`translate(${x}, ${y - 32})`}>
                     <path
-                      d="M0 -11 L2.5 -3.5 L10.5 -3.5 L4.2 1.2 L6.5 8.8 L0 4.2 L-6.5 8.8 L-4.2 1.2 L-10.5 -3.5 L-2.5 -3.5 Z"
-                      fill="var(--amber)"
-                      transform="scale(0.85)"
+                      d="M0 -9 L4 -4 L0 1 L-4 -4 Z"
+                      fill="var(--accent)"
                     />
                     <rect
                       x={-34}

@@ -1,0 +1,17 @@
+id: studio-scrubber-blueprint-diff-and-clamping
+title: Unified Dual Timeline Scrubber, Blueprint Diff View, Multi-Visualizer Clamping, and Progress Feedback
+statement: Unify TimelineDualScrubber on Overview with dual moment binding, add Blueprint to Diff View in TimelinePage, implement spatial drag clamping in Constellation and Topology, replace reset view icon with Maximize2, and add test command progress feedback.
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0045
+history:
+- turn: t0045
+  ts: 2026-10-28T09:28:58Z
+  statement: Unify TimelineDualScrubber on Overview with dual moment binding, add Blueprint to Diff View in TimelinePage, implement spatial drag clamping in Constellation and Topology, replace reset view icon with Maximize2, and add test command progress feedback.
+created: 2026-10-28T09:28:58Z
+updated: 2026-10-28T09:28:58Z
+task: task-t0045

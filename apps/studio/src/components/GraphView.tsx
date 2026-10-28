@@ -16,7 +16,7 @@ import {
   ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Hand, Plus, Minus, RotateCcw, Shield, Lock, AlertTriangle } from "lucide-react";
+import { Hand, Plus, Minus, Maximize2, Shield, Lock, AlertTriangle } from "lucide-react";
 import { useStore, kindIcon } from "../store";
 import { api, Graph } from "../api";
 import { buildHierarchyTree, findNodeById, hashStr } from "../lib/hierarchy";
@@ -355,11 +355,14 @@ const nodeTypes = { bp: BlueprintNodeView };
 
 export interface GraphViewProps {
   timelineT?: number;
+  graph?: Graph | null;
+  compact?: boolean;
 }
 
-function GraphViewInner({ timelineT }: GraphViewProps) {
+function GraphViewInner({ timelineT, graph: propGraph, compact }: GraphViewProps) {
+  const store = useStore();
+  const graph: Graph | null = propGraph !== undefined ? propGraph : store.graph;
   const {
-    graph,
     overviewTimelineT,
     expanded,
     toggle,
@@ -371,7 +374,7 @@ function GraphViewInner({ timelineT }: GraphViewProps) {
     lens,
     run,
     notify,
-  } = useStore();
+  } = store;
   const rf = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -597,7 +600,7 @@ function GraphViewInner({ timelineT }: GraphViewProps) {
   const isDark = typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark";
 
   return (
-    <section className="canvas" style={{ width: "100%", height: "100%", minHeight: 620, position: "relative", cursor: cursorStyle }}>
+    <section className="canvas" style={{ width: "100%", height: "100%", minHeight: compact ? "100%" : 620, position: "relative", cursor: cursorStyle }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -663,10 +666,10 @@ function GraphViewInner({ timelineT }: GraphViewProps) {
         </button>
         <button
           type="button"
-          title="Reset view"
+          title="Fit view to frame (Reset zoom)"
           onClick={() => rf.fitView({ padding: 0.12, duration: 300 })}
         >
-          <RotateCcw size={13} />
+          <Maximize2 size={13} />
         </button>
       </div>
 
@@ -743,10 +746,10 @@ function GraphViewInner({ timelineT }: GraphViewProps) {
   );
 }
 
-export function GraphView({ timelineT }: GraphViewProps) {
+export function GraphView({ timelineT, graph, compact }: GraphViewProps) {
   return (
     <ReactFlowProvider>
-      <GraphViewInner timelineT={timelineT} />
+      <GraphViewInner timelineT={timelineT} graph={graph} compact={compact} />
     </ReactFlowProvider>
   );
 }

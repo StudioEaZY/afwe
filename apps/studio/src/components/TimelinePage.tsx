@@ -18,15 +18,17 @@ import {
   FileCode,
   Disc3,
   Layers,
+  Boxes,
 } from "lucide-react";
 import { ConstellationGlyph } from "../lib/lucideSvgPaths";
 import { useStore } from "../store";
-import { api, SceneData } from "../api";
+import { api, SceneData, Graph } from "../api";
 import { TimelineDualScrubber, TimelineTurnItem } from "./TimelineDualScrubber";
 import { CodeDiffViewer } from "./CodeDiffViewer";
 import { TopologyMap, TopologyDiffMode } from "./TopologyMap";
 import { ConstellationMap } from "./ConstellationMap";
 import { RadialMap } from "./RadialMap";
+import { GraphView } from "./GraphView";
 import { buildHierarchyTree, buildDirectedEdges, HierarchyNode } from "../lib/hierarchy";
 import { HarnessFixButton } from "./HarnessFixPrompt";
 
@@ -52,28 +54,30 @@ export const TimelinePage: React.FC = () => {
   const [beforeScene, setBeforeScene] = useState<SceneData | null>(null);
   const [afterScene, setAfterScene] = useState<SceneData | null>(null);
 
-  // Diff view mode selector supporting all 3 view types with Constellation as default
-  const [diffViewMode, setDiffViewMode] = useState<"constellation" | "radial" | "topology">("constellation");
+  // Diff view mode selector supporting all 4 view types with Blueprint as default
+  const [diffViewMode, setDiffViewMode] = useState<"blueprint" | "constellation" | "radial" | "topology">("blueprint");
 
   // Reconstructed point-in-time graphs for Before & After 3-view comparison
-  const beforeEffectiveGraph = useMemo(() => {
+  const beforeEffectiveGraph = useMemo<Graph | null>(() => {
+    if (!graph) return null;
     if (!beforeScene) return graph;
     const s = beforeScene as any;
     return {
       ...graph,
-      nodes: s.nodes || graph?.nodes || [],
-      code_edges: s.edges || s.code_edges || graph?.code_edges || [],
-    };
+      nodes: s.nodes || graph.nodes || [],
+      code_edges: s.edges || s.code_edges || graph.code_edges || [],
+    } as Graph;
   }, [beforeScene, graph]);
 
-  const afterEffectiveGraph = useMemo(() => {
+  const afterEffectiveGraph = useMemo<Graph | null>(() => {
+    if (!graph) return null;
     if (!afterScene) return graph;
     const s = afterScene as any;
     return {
       ...graph,
-      nodes: s.nodes || graph?.nodes || [],
-      code_edges: s.edges || s.code_edges || graph?.code_edges || [],
-    };
+      nodes: s.nodes || graph.nodes || [],
+      code_edges: s.edges || s.code_edges || graph.code_edges || [],
+    } as Graph;
   }, [afterScene, graph]);
 
   const beforeRoot = useMemo(() => buildHierarchyTree(beforeEffectiveGraph), [beforeEffectiveGraph]);
@@ -88,7 +92,7 @@ export const TimelinePage: React.FC = () => {
     [afterEffectiveGraph, afterRoot]
   );
 
-  const projectName = graph?.project?.name || "acme-platform";
+  const projectName = graph?.project?.name || "workspace";
 
   const loadData = useCallback(async () => {
     try {
@@ -350,6 +354,11 @@ export const TimelinePage: React.FC = () => {
             >
               {[
                 {
+                  id: "blueprint" as const,
+                  label: "Blueprint",
+                  icon: <Boxes size={13} strokeWidth={2} />,
+                },
+                {
                   id: "constellation" as const,
                   label: "Constellation",
                   icon: <ConstellationGlyph size={13} />,
@@ -442,7 +451,13 @@ export const TimelinePage: React.FC = () => {
             </div>
 
             <div style={{ flex: 1, minHeight: "340px", background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "10px", overflow: "hidden", display: "flex" }}>
-              {diffViewMode === "constellation" ? (
+              {diffViewMode === "blueprint" ? (
+                <GraphView
+                  timelineT={1}
+                  graph={beforeEffectiveGraph}
+                  compact={true}
+                />
+              ) : diffViewMode === "constellation" ? (
                 <ConstellationMap
                   root={beforeRoot}
                   anchorKey={null}
@@ -537,7 +552,13 @@ export const TimelinePage: React.FC = () => {
             </div>
 
             <div style={{ flex: 1, minHeight: "340px", background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "10px", overflow: "hidden", display: "flex" }}>
-              {diffViewMode === "constellation" ? (
+              {diffViewMode === "blueprint" ? (
+                <GraphView
+                  timelineT={1}
+                  graph={afterEffectiveGraph}
+                  compact={true}
+                />
+              ) : diffViewMode === "constellation" ? (
                 <ConstellationMap
                   root={afterRoot}
                   anchorKey={null}

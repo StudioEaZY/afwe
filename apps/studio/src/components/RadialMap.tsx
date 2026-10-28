@@ -4,7 +4,7 @@ import {
   AlertTriangle,
   Plus,
   Minus,
-  RotateCcw,
+  Maximize2,
   Hand,
 } from "lucide-react";
 import {
@@ -754,10 +754,10 @@ export const RadialMap: React.FC<Props> = ({
         </button>
         <button
           type="button"
-          title="Reset view"
+          title="Fit view to frame (Reset zoom)"
           onClick={() => setZoom({ k: 1, x: 0, y: 0 })}
         >
-          <RotateCcw size={13} />
+          <Maximize2 size={13} />
         </button>
       </div>
 
