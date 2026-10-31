@@ -10,12 +10,16 @@ import {
   RefreshCw,
   FolderOpen,
   ShieldAlert,
+  Shield,
+  Bot,
+  Layers,
 } from "lucide-react";
 import { useStore } from "../store";
-import { api, isTauri, openProjectDialog } from "../api";
+import { api, isTauri, openProjectDialog, AuthorityRecord, ActionQueueStats } from "../api";
 import { getStudioPrefs, setTheme, applyTheme } from "../lib/prefs";
 import { buildHierarchyTree, HierarchyNode } from "../lib/hierarchy";
 import { EscalationModal } from "./EscalationModal";
+import { DelegationModal } from "./DelegationModal";
 
 export const TopBar: React.FC = () => {
   const {
@@ -46,7 +50,35 @@ export const TopBar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [escalationModalOpen, setEscalationModalOpen] = useState(false);
+  const [delegationModalOpen, setDelegationModalOpen] = useState(false);
+  const [authority, setAuthority] = useState<AuthorityRecord | null>(null);
+  const [queueStats, setQueueStats] = useState<ActionQueueStats | null>(null);
   const searchWrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchGov = () => {
+      api.authority.status().then(setAuthority).catch(() => {});
+      api.queue.get().then((q) => setQueueStats(q.stats)).catch(() => {});
+    };
+    fetchGov();
+
+    let es: EventSource | null = null;
+    try {
+      es = new EventSource("/api/events");
+      es.addEventListener("authority", (e) => {
+        try { setAuthority(JSON.parse(e.data)); } catch (_) {}
+      });
+      es.addEventListener("queue", () => {
+        api.queue.get().then((q) => setQueueStats(q.stats)).catch(() => {});
+      });
+    } catch (_) {}
+
+    const interval = setInterval(fetchGov, 10000);
+    return () => {
+      clearInterval(interval);
+      if (es) es.close();
+    };
+  }, []);
 
   useEffect(() => {
     const prefs = getStudioPrefs();
@@ -350,6 +382,78 @@ export const TopBar: React.FC = () => {
           </span>
         </div>
 
+        {/* Prompter Authority Mode Pill */}
+        {authority && authority.mode === "prompter_delegated" ? (
+          <button
+            type="button"
+            onClick={() => setDelegationModalOpen(true)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              background: "rgba(147, 51, 234, 0.12)",
+              border: "1px solid #9333ea",
+              borderRadius: "8px",
+              padding: "4px 8px",
+              color: "#a855f7",
+              fontSize: "11px",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+            title="Active Prompter Delegation. Click to view or adjust."
+          >
+            <Bot size={13} />
+            <span>LOOP: {authority.delegation?.holder.agent_id}</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setDelegationModalOpen(true)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              background: "var(--side)",
+              border: "1px solid var(--line)",
+              borderRadius: "8px",
+              padding: "4px 8px",
+              color: "var(--ink)",
+              fontSize: "11px",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+            title="Human-only governance active. Click to delegate prompter."
+          >
+            <Shield size={13} style={{ color: "var(--accent)" }} />
+            <span>HUMAN</span>
+          </button>
+        )}
+
+        {/* Action Queue Pending Pill */}
+        {queueStats && queueStats.total_actionable > 0 && (
+          <button
+            type="button"
+            onClick={() => setView("overview")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              background: "rgba(59, 130, 246, 0.12)",
+              border: "1px solid #3b82f6",
+              borderRadius: "8px",
+              padding: "4px 8px",
+              color: "#3b82f6",
+              fontSize: "11px",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+            title="View actionable items in the AFWE Action Queue"
+          >
+            <Layers size={13} />
+            <span>{queueStats.total_actionable} Queue Action(s)</span>
+          </button>
+        )}
+
         {/* Human Escalation Pending Review Pill */}
         {(escalations || []).filter((e) => e.status === "pending").length > 0 && (
           <button
@@ -482,6 +586,13 @@ export const TopBar: React.FC = () => {
 
       {escalationModalOpen && (
         <EscalationModal onClose={() => setEscalationModalOpen(false)} />
+      )}
+
+      {delegationModalOpen && (
+        <DelegationModal
+          onClose={() => setDelegationModalOpen(false)}
+          onSuccess={(rec) => setAuthority(rec)}
+        />
       )}
     </header>
   );

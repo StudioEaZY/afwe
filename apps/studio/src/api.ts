@@ -235,7 +235,97 @@ export const api = {
     frames: (): Promise<{ count: number; frames: TimelineFrame[] }> => call("timeline.frames"),
     snapshot: (turn: string, to?: string): Promise<SceneData> => call("timeline.snapshot", { turn, to }),
   },
+
+  // ── v5: Prompter Authority & Action Queue ──
+  authority: {
+    status: (): Promise<AuthorityRecord> => call("authority.status"),
+    delegate: (p: Json): Promise<AuthorityRecord> => call("authority.delegate", p, "human"),
+    revoke: (): Promise<AuthorityRecord> => call("authority.revoke", {}, "human"),
+  },
+  queue: {
+    get: (): Promise<ActionQueueResponse> => call("queue.get"),
+    act: (item: string, action: string): Promise<any> => call("queue.act", { item, action }, "human"),
+    batch: (action: string): Promise<any> => call("batch.act", { action }, "human"),
+  },
+  heal: {
+    restore: (p: { file: string; hash: string; parent_turn: string }): Promise<any> => call("heal.restore", p, "human"),
+  },
+  attribute: {
+    commit: (p: { commit_hash: string; task_prompt: string; origin?: string }): Promise<any> => call("attribute.commit", p, "human"),
+  },
 };
+
+export interface AuthorityRecord {
+  project_id: string;
+  mode: "human_only" | "prompter_delegated";
+  delegation: PrompterDelegation | null;
+  hmac?: string;
+}
+
+export interface PrompterDelegation {
+  holder: {
+    agent_id: string;
+    redeem_token_hash?: string | null;
+    door: "ui" | "mcp";
+  };
+  scope: {
+    allowed_domains: string[];
+    denied_domains: string[];
+    max_blast_radius: "low" | "medium" | "high";
+  };
+  budget: {
+    auto_approvals_max: number;
+    auto_approvals_used: number;
+    self_heals_max: number;
+    self_heals_used: number;
+    auto_merge: boolean;
+  };
+  validity: {
+    granted_at: string;
+    expires_at: string;
+    ttl_seconds: number;
+  };
+}
+
+export interface ActionQueueItem {
+  id: string;
+  state: "staged" | "ghost_redo" | "ready" | "advisory_drift" | "stale_leases" | "unattributed";
+  title: string;
+  description: string;
+  origin: string;
+  authority: string;
+  created_at: string;
+  requires_human: boolean;
+  human_floor_reasons: string[];
+  allowed_actions: string[];
+  pins: string[];
+  diff_summary: {
+    files_changed: number;
+    insertions: number;
+    deletions: number;
+  };
+  remediation?: {
+    kind: string;
+    target_file: string;
+    baseline_blob_hash: string;
+    parent_turn: string;
+  };
+}
+
+export interface ActionQueueStats {
+  total_actionable: number;
+  staged_count: number;
+  ghost_redo_count: number;
+  ready_count: number;
+  advisory_drift_count: number;
+  stale_leases_count: number;
+  unattributed_count: number;
+}
+
+export interface ActionQueueResponse {
+  items: ActionQueueItem[];
+  stats: ActionQueueStats;
+}
 
 export interface SceneNodeComponents {
   impl: { files_count: number; files: string[]; symbols_count: number };

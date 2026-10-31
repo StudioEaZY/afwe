@@ -15,6 +15,8 @@ import { GraphView } from "./GraphView";
 import { NodeInspector } from "./NodeInspector";
 import { TimelineDualScrubber, TimelineTurnItem } from "./TimelineDualScrubber";
 import { ConstellationGlyph } from "../lib/lucideSvgPaths";
+import { AuthorityBanner } from "./AuthorityBanner";
+import { ActionQueue } from "./ActionQueue";
 
 export const OverviewPage: React.FC = () => {
   const {
@@ -307,9 +309,13 @@ export const OverviewPage: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
-      {/* Main Center Stage Column */}
-      <main style={{ flex: 1, padding: "16px 22px", minWidth: 0, overflowY: "auto" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", overflow: "hidden" }}>
+      {/* Prompter Authority Banner across the top */}
+      <AuthorityBanner />
+
+      <div style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
+        {/* Main Center Stage Column */}
+        <main style={{ flex: 1, padding: "16px 22px", minWidth: 0, overflowY: "auto" }}>
         {/* Breadcrumbs (#crumbs) */}
         <div className="crumbs">
           {activeLens === "radial" && (
@@ -695,6 +701,11 @@ export const OverviewPage: React.FC = () => {
           </div>
         )}
 
+        {/* AFWE Action Queue */}
+        <div style={{ marginTop: "14px" }}>
+          <ActionQueue />
+        </div>
+
         {/* Unified Interactive Dual Timeline Scrubber */}
         <div style={{ marginTop: "12px", marginBottom: "4px" }}>
           <TimelineDualScrubber
@@ -789,6 +800,7 @@ export const OverviewPage: React.FC = () => {
 
       {/* Right Context Inspector (.side-inspector) */}
       <NodeInspector />
+      </div>
     </div>
   );
 };

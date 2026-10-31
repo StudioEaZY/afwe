@@ -1,0 +1,17 @@
+id: studio-surface-governance
+title: studio-surface-governance
+statement: 'Phase 7: Studio Surface (ActionQueue, AuthorityBanner, DelegationModal, and TopBar integration)'
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0053
+history:
+- turn: t0053
+  ts: 2026-10-31T17:48:14Z
+  statement: 'Phase 7: Studio Surface (ActionQueue, AuthorityBanner, DelegationModal, and TopBar integration)'
+created: 2026-10-31T17:48:14Z
+updated: 2026-10-31T17:58:09Z
+task: task-t0053
