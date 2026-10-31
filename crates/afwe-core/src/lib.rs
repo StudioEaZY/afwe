@@ -18,6 +18,7 @@
 pub mod analyze;
 pub mod api;
 pub mod authority;
+pub mod authority_store;
 pub mod baseline;
 pub mod calibration;
 pub mod claims;

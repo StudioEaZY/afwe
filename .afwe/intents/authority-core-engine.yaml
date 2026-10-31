@@ -1,0 +1,20 @@
+id: authority-core-engine
+title: 'Phase 1: Authority Core (R1-R10, OS config storage, HMAC signing, prompter delegation)'
+statement: Implement Prompter Authority Core with R1-R10 rules, PrompterDelegation, Door semantics (UI default unless agentic-loop), OS config storage, HMAC integrity signing, and API query/mutation methods.
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/authority.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/api.rs
+  - crates/afwe-core/src/authority_store.rs
+from_turns:
+- t0047
+history:
+- turn: t0047
+  ts: 2026-10-31T14:32:06Z
+  statement: Implement Prompter Authority Core with R1-R10 rules, PrompterDelegation, Door semantics (UI default unless agentic-loop), OS config storage, HMAC integrity signing, and API query/mutation methods.
+created: 2026-10-31T14:32:06Z
+updated: 2026-10-31T14:45:29Z
+task: task-t0047

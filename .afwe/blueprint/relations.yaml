@@ -65,3 +65,9 @@ relations:
   status: inferred
   origin: human
   confidence: 0.75
+- from: studio-maps
+  to: studio-timeline
+  kind: depends_on
+  status: inferred
+  origin: human
+  confidence: 0.65

@@ -1,0 +1,23 @@
+id: t0047-a1
+title: Authority defaults to human_only if missing, unreadable, or invalid
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-core
+  - crates
+  - demo-project
+  - examples
+  - studio
+  files:
+  - crates/afwe-core/src/authority.rs
+claim:
+  type: forbid_pattern
+  pattern: AuthorityMode::PrompterDelegated as default
+  files:
+  - crates/afwe-core/src/authority.rs
+status: active
+origin: afwe:checkgen
+created: 2026-10-31T14:49:29Z
+created_from: t0047
+provenance: confirmed

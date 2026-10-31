@@ -494,6 +494,92 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             j(esc)
         }
 
+        // ───────── Prompter Authority & Delegation ─────────
+        "authority.status" => {
+            let project_id = crate::authority_store::compute_project_id(&engine.store.project_root);
+            let record = crate::authority_store::load_authority(&project_id);
+            j(record)
+        }
+        "authority.delegate" => {
+            // R2: Human promotion only
+            let origin_str = origin(&p, default_origin);
+            if crate::authority::authority_of(&origin_str) != crate::authority::Authority::Human {
+                let project_id = crate::authority_store::compute_project_id(&engine.store.project_root);
+                let mut fallback = crate::authority::AuthorityRecord::human_only(&project_id);
+                let _ = crate::authority_store::save_authority(&engine.store.project_root, &mut fallback);
+                return Err(anyhow!("R2/R6 VIOLATION: authority.delegate called by non-human origin `{origin_str}`. Active delegation revoked, restored to human_only."));
+            }
+
+            // R4: Idle window only (checks open turns)
+            let turns = engine.store.turns()?;
+            let has_open = turns.iter().any(|t| t.status == "open");
+            if has_open {
+                let project_id = crate::authority_store::compute_project_id(&engine.store.project_root);
+                let mut fallback = crate::authority::AuthorityRecord::human_only(&project_id);
+                let _ = crate::authority_store::save_authority(&engine.store.project_root, &mut fallback);
+                return Err(anyhow!("R4/R6 VIOLATION: authority.delegate rejected while a turn is open. Active delegation revoked, restored to human_only."));
+            }
+
+            // R3: Standalone only & allowed fields: holder, ttl, scope, budget, door
+            let holder_agent = req(&p, "holder").or_else(|_| req(&p, "agent_id"))?;
+            let door_str = s(&p, "door").unwrap_or_else(|| "ui".to_string());
+            let door = match door_str.as_str() {
+                "mcp" => crate::authority::Door::Mcp,
+                _ => crate::authority::Door::Ui,
+            };
+
+            // R5: Hard ceilings
+            let req_ttl = p.get("ttl_seconds").and_then(|v| v.as_u64()).unwrap_or(4 * 3600);
+            let ttl_seconds = req_ttl.min(crate::authority::MAX_DELEGATION_TTL_SECONDS);
+
+            let req_approvals = p.get("auto_approvals_max").and_then(|v| v.as_u64()).unwrap_or(20) as u32;
+            let auto_approvals_max = req_approvals.min(crate::authority::MAX_AUTO_APPROVALS_CEILING);
+
+            let req_heals = p.get("self_heals_max").and_then(|v| v.as_u64()).unwrap_or(5) as u32;
+            let self_heals_max = req_heals.min(crate::authority::MAX_SELF_HEALS_CEILING);
+
+            let auto_merge = b(&p, "auto_merge", false);
+
+            let delegation = crate::authority::PrompterDelegation {
+                holder: crate::authority::DelegationHolder {
+                    agent_id: holder_agent,
+                    redeem_token_hash: s(&p, "redeem_token_hash"),
+                    door,
+                },
+                scope: crate::authority::DelegationScope {
+                    allowed_domains: list(&p, "allowed_domains"),
+                    denied_domains: list(&p, "denied_domains"),
+                    max_blast_radius: crate::authority::BlastRadius::Medium,
+                },
+                budget: crate::authority::DelegationBudget {
+                    auto_approvals_max,
+                    auto_approvals_used: 0,
+                    self_heals_max,
+                    self_heals_used: 0,
+                    auto_merge,
+                },
+                validity: crate::authority::DelegationValidity::new(ttl_seconds),
+            };
+
+            let project_id = crate::authority_store::compute_project_id(&engine.store.project_root);
+            let mut record = crate::authority::AuthorityRecord {
+                project_id: project_id.clone(),
+                mode: crate::authority::AuthorityMode::PrompterDelegated,
+                delegation: Some(delegation),
+                hmac: String::new(),
+            };
+
+            crate::authority_store::save_authority(&engine.store.project_root, &mut record)?;
+            j(record)
+        }
+        "authority.revoke" => {
+            // R7: Revoke anywhere, anytime, any interface
+            let project_id = crate::authority_store::compute_project_id(&engine.store.project_root);
+            let mut record = crate::authority::AuthorityRecord::human_only(&project_id);
+            crate::authority_store::save_authority(&engine.store.project_root, &mut record)?;
+            j(record)
+        }
+
         // ───────── v2: timeline ─────────
         "timeline.list" => timeline::list(engine, p.get("limit").and_then(|v| v.as_u64()).unwrap_or(50) as usize),
         "timeline.get" => timeline::get(engine, &req(&p, "turn")?),
@@ -1001,6 +1087,9 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_onboard_detect", op: "onboard.detect", description: "Detect stacks, git state, configuration and the suggested test command, without changing anything.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_onboard_apply", op: "onboard.apply", description: "Configure the project with a profile (normie | engineer): policy presets, git init, CI gate, AGENTS.md block.", schema: obj(json!({"profile": {"type": "string"}, "init_git": {"type": "boolean"}, "ci": {"type": "boolean"}, "agents_md": {"type": "boolean"}, "test_command": {"type": "string"}}), &["profile"]) },
         ToolSpec { name: "afwe_header", op: "header", description: "Single source-of-truth status header line starting with ⛨ AFWE.", schema: obj(json!({"turn": {"type": "string"}}), &[]) },
+        ToolSpec { name: "afwe_authority_status", op: "authority.status", description: "Get the current Prompter Authority status (human_only or prompter_delegated).", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_authority_delegate", op: "authority.delegate", description: "Human-only promotion to prompter_delegated mode for an agentic loop.", schema: obj(json!({"holder": {"type": "string"}, "ttl_seconds": {"type": "integer"}, "door": {"type": "string"}, "auto_approvals_max": {"type": "integer"}, "self_heals_max": {"type": "integer"}, "auto_merge": {"type": "boolean"}}), &["holder"]) },
+        ToolSpec { name: "afwe_authority_revoke", op: "authority.revoke", description: "Revoke active prompter delegation from any interface, returning to human_only.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_baseline_capture", op: "baseline.capture", description: "Capture current blueprint/code violations into .afwe/baseline.yaml so legacy debt does not fail new turns.", schema: obj(json!({"branch": {"type": "string"}, "label": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_baseline_get", op: "baseline.get", description: "Read the grandfathered violation baseline.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_escalation_list", op: "escalation.list", description: "List pending guard-loosening requests queued for human approval.", schema: obj(json!({}), &[]) },
