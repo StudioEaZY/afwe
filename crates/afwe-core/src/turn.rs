@@ -1051,7 +1051,7 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     let mut verify_issues: Vec<VerifyIssue> = vec![];
     let mut results: Vec<CheckResult> = vec![];
     if !code_rel.is_empty() {
-        let report = verify(&snap, &root, &VerifyOptions { changed: code_rel.clone(), run_commands: true, include_drift: false, debounce_ms: 0, flush: true });
+        let report = verify(&snap, &root, &VerifyOptions { changed: code_rel.clone(), run_commands: true, include_drift: false });
         verify_issues = report.issues.clone();
         for i in report.issues.iter().filter(|i| i.severity == "error") {
             blocking.push(format!("VERIFY_FAILED: {} — {}", i.id, i.message));
@@ -1960,7 +1960,7 @@ pub fn gate_now(engine: &Engine, origin: &str) -> Result<Value> {
 pub fn gate_now_with_base(engine: &Engine, origin: &str, base: Option<&str>) -> Result<Value> {
     let snap = engine.snapshot(true)?;
     let code_root = engine.store.code_root(&snap.manifest);
-    let report = verify(&snap, &code_root, &VerifyOptions { changed: vec![], run_commands: true, include_drift: false, debounce_ms: 0, flush: true });
+    let report = verify(&snap, &code_root, &VerifyOptions { changed: vec![], run_commands: true, include_drift: false });
     let all: Vec<String> = snap.code.files.iter().map(|f| f.path.clone()).collect();
     let mut failures: Vec<String> = report.issues.iter().filter(|i| i.severity == "error").map(|i| format!("{} — {}", i.id, i.message)).collect();
     let mut results = vec![];

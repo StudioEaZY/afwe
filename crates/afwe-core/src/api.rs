@@ -106,15 +106,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             files.extend(list(&p, "changed"));
             let snap = snapshot_for(engine, &files, b(&p, "refresh", true))?;
             let root = engine.store.code_root(&snap.manifest);
-            let debounce_ms = p.get("debounce_ms").and_then(|v| v.as_u64()).unwrap_or(0);
-            let flush = b(&p, "flush", false);
-            let report = verify(&snap, &root, &VerifyOptions {
-                changed: files,
-                run_commands: b(&p, "run_commands", true),
-                include_drift: b(&p, "include_drift", true),
-                debounce_ms,
-                flush,
-            });
+            let report = verify(&snap, &root, &VerifyOptions { changed: files, run_commands: b(&p, "run_commands", true), include_drift: b(&p, "include_drift", true) });
             engine.log(&origin(&p, default_origin), "verify", format!("verify: {} ({} errors, {} warnings)", if report.ok { "ok" } else { "failed" }, report.errors, report.warnings), None)?;
             j(report)
         }
@@ -868,7 +860,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             engine.store.save_manifest(&m)?;
             let snap = engine.snapshot(true)?;
             let root = engine.store.code_root(&snap.manifest);
-            let report = verify(&snap, &root, &VerifyOptions { changed: vec![], run_commands: false, include_drift: true, ..Default::default() });
+            let report = verify(&snap, &root, &VerifyOptions { changed: vec![], run_commands: false, include_drift: true });
             engine.log(&origin_str, "lock", format!("Explore mode locked: verify {}", if report.ok { "ok" } else { "found issues" }), None)?;
             Ok(json!({
                 "status": "locked",
@@ -1145,7 +1137,7 @@ pub fn tool_specs() -> Vec<ToolSpec> {
     vec![
         ToolSpec { name: "afwe_status", op: "status", description: "Project summary: sync status, blueprint size, mapped/unmapped files, memory counts, open board items, pending proposals.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_context", op: "context", description: "PASSIVE GUARDRAIL. Call before editing. Given files (and/or a symbol or node) returns only the architectural context that applies: blueprint node + purpose, decisions, exceptions, constraints, terminology, guardrails, structural rules, relationships and the contract to follow. Returns markdown plus structured JSON.", schema: obj(json!({"files": strs, "symbol": {"type": "string"}, "node": {"type": "string"}, "task": {"type": "string"}, "task_kind": {"type": "string", "description": "code|bugfix|refactor|architecture|feature|workflow"}, "full": {"type": "boolean"}}), &[]) },
-        ToolSpec { name: "afwe_verify", op: "verify", description: "ACTIVE GUARDRAIL. Verify changed files against the blueprint: structural constraints, active guardrail checks (forbidden imports/patterns, commands) and drift. ok=false means fix it, do not silence it.", schema: obj(json!({"files": strs, "run_commands": {"type": "boolean"}, "include_drift": {"type": "boolean"}, "task": {"type": "string"}, "debounce_ms": {"type": "integer"}, "flush": {"type": "boolean"}}), &[]) },
+        ToolSpec { name: "afwe_verify", op: "verify", description: "ACTIVE GUARDRAIL. Verify changed files against the blueprint: structural constraints, active guardrail checks (forbidden imports/patterns, commands) and drift. ok=false means fix it, do not silence it.", schema: obj(json!({"files": strs, "run_commands": {"type": "boolean"}, "include_drift": {"type": "boolean"}, "task": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_sync", op: "sync", description: "Re-analyse the codebase, rebuild the index, detect blueprint/code disagreement and reconcile by confidence (>=70% auto, 50-70% auto+uncertain marker, <50% proposal). Run after implementation.", schema: obj(json!({"dry_run": {"type": "boolean"}, "task": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_drift", op: "drift", description: "List disagreements between blueprint and code with confidence and the change AFWE would make, without applying anything.", schema: obj(json!({"files": strs}), &[]) },
         ToolSpec { name: "afwe_search", op: "search", description: "Search nodes, memory, guardrails, workflows, files and symbols.", schema: obj(json!({"q": {"type": "string"}}), &["q"]) },

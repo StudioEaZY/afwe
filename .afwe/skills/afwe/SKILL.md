@@ -34,10 +34,10 @@ When interacting with this codebase:
    - Retrieve micro-context via `afwe context <files>` (or MCP `afwe_context`).
    - Obey active pins and active guardrails; never delete pinned behavior without an explicit override (`{pin, reason}`).
    - Answer pending questions or review probing guides (`afwe question list`, `afwe guide list`).
-   - **Burst Edit Debouncing**: When using tool hooks that fire on every edit, call `afwe verify --debounce 2000` to avoid paying an $O(N)$ multi-edit tax; intermediate edits queue and exit in <5ms, executing full verification upon turn finish or commit.
+   - **Fast-Path Edit Verification**: When using tool hooks that fire on every edit, run `afwe verify --no-commands` to get immediate fail-fast architectural feedback in < 20ms without paying the test-suite execution tax.
 
 4. **Phase 3: Post-Editing (Verification & Mandatory Synchronization)**:
-   - Run verification via `afwe verify --changed <files>` or flush queued edits via `afwe verify --flush` (or MCP `afwe_verify`).
+   - Run verification via `afwe verify --changed <files>` (or MCP `afwe_verify`).
    - In prototype spikes, explore mode can be temporarily activated via `afwe unlock --reason "..."` and re-armed via `afwe lock`.
    - **Post-Turn Synchronization Obligation**: Whenever code structure, public APIs, rules, or behavior change:
      - Update documentation (`README.md`, `.afwe/docs/`, root `docs/`).

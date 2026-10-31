@@ -244,11 +244,11 @@
     <div class="controls">
       <div class="search-box">
         <input type="text" id="search" class="search-input" placeholder="Search terms, definitions, invariants, or confused-with concepts... (e.g. Turn, Ratchet, CAS)" autofocus />
-        <div class="term-count"><span id="visible-count">74</span> / 74 terms</div>
+        <div class="term-count"><span id="visible-count">73</span> / 73 terms</div>
       </div>
       <div class="categories">
         <button class="cat-btn active" data-cat="all">All Categories</button>
-        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (33)</button>
+        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (32)</button>
         <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
         <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (4)</button>
         <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (7)</button>
@@ -334,24 +334,6 @@ During an AST claim pass across 150 source files, tokens and syntax node records
         <div class="card-footer">
           <span><code>term-asset-arena</code></span>
           <button class="copy-btn" onclick="copyAnchor('asset-arena')" title="Copy permalink">🔗 permalink</button>
-        </div>
-      </article>
-      <article class="card" id="batched-verification-debounced-verification" data-category="Architecture Philosophy & Tenets" data-title="batched verification (debounced verification)" data-tags="">
-        <div class="card-header">
-          <h2 class="card-title">Batched Verification (Debounced Verification)</h2>
-          <span class="card-category">Architecture Philosophy & Tenets</span>
-        </div>
-        <p class="card-meaning"># Batched Verification (Debounced Verification)
-
-The deterministic queueing mechanism that eliminates the multi-edit tax when an agent performs rapid consecutive file modifications within a single prompt.
-
-## Mechanism
-- Intermediate tool edits invoke `afwe verify --debounce &lt;ms&gt;`.
-- If consecutive edits arrive within the debounce window, AFWE registers the touched files into `.afwe/state/verify_debounce.json` and immediately exits successfully (`status: "debounced"` in &lt;5ms).
-- When quiescence occurs, or when `afwe verify --flush`, `turn.commit`, or `afwe gate` runs, consolidated AST analysis and rule verification execute across all accumulated files in a single pass.</p>
-        <div class="card-footer">
-          <span><code>term-batched-verification</code></span>
-          <button class="copy-btn" onclick="copyAnchor('batched-verification-debounced-verification')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="bearer-token" data-category="Architecture Philosophy & Tenets" data-title="bearer token" data-tags="[terminology, security, authentication, protocol]">

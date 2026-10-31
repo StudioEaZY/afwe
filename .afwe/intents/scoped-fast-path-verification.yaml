@@ -1,0 +1,18 @@
+id: scoped-fast-path-verification
+title: Restore Original verify.rs and Scoped Fast-Path Verification
+statement: Restore original verify.rs and adopt scoped --no-commands fast-path verification for agent hooks
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-core/src/materialize.rs
+from_turns:
+- t0068
+history:
+- turn: t0068
+  ts: 2026-10-31T22:23:57Z
+  statement: Restore original verify.rs and adopt scoped --no-commands fast-path verification for agent hooks
+created: 2026-10-31T22:23:57Z
+updated: 2026-10-31T22:23:57Z
+task: task-t0068

@@ -8,108 +8,19 @@ use crate::model::*;
 use std::collections::HashSet;
 use std::path::Path;
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct DebounceQueue {
-    pub last_call_ms: u64,
-    pub pending_files: Vec<String>,
-    pub count: usize,
-}
-
-#[derive(Debug, Clone, Default)]
 pub struct VerifyOptions {
     pub changed: Vec<String>,
     /// run `command` checks (can be slow)
     pub run_commands: bool,
     /// include informational drift findings
     pub include_drift: bool,
-    /// burst edit debounce window in milliseconds (0 = disabled)
-    pub debounce_ms: u64,
-    /// flush all pending debounced edits immediately
-    pub flush: bool,
-}
-
-pub fn check_or_queue_debounce(
-    project_root: &Path,
-    files: &[String],
-    debounce_ms: u64,
-    flush: bool,
-) -> (bool, Vec<String>, usize) {
-    let state_dir = project_root.join(".afwe").join("state");
-    let state_file = state_dir.join("verify_debounce.json");
-    let now_ms = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_millis() as u64)
-        .unwrap_or(0);
-
-    let mut state: DebounceQueue = if state_file.is_file() {
-        std::fs::read_to_string(&state_file)
-            .ok()
-            .and_then(|s| serde_json::from_str(&s).ok())
-            .unwrap_or_default()
-    } else {
-        DebounceQueue::default()
-    };
-
-    if flush {
-        let mut all_files = state.pending_files;
-        for f in files {
-            if !all_files.contains(f) {
-                all_files.push(f.clone());
-            }
-        }
-        let _ = std::fs::remove_file(&state_file);
-        return (false, all_files, 0);
-    }
-
-    if debounce_ms > 0 {
-        let elapsed = now_ms.saturating_sub(state.last_call_ms);
-        for f in files {
-            if !state.pending_files.contains(f) {
-                state.pending_files.push(f.clone());
-            }
-        }
-        state.count += 1;
-        let count = state.count;
-        state.last_call_ms = now_ms;
-        let _ = std::fs::create_dir_all(&state_dir);
-        if let Ok(serialized) = serde_json::to_string(&state) {
-            let _ = std::fs::write(&state_file, serialized);
-        }
-
-        // If burst edit occurred within debounce window (after first edit in burst), defer
-        if count > 1 && elapsed < debounce_ms {
-            return (true, state.pending_files, count);
-        }
-    }
-
-    (false, files.to_vec(), 0)
 }
 
 pub fn verify(snap: &Snapshot, project_root: &Path, opts: &VerifyOptions) -> VerifyReport {
-    // Check burst edit debouncing queue
-    let (debounced, effective_files, burst_count) = check_or_queue_debounce(
-        project_root,
-        &opts.changed,
-        opts.debounce_ms,
-        opts.flush,
-    );
-    if debounced {
-        return VerifyReport {
-            ok: true,
-            errors: 0,
-            warnings: 0,
-            issues: vec![],
-            checked_files: effective_files,
-            ran_checks: vec![format!("batched_edit_queue (deferred burst edit #{burst_count})")],
-        };
-    }
-
     let mut issues: Vec<VerifyIssue> = vec![];
     let mut ran = vec![];
     let table = &snap.table;
-    let changed: Vec<String> = effective_files.iter().map(|f| f.trim_start_matches("./").to_string()).collect();
+    let changed: Vec<String> = opts.changed.iter().map(|f| f.trim_start_matches("./").to_string()).collect();
     let changed_set: HashSet<&str> = changed.iter().map(|s| s.as_str()).collect();
     let scoped = !changed.is_empty();
 

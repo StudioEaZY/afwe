@@ -518,7 +518,7 @@ Inferred rules with confidence between 0.85 and 0.90 are designated as advisory 
 ### 14.3 Tripwire Materialization & Multi-Agent Hooks
 `afwe materialize` generates local and CI enforcement files:
 - `.git/hooks/pre-commit`: chained execution that preserves existing husky/pre-commit scripts as a universal deterministic fallback.
-- `.afwe/guardrails/agent-hooks.json` & `.afwe/guardrails/claude-hooks.json`: harness-agnostic hook configurations for Claude Code, Cursor, Windsurf, Aider, and generic environments, invoking `afwe verify --debounce 2000` on edit to eliminate multi-edit taxes, and `afwe verify --flush` on turn completion.
+- `.afwe/guardrails/agent-hooks.json` & `.afwe/guardrails/claude-hooks.json`: harness-agnostic hook configurations for Claude Code, Cursor, Windsurf, Aider, and generic environments, invoking `afwe verify --no-commands` on edit for immediate fail-fast tripwire feedback in < 20ms without test-suite overhead.
 - `.github/workflows/afwe-gate.yml`: CI workflow running with `actions/checkout@v5`, `fetch-depth: 0`, configurable runner label (`ci.runs_on`), fixed check name `afwe-gate`, prebuilt release binary caching (`actions/cache@v4`), and commit trailer verification (`afwe gate --ci --base <ref>`).
 - `.afwe/guardrails/manifest.yaml`: BLAKE3 file hashes of all active and passive guardrails. PR verification compares PR changes against the protected base branch manifest to prevent agents from tampering with guardrails.
 

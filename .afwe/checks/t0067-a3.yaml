@@ -17,7 +17,7 @@ claim:
   pattern: debounce
   files:
   - crates/afwe-core/src/verify.rs
-status: active
+status: superseded
 origin: afwe:checkgen
 created: 2026-10-31T22:14:23Z
 created_from: t0067

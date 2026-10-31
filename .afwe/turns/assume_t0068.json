@@ -1,0 +1,38 @@
+{
+  "intents": [
+    {
+      "id": "scoped-fast-path-verification",
+      "action": "replace",
+      "targets": [
+        "crates/afwe-core/src/verify.rs",
+        "crates/afwe-core/src/materialize.rs"
+      ],
+      "title": "Restore Original verify.rs and Scoped Fast-Path Verification",
+      "statement": "Restore original verify.rs and adopt scoped --no-commands fast-path verification for agent hooks"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "verify.rs has no debounce queue and is restored to original clean state",
+      "claim": {
+        "type": "forbid_pattern",
+        "pattern": "debounce",
+        "files": [
+          "crates/afwe-core/src/verify.rs"
+        ]
+      }
+    }
+  ],
+  "removes": [],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "Reverting debounce mechanism to clean original verify.rs"
+    },
+    {
+      "pin": "pin-harness-agnostic",
+      "reason": "Restoring original verify.rs and updating agent hooks to use --no-commands fast-path"
+    }
+  ]
+}

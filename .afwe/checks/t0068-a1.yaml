@@ -1,0 +1,24 @@
+id: t0068-a1
+title: verify.rs has no debounce queue and is restored to original clean state
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-cli
+  - afwe-core
+  - crates
+  - demo-project
+  - examples
+  - studio
+  files:
+  - crates/afwe-core/src/verify.rs
+claim:
+  type: forbid_pattern
+  pattern: debounce
+  files:
+  - crates/afwe-core/src/verify.rs
+status: active
+origin: afwe:checkgen
+created: 2026-10-31T22:30:32Z
+created_from: t0068
+provenance: confirmed

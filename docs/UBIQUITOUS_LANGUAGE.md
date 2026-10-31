@@ -40,7 +40,6 @@ flowchart TD
 | [**Action Queue**](#action-queue) | Architecture Philosophy & Tenets | # Action Queue | — |
 | [**Ambiguity Question**](#ambiguity-question) | Confidence Bands & Calibration | A high-blast-radius architectural dilemma generated when system confidence falls below 85% (`afwe question list`). Instead of making an unverified guess, AFWE pauses and queues the question for human architect confirmation, persisting the resolution into memory or pins. | Probing Guide |
 | [**Asset Arena**](#asset-arena) | Memory, Pins & Living Intents | # Asset Arena | — |
-| [**Batched Verification (Debounced Verification)**](#batched-verification-debounced-verification) | Architecture Philosophy & Tenets | # Batched Verification (Debounced Verification) | — |
 | [**Bearer Token**](#bearer-token) | Architecture Philosophy & Tenets | # Bearer Token | — |
 | [**Blueprint**](#blueprint) | Blueprint & Cartography | The deterministic hierarchical architecture tree defining the product's structure, declared across `afwe.yaml` and `.afwe/blueprint/` (`blueprint.yaml`, `relations.yaml`, `constraints.yaml`). It maps code files and symbols to architectural nodes, defines permitted relationships, and sets boundaries. | Index |
 | [**Blueprint Diff View**](#blueprint-diff-view) | Blueprint & Cartography | A dedicated architectural visualizer in Studio Timeline (`TimelinePage.tsx`) that renders the structural delta between two turns or branches. It color-codes added nodes/relations (green), modified boundaries (amber), and removed entities (red), complementing textual source code diffs with structural architecture diffs. | Code Diff Viewer |
@@ -150,22 +149,6 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
 - **Studio Web / Tauri**: Real-time visual cards with state filters and batch action bars.
 - **Terminal Surface**: Live ANSI dashboard via `afwe watch`.
 - **MCP Tooling**: Headless programmatic inspection and resolution via `afwe_queue_get`, `afwe_queue_act`, and `afwe_batch_act`.
-
----
-
-#### Batched Verification (Debounced Verification) <a id="batched-verification-debounced-verification"></a>
-
-- **ID**: `term-batched-verification`
-
-**Meaning:**
-# Batched Verification (Debounced Verification)
-
-The deterministic queueing mechanism that eliminates the multi-edit tax when an agent performs rapid consecutive file modifications within a single prompt.
-
-## Mechanism
-- Intermediate tool edits invoke `afwe verify --debounce <ms>`.
-- If consecutive edits arrive within the debounce window, AFWE registers the touched files into `.afwe/state/verify_debounce.json` and immediately exits successfully (`status: "debounced"` in <5ms).
-- When quiescence occurs, or when `afwe verify --flush`, `turn.commit`, or `afwe gate` runs, consolidated AST analysis and rule verification execute across all accumulated files in a single pass.
 
 ---
 

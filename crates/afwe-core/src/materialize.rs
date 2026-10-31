@@ -103,7 +103,7 @@ pub fn run(engine: &Engine, opts: MaterializeOptions) -> Result<Value> {
     }
 
     if claude_hooks {
-        // Multi-agent and Claude Code hooks with debounced burst verification
+        // Multi-agent and Claude Code hooks with scoped fast-path verification (zero command tax)
         let generic_settings = json!({
             "version": 1,
             "harness": "generic",
@@ -114,15 +114,9 @@ pub fn run(engine: &Engine, opts: MaterializeOptions) -> Result<Value> {
                         "hooks": [
                             {
                                 "type": "command",
-                                "command": "afwe verify --debounce 2000"
+                                "command": "afwe verify --no-commands"
                             }
                         ]
-                    }
-                ],
-                "PostTurn": [
-                    {
-                        "type": "command",
-                        "command": "afwe verify --flush"
                     }
                 ]
             }
@@ -141,7 +135,7 @@ pub fn run(engine: &Engine, opts: MaterializeOptions) -> Result<Value> {
                         "hooks": [
                             {
                                 "type": "command",
-                                "command": "afwe verify --debounce 2000"
+                                "command": "afwe verify --no-commands"
                             }
                         ]
                     }
@@ -152,7 +146,7 @@ pub fn run(engine: &Engine, opts: MaterializeOptions) -> Result<Value> {
             ".afwe/guardrails/claude-hooks.json".into(),
             serde_json::to_string_pretty(&claude_settings)?,
         );
-        actions.push("layer `agent-hooks`: .afwe/guardrails/agent-hooks.json & claude-hooks.json (batched debounced verification)".into());
+        actions.push("layer `agent-hooks`: .afwe/guardrails/agent-hooks.json & claude-hooks.json (fast-path scoped verification)".into());
     }
 
     if agents_md {

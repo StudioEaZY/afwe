@@ -94,12 +94,6 @@ enum Cmd {
         no_drift: bool,
         #[arg(long)]
         task: Option<String>,
-        /// Burst edit debounce window in milliseconds (default 0 = run immediately)
-        #[arg(long, default_value_t = 0)]
-        debounce: u64,
-        /// Flush and verify all pending debounced burst edits immediately
-        #[arg(long)]
-        flush: bool,
     },
     /// Show blueprint/code disagreements with confidence (no changes applied)
     Drift { files: Vec<String> },
@@ -976,18 +970,10 @@ fn run(cli: Cli) -> Result<i32> {
             out(json, &v, |v| v["markdown"].as_str().unwrap_or("").to_string());
             Ok(0)
         }
-        Cmd::Verify { mut files, changed, no_commands, no_drift, task, debounce, flush } => {
+        Cmd::Verify { mut files, changed, no_commands, no_drift, task } => {
             let engine = engine_for(&cli.dir)?;
             files.extend(changed);
-            let v = api::call(&engine, "verify", json!({
-                "files": files,
-                "run_commands": !no_commands,
-                "include_drift": !no_drift,
-                "task": task,
-                "debounce_ms": debounce,
-                "flush": flush,
-                "origin": origin,
-            }), &origin)?;
+            let v = api::call(&engine, "verify", json!({"files": files, "run_commands": !no_commands, "include_drift": !no_drift, "task": task, "origin": origin}), &origin)?;
             let ok = v["ok"].as_bool().unwrap_or(false);
             out(json, &v, |v| afwe_core::verify::render_report(&serde_json::from_value(v.clone()).unwrap()));
             let m = engine.store.manifest()?;
