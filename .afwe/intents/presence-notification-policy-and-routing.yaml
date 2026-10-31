@@ -1,0 +1,17 @@
+id: presence-notification-policy-and-routing
+title: presence-notification-policy-and-routing
+statement: 'Phase 5: Notification Policy and Custom Routing (presence.toml)'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+from_turns:
+- t0062
+history:
+- turn: t0062
+  ts: 2026-10-31T21:12:28Z
+  statement: 'Phase 5: Notification Policy and Custom Routing (presence.toml)'
+created: 2026-10-31T21:12:28Z
+updated: 2026-10-31T21:12:28Z
+task: task-t0062

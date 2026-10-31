@@ -46,8 +46,23 @@ impl PresenceWatcher {
 
     /// Dispatch a presence event to notification/card sinks
     fn dispatch_event(project_name: &str, event: &afwe_core::events::PresenceEvent) {
-        let is_sticky = event.requires_human || event.blast_radius == "high" || event.kind.starts_with("turn.staged");
-        let badge = if is_sticky { "STICKY CARD" } else { "TOAST (30s)" };
+        let policy = super::policy::PresencePolicy::load();
+        let is_human_floor = event.requires_human;
+        let route = policy.resolve_route(&event.kind, is_human_floor);
+
+        // If routed to prompter_delegated or silent, check authority
+        if route == super::policy::RouteTarget::Silent {
+            return;
+        }
+
+        let style = policy.resolve_style(&event.kind, is_human_floor);
+        let badge = match style {
+            super::policy::NotificationStyle::StickyCard => "STICKY CARD",
+            super::policy::NotificationStyle::LongToast => "LONG TOAST",
+            super::policy::NotificationStyle::Toast => "TOAST (30s)",
+            super::policy::NotificationStyle::BadgeOnly => "BADGE ONLY",
+            super::policy::NotificationStyle::Digest => "DIGEST",
+        };
 
         println!(
             "\x1b[38;2;147;197;253;1m⛨ [Presence Notification - {}]\x1b[0m project={} kind={} seq=#{}",
