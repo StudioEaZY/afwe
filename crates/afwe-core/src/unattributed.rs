@@ -52,15 +52,33 @@ pub fn verify_commit_range_attribution(
 
                 // Extract AFWE-Turn or AFWE-Turn-Hash trailer
                 let mut found_turn = false;
+                let mut turn_ref = None;
                 for line in message.lines() {
                     let trimmed = line.trim();
-                    if trimmed.starts_with("AFWE-Turn:") || trimmed.starts_with("AFWE-Turn-Hash:") {
+                    if let Some(rest) = trimmed.strip_prefix("AFWE-Turn:") {
                         found_turn = true;
+                        turn_ref = Some(rest.trim().to_string());
+                        break;
+                    }
+                    if let Some(rest) = trimmed.strip_prefix("AFWE-Turn-Hash:") {
+                        found_turn = true;
+                        turn_ref = Some(rest.trim().to_string());
                         break;
                     }
                 }
 
-                if !found_turn && !stored_turn_hashes.iter().any(|h| commit_sha.starts_with(h)) {
+                // Verify the matching turn record is committed in .afwe/turns/
+                let has_record = if let Some(tr) = &turn_ref {
+                    let turns_dir = repo_root.join(".afwe").join("turns");
+                    turns_dir.join(format!("{tr}.yaml")).exists()
+                        || turns_dir.join(format!("turn-{tr}.yaml")).exists()
+                        || turns_dir.join(format!("{tr}")).exists()
+                        || stored_turn_hashes.iter().any(|h| h == tr || tr.contains(h))
+                } else {
+                    false
+                };
+
+                if (!found_turn || !has_record) && !stored_turn_hashes.iter().any(|h| commit_sha.starts_with(h)) {
                     unattributed.push(commit_sha.to_string());
                 }
             }

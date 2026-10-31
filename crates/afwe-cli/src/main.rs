@@ -94,6 +94,12 @@ enum Cmd {
         no_drift: bool,
         #[arg(long)]
         task: Option<String>,
+        /// Burst edit debounce window in milliseconds (default 0 = run immediately)
+        #[arg(long, default_value_t = 0)]
+        debounce: u64,
+        /// Flush and verify all pending debounced burst edits immediately
+        #[arg(long)]
+        flush: bool,
     },
     /// Show blueprint/code disagreements with confidence (no changes applied)
     Drift { files: Vec<String> },
@@ -193,6 +199,9 @@ enum Cmd {
         /// Terse output for CI
         #[arg(long)]
         ci: bool,
+        /// Base git ref or SHA to verify PR commit trailers and turn records against
+        #[arg(long)]
+        base: Option<String>,
     },
     /// Set the project up: stacks, profile, git, CI gate and agent contract (idempotent)
     Onboard {
@@ -264,7 +273,10 @@ enum Cmd {
         git_hooks: bool,
         #[arg(long)]
         ci: bool,
-        #[arg(long)]
+        /// Multi-agent tool hooks (Claude Code, Cursor, Windsurf, Aider, etc.)
+        #[arg(long, alias = "claude-hooks")]
+        agent_hooks: bool,
+        #[arg(long, hide = true)]
         claude_hooks: bool,
         #[arg(long)]
         agents_md: bool,
@@ -964,10 +976,18 @@ fn run(cli: Cli) -> Result<i32> {
             out(json, &v, |v| v["markdown"].as_str().unwrap_or("").to_string());
             Ok(0)
         }
-        Cmd::Verify { mut files, changed, no_commands, no_drift, task } => {
+        Cmd::Verify { mut files, changed, no_commands, no_drift, task, debounce, flush } => {
             let engine = engine_for(&cli.dir)?;
             files.extend(changed);
-            let v = api::call(&engine, "verify", json!({"files": files, "run_commands": !no_commands, "include_drift": !no_drift, "task": task, "origin": origin}), &origin)?;
+            let v = api::call(&engine, "verify", json!({
+                "files": files,
+                "run_commands": !no_commands,
+                "include_drift": !no_drift,
+                "task": task,
+                "debounce_ms": debounce,
+                "flush": flush,
+                "origin": origin,
+            }), &origin)?;
             let ok = v["ok"].as_bool().unwrap_or(false);
             out(json, &v, |v| afwe_core::verify::render_report(&serde_json::from_value(v.clone()).unwrap()));
             let m = engine.store.manifest()?;
@@ -1499,9 +1519,13 @@ fn run(cli: Cli) -> Result<i32> {
             }
             Ok(0)
         }
-        Cmd::Gate { ci } => {
+        Cmd::Gate { ci, base } => {
             let engine = engine_for(&cli.dir)?;
-            let v = api::call(&engine, "gate", json!({}), &origin)?;
+            let mut params = json!({});
+            if let Some(b) = base {
+                params["base"] = json!(b);
+            }
+            let v = api::call(&engine, "gate", params, &origin)?;
             out(json, &v, |v| render::gate(v, ci));
             Ok(if v["ok"].as_bool().unwrap_or(false) { 0 } else { 1 })
         }
@@ -1673,7 +1697,7 @@ fn run(cli: Cli) -> Result<i32> {
             }
             Ok(0)
         }
-        Cmd::Materialize { apply, remove, check, base, native_tests, git_hooks, ci, claude_hooks, agents_md } => {
+        Cmd::Materialize { apply, remove, check, base, native_tests, git_hooks, ci, agent_hooks, claude_hooks, agents_md } => {
             let engine = engine_for(&cli.dir)?;
             let v = api::call(
                 &engine,
@@ -1686,7 +1710,8 @@ fn run(cli: Cli) -> Result<i32> {
                     "native_tests": native_tests,
                     "git_hooks": git_hooks,
                     "ci": ci,
-                    "claude_hooks": claude_hooks,
+                    "agent_hooks": agent_hooks || claude_hooks,
+                    "claude_hooks": agent_hooks || claude_hooks,
                     "agents_md": agents_md,
                 }),
                 &origin,

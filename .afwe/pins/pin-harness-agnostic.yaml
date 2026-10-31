@@ -1,0 +1,10 @@
+id: pin-harness-agnostic
+statement: AFWE core, verification, and tripwires must remain 100% harness-agnostic without vendor-specific agent lock-in or harness-dependent execution paths
+kind: invariant
+attaches:
+  nodes:
+  - afwe-core
+severity: block
+status: active
+origin: human
+created: 2026-10-31T22:00:00Z

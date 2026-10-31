@@ -31,6 +31,8 @@ pub struct Manifest {
     pub provenance: ProvenanceConfig,
     #[serde(default)]
     pub vcs: VcsConfig,
+    #[serde(default)]
+    pub ci: CiConfig,
     /// Onboarding profile the project was set up with (normie | engineer | custom).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub profile: Option<String>,
@@ -49,6 +51,7 @@ impl Default for Manifest {
             policy: Policy::default(),
             provenance: ProvenanceConfig::default(),
             vcs: VcsConfig::default(),
+            ci: CiConfig::default(),
             profile: None,
         }
     }
@@ -234,6 +237,43 @@ impl Default for ProvenanceConfig {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CiConfig {
+    #[serde(default = "default_runs_on")]
+    pub runs_on: String,
+    #[serde(default = "default_fixed_job_name")]
+    pub fixed_job_name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub binary_version: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub binary_url: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub binary_sha256: Option<String>,
+    #[serde(default = "default_true")]
+    pub verify_turn_records: bool,
+}
+
+fn default_runs_on() -> String {
+    "ubuntu-latest".to_string()
+}
+
+fn default_fixed_job_name() -> String {
+    "afwe-gate".to_string()
+}
+
+impl Default for CiConfig {
+    fn default() -> Self {
+        Self {
+            runs_on: default_runs_on(),
+            fixed_job_name: default_fixed_job_name(),
+            binary_version: None,
+            binary_url: None,
+            binary_sha256: None,
+            verify_turn_records: true,
+        }
+    }
+}
+
 // ───────────────────────────── blueprint ─────────────────────────────
 
 /// Implementation mapping: how a blueprint node is realised in code.
@@ -365,9 +405,12 @@ pub const MEMORY_KINDS: &[&str] = &["decisions", "constraints", "exceptions", "t
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct MemoryMeta {
+    #[serde(default)]
     pub id: String,
     /// decision | constraint | exception | terminology | problem
+    #[serde(default)]
     pub kind: String,
+    #[serde(default, alias = "term")]
     pub title: String,
     /// proposed | accepted | superseded | resolved | open
     #[serde(default, skip_serializing_if = "Option::is_none")]

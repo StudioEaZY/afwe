@@ -203,6 +203,7 @@ pub fn merge_agent(
         changed: vec![],
         run_commands: true,
         include_drift: false,
+        ..Default::default()
     });
     if !report.ok {
         return Err(anyhow!("MERGE_GATE_REDO: Architectural verification failed on merge of `{agent_id}`: {} error(s)", report.errors));

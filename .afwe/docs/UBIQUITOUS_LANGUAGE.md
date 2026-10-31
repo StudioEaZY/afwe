@@ -40,6 +40,7 @@ flowchart TD
 | [**Action Queue**](#action-queue) | Architecture Philosophy & Tenets | # Action Queue | — |
 | [**Ambiguity Question**](#ambiguity-question) | Confidence Bands & Calibration | A high-blast-radius architectural dilemma generated when system confidence falls below 85% (`afwe question list`). Instead of making an unverified guess, AFWE pauses and queues the question for human architect confirmation, persisting the resolution into memory or pins. | Probing Guide |
 | [**Asset Arena**](#asset-arena) | Memory, Pins & Living Intents | # Asset Arena | — |
+| [**Batched Verification (Debounced Verification)**](#batched-verification-debounced-verification) | Architecture Philosophy & Tenets | # Batched Verification (Debounced Verification) | — |
 | [**Bearer Token**](#bearer-token) | Architecture Philosophy & Tenets | # Bearer Token | — |
 | [**Blueprint**](#blueprint) | Blueprint & Cartography | The deterministic hierarchical architecture tree defining the product's structure, declared across `afwe.yaml` and `.afwe/blueprint/` (`blueprint.yaml`, `relations.yaml`, `constraints.yaml`). It maps code files and symbols to architectural nodes, defines permitted relationships, and sets boundaries. | Index |
 | [**Blueprint Diff View**](#blueprint-diff-view) | Blueprint & Cartography | A dedicated architectural visualizer in Studio Timeline (`TimelinePage.tsx`) that renders the structural delta between two turns or branches. It color-codes added nodes/relations (green), modified boundaries (amber), and removed entities (red), complementing textual source code diffs with structural architecture diffs. | Code Diff Viewer |
@@ -48,6 +49,7 @@ flowchart TD
 | [**Capability Bridge**](#capability-bridge) | Ratchets & Integrity Verification | # Capability Bridge | — |
 | [**Capability Ratchet**](#capability-ratchet) | Ratchets & Integrity Verification | A monotonic architectural safety mechanism enforced during `afwe turn commit`. It guarantees that codebase capabilities, public API exports, caller references, decisions, and documentation references can only advance or remain stable—never unintentionally degrade. Intentionally breaking a capability requires an explicit declaration in `turn assume`. | Unit Testing |
 | [**Check**](#check) | Ratchets & Integrity Verification | An executable verification item registered in `.afwe/checks/*.yaml` evaluated during `afwe verify` and `afwe turn commit`. Checks possess trust ratings, explicit authorship (human, generator, agent), and deterministic pass/fail semantics. | Claim |
+| [**CI Runner Profile & Cached Acquisition**](#ci-runner-profile-cached-acquisition) | Architecture Philosophy & Tenets | # CI Runner Profile & Cached Acquisition | — |
 | [**Claim**](#claim) | Claims & Tripwires | A pre-generation assertion declared during Phase 1 (`afwe turn assume`) before code is written. Claims include: | Intent |
 | [**Comment-Aware Claims**](#comment-aware-claims) | Claims & Tripwires | # Comment-Aware Claims | — |
 | [**Component Inspector**](#component-inspector) | Architecture Philosophy & Tenets | The contextual metadata panel in AFWE Studio (`ComponentInspector.tsx` and `NodeInspector.tsx`) activated upon selecting any node or relation. It renders live purpose statements, implementation file/symbol mappings, caller counts, attached active guardrails, ADR decisions, bookmarks, and structural edit controls (`move`, `relate`, `constrain`). | Micro-Context |
@@ -66,6 +68,7 @@ flowchart TD
 | [**Explore Mode**](#explore-mode) | Confidence Bands & Calibration | A temporary mode activated via `afwe unlock --reason "..."` that downgrades blocking active checks and capability ratchets into non-blocking warnings during active exploratory refactoring or rapid prototyping. The harness must re-arm the gate before release via `afwe lock`, which triggers full architecture verification. | Bypassing the Gate |
 | [**Git Channel**](#git-channel) | Architecture Philosophy & Tenets | # Git Channel | — |
 | [**Guardrail**](#guardrail) | Architecture Philosophy & Tenets | An architectural constraint divided into two complementary forms: | Pin, Check |
+| [**Harness-Agnostic Architecture**](#harness-agnostic-architecture) | Architecture Philosophy & Tenets | # Harness-Agnostic Architecture | — |
 | [**Human Floor**](#human-floor) | Architecture Philosophy & Tenets | # Human Floor | — |
 | [**Intent**](#intent) | Memory, Pins & Living Intents | A living, persistent statement of architectural purpose and desired behavior stored in `.afwe/intents/*.yaml`. Derived and merged from verbatim user prompts over time, intents capture what the codebase is intended to do, its historical evolution, and its implementation mappings. | Turn, Workflow |
 | [**Materializer**](#materializer) | Claims & Tripwires | The engine component invoked via `afwe materialize` (or MCP `afwe_materialize`) that renders AFWE tripwires into native workspace files (`.git/hooks/pre-commit`, `.github/workflows/afwe-gate.yml`, native test suites, `AGENTS.md` markers, and `.afwe/checks/manifest.blake3`). It offers preview-first application (`--dry-run` by default) and rollback capabilities. | afwe init |
@@ -150,6 +153,22 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
 
 ---
 
+#### Batched Verification (Debounced Verification) <a id="batched-verification-debounced-verification"></a>
+
+- **ID**: `term-batched-verification`
+
+**Meaning:**
+# Batched Verification (Debounced Verification)
+
+The deterministic queueing mechanism that eliminates the multi-edit tax when an agent performs rapid consecutive file modifications within a single prompt.
+
+## Mechanism
+- Intermediate tool edits invoke `afwe verify --debounce <ms>`.
+- If consecutive edits arrive within the debounce window, AFWE registers the touched files into `.afwe/state/verify_debounce.json` and immediately exits successfully (`status: "debounced"` in <5ms).
+- When quiescence occurs, or when `afwe verify --flush`, `turn.commit`, or `afwe gate` runs, consolidated AST analysis and rule verification execute across all accumulated files in a single pass.
+
+---
+
 #### Bearer Token <a id="bearer-token"></a>
 
 - **ID**: `term-bearer-token`
@@ -166,6 +185,23 @@ The Bearer Token ensures that only the authorized agent or process that initiate
 
 ### Example in Practice
 When an agent starts a Turn via `afwe turn begin "Refactor auth"`, AFWE issues a bearer token embedded in the briefing pack JSON response. Subsequent calls to `afwe turn assume` and `afwe turn commit` validate this token before granting state modifications.
+
+---
+
+#### CI Runner Profile & Cached Acquisition <a id="ci-runner-profile-cached-acquisition"></a>
+
+- **ID**: `term-ci-runner-profile`
+
+**Meaning:**
+# CI Runner Profile & Cached Acquisition
+
+The production CI configuration schema and binary acquisition strategy that guarantees fast, deterministic architectural gating on pull requests and pushes.
+
+## Core Rules
+1. **Configurable Runner Label**: `manifest.ci.runs_on` specifies the target runner (e.g. `blacksmith-4vcpu-ubuntu-2404`, defaulting to `ubuntu-latest`).
+2. **Fixed Check Name**: The GitHub Actions job name is strictly fixed to `afwe-gate` to ensure repository branch protection requirements never break when runners or configurations shift.
+3. **Fast Binary Acquisition**: Uses GitHub Actions caching (`actions/cache@v4`) and pinned prebuilt release downloads with SHA-256 checksum verification before falling back to compilation.
+4. **Full History & Turn Records**: Enforces `fetch-depth: 0` and verifies that commit trailers have corresponding turn records committed in `.afwe/turns/`.
 
 ---
 
@@ -288,6 +324,22 @@ An architectural constraint divided into two complementary forms:
 **Not to be confused with:**
 - **Pin**: Guardrails can be generated, calibrated, and updated by AFWE tools; Pins are locked by humans under a strict budget.
 - **Check**: A Check is the concrete executable assertion registered in the gate registry implementing an active guardrail or assumption claim.
+
+---
+
+#### Harness-Agnostic Architecture <a id="harness-agnostic-architecture"></a>
+
+- **ID**: `term-harness-agnostic`
+
+**Meaning:**
+# Harness-Agnostic Architecture
+
+The architectural invariant that AFWE core, verification, and tripwires operate identically regardless of which AI coding agent or human is executing changes (e.g. Claude Code, Cursor, Windsurf, Aider, OpenCode, custom MCP agents, or human developers).
+
+## Principles
+1. **Zero Vendor Lock-in**: AFWE core contains no proprietary harness SDKs or vendor-specific execution branches.
+2. **Layered Hook Fallback**: Tool hooks (`agent-hooks.json`, `claude-hooks.json`) provide low-latency feedback; native Git pre-commit hooks (`.afwe/guardrails/pre-commit`) and the CI gate (`afwe-gate`) act as deterministic fallbacks for any environment lacking tool hooks.
+3. **Open Standards**: Interoperates via standard JSON-RPC, standard CLI interfaces, and Git porcelain/plumbing.
 
 ---
 

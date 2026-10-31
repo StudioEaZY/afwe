@@ -244,11 +244,11 @@
     <div class="controls">
       <div class="search-box">
         <input type="text" id="search" class="search-input" placeholder="Search terms, definitions, invariants, or confused-with concepts... (e.g. Turn, Ratchet, CAS)" autofocus />
-        <div class="term-count"><span id="visible-count">71</span> / 71 terms</div>
+        <div class="term-count"><span id="visible-count">74</span> / 74 terms</div>
       </div>
       <div class="categories">
         <button class="cat-btn active" data-cat="all">All Categories</button>
-        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (30)</button>
+        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (33)</button>
         <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
         <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (4)</button>
         <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (7)</button>
@@ -334,6 +334,24 @@ During an AST claim pass across 150 source files, tokens and syntax node records
         <div class="card-footer">
           <span><code>term-asset-arena</code></span>
           <button class="copy-btn" onclick="copyAnchor('asset-arena')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="batched-verification-debounced-verification" data-category="Architecture Philosophy & Tenets" data-title="batched verification (debounced verification)" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Batched Verification (Debounced Verification)</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Batched Verification (Debounced Verification)
+
+The deterministic queueing mechanism that eliminates the multi-edit tax when an agent performs rapid consecutive file modifications within a single prompt.
+
+## Mechanism
+- Intermediate tool edits invoke `afwe verify --debounce &lt;ms&gt;`.
+- If consecutive edits arrive within the debounce window, AFWE registers the touched files into `.afwe/state/verify_debounce.json` and immediately exits successfully (`status: "debounced"` in &lt;5ms).
+- When quiescence occurs, or when `afwe verify --flush`, `turn.commit`, or `afwe gate` runs, consolidated AST analysis and rule verification execute across all accumulated files in a single pass.</p>
+        <div class="card-footer">
+          <span><code>term-batched-verification</code></span>
+          <button class="copy-btn" onclick="copyAnchor('batched-verification-debounced-verification')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="bearer-token" data-category="Architecture Philosophy & Tenets" data-title="bearer token" data-tags="[terminology, security, authentication, protocol]">
@@ -465,6 +483,25 @@ The MCP server in `crates/afwe-cli/src/mcp.rs` serves as a Capability Bridge bet
         <div class="card-footer">
           <span><code>term-check</code></span>
           <button class="copy-btn" onclick="copyAnchor('check')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="ci-runner-profile-cached-acquisition" data-category="Architecture Philosophy & Tenets" data-title="ci runner profile & cached acquisition" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">CI Runner Profile & Cached Acquisition</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># CI Runner Profile & Cached Acquisition
+
+The production CI configuration schema and binary acquisition strategy that guarantees fast, deterministic architectural gating on pull requests and pushes.
+
+## Core Rules
+1. **Configurable Runner Label**: `manifest.ci.runs_on` specifies the target runner (e.g. `blacksmith-4vcpu-ubuntu-2404`, defaulting to `ubuntu-latest`).
+2. **Fixed Check Name**: The GitHub Actions job name is strictly fixed to `afwe-gate` to ensure repository branch protection requirements never break when runners or configurations shift.
+3. **Fast Binary Acquisition**: Uses GitHub Actions caching (`actions/cache@v4`) and pinned prebuilt release downloads with SHA-256 checksum verification before falling back to compilation.
+4. **Full History & Turn Records**: Enforces `fetch-depth: 0` and verifies that commit trailers have corresponding turn records committed in `.afwe/turns/`.</p>
+        <div class="card-footer">
+          <span><code>term-ci-runner-profile</code></span>
+          <button class="copy-btn" onclick="copyAnchor('ci-runner-profile-cached-acquisition')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="claim" data-category="Claims & Tripwires" data-title="claim" data-tags="claims pre-generation">
@@ -766,6 +803,24 @@ A zero-relay remote communication protocol connecting inbound-restricted sandbox
         <div class="card-footer">
           <span><code>term-guardrail</code></span>
           <button class="copy-btn" onclick="copyAnchor('guardrail')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="harness-agnostic-architecture" data-category="Architecture Philosophy & Tenets" data-title="harness-agnostic architecture" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Harness-Agnostic Architecture</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Harness-Agnostic Architecture
+
+The architectural invariant that AFWE core, verification, and tripwires operate identically regardless of which AI coding agent or human is executing changes (e.g. Claude Code, Cursor, Windsurf, Aider, OpenCode, custom MCP agents, or human developers).
+
+## Principles
+1. **Zero Vendor Lock-in**: AFWE core contains no proprietary harness SDKs or vendor-specific execution branches.
+2. **Layered Hook Fallback**: Tool hooks (`agent-hooks.json`, `claude-hooks.json`) provide low-latency feedback; native Git pre-commit hooks (`.afwe/guardrails/pre-commit`) and the CI gate (`afwe-gate`) act as deterministic fallbacks for any environment lacking tool hooks.
+3. **Open Standards**: Interoperates via standard JSON-RPC, standard CLI interfaces, and Git porcelain/plumbing.</p>
+        <div class="card-footer">
+          <span><code>term-harness-agnostic</code></span>
+          <button class="copy-btn" onclick="copyAnchor('harness-agnostic-architecture')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="human-floor" data-category="Architecture Philosophy & Tenets" data-title="human floor" data-tags="">

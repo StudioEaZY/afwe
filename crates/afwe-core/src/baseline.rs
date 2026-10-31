@@ -46,6 +46,7 @@ pub fn capture(engine: &Engine) -> Result<usize> {
         changed: vec![],
         run_commands: false,
         include_drift: false,
+        ..Default::default()
     });
     let mut entries = vec![];
     for issue in &report.issues {

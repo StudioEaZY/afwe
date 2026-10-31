@@ -1,0 +1,24 @@
+id: t0067-a2
+title: Manifest model supports parameterizable ci runner configuration
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-cli
+  - afwe-core
+  - crates
+  - demo-project
+  - examples
+  - studio
+  files:
+  - crates/afwe-core/src/model.rs
+claim:
+  type: require_pattern
+  pattern: 'pub runs_on: String'
+  files:
+  - crates/afwe-core/src/model.rs
+status: active
+origin: afwe:checkgen
+created: 2026-10-31T22:14:23Z
+created_from: t0067
+provenance: confirmed

@@ -14,7 +14,8 @@ use std::path::Path;
 
 pub const CI_TEMPLATE: &str = r#"# AFWE architecture gate — added by `afwe onboard`.
 # If you haven't set the repository variable AFWE_INSTALL_COMMAND, this workflow
-# falls back to building afwe directly if Cargo.toml has afwe-cli, or cargo installing it.
+# falls back to downloading a pinned release binary, building afwe directly if Cargo.toml
+# has afwe-cli, or cargo installing it. Fixed job name `afwe-gate` for branch protection.
 name: AFWE Architecture Gate
 on: [push, pull_request]
 jobs:
@@ -24,29 +25,50 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-      - name: Install or Build AFWE
+      - name: Cache AFWE binary
+        id: cache-afwe
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/afwe
+          key: ${{ runner.os }}-afwe-${{ hashFiles('.afwe/manifest.yaml') }}
+      - name: Install or Acquire AFWE Binary
+        if: steps.cache-afwe.outputs.cache-hit != 'true'
         env:
           AFWE_INSTALL_CMD: ${{ vars.AFWE_INSTALL_COMMAND }}
+          AFWE_BINARY_URL: ${{ vars.AFWE_BINARY_URL }}
+          AFWE_BINARY_SHA256: ${{ vars.AFWE_BINARY_SHA256 }}
         run: |
+          mkdir -p ~/.cargo/bin
           if [ -n "$AFWE_INSTALL_CMD" ]; then
             eval "$AFWE_INSTALL_CMD"
+          elif [ -n "$AFWE_BINARY_URL" ]; then
+            echo "Downloading pinned AFWE release binary..."
+            curl -sSL -o ~/.cargo/bin/afwe "$AFWE_BINARY_URL"
+            chmod +x ~/.cargo/bin/afwe
+            if [ -n "$AFWE_BINARY_SHA256" ]; then
+              echo "$AFWE_BINARY_SHA256  ~/.cargo/bin/afwe" | sha256sum -c -
+            fi
           elif [ -f "crates/afwe-cli/Cargo.toml" ]; then
             cargo build --release -p afwe-cli
-            echo "$PWD/target/release" >> $GITHUB_PATH
+            cp target/release/afwe ~/.cargo/bin/afwe 2>/dev/null || cp target/release/afwe.exe ~/.cargo/bin/afwe.exe 2>/dev/null
           else
             cargo install --git https://github.com/StudioEaZY/afwe.git --branch ReBorn afwe-cli
           fi
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
       - name: Verify tripwire manifest and base-branch guard integrity
         run: afwe materialize --check --base "${{ github.event.pull_request.base.sha || github.event.before }}"
       - name: The architecture matches the code
         run: |
           afwe sync
           afwe sync --check
-      - name: Constraints, guardrails, pins and registered checks hold
-        run: afwe gate --ci
+      - name: Verify commit trailers and committed turn records
+        run: afwe gate --ci --base "${{ github.event.pull_request.base.sha || github.event.before }}"
 "#;
+
+pub fn render_ci_template(runs_on: &str) -> String {
+    let runs_on = if runs_on.trim().is_empty() { "ubuntu-latest" } else { runs_on.trim() };
+    CI_TEMPLATE.replace("runs-on: ubuntu-latest", &format!("runs-on: {runs_on}"))
+}
 
 const AGENTS_BEGIN: &str = "<!-- afwe:begin -->";
 const AGENTS_END: &str = "<!-- afwe:end -->";

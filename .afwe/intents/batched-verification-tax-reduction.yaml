@@ -1,0 +1,18 @@
+id: batched-verification-tax-reduction
+title: Batched Verification & Multi-Edit Tax Elimination
+statement: Implement deterministic debounced/batched file verification queue to eliminate multi-edit tax on consecutive file modifications
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/verify.rs
+  - crates/afwe-cli/src/main.rs
+from_turns:
+- t0067
+history:
+- turn: t0067
+  ts: 2026-10-31T21:56:21Z
+  statement: Implement deterministic debounced/batched file verification queue to eliminate multi-edit tax on consecutive file modifications
+created: 2026-10-31T21:56:21Z
+updated: 2026-10-31T21:56:21Z
+task: task-t0067

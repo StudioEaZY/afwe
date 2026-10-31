@@ -1051,7 +1051,7 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     let mut verify_issues: Vec<VerifyIssue> = vec![];
     let mut results: Vec<CheckResult> = vec![];
     if !code_rel.is_empty() {
-        let report = verify(&snap, &root, &VerifyOptions { changed: code_rel.clone(), run_commands: true, include_drift: false });
+        let report = verify(&snap, &root, &VerifyOptions { changed: code_rel.clone(), run_commands: true, include_drift: false, debounce_ms: 0, flush: true });
         verify_issues = report.issues.clone();
         for i in report.issues.iter().filter(|i| i.severity == "error") {
             blocking.push(format!("VERIFY_FAILED: {} — {}", i.id, i.message));
@@ -1954,9 +1954,13 @@ mod tests {
 /// `afwe gate` — the whole-project gate used by CI and humans: constraints and guardrails over the
 /// full project, every active registered check, and the project test command. Appends one log line.
 pub fn gate_now(engine: &Engine, origin: &str) -> Result<Value> {
+    gate_now_with_base(engine, origin, None)
+}
+
+pub fn gate_now_with_base(engine: &Engine, origin: &str, base: Option<&str>) -> Result<Value> {
     let snap = engine.snapshot(true)?;
     let code_root = engine.store.code_root(&snap.manifest);
-    let report = verify(&snap, &code_root, &VerifyOptions { changed: vec![], run_commands: true, include_drift: false });
+    let report = verify(&snap, &code_root, &VerifyOptions { changed: vec![], run_commands: true, include_drift: false, debounce_ms: 0, flush: true });
     let all: Vec<String> = snap.code.files.iter().map(|f| f.path.clone()).collect();
     let mut failures: Vec<String> = report.issues.iter().filter(|i| i.severity == "error").map(|i| format!("{} — {}", i.id, i.message)).collect();
     let mut results = vec![];
@@ -1975,6 +1979,20 @@ pub fn gate_now(engine: &Engine, origin: &str) -> Result<Value> {
             failures.push(format!("project tests `{cmd}` — {}", msg.unwrap_or_default()));
         }
     }
+
+    // Verify commit trailers and committed turn records in PR range if base ref is provided
+    if let Some(base_ref) = base.filter(|b| !b.trim().is_empty()) {
+        let stored_hashes: Vec<String> = engine.store.turns().unwrap_or_default().into_iter().map(|t| t.id).collect();
+        let rev_range = format!("{base_ref}..HEAD");
+        if let Ok(attr_report) = crate::unattributed::verify_commit_range_attribution(&engine.store.project_root, &rev_range, &stored_hashes) {
+            if !attr_report.all_commits_attributed {
+                for c in &attr_report.unattributed_commits {
+                    failures.push(format!("commit `{c}` missing valid AFWE turn trailer or committed turn record in .afwe/turns/"));
+                }
+            }
+        }
+    }
+
     let ok = failures.is_empty();
     engine.log(origin, "gate", format!("gate {}: {} failure(s)", if ok { "passed" } else { "failed" }, failures.len()), None)?;
     Ok(json!({

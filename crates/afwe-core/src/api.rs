@@ -106,7 +106,15 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             files.extend(list(&p, "changed"));
             let snap = snapshot_for(engine, &files, b(&p, "refresh", true))?;
             let root = engine.store.code_root(&snap.manifest);
-            let report = verify(&snap, &root, &VerifyOptions { changed: files, run_commands: b(&p, "run_commands", true), include_drift: b(&p, "include_drift", true) });
+            let debounce_ms = p.get("debounce_ms").and_then(|v| v.as_u64()).unwrap_or(0);
+            let flush = b(&p, "flush", false);
+            let report = verify(&snap, &root, &VerifyOptions {
+                changed: files,
+                run_commands: b(&p, "run_commands", true),
+                include_drift: b(&p, "include_drift", true),
+                debounce_ms,
+                flush,
+            });
             engine.log(&origin(&p, default_origin), "verify", format!("verify: {} ({} errors, {} warnings)", if report.ok { "ok" } else { "failed" }, report.errors, report.warnings), None)?;
             j(report)
         }
@@ -390,7 +398,10 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         "rollback.reconcile" => j(crate::rollback::reconcile(engine)?),
         "turn.get" => j(turn::get(engine, &req(&p, "turn")?)?),
         "turn.list" => j(turn::list(engine)?),
-        "gate" => turn::gate_now(engine, &origin(&p, default_origin)),
+        "gate" => {
+            let base = s(&p, "base");
+            turn::gate_now_with_base(engine, &origin(&p, default_origin), base.as_deref())
+        }
         "header" => {
             let turn_id = s(&p, "turn");
             let rendered = crate::header::render(engine, turn_id.as_deref())?;
@@ -820,6 +831,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             Ok(json!({"question": q_clone, "pin": created_pin}))
         }
         "materialize" => {
+            let agent_hooks = b(&p, "agent_hooks", false) || b(&p, "claude_hooks", false);
             let opts = crate::materialize::MaterializeOptions {
                 apply: b(&p, "apply", false),
                 remove: b(&p, "remove", false),
@@ -828,7 +840,8 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
                 native_tests: b(&p, "native_tests", false),
                 git_hooks: b(&p, "git_hooks", false),
                 ci: b(&p, "ci", false),
-                claude_hooks: b(&p, "claude_hooks", false),
+                agent_hooks,
+                claude_hooks: agent_hooks,
                 agents_md: b(&p, "agents_md", false),
             };
             crate::materialize::run(engine, opts)
@@ -855,7 +868,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             engine.store.save_manifest(&m)?;
             let snap = engine.snapshot(true)?;
             let root = engine.store.code_root(&snap.manifest);
-            let report = verify(&snap, &root, &VerifyOptions { changed: vec![], run_commands: false, include_drift: true });
+            let report = verify(&snap, &root, &VerifyOptions { changed: vec![], run_commands: false, include_drift: true, ..Default::default() });
             engine.log(&origin_str, "lock", format!("Explore mode locked: verify {}", if report.ok { "ok" } else { "found issues" }), None)?;
             Ok(json!({
                 "status": "locked",
@@ -1132,7 +1145,7 @@ pub fn tool_specs() -> Vec<ToolSpec> {
     vec![
         ToolSpec { name: "afwe_status", op: "status", description: "Project summary: sync status, blueprint size, mapped/unmapped files, memory counts, open board items, pending proposals.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_context", op: "context", description: "PASSIVE GUARDRAIL. Call before editing. Given files (and/or a symbol or node) returns only the architectural context that applies: blueprint node + purpose, decisions, exceptions, constraints, terminology, guardrails, structural rules, relationships and the contract to follow. Returns markdown plus structured JSON.", schema: obj(json!({"files": strs, "symbol": {"type": "string"}, "node": {"type": "string"}, "task": {"type": "string"}, "task_kind": {"type": "string", "description": "code|bugfix|refactor|architecture|feature|workflow"}, "full": {"type": "boolean"}}), &[]) },
-        ToolSpec { name: "afwe_verify", op: "verify", description: "ACTIVE GUARDRAIL. Verify changed files against the blueprint: structural constraints, active guardrail checks (forbidden imports/patterns, commands) and drift. ok=false means fix it, do not silence it.", schema: obj(json!({"files": strs, "run_commands": {"type": "boolean"}, "include_drift": {"type": "boolean"}, "task": {"type": "string"}}), &[]) },
+        ToolSpec { name: "afwe_verify", op: "verify", description: "ACTIVE GUARDRAIL. Verify changed files against the blueprint: structural constraints, active guardrail checks (forbidden imports/patterns, commands) and drift. ok=false means fix it, do not silence it.", schema: obj(json!({"files": strs, "run_commands": {"type": "boolean"}, "include_drift": {"type": "boolean"}, "task": {"type": "string"}, "debounce_ms": {"type": "integer"}, "flush": {"type": "boolean"}}), &[]) },
         ToolSpec { name: "afwe_sync", op: "sync", description: "Re-analyse the codebase, rebuild the index, detect blueprint/code disagreement and reconcile by confidence (>=70% auto, 50-70% auto+uncertain marker, <50% proposal). Run after implementation.", schema: obj(json!({"dry_run": {"type": "boolean"}, "task": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_drift", op: "drift", description: "List disagreements between blueprint and code with confidence and the change AFWE would make, without applying anything.", schema: obj(json!({"files": strs}), &[]) },
         ToolSpec { name: "afwe_search", op: "search", description: "Search nodes, memory, guardrails, workflows, files and symbols.", schema: obj(json!({"q": {"type": "string"}}), &["q"]) },
@@ -1210,7 +1223,7 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_guide_confirm", op: "guide.confirm", description: "Human confirmation of a probing or ready-to-graduate guide, promoting it to an active standing check.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
         ToolSpec { name: "afwe_question_list", op: "question.list", description: "List open high-blast-radius (<85% confidence) architectural ambiguity questions.", schema: obj(json!({"all": {"type": "boolean"}}), &[]) },
         ToolSpec { name: "afwe_question_answer", op: "question.answer", description: "Answer an architectural ambiguity question and optionally promote the decision to an active pin.", schema: obj(json!({"id": {"type": "string"}, "answer": {"type": "string"}, "pin": {"type": "boolean"}}), &["id", "answer"]) },
-        ToolSpec { name: "afwe_materialize", op: "materialize", description: "Preview-first tripwire generator (`apply`, `remove`, `check`, `base`). Materializes git hooks, CI gate, native tests, AGENTS.md marker blocks, and BLAKE3 manifest.", schema: obj(json!({"apply": {"type": "boolean"}, "remove": {"type": "boolean"}, "check": {"type": "boolean"}, "base": {"type": "string"}, "native_tests": {"type": "boolean"}, "git_hooks": {"type": "boolean"}, "ci": {"type": "boolean"}, "claude_hooks": {"type": "boolean"}, "agents_md": {"type": "boolean"}}), &[]) },
+        ToolSpec { name: "afwe_materialize", op: "materialize", description: "Preview-first tripwire generator (`apply`, `remove`, `check`, `base`). Materializes git hooks, CI gate, native tests, AGENTS.md marker blocks, multi-agent hooks, and BLAKE3 manifest.", schema: obj(json!({"apply": {"type": "boolean"}, "remove": {"type": "boolean"}, "check": {"type": "boolean"}, "base": {"type": "string"}, "native_tests": {"type": "boolean"}, "git_hooks": {"type": "boolean"}, "ci": {"type": "boolean"}, "agent_hooks": {"type": "boolean"}, "claude_hooks": {"type": "boolean"}, "agents_md": {"type": "boolean"}}), &[]) },
         ToolSpec { name: "afwe_unlock", op: "unlock", description: "Enable Explore Mode (`policy.explore_mode = true`) so blocking checks are downgraded to warnings during active prototyping/refactoring.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_lock", op: "lock", description: "Disable Explore Mode (`policy.explore_mode = false`) and re-verify the full architecture.", schema: obj(json!({}), &[]) },
     ]

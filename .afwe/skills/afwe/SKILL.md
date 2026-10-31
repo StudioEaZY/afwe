@@ -34,9 +34,10 @@ When interacting with this codebase:
    - Retrieve micro-context via `afwe context <files>` (or MCP `afwe_context`).
    - Obey active pins and active guardrails; never delete pinned behavior without an explicit override (`{pin, reason}`).
    - Answer pending questions or review probing guides (`afwe question list`, `afwe guide list`).
+   - **Burst Edit Debouncing**: When using tool hooks that fire on every edit, call `afwe verify --debounce 2000` to avoid paying an $O(N)$ multi-edit tax; intermediate edits queue and exit in <5ms, executing full verification upon turn finish or commit.
 
 4. **Phase 3: Post-Editing (Verification & Mandatory Synchronization)**:
-   - Run verification via `afwe verify --changed <files>` (or MCP `afwe_verify`).
+   - Run verification via `afwe verify --changed <files>` or flush queued edits via `afwe verify --flush` (or MCP `afwe_verify`).
    - In prototype spikes, explore mode can be temporarily activated via `afwe unlock --reason "..."` and re-armed via `afwe lock`.
    - **Post-Turn Synchronization Obligation**: Whenever code structure, public APIs, rules, or behavior change:
      - Update documentation (`README.md`, `.afwe/docs/`, root `docs/`).
@@ -44,6 +45,7 @@ When interacting with this codebase:
      - Update skill instructions (`.afwe/skills/afwe/SKILL.md`) with generalized examples.
      - Update MCP tool specs and handlers (`mcp.rs`, `api.rs`) whenever tool capabilities expand.
      - Persist non-obvious design choices via `afwe memory add --kind decision ...` (or `afwe_memory_add`).
+   - **Harness-Agnostic Tripwires & CI Gate**: Generate multi-agent hooks via `afwe materialize --apply --agent-hooks` and production CI workflow (`afwe-gate.yml`) with configurable runner label (`manifest.ci.runs_on`), fixed check name `afwe-gate`, and prebuilt release binary caching.
    - Commit the turn via `afwe turn commit <turn> --summary "..." [--token <tok>]` (or MCP `afwe_turn_commit`).
      Commits are isolated via Git plumbing trees with CAS verification and OS advisory commit locks (`flock`/`LockFileEx`), preventing dirty workspace leakage.
      The commit gate deterministically enforces capability and governance ratchets:

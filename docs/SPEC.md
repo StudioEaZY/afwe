@@ -515,10 +515,11 @@ Inferred rules with confidence between 0.85 and 0.90 are designated as advisory 
 - **Graduation Mode**: By default (`policy.graduation.require_human = true`, Option A), ready guides require one human confirmation (`afwe guide confirm <id>`) to become blocking checks. When set to `false` (Option B), they graduate automatically.
 - **Ambiguities (< 0.85)**: High-blast-radius ambiguities generate questions queued in `state/calibration.json` (`AmbiguityQuestion`), capped at 3 open questions per session.
 
-### 14.3 Tripwire Materialization & BLAKE3 Manifest
+### 14.3 Tripwire Materialization & Multi-Agent Hooks
 `afwe materialize` generates local and CI enforcement files:
-- `.git/hooks/pre-commit`: chained execution that preserves existing husky/pre-commit scripts.
-- `.github/workflows/afwe-gate.yml`: CI workflow running with `actions/checkout@v5`, `fetch-depth: 0`, and `afwe materialize --check --base <ref>`.
+- `.git/hooks/pre-commit`: chained execution that preserves existing husky/pre-commit scripts as a universal deterministic fallback.
+- `.afwe/guardrails/agent-hooks.json` & `.afwe/guardrails/claude-hooks.json`: harness-agnostic hook configurations for Claude Code, Cursor, Windsurf, Aider, and generic environments, invoking `afwe verify --debounce 2000` on edit to eliminate multi-edit taxes, and `afwe verify --flush` on turn completion.
+- `.github/workflows/afwe-gate.yml`: CI workflow running with `actions/checkout@v5`, `fetch-depth: 0`, configurable runner label (`ci.runs_on`), fixed check name `afwe-gate`, prebuilt release binary caching (`actions/cache@v4`), and commit trailer verification (`afwe gate --ci --base <ref>`).
 - `.afwe/guardrails/manifest.yaml`: BLAKE3 file hashes of all active and passive guardrails. PR verification compares PR changes against the protected base branch manifest to prevent agents from tampering with guardrails.
 
 ### 14.4 Explore Mode

@@ -1,0 +1,19 @@
+id: ci-runner-config-and-cache
+title: CI Runner Label Configuration & Fast Binary Caching
+statement: Parameterize CI runner label from manifest config, pin fixed afwe-gate job name, and acquire prebuilt release binary with checksum caching
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/model.rs
+  - crates/afwe-core/src/onboard.rs
+  - crates/afwe-core/src/unattributed.rs
+from_turns:
+- t0067
+history:
+- turn: t0067
+  ts: 2026-10-31T21:56:21Z
+  statement: Parameterize CI runner label from manifest config, pin fixed afwe-gate job name, and acquire prebuilt release binary with checksum caching
+created: 2026-10-31T21:56:21Z
+updated: 2026-10-31T21:56:21Z
+task: task-t0067

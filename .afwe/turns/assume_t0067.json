@@ -1,0 +1,76 @@
+{
+  "intents": [
+    {
+      "id": "harness-agnostic-tripwires",
+      "action": "create",
+      "targets": [
+        ".afwe/pins/pin-harness-agnostic.yaml",
+        "crates/afwe-core/src/materialize.rs"
+      ],
+      "title": "Harness-Agnostic Invariant & Multi-Agent Hooks",
+      "statement": "Enforce harness-agnostic invariant and multi-agent hooks across Claude Code, Cursor, Windsurf, Aider, and generic environments"
+    },
+    {
+      "id": "batched-verification-tax-reduction",
+      "action": "update",
+      "targets": [
+        "crates/afwe-core/src/verify.rs",
+        "crates/afwe-cli/src/main.rs"
+      ],
+      "title": "Batched Verification & Multi-Edit Tax Elimination",
+      "statement": "Implement deterministic debounced/batched file verification queue to eliminate multi-edit tax on consecutive file modifications"
+    },
+    {
+      "id": "ci-runner-config-and-cache",
+      "action": "update",
+      "targets": [
+        "crates/afwe-core/src/model.rs",
+        "crates/afwe-core/src/onboard.rs",
+        "crates/afwe-core/src/unattributed.rs"
+      ],
+      "title": "CI Runner Label Configuration & Fast Binary Caching",
+      "statement": "Parameterize CI runner label from manifest config, pin fixed afwe-gate job name, and acquire prebuilt release binary with checksum caching"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "pin-harness-agnostic exists and is active",
+      "claim": {
+        "type": "require_file",
+        "files": [
+          ".afwe/pins/pin-harness-agnostic.yaml"
+        ]
+      }
+    },
+    {
+      "id": "a2",
+      "text": "Manifest model supports parameterizable ci runner configuration",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "pub runs_on: String",
+        "files": [
+          "crates/afwe-core/src/model.rs"
+        ]
+      }
+    },
+    {
+      "id": "a3",
+      "text": "Verify engine supports debounced edit batching",
+      "claim": {
+        "type": "require_pattern",
+        "pattern": "debounce",
+        "files": [
+          "crates/afwe-core/src/verify.rs"
+        ]
+      }
+    }
+  ],
+  "removes": [],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "Deterministic extensions for harness-agnostic hooks, debounced verification, and CI runner config"
+    }
+  ]
+}

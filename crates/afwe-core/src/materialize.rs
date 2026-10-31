@@ -34,17 +34,20 @@ pub struct MaterializeOptions {
     pub native_tests: bool,
     pub git_hooks: bool,
     pub ci: bool,
+    pub agent_hooks: bool,
+    #[serde(default)]
     pub claude_hooks: bool,
     pub agents_md: bool,
 }
 
 impl MaterializeOptions {
     pub fn effective_layers(&self) -> (bool, bool, bool, bool, bool) {
-        let any_explicit = self.native_tests || self.git_hooks || self.ci || self.claude_hooks || self.agents_md;
+        let hooks = self.agent_hooks || self.claude_hooks;
+        let any_explicit = self.native_tests || self.git_hooks || self.ci || hooks || self.agents_md;
         if any_explicit {
-            (self.native_tests, self.git_hooks, self.ci, self.claude_hooks, self.agents_md)
+            (self.native_tests, self.git_hooks, self.ci, hooks, self.agents_md)
         } else {
-            // Default layers when none specified (claude_hooks is always opt-in)
+            // Default layers when none specified (agent_hooks is opt-in)
             (true, true, true, false, true)
         }
     }
@@ -94,12 +97,43 @@ pub fn run(engine: &Engine, opts: MaterializeOptions) -> Result<Value> {
     }
 
     if ci {
-        planned.insert(".github/workflows/afwe-gate.yml".into(), CI_TEMPLATE.to_string());
-        actions.push("layer `ci`: .github/workflows/afwe-gate.yml (fetch-depth: 0 + base ref check)".into());
+        let ci_content = crate::onboard::render_ci_template(&m.ci.runs_on);
+        planned.insert(".github/workflows/afwe-gate.yml".into(), ci_content);
+        actions.push(format!("layer `ci`: .github/workflows/afwe-gate.yml (runs-on: {}, fixed afwe-gate job, release binary cache)", if m.ci.runs_on.is_empty() { "ubuntu-latest" } else { &m.ci.runs_on }));
     }
 
     if claude_hooks {
-        let settings = json!({
+        // Multi-agent and Claude Code hooks with debounced burst verification
+        let generic_settings = json!({
+            "version": 1,
+            "harness": "generic",
+            "hooks": {
+                "PostToolUse": [
+                    {
+                        "matcher": "Write|Edit|MultiEdit|write_file|edit_file",
+                        "hooks": [
+                            {
+                                "type": "command",
+                                "command": "afwe verify --debounce 2000"
+                            }
+                        ]
+                    }
+                ],
+                "PostTurn": [
+                    {
+                        "type": "command",
+                        "command": "afwe verify --flush"
+                    }
+                ]
+            }
+        });
+        planned.insert(
+            ".afwe/guardrails/agent-hooks.json".into(),
+            serde_json::to_string_pretty(&generic_settings)?,
+        );
+
+        let claude_settings = json!({
+            "version": 1,
             "hooks": {
                 "PostToolUse": [
                     {
@@ -107,7 +141,7 @@ pub fn run(engine: &Engine, opts: MaterializeOptions) -> Result<Value> {
                         "hooks": [
                             {
                                 "type": "command",
-                                "command": "afwe verify"
+                                "command": "afwe verify --debounce 2000"
                             }
                         ]
                     }
@@ -116,9 +150,9 @@ pub fn run(engine: &Engine, opts: MaterializeOptions) -> Result<Value> {
         });
         planned.insert(
             ".afwe/guardrails/claude-hooks.json".into(),
-            serde_json::to_string_pretty(&settings)?,
+            serde_json::to_string_pretty(&claude_settings)?,
         );
-        actions.push("layer `claude-hooks`: .afwe/guardrails/claude-hooks.json (notify_and_backup mode)".into());
+        actions.push("layer `agent-hooks`: .afwe/guardrails/agent-hooks.json & claude-hooks.json (batched debounced verification)".into());
     }
 
     if agents_md {

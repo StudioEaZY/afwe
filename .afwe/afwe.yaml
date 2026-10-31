@@ -29,4 +29,8 @@ vcs:
   provider: git
   auto_commit: false
   test_command: .\target\debug\deps\end_to_end-cd83c87f2b1bd985.exe
+ci:
+  runs_on: ubuntu-latest
+  fixed_job_name: afwe-gate
+  verify_turn_records: true
 profile: engineer
