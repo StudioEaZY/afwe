@@ -1,0 +1,18 @@
+id: one-step-project-installation
+title: one-step-project-installation
+statement: 'Phase 3: One-Step Project Installation (afwe install-project)'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  - afwe-cli
+from_turns:
+- t0060
+history:
+- turn: t0060
+  ts: 2026-10-31T20:35:50Z
+  statement: 'Phase 3: One-Step Project Installation (afwe install-project)'
+created: 2026-10-31T20:35:50Z
+updated: 2026-10-31T20:35:50Z
+task: task-t0060

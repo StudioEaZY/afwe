@@ -316,6 +316,12 @@ enum Cmd {
     /// OS Presence and human-side notification service
     #[command(subcommand)]
     Presence(PresenceCmd),
+    /// One-step setup: init project, materialize tripwires, register project, and setup presence
+    InstallProject {
+        /// Project directory path (defaults to current directory)
+        #[arg(default_value = ".")]
+        path: String,
+    },
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
     Call { op: String, params: Option<String> },
 }
@@ -1899,6 +1905,23 @@ fn run(cli: Cli) -> Result<i32> {
                         println!("✔ AFWE Presence Watcher autostart registration removed.");
                     }
                 }
+            }
+            Ok(0)
+        }
+        Cmd::InstallProject { path } => {
+            let p = std::path::Path::new(&path);
+            let report = afwe_core::install::Installer::install_project(p)?;
+            // Also install presence autostart
+            let _ = presence::autostart::AutostartManager::install();
+
+            if json {
+                println!("{}", serde_json::to_string_pretty(&report)?);
+            } else {
+                println!("✔ AFWE successfully installed on project `{}` ({})", report.project_name, report.project_path);
+                println!("  • ID: {}", report.project_id);
+                println!("  • Materialized tripwires: pre-commit hook, CI gate, AGENTS.md contract");
+                println!("  • Project registered for presence notifications");
+                println!("  • Presence Watcher autostart verified");
             }
             Ok(0)
         }

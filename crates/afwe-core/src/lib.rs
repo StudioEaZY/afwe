@@ -35,6 +35,7 @@ pub mod heal_executor;
 pub mod heal_policy;
 pub mod index;
 pub mod init;
+pub mod install;
 pub mod intent;
 pub mod judgment;
 pub mod lease;
