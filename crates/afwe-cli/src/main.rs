@@ -300,8 +300,35 @@ enum Cmd {
         #[arg(long)]
         once: bool,
     },
+    /// Stream presence lifecycle events
+    Events {
+        /// Follow new events in real time
+        #[arg(long)]
+        follow: bool,
+        /// Resume after a specific sequence number
+        #[arg(long, default_value = "0")]
+        after: u64,
+    },
+    /// Project registry management
+    #[command(subcommand)]
+    Registry(RegistryCmd),
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
     Call { op: String, params: Option<String> },
+}
+
+#[derive(Subcommand)]
+enum RegistryCmd {
+    /// List registered projects
+    List,
+    /// Register a project directory
+    Add {
+        #[arg(default_value = ".")]
+        path: String,
+        #[arg(long)]
+        name: Option<String>,
+    },
+    /// Unregister a project directory or ID
+    Remove { id: String },
 }
 
 #[derive(Subcommand)]
@@ -1753,6 +1780,68 @@ fn run(cli: Cli) -> Result<i32> {
         Cmd::Watch { interval, once } => {
             let engine = engine_for(&cli.dir)?;
             watch::run_watch(&engine.store.project_root, interval, once)?;
+            Ok(0)
+        }
+        Cmd::Events { follow, after } => {
+            let engine = engine_for(&cli.dir)?;
+            let feed = afwe_core::events::EventFeed::for_project(&engine.store.project_root);
+            let mut last_seen = after;
+            loop {
+                let events = feed.read_since(last_seen)?;
+                for event in events {
+                    last_seen = event.seq;
+                    if json {
+                        println!("{}", serde_json::to_string(&event)?);
+                    } else {
+                        println!("[seq #{:<4} {}] {:<18} | {} | {}", event.seq, event.timestamp, event.kind, event.title, event.detail);
+                    }
+                }
+                if !follow {
+                    break;
+                }
+                std::thread::sleep(std::time::Duration::from_millis(500));
+            }
+            Ok(0)
+        }
+        Cmd::Registry(cmd) => {
+            let mut reg = afwe_core::project_registry::ProjectRegistry::load()?;
+            match cmd {
+                RegistryCmd::List => {
+                    if json {
+                        println!("{}", serde_json::to_string_pretty(&reg.projects)?);
+                    } else {
+                        println!("⛨ AFWE Project Registry ({} registered):", reg.projects.len());
+                        for p in &reg.projects {
+                            println!("  • {:<12} {:<24} host={:<12} path={}", p.id, p.name, p.host_id, p.path);
+                        }
+                    }
+                }
+                RegistryCmd::Add { path, name } => {
+                    let p = std::path::Path::new(&path);
+                    let project_name = name.unwrap_or_else(|| {
+                        p.canonicalize()
+                            .ok()
+                            .and_then(|c| c.file_name().map(|f| f.to_string_lossy().to_string()))
+                            .unwrap_or_else(|| "project".to_string())
+                    });
+                    let entry = reg.register(p, &project_name)?;
+                    if json {
+                        println!("{}", serde_json::to_string_pretty(&entry)?);
+                    } else {
+                        println!("Registered project `{}` (id: {}) at {}", entry.name, entry.id, entry.path);
+                    }
+                }
+                RegistryCmd::Remove { id } => {
+                    let removed = reg.unregister(&id)?;
+                    if json {
+                        println!("{}", serde_json::json!({"removed": removed, "id": id}));
+                    } else if removed {
+                        println!("Removed project `{}` from registry.", id);
+                    } else {
+                        println!("No project matching `{}` found in registry.", id);
+                    }
+                }
+            }
             Ok(0)
         }
         Cmd::Call { op, params } => {

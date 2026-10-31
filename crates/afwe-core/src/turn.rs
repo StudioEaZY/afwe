@@ -543,6 +543,29 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     };
     engine.store.save_baseline(&id, &baseline)?;
 
+    // Emit presence lifecycle event
+    let feed = crate::events::EventFeed::for_project(&engine.store.project_root);
+    let _ = feed.emit(crate::events::PresenceEvent {
+        seq: 0,
+        timestamp: String::new(),
+        project_id: engine.store.project_root.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_else(|| "project".to_string()),
+        host_id: crate::project_registry::whoami_host(),
+        turn_hash: Some(turn.turn_hash.clone()),
+        turn_id: Some(turn.alias.clone().unwrap_or(turn.id.clone())),
+        kind: "turn.begin".to_string(),
+        outcome: None,
+        blast_radius: "low".to_string(),
+        requires_human: false,
+        title: format!("Turn {}: open", turn.alias.clone().unwrap_or(turn.id.clone())),
+        detail: format!("Scope: {} files", brief_files.len()),
+        touched_files: brief_files.clone(),
+        agent_quote: Some(req.prompt.clone()),
+        metadata: serde_json::json!({
+            "task": task_id,
+            "session_id": session_id,
+        }),
+    });
+
     Ok(json!({
         "turn": turn.alias.clone().unwrap_or(turn.id.clone()),
         "turn_hash": turn.turn_hash,
@@ -1592,6 +1615,30 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         format!("{id} committed: {summary} [{} {:.0}%]", strength_name(strength), confidence * 100.0),
         Some(json!({"turn": id, "commit": commit_info, "folded": turn.folded, "checkgen": made_checks})),
     )?;
+
+    // Emit presence lifecycle event for committed turn
+    let feed = crate::events::EventFeed::for_project(&engine.store.project_root);
+    let _ = feed.emit(crate::events::PresenceEvent {
+        seq: 0,
+        timestamp: String::new(),
+        project_id: engine.store.project_root.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_else(|| "project".to_string()),
+        host_id: crate::project_registry::whoami_host(),
+        turn_hash: Some(turn.turn_hash.clone()),
+        turn_id: Some(turn.alias.clone().unwrap_or(turn.id.clone())),
+        kind: "turn.committed".to_string(),
+        outcome: Some("committed".to_string()),
+        blast_radius: "low".to_string(),
+        requires_human: false,
+        title: format!("Turn {}: committed", turn.alias.clone().unwrap_or(turn.id.clone())),
+        detail: summary.clone(),
+        touched_files: turn.touched.files.clone(),
+        agent_quote: Some(summary.clone()),
+        metadata: serde_json::json!({
+            "confidence": confidence,
+            "strength": strength_name(strength),
+            "commit": commit_info,
+        }),
+    });
 
     let badge = format!("✔ AFWE Turn {id} {} [Confidence: {:.0}% · Strength: {}]", if vcs_active { "committed" } else { "recorded" }, confidence * 100.0, strength_name(strength));
     Ok(json!({

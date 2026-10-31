@@ -1,0 +1,18 @@
+id: presence-event-feed-and-project-registry
+title: presence-event-feed-and-project-registry
+statement: 'Phase 1: Implement Event Feed and Project Registry Core'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  - afwe-cli
+from_turns:
+- t0058
+history:
+- turn: t0058
+  ts: 2026-10-31T20:02:03Z
+  statement: 'Phase 1: Implement Event Feed and Project Registry Core'
+created: 2026-10-31T20:02:03Z
+updated: 2026-10-31T20:06:02Z
+task: task-t0058
