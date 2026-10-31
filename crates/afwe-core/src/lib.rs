@@ -46,6 +46,7 @@ pub mod mission;
 pub mod model;
 pub mod onboard;
 pub mod ops;
+pub mod outbox;
 pub mod project_registry;
 pub mod queue;
 pub mod registry;

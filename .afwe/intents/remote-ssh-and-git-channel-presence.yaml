@@ -1,0 +1,18 @@
+id: remote-ssh-and-git-channel-presence
+title: remote-ssh-and-git-channel-presence
+statement: 'Phase 7: Remote and Git Channel Support (SSH Follower and Git Refs Outbox/Inbox)'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  - afwe-cli
+from_turns:
+- t0064
+history:
+- turn: t0064
+  ts: 2026-10-31T21:19:00Z
+  statement: 'Phase 7: Remote and Git Channel Support (SSH Follower and Git Refs Outbox/Inbox)'
+created: 2026-10-31T21:19:00Z
+updated: 2026-10-31T21:20:43Z
+task: task-t0064
