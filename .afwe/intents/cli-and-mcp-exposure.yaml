@@ -1,0 +1,18 @@
+id: cli-and-mcp-exposure
+title: cli-and-mcp-exposure
+statement: 'Phase 5: MCP and CLI Exposure (authority subcommands, queue commands, attribute command, and MCP tool registration)'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+  - afwe-core
+from_turns:
+- t0051
+history:
+- turn: t0051
+  ts: 2026-10-31T16:13:40Z
+  statement: 'Phase 5: MCP and CLI Exposure (authority subcommands, queue commands, attribute command, and MCP tool registration)'
+created: 2026-10-31T16:13:40Z
+updated: 2026-10-31T16:13:40Z
+task: task-t0051

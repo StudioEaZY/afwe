@@ -594,6 +594,31 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let res = crate::queue::batch_act(engine, &action_name, auth.delegation.as_ref())?;
             j(res)
         }
+        "queue.act" => {
+            let item = req(&p, "item")?;
+            let action = req(&p, "action")?;
+            let res = match action.as_str() {
+                "approve" | "confirm" => {
+                    call(engine, "turn.confirm", json!({"turn": item}), default_origin)?
+                }
+                "commit" => {
+                    call(engine, "turn.commit", json!({"turn": item, "summary": "Committed via action queue"}), default_origin)?
+                }
+                "revert" => {
+                    call(engine, "turn.revert", json!({"turn": item}), default_origin)?
+                }
+                "abandon" => {
+                    call(engine, "turn.abandon", json!({"turn": item}), default_origin)?
+                }
+                "prune" => {
+                    call(engine, "lease.release", json!({"node": item, "mission": "any", "agent": "any"}), default_origin)?
+                }
+                other => {
+                    return Err(anyhow!("unsupported queue action `{other}` for item `{item}`"));
+                }
+            };
+            j(res)
+        }
 
         // ───────── Self-Heal & Remediation ─────────
         "heal.restore" => {
@@ -863,6 +888,9 @@ pub const OPS: &[&str] = &[
     "scene.get", "scene.query", "timeline.snapshot", "timeline.frames",
     "guide.list", "guide.confirm", "guide.reject", "question.list", "question.answer",
     "materialize", "unlock", "lock",
+    "authority.status", "authority.delegate", "authority.revoke",
+    "queue.get", "queue.act", "batch.act",
+    "heal.restore", "gate.ci_check", "attribute.commit",
 ];
 
 fn stats(engine: &Engine) -> Result<Value> {
@@ -1153,6 +1181,7 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_authority_delegate", op: "authority.delegate", description: "Human-only promotion to prompter_delegated mode for an agentic loop.", schema: obj(json!({"holder": {"type": "string"}, "ttl_seconds": {"type": "integer"}, "door": {"type": "string"}, "auto_approvals_max": {"type": "integer"}, "self_heals_max": {"type": "integer"}, "auto_merge": {"type": "boolean"}}), &["holder"]) },
         ToolSpec { name: "afwe_authority_revoke", op: "authority.revoke", description: "Revoke active prompter delegation from any interface, returning to human_only.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_queue_get", op: "queue.get", description: "Get the 6-state Action Queue: STAGED, GHOST REDO, READY, ADVISORY DRIFT, STALE NODE LEASES, UNATTRIBUTED.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_queue_act", op: "queue.act", description: "Execute an action (approve, commit, revert, abandon, prune) on an Action Queue item.", schema: obj(json!({"item": {"type": "string"}, "action": {"type": "string"}}), &["item", "action"]) },
         ToolSpec { name: "afwe_batch_act", op: "batch.act", description: "Execute batch operations on the Action Queue (batch.approve, batch.commit, batch.prune_leases).", schema: obj(json!({"action": {"type": "string"}}), &["action"]) },
         ToolSpec { name: "afwe_heal_restore", op: "heal.restore", description: "Safely execute a clean restore of an undeclared dropped file as a remediation child turn with byte derivability verification.", schema: obj(json!({"file": {"type": "string"}, "hash": {"type": "string"}, "parent_turn": {"type": "string"}}), &["file", "hash", "parent_turn"]) },
         ToolSpec { name: "afwe_gate_ci_check", op: "gate.ci_check", description: "Verify that all commits in the PR range carry valid AFWE turn trailers and stored turn records.", schema: obj(json!({"base": {"type": "string"}}), &[]) },

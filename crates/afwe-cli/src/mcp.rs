@@ -138,6 +138,21 @@ fn call_tool(engine: &mut Option<Engine>, start: &PathBuf, origin: &str, name: &
             content.push(json!({"type": "text", "text": afwe_core::verify::render_report(&report)}));
         }
         "contract.render" => content.push(json!({"type": "text", "text": result["markdown"].as_str().unwrap_or("")})),
+        "authority.status" | "authority.delegate" | "authority.revoke" => {
+            content.push(json!({"type": "text", "text": crate::render::authority_status(&result)}));
+        }
+        "queue.get" => {
+            content.push(json!({"type": "text", "text": crate::render::queue_list(&result)}));
+        }
+        "batch.act" | "queue.act" => {
+            content.push(json!({"type": "text", "text": crate::render::queue_act_result(&result)}));
+        }
+        "heal.restore" => {
+            content.push(json!({"type": "text", "text": crate::render::heal_result(&result)}));
+        }
+        "attribute.commit" => {
+            content.push(json!({"type": "text", "text": crate::render::attribute_result(&result)}));
+        }
         _ => content.push(json!({"type": "text", "text": serde_json::to_string_pretty(&result)?})),
     }
     Ok(json!({"content": content, "isError": is_error, "structuredContent": result}))

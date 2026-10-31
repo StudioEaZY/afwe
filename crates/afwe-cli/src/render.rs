@@ -833,3 +833,95 @@ pub fn materialize(v: &Value) -> String {
         _ => serde_json::to_string_pretty(v).unwrap_or_default(),
     }
 }
+
+pub fn authority_status(v: &Value) -> String {
+    let mode = s(v, "mode");
+    if mode == "human_only" {
+        return String::from("⛨ Authority: HUMAN ONLY (default)\n  No active prompter delegation. Human governance is strictly enforced.\n  To delegate: `afwe authority delegate <agent> [--ttl-seconds 3600]`\n");
+    }
+    let del = &v["delegation"];
+    let holder = s(del, "holder");
+    let door = s(del, "door");
+    let ttl = del["ttl_seconds"].as_u64().unwrap_or(0);
+    let auto_app = del["budget"]["auto_approvals_max"].as_u64().unwrap_or(0);
+    let self_heal = del["budget"]["self_heals_max"].as_u64().unwrap_or(0);
+    let auto_merge = del["budget"]["auto_merge"].as_bool().unwrap_or(false);
+    format!(
+        "⛨ Authority: PROMPTER DELEGATED\n  Holder:       {}\n  Door:         {}\n  TTL:          {}s\n  Approvals:    {} remaining\n  Self-heals:   {} remaining\n  Auto-merge:   {}\n  To revoke:    `afwe authority revoke`\n",
+        holder, door, ttl, auto_app, self_heal, if auto_merge { "enabled" } else { "disabled (restores only)" }
+    )
+}
+
+pub fn queue_list(v: &Value) -> String {
+    let summary = &v["summary"];
+    let mut out = format!(
+        "⛨ Action Queue (Actionable: {})\n  STAGED: {} | GHOST REDO: {} | READY: {} | DRIFT: {} | STALE LEASES: {} | UNATTRIBUTED: {}\n\n",
+        summary["total_actionable"].as_u64().unwrap_or(0),
+        summary["staged_count"].as_u64().unwrap_or(0),
+        summary["ghost_redo_count"].as_u64().unwrap_or(0),
+        summary["ready_count"].as_u64().unwrap_or(0),
+        summary["advisory_drift_count"].as_u64().unwrap_or(0),
+        summary["stale_leases_count"].as_u64().unwrap_or(0),
+        summary["unattributed_count"].as_u64().unwrap_or(0),
+    );
+
+    let items = list_of(&v["items"]);
+    if items.is_empty() {
+        out.push_str("  (Action queue is empty — all clear)\n");
+        return out;
+    }
+
+    for item in items {
+        let kind = s(item, "kind");
+        let id = s(item, "id");
+        let title = s(item, "title");
+        let badge = s(item, "badge");
+        let detail = s(item, "detail");
+        out.push_str(&format!("  [{:<16}] {:<14} {:<36}", kind, id, title));
+        if !badge.is_empty() {
+            out.push_str(&format!(" ({badge})"));
+        }
+        if !detail.is_empty() {
+            out.push_str(&format!(" — {detail}"));
+        }
+        out.push('\n');
+    }
+    out
+}
+
+pub fn queue_act_result(v: &Value) -> String {
+    if let Some(op) = v.get("operation").and_then(|o| o.as_str()) {
+        let count = v["acted_count"].as_u64().unwrap_or(0);
+        let skipped = list_of(&v["skipped_pins"]);
+        let mut out = format!("Batch operation `{op}` completed: {count} item(s) processed.\n");
+        if !skipped.is_empty() {
+            out.push_str(&format!("  Skipped {} item(s) due to active pin conflicts: {}\n", skipped.len(), strings(&v["skipped_pins"])));
+        }
+        out
+    } else {
+        format!("Action executed: {}\n", serde_json::to_string_pretty(v).unwrap_or_default())
+    }
+}
+
+pub fn heal_result(v: &Value) -> String {
+    let child = s(v, "child_turn");
+    let file = s(v, "restored_file");
+    let hash = s(v, "hash");
+    let status = s(v, "status");
+    format!(
+        "⛨ Heal Restore Result: {}\n  Child Turn:     {}\n  Restored File:  {}\n  Baseline Hash:  {}\n",
+        status, child, file, hash
+    )
+}
+
+pub fn attribute_result(v: &Value) -> String {
+    let commit = s(v, "commit");
+    let turn = s(v, "turn");
+    let summary = s(v, "summary");
+    let status = s(v, "status");
+    format!(
+        "⛨ Commit Attribution: {}\n  Commit:   {}\n  Turn:     {}\n  Summary:  {}\n",
+        status, commit, turn, summary
+    )
+}
+

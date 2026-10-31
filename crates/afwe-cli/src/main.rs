@@ -270,6 +270,23 @@ enum Cmd {
     Lock,
     /// Upgrade the .afwe/ folder to the current format (legacy workflows/ become intents/)
     Migrate,
+    /// Prompter Authority governance (human_only or prompter_delegated)
+    #[command(subcommand)]
+    Authority(AuthorityCmd),
+    /// 6-state Action Queue over turns and repository state
+    #[command(subcommand)]
+    Queue(QueueCmd),
+    /// Safe, narrow self-heal of dropped files as child turns
+    #[command(subcommand)]
+    Heal(HealCmd),
+    /// Retroactively attribute a manual human commit with an AFWE turn
+    Attribute {
+        /// Git commit SHA or ref
+        commit: String,
+        /// Description of the change for attribution
+        #[arg(long, short)]
+        summary: Option<String>,
+    },
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
     Call { op: String, params: Option<String> },
 }
@@ -696,18 +713,96 @@ enum LeaseCmd {
     },
 }
 
+#[derive(Subcommand)]
+enum AuthorityCmd {
+    /// Show current prompter authority status
+    Status,
+    /// Delegate prompter authority to an agent for a bounded loop
+    Delegate {
+        /// Name or identifier of the agent
+        holder: String,
+        /// Time-to-live in seconds (default 3600)
+        #[arg(long, default_value_t = 3600)]
+        ttl_seconds: u64,
+        /// Maximum auto-approved proposals (default 20)
+        #[arg(long, default_value_t = 20)]
+        auto_approvals_max: u32,
+        /// Maximum clean self-heals (default 5)
+        #[arg(long, default_value_t = 5)]
+        self_heals_max: u32,
+        /// Target blast radius ceiling (leaf | module | subsystem | project, default leaf)
+        #[arg(long, default_value = "leaf")]
+        blast_radius: String,
+        /// Door interface (ui | cli | mcp | terminal, default ui)
+        #[arg(long, default_value = "ui")]
+        door: String,
+        /// Enable 3-way auto-merging for self-heals
+        #[arg(long)]
+        auto_merge: bool,
+    },
+    /// Revoke active prompter delegation and return immediately to human_only
+    Revoke,
+}
+
+#[derive(Subcommand)]
+enum QueueCmd {
+    /// List Action Queue items (STAGED, GHOST REDO, READY, ADVISORY DRIFT, STALE NODE LEASES, UNATTRIBUTED)
+    List {
+        /// Filter by queue state
+        #[arg(long)]
+        state: Option<String>,
+    },
+    /// Execute an action on a specific queue item
+    Act {
+        /// Item ID (e.g. turn ID or lease node)
+        item: String,
+        /// Action to take (approve, commit, revert, abandon, prune)
+        action: String,
+    },
+    /// Execute an atomic batch action across the queue (batch.approve, batch.commit, batch.prune_leases)
+    Batch {
+        /// Batch action (approve | commit | prune_leases)
+        action: String,
+        /// Skip items with pin conflicts instead of halting
+        #[arg(long)]
+        skip_pins: bool,
+    },
+}
+
+#[derive(Subcommand)]
+enum HealCmd {
+    /// Execute a clean restore of an undeclared dropped file as a child turn
+    Restore {
+        /// Relative path to restore
+        file: String,
+        /// BLAKE3 baseline blob hash to restore from (defaults to baseline blob)
+        #[arg(long)]
+        hash: Option<String>,
+        /// Parent turn ID (defaults to active or last open turn)
+        #[arg(long)]
+        parent: Option<String>,
+    },
+}
+
 #[derive(Args)]
 struct Empty {}
 
 fn main() {
-    let cli = Cli::parse();
-    let code = match run(cli) {
-        Ok(code) => code,
-        Err(e) => {
-            eprintln!("afwe: {e:#}");
-            2
-        }
-    };
+    const STACK_SIZE: usize = 8 * 1024 * 1024; // 8MB stack for complex CLI enum parse tree
+    let child = std::thread::Builder::new()
+        .stack_size(STACK_SIZE)
+        .spawn(|| {
+            let cli = Cli::parse();
+            match run(cli) {
+                Ok(code) => code,
+                Err(e) => {
+                    eprintln!("afwe: {e:#}");
+                    2
+                }
+            }
+        })
+        .expect("failed to spawn main runner thread");
+    let code = child.join().unwrap_or(1);
     std::process::exit(code);
 }
 
@@ -1548,6 +1643,82 @@ fn run(cli: Cli) -> Result<i32> {
             out(json, &v, |v| format!("format {} · {} workflow(s) moved to intents/", s_of(v, "format"), v["workflows_moved"]));
             Ok(0)
         }
+        Cmd::Authority(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                AuthorityCmd::Status => {
+                    let v = api::call(&engine, "authority.status", json!({}), &origin)?;
+                    out(json, &v, render::authority_status);
+                }
+                AuthorityCmd::Delegate { holder, ttl_seconds, auto_approvals_max, self_heals_max, blast_radius, door, auto_merge } => {
+                    let v = api::call(&engine, "authority.delegate", json!({
+                        "holder": holder,
+                        "ttl_seconds": ttl_seconds,
+                        "auto_approvals_max": auto_approvals_max,
+                        "self_heals_max": self_heals_max,
+                        "blast_radius": blast_radius,
+                        "door": door,
+                        "auto_merge": auto_merge,
+                    }), &origin)?;
+                    out(json, &v, render::authority_status);
+                }
+                AuthorityCmd::Revoke => {
+                    let v = api::call(&engine, "authority.revoke", json!({}), &origin)?;
+                    out(json, &v, render::authority_status);
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Queue(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                QueueCmd::List { state } => {
+                    let mut params = json!({});
+                    if let Some(s) = state {
+                        params["state"] = json!(s);
+                    }
+                    let v = api::call(&engine, "queue.get", params, &origin)?;
+                    out(json, &v, render::queue_list);
+                }
+                QueueCmd::Act { item, action } => {
+                    let v = api::call(&engine, "queue.act", json!({"item": item, "action": action}), &origin)?;
+                    out(json, &v, render::queue_act_result);
+                }
+                QueueCmd::Batch { action, skip_pins } => {
+                    let batch_action = if action.starts_with("batch.") { action } else { format!("batch.{action}") };
+                    let v = api::call(&engine, "batch.act", json!({"action": batch_action, "skip_pins": skip_pins}), &origin)?;
+                    out(json, &v, render::queue_act_result);
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Heal(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            match cmd {
+                HealCmd::Restore { file, hash, parent } => {
+                    let mut params = json!({"file": file});
+                    if let Some(h) = hash {
+                        params["hash"] = json!(h);
+                    }
+                    if let Some(p) = parent {
+                        params["parent_turn"] = json!(p);
+                    }
+                    let v = api::call(&engine, "heal.restore", params, &origin)?;
+                    out(json, &v, render::heal_result);
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Attribute { commit, summary } => {
+            let engine = engine_for(&cli.dir)?;
+            let mut params = json!({"commit": commit});
+            if let Some(s) = summary {
+                params["summary"] = json!(s);
+            }
+            let v = api::call(&engine, "attribute.commit", params, &origin)?;
+            out(json, &v, render::attribute_result);
+            Ok(0)
+        }
         Cmd::Call { op, params } => {
             let engine = engine_for(&cli.dir)?;
             let params: Value = match params {
@@ -1617,6 +1788,23 @@ fn parse_overrides(list: &[String]) -> Result<Value> {
         out.push(json!({"pin": pin.trim(), "reason": reason.trim()}));
     }
     Ok(json!(out))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_status_command() {
+        let cli = Cli {
+            dir: None,
+            json: true,
+            origin: "human".to_string(),
+            cmd: Cmd::Status,
+        };
+        let code = run(cli).unwrap();
+        assert_eq!(code, 0);
+    }
 }
 
 #[derive(Subcommand)]
