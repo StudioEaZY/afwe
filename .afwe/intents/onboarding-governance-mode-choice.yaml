@@ -1,0 +1,18 @@
+id: onboarding-governance-mode-choice
+title: onboarding-governance-mode-choice
+statement: 'First-run Governance Choice: prompt user for human_only vs prompter_delegated on onboarding'
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+  - afwe-cli
+from_turns:
+- t0056
+history:
+- turn: t0056
+  ts: 2026-10-31T18:38:29Z
+  statement: 'First-run Governance Choice: prompt user for human_only vs prompter_delegated on onboarding'
+created: 2026-10-31T18:38:29Z
+updated: 2026-10-31T18:38:29Z
+task: task-t0056

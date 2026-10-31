@@ -214,6 +214,9 @@ enum Cmd {
         /// Legacy codebase adoption: bootstrap uncharted nodes and capture baseline ratchet
         #[arg(long)]
         legacy: bool,
+        /// First-run prompter authority delegation to an orchestrator agent (e.g. orchestrator-1)
+        #[arg(long)]
+        delegate: Option<String>,
     },
     /// Invariant single source-of-truth status header starting with ⛨ AFWE
     Header {
@@ -1453,7 +1456,7 @@ fn run(cli: Cli) -> Result<i32> {
             out(json, &v, |v| render::gate(v, ci));
             Ok(if v["ok"].as_bool().unwrap_or(false) { 0 } else { 1 })
         }
-        Cmd::Onboard { profile, check, no_git, no_baseline, no_ci, no_agents, test_command, legacy } => {
+        Cmd::Onboard { profile, check, no_git, no_baseline, no_ci, no_agents, test_command, legacy, delegate } => {
             let root = match cli.dir.clone() {
                 Some(d) => d,
                 None => std::env::current_dir()?,
@@ -1463,10 +1466,27 @@ fn run(cli: Cli) -> Result<i32> {
                 out(json, &v, render::onboard_detect);
                 return Ok(0);
             }
-            let v = afwe_core::onboard::apply(
+            let mut v = afwe_core::onboard::apply(
                 &root,
                 afwe_core::onboard::ApplyOptions { profile, init_git: !no_git, baseline_commit: !no_baseline, ci: !no_ci, agents_md: !no_agents, test_command, legacy },
             )?;
+
+            // If --delegate was passed, grant prompter delegation right now
+            if let Some(agent_id) = delegate {
+                let engine = Engine::load(&root)?;
+                let del_res = api::call(&engine, "authority.delegate", json!({
+                    "holder": agent_id,
+                    "door": "ui",
+                    "ttl_seconds": 4 * 3600,
+                    "auto_approvals_max": 20,
+                    "self_heals_max": 5,
+                    "auto_merge": false
+                }), "human")?;
+                if let Some(actions) = v.get_mut("actions").and_then(|a| a.as_array_mut()) {
+                    actions.push(json!(format!("Prompter authority delegated to `{agent_id}` (4h TTL, 20 approvals)")));
+                }
+            }
+
             out(json, &v, render::onboard_apply);
             Ok(0)
         }

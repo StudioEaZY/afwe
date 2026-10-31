@@ -13,6 +13,8 @@ export function OnboardingModal() {
   const [ci, setCi] = useState(true);
   const [agents, setAgents] = useState(true);
   const [testCmd, setTestCmd] = useState("");
+  const [govMode, setGovMode] = useState<"prompter_delegated" | "human_only">("prompter_delegated");
+  const [orchestratorId, setOrchestratorId] = useState("orchestrator-1");
   const [result, setResult] = useState<any>(null);
   const [busy, setBusy] = useState(false);
 
@@ -42,6 +44,25 @@ export function OnboardingModal() {
         agents_md: agents,
         test_command: testCmd.trim() || null,
       });
+
+      // If prompter delegation was selected on first-run, grant it cleanly now
+      if (govMode === "prompter_delegated" && orchestratorId.trim()) {
+        try {
+          await call("authority.delegate", {
+            holder: orchestratorId.trim(),
+            door: "ui",
+            ttl_seconds: 4 * 3600,
+            auto_approvals_max: 20,
+            self_heals_max: 5,
+            auto_merge: false,
+          }, "human");
+          if (!r.actions) r.actions = [];
+          r.actions.push(`Prompter authority delegated to ${orchestratorId.trim()} (4h TTL, 20 approvals)`);
+        } catch (e: any) {
+          console.warn("authority.delegate during onboard:", e);
+        }
+      }
+
       setResult(r);
       setConfigured(true);
       await refresh();
@@ -86,6 +107,33 @@ export function OnboardingModal() {
               <input type="radio" checked={profile === "engineer"} onChange={() => setProfile("engineer")} />
               <span>
                 <b>Engineer</b> — turns end ready and you commit with git (the trailer is already in the record); stricter pins. Same gate, same engine.
+              </span>
+            </label>
+          </section>
+
+          <section>
+            <div className="onb-h">Governance Mode</div>
+            <label className="onb-opt">
+              <input type="radio" checked={govMode === "prompter_delegated"} onChange={() => setGovMode("prompter_delegated")} />
+              <span>
+                <b>Agentic Loop (Prompter-Delegated)</b> — Recommended. Delegates the routine prompter role to an orchestrator agent under bounded limits. Human-floor items park in the Action Queue; loops never freeze.
+              </span>
+            </label>
+            {govMode === "prompter_delegated" && (
+              <div style={{ paddingLeft: "26px", marginTop: "4px", marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontSize: "11px", color: "var(--mute)" }}>Orchestrator Agent ID:</span>
+                <input
+                  value={orchestratorId}
+                  onChange={(e) => setOrchestratorId(e.target.value)}
+                  placeholder="orchestrator-1"
+                  style={{ fontSize: "12px", padding: "3px 8px", width: "160px", borderRadius: "4px", border: "1px solid var(--line)", background: "var(--panel)" }}
+                />
+              </div>
+            )}
+            <label className="onb-opt">
+              <input type="radio" checked={govMode === "human_only"} onChange={() => setGovMode("human_only")} />
+              <span>
+                <b>Human-Only</b> — Traditional single-developer mode. Every turn gate, override, and proposal requires direct manual human presence.
               </span>
             </label>
           </section>
