@@ -36,6 +36,7 @@ flowchart TD
 
 | Term | Category | Meaning Summary | Not To Be Confused With |
 | :--- | :--- | :--- | :--- |
+| [**Action Queue**](#action-queue) | Architecture Philosophy & Tenets | # Action Queue | — |
 | [**Ambiguity Question**](#ambiguity-question) | Confidence Bands & Calibration | A high-blast-radius architectural dilemma generated when system confidence falls below 85% (`afwe question list`). Instead of making an unverified guess, AFWE pauses and queues the question for human architect confirmation, persisting the resolution into memory or pins. | Probing Guide |
 | [**Blueprint**](#blueprint) | Blueprint & Cartography | The deterministic hierarchical architecture tree defining the product's structure, declared across `afwe.yaml` and `.afwe/blueprint/` (`blueprint.yaml`, `relations.yaml`, `constraints.yaml`). It maps code files and symbols to architectural nodes, defines permitted relationships, and sets boundaries. | Index |
 | [**Blueprint Node**](#blueprint-node) | Blueprint & Cartography | An architectural entity within the Blueprint tree representing a product, subsystem, module, or component. Each node has an ID, human-readable name, purpose statement, implementation mapping (file globs and symbols), status (`active`, `planned`, `deprecated`, `uncharted`), and architectural boundaries. | File / Directory |
@@ -51,10 +52,12 @@ flowchart TD
 | [**DROPPED_CAPABILITY**](#dropped_capability) | Ratchets & Integrity Verification | A blocking commit gate error triggered when an intra-file public export or capability is deleted or privatized without an explicit removal or replacement declared in `turn assume` (`removes: [...]` or `action: remove / replace`). | SEVERED_CAPABILITY |
 | [**Explore Mode**](#explore-mode) | Confidence Bands & Calibration | A temporary mode activated via `afwe unlock --reason "..."` that downgrades blocking active checks and capability ratchets into non-blocking warnings during active exploratory refactoring or rapid prototyping. The harness must re-arm the gate before release via `afwe lock`, which triggers full architecture verification. | Bypassing the Gate |
 | [**Guardrail**](#guardrail) | Architecture Philosophy & Tenets | An architectural constraint divided into two complementary forms: | Pin, Check |
+| [**Human Floor**](#human-floor) | Architecture Philosophy & Tenets | # Human Floor | — |
 | [**Intent**](#intent) | Memory, Pins & Living Intents | A living, persistent statement of architectural purpose and desired behavior stored in `.afwe/intents/*.yaml`. Derived and merged from verbatim user prompts over time, intents capture what the codebase is intended to do, its historical evolution, and its implementation mappings. | Turn, Workflow |
 | [**Materializer**](#materializer) | Claims & Tripwires | The engine component invoked via `afwe materialize` (or MCP `afwe_materialize`) that renders AFWE tripwires into native workspace files (`.git/hooks/pre-commit`, `.github/workflows/afwe-gate.yml`, native test suites, `AGENTS.md` markers, and `.afwe/checks/manifest.blake3`). It offers preview-first application (`--dry-run` by default) and rollback capabilities. | afwe init |
 | [**Micro-Context**](#micro-context) | Blueprint & Cartography | The targeted, highly scoped architectural context retrieved via `afwe context <files>` (or MCP tool `afwe_context`). Before an agent touches a file, micro-context delivers only the nodes, purpose statements, decisions, exceptions, constraints, ubiquitous terminology, and active guardrails that directly apply to those specific files. | Whole-Repository Prompting |
 | [**Mission**](#mission) | Multi-Agent Concurrency & Worktrees | A goal-oriented coordination structure stored in `.afwe/missions/*.yaml` that orchestrates multiple autonomous agents across isolated Git worktrees. Missions break complex epics into discrete turn obligations, managing concurrency leases, shared node boundaries, and merge gates. | Turn |
+| [**Narrow Self-Heal**](#narrow-self-heal) | Architecture Philosophy & Tenets | # Narrow Self-Heal | — |
 | [**ORPHANED_DECISION**](#orphaned_decision) | Ratchets & Integrity Verification | A commit gate error triggered when an architectural decision record in `.afwe/memory/decisions/` is anchored to files or symbols that have been deleted or moved without updating or superseding the decision. | ORPHANED_PIN |
 | [**ORPHANED_PIN**](#orphaned_pin) | Ratchets & Integrity Verification | A commit gate error triggered when a human-locked pin in `.afwe/pins/` targets architectural nodes, files, or symbols that no longer exist in the working tree. Pins require explicit human override or retirement. | ORPHANED_DECISION |
 | [**Phase 0 (Briefing & Pins)**](#phase-0-briefing-pins) | Turn Protocol & Lifecycle | The initial pre-planning phase of a turn initiated via `afwe turn begin "<prompt>" --target <files> [--claim <files>]`. It stores the prompt verbatim, generates a deterministic briefing pack including active pins, guardrails, memory, active intents, and probing guides, issues a bearer security token, and acquires upfront file claims to prevent multi-agent contention. | Phase 1 (turn assume) |
@@ -62,9 +65,11 @@ flowchart TD
 | [**Phase 2 (Gated Commit)**](#phase-2-gated-commit) | Turn Protocol & Lifecycle | The final gated commit phase invoked via `afwe turn commit <turn> --summary "..." [--token <tok>]`. AFWE isolates working changes via Git plumbing trees with Content-Addressable Storage (CAS) verification and advisory OS commit locks, executing the gate against active pins, claims, and capability ratchets before recording the turn in `.afwe/turns/` and emitting an `AFWE-Turn:` trailer. | git commit -m |
 | [**Pin**](#pin) | Memory, Pins & Living Intents | A human-locked architectural decision or intentional bug stored in `.afwe/pins/*.yaml`. Pins represent immutable boundaries that automated agents and refactorings are strictly forbidden from breaking or deleting without an explicit override `{pin, reason}`. Pins are capped under a codebase-scaled budget to prevent architectural ossification. | Guardrail, Decision (Memory) |
 | [**Probing Guide**](#probing-guide) | Confidence Bands & Calibration | An advisory architectural hint emitted in Phase 0 briefings with 85%–90% confidence (`[GUIDE - ADVISORY]`). Probing guides steer the agent toward emerging architectural patterns without hard-blocking execution. When repeatedly adhered to, probing guides graduate into active deterministic checks via `afwe guide graduate`. | Active Check, Ambiguity Question |
+| [**Prompter Delegation**](#prompter-delegation) | Architecture Philosophy & Tenets | # Prompter Delegation | — |
 | [**Ratchet Baseline**](#ratchet-baseline) | Ratchets & Integrity Verification | A snapshot mechanism (`afwe baseline snapshot`) used when onboarding legacy codebases to grandfather pre-existing violations, uncalled exports, or circular imports without failing the gate. The gate prevents any *new* regressions from being introduced beyond the recorded baseline. | Ratchet |
 | [**Rust for Project Intent**](#rust-for-project-intent) | Architecture Philosophy & Tenets | The foundational design philosophy of AFWE: applying the unforgiving, deterministic mental model of the Rust compiler to overall project architecture and intent. Under this paradigm, you can break things on purpose by declaring them explicitly in `turn assume` (`removes: [...]`), but the gate ensures you can never break things by accident. | Programming Language Choice |
 | [**SEVERED_CAPABILITY**](#severed_capability) | Ratchets & Integrity Verification | A blocking commit gate error triggered when cross-module caller severance drops inbound references to an exported function or struct from >0 to 0, turning previously consumed functionality into dead code without declared intent. | DEAD_ON_ARRIVAL |
+| [**Skipping Resistance**](#skipping-resistance) | Architecture Philosophy & Tenets | # Skipping Resistance | — |
 | [**The Folder is the Product**](#the-folder-is-the-product) | Architecture Philosophy & Tenets | The core tenet of AFWE stating that `.afwe/` itself is the persistent, tool-agnostic structural model of the project. The engine that reads and writes it (CLI, MCP, Studio) is completely replaceable; the folder, its yaml files, markdown memory, and git history remain the durable single source of architectural truth. | Ephemeral Cache or Lockfile |
 | [**Tripwire**](#tripwire) | Claims & Tripwires | A deterministic, preview-first defensive layer materialized directly into developer and CI harnesses (git hooks, GitHub Actions CI gates, native unit test harnesses, AGENTS.md blocks, and BLAKE3 manifests). Tripwires intercept architectural regressions outside of AFWE commands. | Passive Guardrail |
 | [**Turn**](#turn) | Turn Protocol & Lifecycle | A discrete, atomic engineering lifecycle unit spanning exactly one prompt ("one prompt = one turn"). A turn progresses sequentially through three deterministic phases: Phase 0 (`afwe turn begin`) pre-planning briefing, Phase 1 (`afwe turn assume`) pre-code intent and claims declaration, and Phase 2 (`afwe turn commit`) post-verification gated commit via isolated Git plumbing trees with CAS verification. | Intent, Git Commit |
@@ -73,6 +78,163 @@ flowchart TD
 | [**Turn Redo**](#turn-redo) | Turn Protocol & Lifecycle | A safety command (`afwe turn redo <turn>`) that cleanly reverts uncommitted workspace edits back to the turn's begin baseline (backed up in `.afwe/backups/<turn_hash>/`), while keeping the turn open and retaining locks for rework. | Turn Abandon, Turn Undo / Revert |
 
 ## Detailed Vocabulary by Category
+
+### Architecture Philosophy & Tenets
+
+#### Action Queue <a id="action-queue"></a>
+
+- **ID**: `term-action-queue`
+
+**Meaning:**
+# Action Queue
+
+The deterministic, read-only 6-state governance view over turns, leases, and repository state, providing both humans and delegated orchestrators an actionable view of pending items without polling.
+
+## The Six Canonical States
+1. **STAGED**: Proposals parked awaiting confirmation or human-floor review.
+2. **GHOST REDO**: Turns left in REDO state when work ceased without clean reset.
+3. **READY**: Evaluated turns where checks passed, sitting in the Ready drawer for git commit.
+4. **ADVISORY DRIFT**: Non-blocking architectural violations and documentation drift.
+5. **STALE NODE LEASES**: Concurrency node leases whose leaseholder heartbeats have lapsed.
+6. **UNATTRIBUTED**: Working-tree modifications or commits lacking AFWE turn attribution.
+
+## Interfaces
+- **Studio Web / Tauri**: Real-time visual cards with state filters and batch action bars.
+- **Terminal Surface**: Live ANSI dashboard via `afwe watch`.
+- **MCP Tooling**: Headless programmatic inspection and resolution via `afwe_queue_get`, `afwe_queue_act`, and `afwe_batch_act`.
+
+---
+
+#### Context Codename Separation <a id="context-codename-separation"></a>
+
+- **ID**: `term-context-separation`
+- **Tags**: `architecture-philosophy`, `repository-rules`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+The strict architectural separation governing AFWE development between two distinct contexts:
+1. **AFWE-Core**: This engine repository, its Rust crates (`afwe-core`, `afwe-cli`), binaries, MCP server, Studio, and master documentation in `docs/` and `crates/`.
+2. **AFWE-Client**: Consumer codebases initialized with `afwe init` or `afwe onboard`, whose scaffolds and templates live inside `.afwe/`. Client docs and generator templates must always reference `.afwe/docs/TUTORIAL.md`, never root `docs/`.
+
+**Not to be confused with:**
+- **Client/Server Networking**: This is not a network protocol; it is an architectural contract distinguishing engine authoring from client consumer scaffolding.
+
+---
+
+#### Guardrail <a id="guardrail"></a>
+
+- **ID**: `term-guardrail`
+- **Tags**: `guardrails`, `verification`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+An architectural constraint divided into two complementary forms:
+1. **Passive Guardrail**: Targeted contextual instructions injected into the agent's micro-context (`afwe context <files>`) before editing begins.
+2. **Active Guardrail**: Concrete test, AST inspection, or claim enforced by `afwe verify` and the commit gate.
+
+**Not to be confused with:**
+- **Pin**: Guardrails can be generated, calibrated, and updated by AFWE tools; Pins are locked by humans under a strict budget.
+- **Check**: A Check is the concrete executable assertion registered in the gate registry implementing an active guardrail or assumption claim.
+
+---
+
+#### Human Floor <a id="human-floor"></a>
+
+- **ID**: `term-human-floor`
+
+**Meaning:**
+# Human Floor
+
+Non-delegable invariants and policy thresholds that cannot be auto-approved or bypassed by any delegated agent prompter, regardless of active delegation budgets.
+
+## Human Floor Triggers (R8)
+- Changes touching policy pins or root architecture governance.
+- Large blast radius operations crossing multiple major subsystem boundaries.
+- Remediations outside the narrow self-heal allowlist.
+- Authority mode changes or lease delegation grants.
+
+When a turn triggers a human floor, it is parked as `STAGED` with `requires_human: true`. The orchestrator agent skips the turn and continues its loop without stalling.
+
+---
+
+#### Narrow Self-Heal <a id="narrow-self-heal"></a>
+
+- **ID**: `term-self-heal`
+
+**Meaning:**
+# Narrow Self-Heal
+
+A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes mechanical corrective actions without authoring new source code.
+
+## Section 0 Scope Boundary
+- **Restores of Dropped Files**: Restoring an unchanged file from recorded baseline bytes is allowlisted because no foreign bytes are introduced (derivability check passes).
+- **Sub-Turn Audit Trail**: Executed as a recorded child turn `<parent_turn>.1` with CAS validation and an explicit undo recipe.
+- **Out of Scope**: Severed capabilities (missing wiring), semantic merges of modified files, and autonomous source generation are strictly forbidden inside `afwe-core`.
+
+---
+
+#### Prompter Delegation <a id="prompter-delegation"></a>
+
+- **ID**: `term-prompter-delegation`
+
+**Meaning:**
+# Prompter Delegation
+
+A time-bounded, permission-bounded grant from a human prompter to an orchestrator agent (`authority.delegate`), distinct from node concurrency leases (`lease.rs`).
+
+## Key Properties
+- **Deterministic Default**: The system starts and defaults to `human_only`.
+- **Standalone Request**: Promotion/delegation can only be granted before work begins, by a human, as a standalone request with no other payload (R1-R3).
+- **Idle Window Invariant (R4)**: Prompter delegation is forbidden while any turn is actively `open` (ready turns in the Ready drawer do not block).
+- **Hard Ceilings (R5)**: Maximum TTL of 12 hours (default 4h), max auto-approvals of 50 (default 20), max self-heals of 10 (default 5).
+- **Fail-Closed Fallback (R6)**: Any rejected attempt to loosen authority immediately revokes any active delegation and restores `human_only`.
+- **Instant Revocation (R7)**: May be revoked at any time from any interface via `afwe authority revoke`.
+
+---
+
+#### Rust for Project Intent <a id="rust-for-project-intent"></a>
+
+- **ID**: `term-rust-for-project-intent`
+- **Tags**: `architecture-philosophy`, `compiler-mental-model`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+The foundational design philosophy of AFWE: applying the unforgiving, deterministic mental model of the Rust compiler to overall project architecture and intent. Under this paradigm, you can break things on purpose by declaring them explicitly in `turn assume` (`removes: [...]`), but the gate ensures you can never break things by accident.
+
+**Not to be confused with:**
+- **Programming Language Choice**: This refers to the architectural design philosophy of strictness and explicit declaration, regardless of what programming language the user's project uses.
+
+---
+
+#### Skipping Resistance <a id="skipping-resistance"></a>
+
+- **ID**: `term-skipping-resistance`
+
+**Meaning:**
+# Skipping Resistance
+
+Tripwire mechanisms ensuring that agents and developers cannot bypass architectural governance by circumventing AFWE CLI calls.
+
+## Core Tripwires (Section 6A)
+- **CI Gate Trailer Check**: `afwe gate --ci` validates that git commits have valid `AFWE-Turn-Hash` and `AFWE-Turn` trailers matching recorded commit trees.
+- **Unattributed Work Scanner**: Scans working tree changes and flags unmapped modifications as `UNATTRIBUTED` in the Action Queue.
+- **Retroactive Attribution**: `afwe attribute <commit>` allows manual developer commits to be safely and legitimately incorporated into the AFWE audit trail.
+
+---
+
+#### The Folder is the Product <a id="the-folder-is-the-product"></a>
+
+- **ID**: `term-the-folder-is-the-product`
+- **Tags**: `architecture-philosophy`, `persistent-model`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+The core tenet of AFWE stating that `.afwe/` itself is the persistent, tool-agnostic structural model of the project. The engine that reads and writes it (CLI, MCP, Studio) is completely replaceable; the folder, its yaml files, markdown memory, and git history remain the durable single source of architectural truth.
+
+**Not to be confused with:**
+- **Ephemeral Cache or Lockfile**: `.afwe/` (excluding gitignored `index/` and `state/`) is committed to version control and represents the living architecture of the codebase.
+
+---
 
 ### Confidence Bands & Calibration
 
@@ -400,69 +562,6 @@ A goal-oriented coordination structure stored in `.afwe/missions/*.yaml` that or
 
 **Not to be confused with:**
 - **Turn**: A Turn is executed by a single agent for a single prompt; a Mission coordinates multiple agents and turns toward a composite outcome.
-
----
-
-### Architecture Philosophy & Tenets
-
-#### Context Codename Separation <a id="context-codename-separation"></a>
-
-- **ID**: `term-context-separation`
-- **Tags**: `architecture-philosophy`, `repository-rules`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-The strict architectural separation governing AFWE development between two distinct contexts:
-1. **AFWE-Core**: This engine repository, its Rust crates (`afwe-core`, `afwe-cli`), binaries, MCP server, Studio, and master documentation in `docs/` and `crates/`.
-2. **AFWE-Client**: Consumer codebases initialized with `afwe init` or `afwe onboard`, whose scaffolds and templates live inside `.afwe/`. Client docs and generator templates must always reference `.afwe/docs/TUTORIAL.md`, never root `docs/`.
-
-**Not to be confused with:**
-- **Client/Server Networking**: This is not a network protocol; it is an architectural contract distinguishing engine authoring from client consumer scaffolding.
-
----
-
-#### Guardrail <a id="guardrail"></a>
-
-- **ID**: `term-guardrail`
-- **Tags**: `guardrails`, `verification`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-An architectural constraint divided into two complementary forms:
-1. **Passive Guardrail**: Targeted contextual instructions injected into the agent's micro-context (`afwe context <files>`) before editing begins.
-2. **Active Guardrail**: Concrete test, AST inspection, or claim enforced by `afwe verify` and the commit gate.
-
-**Not to be confused with:**
-- **Pin**: Guardrails can be generated, calibrated, and updated by AFWE tools; Pins are locked by humans under a strict budget.
-- **Check**: A Check is the concrete executable assertion registered in the gate registry implementing an active guardrail or assumption claim.
-
----
-
-#### Rust for Project Intent <a id="rust-for-project-intent"></a>
-
-- **ID**: `term-rust-for-project-intent`
-- **Tags**: `architecture-philosophy`, `compiler-mental-model`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-The foundational design philosophy of AFWE: applying the unforgiving, deterministic mental model of the Rust compiler to overall project architecture and intent. Under this paradigm, you can break things on purpose by declaring them explicitly in `turn assume` (`removes: [...]`), but the gate ensures you can never break things by accident.
-
-**Not to be confused with:**
-- **Programming Language Choice**: This refers to the architectural design philosophy of strictness and explicit declaration, regardless of what programming language the user's project uses.
-
----
-
-#### The Folder is the Product <a id="the-folder-is-the-product"></a>
-
-- **ID**: `term-the-folder-is-the-product`
-- **Tags**: `architecture-philosophy`, `persistent-model`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-The core tenet of AFWE stating that `.afwe/` itself is the persistent, tool-agnostic structural model of the project. The engine that reads and writes it (CLI, MCP, Studio) is completely replaceable; the folder, its yaml files, markdown memory, and git history remain the durable single source of architectural truth.
-
-**Not to be confused with:**
-- **Ephemeral Cache or Lockfile**: `.afwe/` (excluding gitignored `index/` and `state/`) is committed to version control and represents the living architecture of the codebase.
 
 ---
 

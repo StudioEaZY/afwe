@@ -244,22 +244,48 @@
     <div class="controls">
       <div class="search-box">
         <input type="text" id="search" class="search-input" placeholder="Search terms, definitions, invariants, or confused-with concepts... (e.g. Turn, Ratchet, CAS)" autofocus />
-        <div class="term-count"><span id="visible-count">35</span> / 35 terms</div>
+        <div class="term-count"><span id="visible-count">40</span> / 40 terms</div>
       </div>
       <div class="categories">
         <button class="cat-btn active" data-cat="all">All Categories</button>
+        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (9)</button>
         <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
         <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (4)</button>
         <button class="cat-btn" data-cat="Ratchets & Integrity Verification">Ratchets & Integrity Verification (9)</button>
         <button class="cat-btn" data-cat="Claims & Tripwires">Claims & Tripwires (3)</button>
         <button class="cat-btn" data-cat="Multi-Agent Concurrency & Worktrees">Multi-Agent Concurrency & Worktrees (3)</button>
-        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (4)</button>
         <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (2)</button>
         <button class="cat-btn" data-cat="Turn Protocol & Lifecycle">Turn Protocol & Lifecycle (7)</button>
       </div>
     </div>
 
     <div class="grid" id="terms-grid">
+      <article class="card" id="action-queue" data-category="Architecture Philosophy & Tenets" data-title="action queue" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Action Queue</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Action Queue
+
+The deterministic, read-only 6-state governance view over turns, leases, and repository state, providing both humans and delegated orchestrators an actionable view of pending items without polling.
+
+## The Six Canonical States
+1. **STAGED**: Proposals parked awaiting confirmation or human-floor review.
+2. **GHOST REDO**: Turns left in REDO state when work ceased without clean reset.
+3. **READY**: Evaluated turns where checks passed, sitting in the Ready drawer for git commit.
+4. **ADVISORY DRIFT**: Non-blocking architectural violations and documentation drift.
+5. **STALE NODE LEASES**: Concurrency node leases whose leaseholder heartbeats have lapsed.
+6. **UNATTRIBUTED**: Working-tree modifications or commits lacking AFWE turn attribution.
+
+## Interfaces
+- **Studio Web / Tauri**: Real-time visual cards with state filters and batch action bars.
+- **Terminal Surface**: Live ANSI dashboard via `afwe watch`.
+- **MCP Tooling**: Headless programmatic inspection and resolution via `afwe_queue_get`, `afwe_queue_act`, and `afwe_batch_act`.</p>
+        <div class="card-footer">
+          <span><code>term-action-queue</code></span>
+          <button class="copy-btn" onclick="copyAnchor('action-queue')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="ambiguity-question" data-category="Confidence Bands & Calibration" data-title="ambiguity question" data-tags="confidence-bands human-in-the-loop">
         <div class="card-header">
           <h2 class="card-title">Ambiguity Question</h2>
@@ -500,6 +526,27 @@
           <button class="copy-btn" onclick="copyAnchor('guardrail')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="human-floor" data-category="Architecture Philosophy & Tenets" data-title="human floor" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Human Floor</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Human Floor
+
+Non-delegable invariants and policy thresholds that cannot be auto-approved or bypassed by any delegated agent prompter, regardless of active delegation budgets.
+
+## Human Floor Triggers (R8)
+- Changes touching policy pins or root architecture governance.
+- Large blast radius operations crossing multiple major subsystem boundaries.
+- Remediations outside the narrow self-heal allowlist.
+- Authority mode changes or lease delegation grants.
+
+When a turn triggers a human floor, it is parked as `STAGED` with `requires_human: true`. The orchestrator agent skips the turn and continues its loop without stalling.</p>
+        <div class="card-footer">
+          <span><code>term-human-floor</code></span>
+          <button class="copy-btn" onclick="copyAnchor('human-floor')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="intent" data-category="Memory, Pins & Living Intents" data-title="intent" data-tags="intents architecture">
         <div class="card-header">
           <h2 class="card-title">Intent</h2>
@@ -559,6 +606,24 @@
         <div class="card-footer">
           <span><code>term-mission</code></span>
           <button class="copy-btn" onclick="copyAnchor('mission')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="narrow-self-heal" data-category="Architecture Philosophy & Tenets" data-title="narrow self-heal" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Narrow Self-Heal</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Narrow Self-Heal
+
+A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes mechanical corrective actions without authoring new source code.
+
+## Section 0 Scope Boundary
+- **Restores of Dropped Files**: Restoring an unchanged file from recorded baseline bytes is allowlisted because no foreign bytes are introduced (derivability check passes).
+- **Sub-Turn Audit Trail**: Executed as a recorded child turn `&lt;parent_turn&gt;.1` with CAS validation and an explicit undo recipe.
+- **Out of Scope**: Severed capabilities (missing wiring), semantic merges of modified files, and autonomous source generation are strictly forbidden inside `afwe-core`.</p>
+        <div class="card-footer">
+          <span><code>term-self-heal</code></span>
+          <button class="copy-btn" onclick="copyAnchor('narrow-self-heal')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="orphaned_decision" data-category="Ratchets & Integrity Verification" data-title="orphaned_decision" data-tags="ratchet memory gate-error">
@@ -668,6 +733,27 @@
           <button class="copy-btn" onclick="copyAnchor('probing-guide')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="prompter-delegation" data-category="Architecture Philosophy & Tenets" data-title="prompter delegation" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Prompter Delegation</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Prompter Delegation
+
+A time-bounded, permission-bounded grant from a human prompter to an orchestrator agent (`authority.delegate`), distinct from node concurrency leases (`lease.rs`).
+
+## Key Properties
+- **Deterministic Default**: The system starts and defaults to `human_only`.
+- **Standalone Request**: Promotion/delegation can only be granted before work begins, by a human, as a standalone request with no other payload (R1-R3).
+- **Idle Window Invariant (R4)**: Prompter delegation is forbidden while any turn is actively `open` (ready turns in the Ready drawer do not block).
+- **Hard Ceilings (R5)**: Maximum TTL of 12 hours (default 4h), max auto-approvals of 50 (default 20), max self-heals of 10 (default 5).
+- **Fail-Closed Fallback (R6)**: Any rejected attempt to loosen authority immediately revokes any active delegation and restores `human_only`.
+- **Instant Revocation (R7)**: May be revoked at any time from any interface via `afwe authority revoke`.</p>
+        <div class="card-footer">
+          <span><code>term-prompter-delegation</code></span>
+          <button class="copy-btn" onclick="copyAnchor('prompter-delegation')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="ratchet-baseline" data-category="Ratchets & Integrity Verification" data-title="ratchet baseline" data-tags="ratchet baseline">
         <div class="card-header">
           <h2 class="card-title">Ratchet Baseline</h2>
@@ -711,6 +797,24 @@
         <div class="card-footer">
           <span><code>term-severed-capability</code></span>
           <button class="copy-btn" onclick="copyAnchor('severed_capability')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="skipping-resistance" data-category="Architecture Philosophy & Tenets" data-title="skipping resistance" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Skipping Resistance</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Skipping Resistance
+
+Tripwire mechanisms ensuring that agents and developers cannot bypass architectural governance by circumventing AFWE CLI calls.
+
+## Core Tripwires (Section 6A)
+- **CI Gate Trailer Check**: `afwe gate --ci` validates that git commits have valid `AFWE-Turn-Hash` and `AFWE-Turn` trailers matching recorded commit trees.
+- **Unattributed Work Scanner**: Scans working tree changes and flags unmapped modifications as `UNATTRIBUTED` in the Action Queue.
+- **Retroactive Attribution**: `afwe attribute &lt;commit&gt;` allows manual developer commits to be safely and legitimately incorporated into the AFWE audit trail.</p>
+        <div class="card-footer">
+          <span><code>term-skipping-resistance</code></span>
+          <button class="copy-btn" onclick="copyAnchor('skipping-resistance')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="the-folder-is-the-product" data-category="Architecture Philosophy & Tenets" data-title="the folder is the product" data-tags="architecture-philosophy persistent-model">

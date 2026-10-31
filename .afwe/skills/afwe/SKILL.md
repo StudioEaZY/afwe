@@ -54,3 +54,14 @@ When interacting with this codebase:
      - `DOCS_DRIFT`: markdown documentation links pointing to missing code files.
      Remember: "Rust for project intent" — you can break things on purpose by declaring them in `turn assume`, but you can never break them by accident.
    - Inspect stats and gate telemetry with `afwe stats`.
+
+5. **Prompter Authority & Agentic Loops (Autonomous Workflows)**:
+   - **Default Mode (`human_only`)**: System starts in deterministic `human_only`. Direct human presence is required for all gate overrides, mode changes, and baseline resets.
+   - **Delegation Grants (`prompter_delegated`)**: A human prompter can delegate the prompter role to one orchestrator agent for a bounded run (`afwe authority delegate --holder <agent> --ttl 4h --budget 30 --door mcp` or MCP `afwe_authority_delegate`).
+   - **Idle Window Invariant (R4)**: Delegation grants are rejected if any turn is actively `open` (`ready` turns waiting in drawer do not block).
+   - **Fail-Closed Fallback (R6)**: Any rejected attempt to alter authority instantly revokes active delegation and restores `human_only`.
+   - **Human Floor (R8)**: Invariant policy pins and high blast radius turns are never auto-approvable. They park as `STAGED` with `requires_human: true`, allowing the agent loop to continue without stalling.
+   - **6-State Action Queue**: View and resolve pending work via `afwe queue list` / `afwe queue act` / `afwe queue batch` (MCP `afwe_queue_get`, `afwe_queue_act`, `afwe_batch_act`), the Studio surface, or the live terminal monitor (`afwe watch`).
+   - **Narrow Self-Heal**: Mechanical restores of undeclared file drops run as sub-turns `<parent>.1` via `afwe heal restore` (MCP `afwe_heal_restore`).
+   - **Attribution & CI Verification**: Validate git commit trailers via `afwe gate --ci`. Attribute manual developer commits via `afwe attribute <commit>`.
+   - **Revoke**: Prompter delegation can be revoked instantly at any time via `afwe authority revoke` (MCP `afwe_authority_revoke`).

@@ -547,4 +547,45 @@ To prevent false alarms on dynamic method dispatch, macros, or string lookups, t
 - **Language-Adaptive**: Weakly typed languages (Python/JS) leverage identifier token matching across files; typed languages (Rust/Go/TS) leverage module-scoped import specifiers where available.
 - **Baseline Grandfathering**: Pre-existing zero-reference symbols in `baseline.yaml` are grandfathered to prevent alert fatigue on existing codebases.
 
+---
+
+## 16. Prompter Authority, Action Queue & Always-On Surfaces
+
+### 16.1 Prompter Authority & Delegation Rules (R1–R10)
+AFWE treats the prompter not as a physical person at the keyboard, but as a formal role with cryptographic and bounded authority.
+- **R1 (Default)**: Authority starts in `human_only`. Direct human presence is required for all gate overrides, mode alterations, and baseline resets.
+- **R2 (Human-Only Grant)**: Only a human may grant a delegation (`authority.delegate`). Any non-human attempt fails closed.
+- **R3 (Standalone Request)**: Authority modifications must be submitted as standalone requests with zero extraneous operations or payload fields.
+- **R4 (Idle Window)**: Prompter delegation is forbidden while any turn is actively `open` (ready turns waiting in the Ready drawer do not block).
+- **R5 (Hard Ceilings)**: Hard limits clamp delegation: TTL $\le$ 12h (default 4h), auto-approvals $\le$ 50 (default 20), self-heals $\le$ 10 (default 5).
+- **R6 (Fail-Closed Fallback)**: Any rejected attempt to alter authority instantly revokes active delegation and restores `human_only`.
+- **R7 (Instant Revocation)**: May be revoked at any time from any interface via `afwe authority revoke`.
+- **R8 (Human Floor)**: Invariant policy pins and high blast radius turns are never auto-approvable. They park as `STAGED` with `requires_human: true`.
+- **R9 (Authority Capture)**: Each turn captures its authority snapshot at `turn.begin` and enforces that authority at decision time.
+- **R10 (Protected Paths)**: Claims and edits targeting `.afwe/state/**`, authority keys, or tripwires fail with `PROTECTED_PATH`.
+
+### 16.2 Six-State Action Queue
+A deterministic, read-only view over turns, leases, and repository state:
+1. `STAGED`: Proposals parked awaiting confirmation or human-floor review.
+2. `GHOST REDO`: Turns left in REDO state when work ceased without clean reset.
+3. `READY`: Turns whose verification checks passed, sitting in the Ready drawer awaiting git commit.
+4. `ADVISORY DRIFT`: Non-blocking architectural violations and documentation drift.
+5. `STALE NODE LEASES`: Concurrency node leases whose leaseholder heartbeats have lapsed.
+6. `UNATTRIBUTED`: Working-tree modifications or commits lacking AFWE turn attribution.
+
+### 16.3 Scope Boundary & Narrow Self-Heal
+AFWE detects, organizes, routes, and safely executes mechanical corrective actions. It never becomes an autonomous source-code author without a recorded baseline, never auto-resolves semantic conflicts, and never calls LLM APIs inside `afwe-core`.
+- **Derivability Check**: A remediation byte is allowlisted if and only if it is identically derivable from a recorded baseline blob (`heal_policy.rs`).
+- **Child Turns**: Clean restores of dropped files run as recorded sub-turns `<parent_turn>.1` with CAS validation and an undo recipe (`afwe heal restore`).
+
+### 16.4 Skipping Resistance & Attribution
+- **CI Gate**: `afwe gate --ci` validates `AFWE-Turn-Hash` and `AFWE-Turn` trailers on base branch PR commits.
+- **Retroactive Attribution**: `afwe attribute <commit>` attributes manual developer commits into the official audit log.
+
+### 16.5 Surfaces
+- **Studio (Tauri / Web)**: Visual Action Queue, Prompter Authority Banner, and Delegation Modal with SSE event streaming (`/api/events`).
+- **Terminal (`afwe watch`)**: ANSI dashboard displaying invariant header, active turn status, and live 6-state Action Queue.
+- **MCP Server**: Exposes `afwe_authority_*`, `afwe_queue_*`, `afwe_batch_act`, and `afwe_heal_restore` tools for orchestrator agent integration.
+
+
 

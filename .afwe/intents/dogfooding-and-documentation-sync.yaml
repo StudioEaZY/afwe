@@ -1,0 +1,17 @@
+id: dogfooding-and-documentation-sync
+title: dogfooding-and-documentation-sync
+statement: 'Phase 9: Dogfooding, Ubiquitous Language, Skills & Docs Sync'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0055
+history:
+- turn: t0055
+  ts: 2026-10-31T18:08:44Z
+  statement: 'Phase 9: Dogfooding, Ubiquitous Language, Skills & Docs Sync'
+created: 2026-10-31T18:08:44Z
+updated: 2026-10-31T18:08:44Z
+task: task-t0055
