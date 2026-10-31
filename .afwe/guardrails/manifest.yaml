@@ -1,0 +1,7 @@
+version: 1
+generated_at: 2026-10-31T23:01:16Z
+entries:
+  .afwe/guardrails/agents-block.md: 894df9017e479e72
+  .afwe/guardrails/generated_checks_test.sh: 790d65f08e65712e
+  .afwe/guardrails/pre-commit: 3c2083eccbfc5258
+  .github/workflows/afwe-gate.yml: 1381612999bcc6c4

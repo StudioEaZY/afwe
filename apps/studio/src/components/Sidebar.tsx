@@ -196,24 +196,33 @@ export const Sidebar: React.FC = () => {
             borderBottom: "1px solid var(--line)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <svg width="22" height="22" viewBox="0 0 30 30" aria-hidden="true">
-              <circle cx="9" cy="10" r="4.2" fill="var(--accent)" />
-              <circle cx="20" cy="7" r="3" fill="var(--amber)" />
-              <circle cx="21" cy="19" r="4.6" fill="var(--mapped)" />
-              <circle cx="9" cy="22" r="2.6" fill="var(--amber)" opacity=".7" />
-            </svg>
-            <span
-              className="serif"
-              style={{
-                fontSize: "20px",
-                fontWeight: 700,
-                color: "var(--ink)",
-                letterSpacing: "0.06em",
-              }}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <img
+              src="/afwe-icon.svg"
+              alt="AFWE Emblem"
+              style={{ width: "26px", height: "26px", objectFit: "contain", flexShrink: 0 }}
+            />
+            <svg
+              viewBox="0 0 240 50"
+              style={{ width: "88px", height: "18px", color: "var(--ink)", flexShrink: 0 }}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="5"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
+              aria-label="AFWE"
             >
-              AFWE
-            </span>
+              <path d="M 6,45 L 26,7 L 46,45" />
+              <path d="M 64,7 L 100,7" />
+              <path d="M 66,22 L 66,45" />
+              <path d="M 64,22 L 100,22" />
+              <path d="M 120,4 L 120,45" />
+              <path d="M 136,12 L 136,45" />
+              <path d="M 152,4 L 152,45" />
+              <path d="M 172,11 L 210,11" />
+              <path d="M 172,26 L 210,26" />
+              <path d="M 172,41 L 210,41" />
+            </svg>
           </div>
           <div style={{ fontSize: "11.5px", color: "var(--mute)", marginTop: "4px" }}>
             Your code. Its memory. Its rules.

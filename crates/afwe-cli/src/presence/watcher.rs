@@ -83,24 +83,33 @@ impl PresenceWatcher {
 
         #[cfg(target_os = "windows")]
         {
-            // Windows PowerShell notification toast fallback when GUI card is not active
-            let escaped_title = event.title.replace('"', "`\"");
-            let escaped_detail = event.detail.replace('"', "`\"");
-            let ps_script = format!(
-                "[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > $null; \
-                 $template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02); \
-                 $xml = [Windows.Data.Xml.Dom.XmlDocument]::new(); \
-                 $xml.LoadXml($template.GetXml()); \
-                 $textNodes = $xml.GetElementsByTagName('text'); \
-                 $textNodes.Item(0).AppendChild($xml.CreateTextNode('AFWE: {}')) > $null; \
-                 $textNodes.Item(1).AppendChild($xml.CreateTextNode('{}')) > $null; \
-                 $toast = [Windows.UI.Notifications.ToastNotification]::new($xml); \
-                 [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('AFWE').Show($toast);",
-                escaped_title, escaped_detail
+            let id = event.turn_id.as_deref().unwrap_or("active");
+            let xml_title = xml_escape(&format!("AFWE: {}", event.title));
+            let xml_detail = xml_escape(&event.detail);
+
+            let icon_uri = "file:///C:/Users/eazy4/.cargo/afwe-icon.png";
+
+            let toast_xml = format!(
+                r#"<toast duration="long"><visual><binding template="ToastGeneric"><image placement="appLogoOverride" src="{}" hint-crop="circle"/><text>{}</text><text>{}</text></binding></visual><actions><action content="Approve" arguments="http://127.0.0.1:4242/api/action?act=approve&amp;id={}" activationType="protocol"/><action content="Revert" arguments="http://127.0.0.1:4242/api/action?act=revert&amp;id={}" activationType="protocol"/><action content="Reply" arguments="http://127.0.0.1:4242/?view=card&amp;focus=reply&amp;id={}" activationType="protocol"/><action content="Open Studio" arguments="http://127.0.0.1:4242" activationType="protocol"/></actions></toast>"#,
+                icon_uri, xml_title, xml_detail, id, id, id
             );
+
+            let ps_script = format!(
+                "[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null; [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null; $xml = New-Object Windows.Data.Xml.Dom.XmlDocument; $xml.LoadXml(@'\n{}\n'@); $toast = [Windows.UI.Notifications.ToastNotification]::new($xml); [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('AFWE').Show($toast);",
+                toast_xml
+            );
+
             let _ = std::process::Command::new("powershell")
                 .args(["-NoProfile", "-WindowStyle", "Hidden", "-Command", &ps_script])
                 .spawn();
         }
     }
+}
+
+fn xml_escape(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&apos;")
 }

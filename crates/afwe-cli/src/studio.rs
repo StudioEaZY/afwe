@@ -82,6 +82,16 @@ pub fn serve(start: PathBuf, host: &str, port: u16, open_browser: bool, dist: Op
                 );
                 let _ = req.respond(resp);
             });
+        } else if path.starts_with("/api/action") {
+            let engine = engine.clone();
+            let broadcaster = broadcaster.clone();
+            let full_url = req.url().to_string();
+            std::thread::spawn(move || {
+                let html = handle_toast_action(&engine, &full_url, &broadcaster);
+                let mut r = Response::from_string(html).with_status_code(StatusCode(200));
+                r.add_header(Header::from_bytes("Content-Type", "text/html; charset=utf-8").unwrap());
+                let _ = req.respond(r);
+            });
         } else if path.starts_with("/api/") {
             let engine = engine.clone();
             let broadcaster = broadcaster.clone();
@@ -196,6 +206,211 @@ fn handle_api(engine: &Arc<Mutex<Engine>>, method: &Method, path: &str, body: &s
         }
         _ => (404, json!({"ok": false, "error": "not found"}), None),
     }
+}
+
+fn handle_toast_action(
+    engine: &Arc<Mutex<Engine>>,
+    path: &str,
+    broadcaster: &Arc<Mutex<Vec<Sender<String>>>>,
+) -> String {
+    let query_str = path.split_once('?').map(|(_, q)| q).unwrap_or("");
+    let mut act = String::new();
+    let mut id = String::new();
+    for pair in query_str.split('&') {
+        if let Some((k, v)) = pair.split_once('=') {
+            if k == "act" {
+                act = v.to_string();
+            } else if k == "id" {
+                id = v.to_string();
+            }
+        }
+    }
+
+    let mut result_msg = String::new();
+    let mut success = false;
+    let eng = engine.lock().unwrap();
+
+    if act == "approve" {
+        let mut committed = false;
+        if id.starts_with('t') {
+            match api::call(&eng, "turn.commit", json!({"turn": id, "summary": "Approved via Windows Toast"}), "human") {
+                Ok(_) => {
+                    result_msg = format!("Turn {} successfully committed and approved.", id);
+                    success = true;
+                    committed = true;
+                }
+                Err(e) => {
+                    result_msg = format!("turn.commit note: {e}");
+                }
+            }
+        }
+        if !committed {
+            match api::call(&eng, "queue.act", json!({"item": id, "action": "approve"}), "human") {
+                Ok(_) => {
+                    result_msg = format!("Action approved for item {}.", id);
+                    success = true;
+                }
+                Err(e) => {
+                    if !result_msg.is_empty() {
+                        result_msg.push_str(&format!(" | queue.act error: {e}"));
+                    } else {
+                        result_msg = format!("Approval failed: {e}");
+                    }
+                }
+            }
+        }
+        if success {
+            broadcast_event(broadcaster, "turn.commit");
+            broadcast_event(broadcaster, "queue.act");
+        }
+    } else if act == "revert" {
+        let mut reverted = false;
+        if id.starts_with('t') {
+            match api::call(&eng, "turn.redo", json!({"turn": id}), "human") {
+                Ok(_) => {
+                    result_msg = format!("Turn {} successfully reverted/reset to baseline.", id);
+                    success = true;
+                    reverted = true;
+                }
+                Err(e) => {
+                    result_msg = format!("turn.redo note: {e}");
+                }
+            }
+        }
+        if !reverted {
+            match api::call(&eng, "queue.act", json!({"item": id, "action": "revert"}), "human") {
+                Ok(_) => {
+                    result_msg = format!("Item {} successfully reverted.", id);
+                    success = true;
+                }
+                Err(e) => {
+                    if !result_msg.is_empty() {
+                        result_msg.push_str(&format!(" | queue.act error: {e}"));
+                    } else {
+                        result_msg = format!("Revert failed: {e}");
+                    }
+                }
+            }
+        }
+        if success {
+            broadcast_event(broadcaster, "turn.redo");
+            broadcast_event(broadcaster, "queue.act");
+        }
+    } else {
+        result_msg = format!("Unknown action '{}'", act);
+    }
+
+    let status_color = if success { "#4A6150" } else { "#C4513F" };
+    let status_badge = if success { "✔ SUCCESS" } else { "✕ ACTION NOTICE" };
+
+    format!(r#"<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AFWE Action: {act}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {{
+      background: #191816;
+      color: #EDE8DC;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }}
+    .card {{
+      background: #22211E;
+      border: 1px solid #34322D;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      text-align: center;
+    }}
+    .badge {{
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: {status_color};
+      color: #F4F1E8;
+      margin-bottom: 16px;
+    }}
+    h1 {{
+      font-size: 20px;
+      margin: 0 0 10px 0;
+      font-weight: 600;
+      color: #EDE8DC;
+    }}
+    p {{
+      font-size: 13.5px;
+      color: #9C968A;
+      line-height: 1.5;
+      margin: 0 0 24px 0;
+    }}
+    .btn {{
+      display: inline-block;
+      padding: 10px 20px;
+      background: #4A6150;
+      color: #F4F1E8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      margin: 0 6px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }}
+    .btn:hover {{ opacity: 0.9; }}
+    .btn-secondary {{
+      background: #34322D;
+      color: #EDE8DC;
+    }}
+    .brand {{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <img src="/afwe-icon.svg" style="width: 32px; height: 32px;" alt="AFWE" />
+      <svg viewBox="0 0 240 50" style="width: 100px; height: 20px; color: #EDE8DC;" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="square">
+        <path d="M 6,45 L 26,7 L 46,45" />
+        <path d="M 64,7 L 100,7" />
+        <path d="M 66,22 L 66,45" />
+        <path d="M 64,22 L 100,22" />
+        <path d="M 120,4 L 120,45" />
+        <path d="M 136,12 L 136,45" />
+        <path d="M 152,4 L 152,45" />
+        <path d="M 172,11 L 210,11" />
+        <path d="M 172,26 L 210,26" />
+        <path d="M 172,41 L 210,41" />
+      </svg>
+    </div>
+    <div class="badge">{status_badge}</div>
+    <h1>ACTION: {act}</h1>
+    <p>{result_msg}</p>
+    <div>
+      <a href="/" class="btn">Open Studio</a>
+      <button class="btn btn-secondary" onclick="window.close()">Close Window</button>
+    </div>
+  </div>
+</body>
+</html>"#)
 }
 
 fn write_daemon_state(root: &Path, port: u16, url: &str) -> Result<()> {

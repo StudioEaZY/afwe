@@ -1,0 +1,18 @@
+id: brand-presence-notifications
+title: Brand presence toast notifications, Studio sidebar and card HUD with official emblem and wordmark
+statement: Brand presence toast notifications, Studio sidebar and card HUD with official emblem and wordmark
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+  - studio-shell
+from_turns:
+- t0070
+history:
+- turn: t0070
+  ts: 2026-10-31T23:49:27Z
+  statement: Brand presence toast notifications, Studio sidebar and card HUD with official emblem and wordmark
+created: 2026-10-31T23:49:27Z
+updated: 2026-10-31T23:49:27Z
+task: task-t0070
