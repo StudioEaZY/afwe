@@ -1,0 +1,18 @@
+id: presence-proof-floor-only
+title: presence-proof-floor-only
+statement: 'Phase 6: Presence Proof floor_only (Biometric and Credential Verification)'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+  - afwe-core
+from_turns:
+- t0063
+history:
+- turn: t0063
+  ts: 2026-10-31T21:15:48Z
+  statement: 'Phase 6: Presence Proof floor_only (Biometric and Credential Verification)'
+created: 2026-10-31T21:15:48Z
+updated: 2026-10-31T21:15:48Z
+task: task-t0063
