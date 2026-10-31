@@ -97,6 +97,8 @@ Once passing, AFWE commits the turn atomically with trailer `AFWE-Turn: t0001`.
 
 ---
 
-## 3. Key Takeaway
+## 3. Key Takeaway & Honest Boundary
 
-By forcing claims **before** code generation, AFWE turns messy, qualitative human prompts into **deterministic pre-commit tests**, guaranteeing architectural integrity without requiring an LLM inside the engine kernel.
+By forcing claims **before** code generation, AFWE turns messy, qualitative human prompts into **deterministic pre-commit tests (tree-sitter patterns, symbol presence, structural import edges)**, guaranteeing architectural integrity without requiring an LLM inside the engine kernel.
+
+> **Honest Limitation**: AFWE deterministically proves that all declared assumptions and claims hold true; it does not replace the requirement for agents or humans to decompose intent accurately at `turn assume`.

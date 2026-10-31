@@ -1,55 +1,39 @@
-id: t0065
-turn_hash: turn-31e27460938b
-alias: t0065
-epoch_id: epoch-947668
-token_hash: a0f62d6558725a356fe7d40ebde39994d7b1c7fe6cb274d1371be15511f9a984
-claims:
-- path: .afwe/memory/terminology/term-presence-watcher.md
-  claimed_at: 2026-10-31T21:22:53Z
-- path: .afwe/memory/terminology/term-presence-proof.md
-  claimed_at: 2026-10-31T21:22:53Z
-- path: .afwe/memory/terminology/term-git-channel.md
-  claimed_at: 2026-10-31T21:22:53Z
-- path: .afwe/skills/afwe/SKILL.md
-  base_blob: 63d7d6ef7eeddccbb5b1ed98cd0b2b7b462f0dc0
-  claimed_at: 2026-10-31T21:22:53Z
-- path: crates/afwe-core/src/contract.rs
-  base_blob: 21afbdf40a50a573bf800ec37e1a39200d8634b3
-  node: afwe-core
-  claimed_at: 2026-10-31T21:22:54Z
-- path: docs/SPEC.md
-  base_blob: 8f8929274e4c3c3807a44ac824d3b7bff2089b58
-  claimed_at: 2026-10-31T21:22:54Z
-base_head: 115e2e2b730040ab1cd2546a6e46132a5cf205b1
-last_activity: 2026-10-31T21:22:23Z
-ts: 2026-10-31T21:22:23Z
+id: t0066
+turn_hash: turn-31c9f41e40f3
+alias: t0066
+epoch_id: epoch-0b44b8
+token_hash: b16afd734194a83f50379df4e75edeb722dbe1ff7c45436d733cc30d17142225
+base_head: 39b8501ac2946b46d1eae32567b852880c86654f
+last_activity: 2026-10-31T21:44:50Z
+ts: 2026-10-31T21:44:50Z
 origin: human
-prompt: 'Phase 8: Ubiquitous Language, Skills, and Documentation Sync for Presence'
-prompt_hash: 5721a2a2924f029e
-task: task-t0065
+prompt: Switch afwe-client templates to ReBorn branch and sync walkthrough docs
+prompt_hash: f95a20da3ee97100
+task: task-t0066
 targets:
-- .afwe/memory/terminology/term-presence-watcher.md
-- .afwe/memory/terminology/term-presence-proof.md
-- .afwe/memory/terminology/term-git-channel.md
-- .afwe/skills/afwe/SKILL.md
-- crates/afwe-core/src/contract.rs
-- docs/SPEC.md
+- docs/WALKTHROUGH.md
+- .afwe/docs/WALKTHROUGH.md
+- crates/afwe-core/src/onboard.rs
+- .github/workflows/afwe-gate.yml
+- scripts/install.sh
 scope:
   nodes:
-  - afwe-core
-  - afwe-cli
+  - afwe
+  - afwe-2
   files:
-  - crates/afwe-core/src/contract.rs
-  - docs/SPEC.md
+  - docs/WALKTHROUGH.md
+  - crates/afwe-core/src/onboard.rs
+  - scripts/install.sh
 intents:
-- id: presence-ubiquitous-language-and-docs-sync
-  action: create
+- id: switch-client-templates-to-reborn
+  action: replace
   targets:
-  - afwe-core
-  - afwe-cli
+  - afwe
+  - afwe-2
+  statement: Switch client installation templates to ReBorn branch and sync walkthrough documentation
 overrides:
 - pin: pin-5babbe
-  reason: Presence terminology and skills sync is 100% deterministic documentation with zero model calls
+  reason: Deterministic updates to client installation templates, CI gate, and sync walkthrough documentation
 status: ready
 touched:
   nodes:
@@ -57,17 +41,11 @@ touched:
   - crates
   - demo-project
   - examples
+  - scripts
   - studio
   files:
-  - .afwe/assumptions-t0065.json
-  - .afwe/docs/SPEC.md
-  - .afwe/docs/UBIQUITOUS_LANGUAGE.html
-  - .afwe/docs/UBIQUITOUS_LANGUAGE.md
-  - .afwe/intents/presence-ubiquitous-language-and-docs-sync.yaml
-  - .afwe/memory/terminology/term-git-channel.md
-  - .afwe/memory/terminology/term-presence-proof.md
-  - .afwe/memory/terminology/term-presence-watcher.md
-  - .afwe/skills/afwe/SKILL.md
+  - .afwe/docs/WALKTHROUGH.md
+  - .afwe/intents/switch-client-templates-to-reborn.yaml
   - .github/workflows/afwe-gate.yml
   - .github/workflows/ci.yml
   - .github/workflows/release.yml
@@ -77,12 +55,8 @@ touched:
   - apps/website/.env
   - apps/website/.env.example
   - apps/website/.gitignore
-  - apps/website/public/docs/UBIQUITOUS_LANGUAGE.html
-  - apps/website/public/docs/UBIQUITOUS_LANGUAGE.md
-  - crates/afwe-core/src/contract.rs
-  - docs/SPEC.md
-  - docs/UBIQUITOUS_LANGUAGE.html
-  - docs/UBIQUITOUS_LANGUAGE.md
+  - crates/afwe-core/src/onboard.rs
+  - docs/WALKTHROUGH.md
   - examples/demo-project/.afwe/.gitignore
   - examples/demo-project/.afwe/README.md
   - examples/demo-project/.afwe/abstractions/workspace-blueprint.yaml
@@ -271,6 +245,7 @@ touched:
   - examples/multi-intent-funnel/.afwe/turns/t0010.yaml
   - examples/multi-intent-funnel/.afwe/turns/t0011.yaml
   - examples/multi-intent-funnel/.afwe/turns/t0012.yaml
+  - scripts/install.sh
   symbols:
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::$
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::$$
@@ -4668,7 +4643,7 @@ touched:
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::zx
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::zy
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::zz
-  - crates/afwe-core/src/contract.rs::AFWE_SKILL_MD
+  - crates/afwe-core/src/onboard.rs::CI_TEMPLATE
 implements:
   afwe-2:
   - packages/afwe/README.md
@@ -6155,20 +6130,20 @@ checks:
   passed: true
   blocking: true
 strength: deterministic
-confidence: 0.68
+confidence: 0.9
 confidence_parts:
   clarity: 1.0
-  mapping: 0.75
+  mapping: 1.0
   pins: 0.9
   verification: 1.0
 gate:
   decision: ready
   reasons:
-  - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Presence terminology and skills sync is 100% deterministic documentation with zero model calls'
+  - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Deterministic updates to client installation templates, CI gate, and sync walkthrough documentation'
   - 'PIN_WARN pin-studio-bookmarks-wired: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector'
 footer_shown: true
-summary: 'docs: Phase 8 Ubiquitous Language, Skills, and SPEC Sync for Presence'
-turn_token: afwe_tok_5aa3d11e6d5466e435aa782659f58f1e
+summary: Switch afwe-client templates to ReBorn branch and sync walkthrough docs
+turn_token: afwe_tok_ea7930fbc6c005f6267d5698e06f1aee
 session_id: sess-cbf30d
 held_out_guides:
 - guide-t0022-a1
@@ -6176,6 +6151,8 @@ held_out_guides:
 - guide-t0026-a1
 - guide-t0028-a1
 - guide-t0032-a1
+- guide-t0035-a2
 - guide-t0036-a1
+- guide-t0036-a2
 - guide-t0041-a1
 - guide-t0046-a1

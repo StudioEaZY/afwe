@@ -20,7 +20,7 @@ jobs:
             cargo build --release -p afwe-cli
             echo "$PWD/target/release" >> $GITHUB_PATH
           else
-            cargo install --git https://github.com/StudioEaZY/afwe.git afwe-cli
+            cargo install --git https://github.com/StudioEaZY/afwe.git --branch ReBorn afwe-cli
           fi
       - name: The architecture matches the code
         run: |

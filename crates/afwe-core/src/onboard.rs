@@ -36,7 +36,7 @@ jobs:
             cargo build --release -p afwe-cli
             echo "$PWD/target/release" >> $GITHUB_PATH
           else
-            cargo install --git https://github.com/StudioEaZY/afwe.git afwe-cli
+            cargo install --git https://github.com/StudioEaZY/afwe.git --branch ReBorn afwe-cli
           fi
       - name: Verify tripwire manifest and base-branch guard integrity
         run: afwe materialize --check --base "${{ github.event.pull_request.base.sha || github.event.before }}"
