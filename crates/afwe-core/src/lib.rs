@@ -42,6 +42,7 @@ pub mod mission;
 pub mod model;
 pub mod onboard;
 pub mod ops;
+pub mod queue;
 pub mod registry;
 pub mod rollback;
 pub mod scene;

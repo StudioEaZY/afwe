@@ -1,0 +1,19 @@
+id: action-queue-engine
+title: 'Phase 2: Action Queue Engine (6-state derivation, read-only view over turns, batch actions)'
+statement: Implement 6-state Action Queue Engine over existing turns and repository state, providing deterministic classification, summary statistics, and atomic batch actions with individual reason safeguards.
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/queue.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/api.rs
+from_turns:
+- t0048
+history:
+- turn: t0048
+  ts: 2026-10-31T15:27:04Z
+  statement: Implement 6-state Action Queue Engine over existing turns and repository state, providing deterministic classification, summary statistics, and atomic batch actions with individual reason safeguards.
+created: 2026-10-31T15:27:04Z
+updated: 2026-10-31T15:27:04Z
+task: task-t0048

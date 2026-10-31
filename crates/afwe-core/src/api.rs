@@ -580,6 +580,21 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             j(record)
         }
 
+        // ───────── Action Queue & Batch Actions ─────────
+        "queue.get" => {
+            let project_id = crate::authority_store::compute_project_id(&engine.store.project_root);
+            let auth = crate::authority_store::load_authority(&project_id);
+            let q = crate::queue::get_action_queue(engine, auth.delegation.as_ref())?;
+            j(q)
+        }
+        "batch.act" => {
+            let action_name = req(&p, "action")?;
+            let project_id = crate::authority_store::compute_project_id(&engine.store.project_root);
+            let auth = crate::authority_store::load_authority(&project_id);
+            let res = crate::queue::batch_act(engine, &action_name, auth.delegation.as_ref())?;
+            j(res)
+        }
+
         // ───────── v2: timeline ─────────
         "timeline.list" => timeline::list(engine, p.get("limit").and_then(|v| v.as_u64()).unwrap_or(50) as usize),
         "timeline.get" => timeline::get(engine, &req(&p, "turn")?),
@@ -1090,6 +1105,8 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_authority_status", op: "authority.status", description: "Get the current Prompter Authority status (human_only or prompter_delegated).", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_authority_delegate", op: "authority.delegate", description: "Human-only promotion to prompter_delegated mode for an agentic loop.", schema: obj(json!({"holder": {"type": "string"}, "ttl_seconds": {"type": "integer"}, "door": {"type": "string"}, "auto_approvals_max": {"type": "integer"}, "self_heals_max": {"type": "integer"}, "auto_merge": {"type": "boolean"}}), &["holder"]) },
         ToolSpec { name: "afwe_authority_revoke", op: "authority.revoke", description: "Revoke active prompter delegation from any interface, returning to human_only.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_queue_get", op: "queue.get", description: "Get the 6-state Action Queue: STAGED, GHOST REDO, READY, ADVISORY DRIFT, STALE NODE LEASES, UNATTRIBUTED.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_batch_act", op: "batch.act", description: "Execute batch operations on the Action Queue (batch.approve, batch.commit, batch.prune_leases).", schema: obj(json!({"action": {"type": "string"}}), &["action"]) },
         ToolSpec { name: "afwe_baseline_capture", op: "baseline.capture", description: "Capture current blueprint/code violations into .afwe/baseline.yaml so legacy debt does not fail new turns.", schema: obj(json!({"branch": {"type": "string"}, "label": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_baseline_get", op: "baseline.get", description: "Read the grandfathered violation baseline.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_escalation_list", op: "escalation.list", description: "List pending guard-loosening requests queued for human approval.", schema: obj(json!({}), &[]) },

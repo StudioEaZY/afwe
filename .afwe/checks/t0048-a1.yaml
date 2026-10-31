@@ -1,0 +1,23 @@
+id: t0048-a1
+title: Manual ready turns are classified with Neutral badge, never alert or error
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-core
+  - crates
+  - demo-project
+  - examples
+  - studio
+  files:
+  - crates/afwe-core/src/queue.rs
+claim:
+  type: forbid_pattern
+  pattern: QueueItemKind::ReadyManual => QueueBadge::Amber
+  files:
+  - crates/afwe-core/src/queue.rs
+status: active
+origin: afwe:checkgen
+created: 2026-10-31T15:30:35Z
+created_from: t0048
+provenance: confirmed
