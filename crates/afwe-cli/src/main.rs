@@ -5,6 +5,7 @@ mod docs;
 mod mcp;
 mod render;
 mod studio;
+mod watch;
 
 use afwe_core::api;
 use afwe_core::engine::Engine;
@@ -286,6 +287,15 @@ enum Cmd {
         /// Description of the change for attribution
         #[arg(long, short)]
         summary: Option<String>,
+    },
+    /// Terminal surface live monitor (invariant header, authority status, and 6-state Action Queue)
+    Watch {
+        /// Refresh interval in seconds (default: 2)
+        #[arg(long, default_value = "2")]
+        interval: u64,
+        /// Render a single snapshot and exit immediately (useful for CI and scripts)
+        #[arg(long)]
+        once: bool,
     },
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
     Call { op: String, params: Option<String> },
@@ -1718,6 +1728,11 @@ fn run(cli: Cli) -> Result<i32> {
             }
             let v = api::call(&engine, "attribute.commit", params, &origin)?;
             out(json, &v, render::attribute_result);
+            Ok(0)
+        }
+        Cmd::Watch { interval, once } => {
+            let engine = engine_for(&cli.dir)?;
+            watch::run_watch(&engine.store.project_root, interval, once)?;
             Ok(0)
         }
         Cmd::Call { op, params } => {

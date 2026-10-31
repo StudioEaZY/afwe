@@ -1,0 +1,17 @@
+id: terminal-surface-watch
+title: terminal-surface-watch
+statement: 'Phase 8: Terminal Surface (afwe watch live terminal monitor)'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+from_turns:
+- t0054
+history:
+- turn: t0054
+  ts: 2026-10-31T18:00:48Z
+  statement: 'Phase 8: Terminal Surface (afwe watch live terminal monitor)'
+created: 2026-10-31T18:00:48Z
+updated: 2026-10-31T18:00:48Z
+task: task-t0054
