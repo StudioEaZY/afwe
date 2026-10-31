@@ -583,9 +583,16 @@ AFWE detects, organizes, routes, and safely executes mechanical corrective actio
 - **Retroactive Attribution**: `afwe attribute <commit>` attributes manual developer commits into the official audit log.
 
 ### 16.5 Surfaces
-- **Studio (Tauri / Web)**: Visual Action Queue, Prompter Authority Banner, and Delegation Modal with SSE event streaming (`/api/events`).
+- **Studio (Tauri / Web)**: Visual Action Queue, Prompter Authority Banner, Delegation Modal, and compact non-activating Presence Card (`/?view=card`).
 - **Terminal (`afwe watch`)**: ANSI dashboard displaying invariant header, active turn status, and live 6-state Action Queue.
 - **MCP Server**: Exposes `afwe_authority_*`, `afwe_queue_*`, `afwe_batch_act`, and `afwe_heal_restore` tools for orchestrator agent integration.
+
+### 16.6 Human Presence, Watcher & Git Channel
+- **Headless Presence Watcher**: Zero-GUI daemon (`afwe presence run`) started at user login via OS autostart (Windows Scheduled Task, macOS LaunchAgent, Linux systemd user service).
+- **User Notification Policy**: Configured via `%APPDATA%\afwe\presence.toml` or `~/.config/afwe/presence.toml` supporting quiet hours, custom styles (Sticky Card vs. Toast), and wildcard routing (`mid_turn.* -> prompter_delegated`, `turn_end.* -> human`).
+- **Presence Proof (`floor_only`)**: Physical OS biometric/credential verification (Windows Hello, Touch ID, PAM challenge) required for human-floor mutations and pin overrides, keeping routine turns frictionless.
+- **Git Channel**: Zero-relay two-way notification and steering protocol for inbound-restricted sandboxes via lightweight Git refs (`refs/afwe/outbox/<project>` and `refs/afwe/inbox/<project>`).
+
 
 
 

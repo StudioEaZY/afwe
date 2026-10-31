@@ -1,0 +1,18 @@
+id: presence-ubiquitous-language-and-docs-sync
+title: presence-ubiquitous-language-and-docs-sync
+statement: 'Phase 8: Ubiquitous Language, Skills, and Documentation Sync for Presence'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  - afwe-cli
+from_turns:
+- t0065
+history:
+- turn: t0065
+  ts: 2026-10-31T21:22:56Z
+  statement: 'Phase 8: Ubiquitous Language, Skills, and Documentation Sync for Presence'
+created: 2026-10-31T21:22:56Z
+updated: 2026-10-31T21:22:56Z
+task: task-t0065

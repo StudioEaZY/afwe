@@ -64,6 +64,7 @@ flowchart TD
 | [**Edge Routing Geometry**](#edge-routing-geometry) | Architecture Philosophy & Tenets | The configurable mathematical curvature options applied to relationship lines across Studio maps: | Constraint Violation Routing |
 | [**Epoch ID**](#epoch-id) | Turn Protocol & Lifecycle | # Epoch ID | — |
 | [**Explore Mode**](#explore-mode) | Confidence Bands & Calibration | A temporary mode activated via `afwe unlock --reason "..."` that downgrades blocking active checks and capability ratchets into non-blocking warnings during active exploratory refactoring or rapid prototyping. The harness must re-arm the gate before release via `afwe lock`, which triggers full architecture verification. | Bypassing the Gate |
+| [**Git Channel**](#git-channel) | Architecture Philosophy & Tenets | # Git Channel | — |
 | [**Guardrail**](#guardrail) | Architecture Philosophy & Tenets | An architectural constraint divided into two complementary forms: | Pin, Check |
 | [**Human Floor**](#human-floor) | Architecture Philosophy & Tenets | # Human Floor | — |
 | [**Intent**](#intent) | Memory, Pins & Living Intents | A living, persistent statement of architectural purpose and desired behavior stored in `.afwe/intents/*.yaml`. Derived and merged from verbatim user prompts over time, intents capture what the codebase is intended to do, its historical evolution, and its implementation mappings. | Turn, Workflow |
@@ -79,6 +80,8 @@ flowchart TD
 | [**Phase 1 (Pre-Code Declaration)**](#phase-1-pre-code-declaration) | Turn Protocol & Lifecycle | The pre-code declaration phase invoked via `afwe turn assume <turn> --file <json> [--token <tok>]`. Before any code is generated or edited, the agent explicitly registers its architectural intents, file claims, and pre-generation AST assertions (`forbid_import`, `forbid_symbol`, `export_exists`, `symbol_signature`, `pattern`, `command`). Intentional removals must be declared in `removes` to satisfy the strict "Rust for project intent" compiler model. | Phase 2 (turn commit) |
 | [**Phase 2 (Gated Commit)**](#phase-2-gated-commit) | Turn Protocol & Lifecycle | The final gated commit phase invoked via `afwe turn commit <turn> --summary "..." [--token <tok>]`. AFWE isolates working changes via Git plumbing trees with Content-Addressable Storage (CAS) verification and advisory OS commit locks, executing the gate against active pins, claims, and capability ratchets before recording the turn in `.afwe/turns/` and emitting an `AFWE-Turn:` trailer. | git commit -m |
 | [**Pin**](#pin) | Memory, Pins & Living Intents | A human-locked architectural decision or intentional bug stored in `.afwe/pins/*.yaml`. Pins represent immutable boundaries that automated agents and refactorings are strictly forbidden from breaking or deleting without an explicit override `{pin, reason}`. Pins are capped under a codebase-scaled budget to prevent architectural ossification. | Guardrail, Decision (Memory) |
+| [**Presence Proof**](#presence-proof) | Architecture Philosophy & Tenets | # Presence Proof | — |
+| [**Presence Watcher**](#presence-watcher) | Architecture Philosophy & Tenets | # Presence Watcher | — |
 | [**Private Git Plumbing Tree**](#private-git-plumbing-tree) | Architecture Philosophy & Tenets | # Private Git Plumbing Tree | — |
 | [**Probing Guide**](#probing-guide) | Confidence Bands & Calibration | An advisory architectural hint emitted in Phase 0 briefings with 85%–90% confidence (`[GUIDE - ADVISORY]`). Probing guides steer the agent toward emerging architectural patterns without hard-blocking execution. When repeatedly adhered to, probing guides graduate into active deterministic checks via `afwe guide graduate`. | Active Check, Ambiguity Question |
 | [**Prompter Delegation**](#prompter-delegation) | Architecture Philosophy & Tenets | # Prompter Delegation | — |
@@ -260,6 +263,17 @@ The configurable mathematical curvature options applied to relationship lines ac
 
 ---
 
+#### Git Channel <a id="git-channel"></a>
+
+- **ID**: `term-git-channel`
+
+**Meaning:**
+# Git Channel
+
+A zero-relay remote communication protocol connecting inbound-restricted sandboxes, cloud agents, and containers to the human prompter. The engine writes structured queue facts to `refs/afwe/outbox/<project>` via lightweight git blobs (without growing commit history), while the presence watcher reads outbox updates via `git ls-remote` and transmits human steering replies through `refs/afwe/inbox/<project>`.
+
+---
+
 #### Guardrail <a id="guardrail"></a>
 
 - **ID**: `term-guardrail`
@@ -337,6 +351,28 @@ An architectural layout algorithm in Studio Blueprint and Topology views that dy
 
 **Not to be confused with:**
 - **Single-Anchor Ports**: Traditional flow diagrams route all inputs through the top center and outputs through the bottom center; Perimeter Port Distribution balances connections across the entire node perimeter.
+
+---
+
+#### Presence Proof <a id="presence-proof"></a>
+
+- **ID**: `term-presence-proof`
+
+**Meaning:**
+# Presence Proof
+
+A hardware/OS biometric or credential prompt (Windows Hello, Touch ID, or system password challenge) invoked before executing high-blast-radius human-floor actions or override approvals. Under the settled `floor_only` default, routine turns, ready commits, and steering replies remain frictionless 1-click actions, while attempts by local agents or synthetic clicks to lower authority or override architectural pins require undeniable physical human confirmation.
+
+---
+
+#### Presence Watcher <a id="presence-watcher"></a>
+
+- **ID**: `term-presence-watcher`
+
+**Meaning:**
+# Presence Watcher
+
+A lightweight, zero-GUI background daemon (`afwe presence run`) started at user login via OS autostart (Windows Scheduled Task, macOS LaunchAgent, Linux systemd user service). It monitors registered repositories listed in the user-level project registry, streams sequenced lifecycle events, applies user notification routing policies (`presence.toml`), and raises OS notifications or spawns compact always-on-top cards without stealing active typing focus.
 
 ---
 

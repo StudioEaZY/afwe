@@ -65,3 +65,4 @@ When interacting with this codebase:
    - **Narrow Self-Heal**: Mechanical restores of undeclared file drops run as sub-turns `<parent>.1` via `afwe heal restore` (MCP `afwe_heal_restore`).
    - **Attribution & CI Verification**: Validate git commit trailers via `afwe gate --ci`. Attribute manual developer commits via `afwe attribute <commit>`.
    - **Revoke**: Prompter delegation can be revoked instantly at any time via `afwe authority revoke` (MCP `afwe_authority_revoke`).
+   - **Human Presence & Watcher**: The headless presence watcher (`afwe presence run`) starts at login, tracks events across registered projects, applies user notification routing (`presence.toml`), and enforces `floor_only` biometric presence proof (Windows Hello / Touch ID) for high-blast-radius actions. For remote sandboxes without inbound access, the Git Channel (`refs/afwe/outbox/` and `refs/afwe/inbox/`) provides zero-relay two-way notification and steering.
