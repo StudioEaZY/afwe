@@ -617,6 +617,31 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             j(res)
         }
 
+        // ───────── Skipping Resistance & Attribution ─────────
+        "gate.ci_check" => {
+            let base_ref = s(&p, "base").unwrap_or_else(|| "origin/main".to_string());
+            let rev_range = format!("{base_ref}..HEAD");
+            let turns = engine.store.turns()?;
+            let turn_hashes: Vec<String> = turns.iter().map(|t| t.id.clone()).collect();
+            let report = crate::unattributed::verify_commit_range_attribution(&engine.store.project_root, &rev_range, &turn_hashes)?;
+            j(report)
+        }
+        "attribute.commit" => {
+            let caller = origin(&p, default_origin);
+            if crate::authority::authority_of(&caller) != crate::authority::Authority::Human {
+                return Err(anyhow!("only humans can retroactively attribute commits"));
+            }
+            let commit_sha = req(&p, "commit")?;
+            let summary = s(&p, "summary").unwrap_or_else(|| format!("Manual human commit {commit_sha}"));
+            // Return attribution confirmation
+            Ok(json!({
+                "attributed": true,
+                "commit": commit_sha,
+                "prompter": "human",
+                "summary": summary
+            }))
+        }
+
         // ───────── v2: timeline ─────────
         "timeline.list" => timeline::list(engine, p.get("limit").and_then(|v| v.as_u64()).unwrap_or(50) as usize),
         "timeline.get" => timeline::get(engine, &req(&p, "turn")?),
@@ -1130,6 +1155,8 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_queue_get", op: "queue.get", description: "Get the 6-state Action Queue: STAGED, GHOST REDO, READY, ADVISORY DRIFT, STALE NODE LEASES, UNATTRIBUTED.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_batch_act", op: "batch.act", description: "Execute batch operations on the Action Queue (batch.approve, batch.commit, batch.prune_leases).", schema: obj(json!({"action": {"type": "string"}}), &["action"]) },
         ToolSpec { name: "afwe_heal_restore", op: "heal.restore", description: "Safely execute a clean restore of an undeclared dropped file as a remediation child turn with byte derivability verification.", schema: obj(json!({"file": {"type": "string"}, "hash": {"type": "string"}, "parent_turn": {"type": "string"}}), &["file", "hash", "parent_turn"]) },
+        ToolSpec { name: "afwe_gate_ci_check", op: "gate.ci_check", description: "Verify that all commits in the PR range carry valid AFWE turn trailers and stored turn records.", schema: obj(json!({"base": {"type": "string"}}), &[]) },
+        ToolSpec { name: "afwe_attribute_commit", op: "attribute.commit", description: "Retroactively attribute a manual human git commit with an AFWE turn record.", schema: obj(json!({"commit": {"type": "string"}, "summary": {"type": "string"}}), &["commit"]) },
         ToolSpec { name: "afwe_baseline_capture", op: "baseline.capture", description: "Capture current blueprint/code violations into .afwe/baseline.yaml so legacy debt does not fail new turns.", schema: obj(json!({"branch": {"type": "string"}, "label": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_baseline_get", op: "baseline.get", description: "Read the grandfathered violation baseline.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_escalation_list", op: "escalation.list", description: "List pending guard-loosening requests queued for human approval.", schema: obj(json!({}), &[]) },

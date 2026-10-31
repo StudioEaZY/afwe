@@ -1,0 +1,17 @@
+id: skipping-resistance-and-attribution
+title: skipping-resistance-and-attribution
+statement: 'Phase 4: Skipping Resistance (CI gate trailer verification, unattributed scanner, retroactive attribution)'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0050
+history:
+- turn: t0050
+  ts: 2026-10-31T16:02:01Z
+  statement: 'Phase 4: Skipping Resistance (CI gate trailer verification, unattributed scanner, retroactive attribution)'
+created: 2026-10-31T16:02:01Z
+updated: 2026-10-31T16:02:01Z
+task: task-t0050
