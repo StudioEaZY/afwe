@@ -1,0 +1,17 @@
+id: presence-watcher-and-autostart
+title: presence-watcher-and-autostart
+statement: 'Phase 2: Implement Headless Presence Watcher and Autostart'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+from_turns:
+- t0059
+history:
+- turn: t0059
+  ts: 2026-10-31T20:31:48Z
+  statement: 'Phase 2: Implement Headless Presence Watcher and Autostart'
+created: 2026-10-31T20:31:48Z
+updated: 2026-10-31T20:31:48Z
+task: task-t0059

@@ -3,6 +3,7 @@
 
 mod docs;
 mod mcp;
+mod presence;
 mod render;
 mod studio;
 mod watch;
@@ -312,8 +313,23 @@ enum Cmd {
     /// Project registry management
     #[command(subcommand)]
     Registry(RegistryCmd),
+    /// OS Presence and human-side notification service
+    #[command(subcommand)]
+    Presence(PresenceCmd),
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
     Call { op: String, params: Option<String> },
+}
+
+#[derive(Subcommand)]
+enum PresenceCmd {
+    /// Run the headless presence loop (started automatically at login)
+    Run,
+    /// Show presence watcher status and autostart registration
+    Status,
+    /// Install autostart so the presence watcher runs automatically at logon
+    Install,
+    /// Remove autostart registration
+    Uninstall,
 }
 
 #[derive(Subcommand)]
@@ -1839,6 +1855,48 @@ fn run(cli: Cli) -> Result<i32> {
                         println!("Removed project `{}` from registry.", id);
                     } else {
                         println!("No project matching `{}` found in registry.", id);
+                    }
+                }
+            }
+            Ok(0)
+        }
+        Cmd::Presence(cmd) => {
+            match cmd {
+                PresenceCmd::Run => {
+                    presence::watcher::PresenceWatcher::run()?;
+                }
+                PresenceCmd::Status => {
+                    let installed = presence::autostart::AutostartManager::is_installed()?;
+                    let reg = afwe_core::project_registry::ProjectRegistry::load()?;
+                    if json {
+                        println!("{}", serde_json::json!({
+                            "autostart_installed": installed,
+                            "registered_projects": reg.projects.len(),
+                            "projects": reg.projects,
+                        }));
+                    } else {
+                        println!("⛨ AFWE Presence Status:");
+                        println!("  • Autostart on login: {}", if installed { "ACTIVE (registered)" } else { "INACTIVE (run `afwe presence install` to enable)" });
+                        println!("  • Registered projects: {}", reg.projects.len());
+                        for p in &reg.projects {
+                            println!("    - {:<12} {:<24} seq=#{} path={}", p.id, p.name, p.last_seen_seq, p.path);
+                        }
+                    }
+                }
+                PresenceCmd::Install => {
+                    presence::autostart::AutostartManager::install()?;
+                    if json {
+                        println!("{}", serde_json::json!({"status": "installed"}));
+                    } else {
+                        println!("✔ AFWE Presence Watcher registered for autostart on login.");
+                    }
+                }
+                PresenceCmd::Uninstall => {
+                    presence::autostart::AutostartManager::uninstall()?;
+                    if json {
+                        println!("{}", serde_json::json!({"status": "uninstalled"}));
+                    } else {
+                        println!("✔ AFWE Presence Watcher autostart registration removed.");
                     }
                 }
             }
