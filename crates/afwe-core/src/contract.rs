@@ -63,6 +63,7 @@ When interacting with this codebase:
 
 1. **Phase 0: Pre-Planning & Research (Before Planning)**:
    - Call `afwe turn begin "<prompt>" --target <files> [--claim <files>] [--parent <turn>]` (or MCP tool `afwe_turn_begin`) **immediately upon receiving the prompt**, before researching or authoring a plan (`/plan`).
+   - Read `docs/UBIQUITOUS_LANGUAGE.md` (or `.afwe/docs/UBIQUITOUS_LANGUAGE.md`) and `.afwe/memory/terminology/` to ensure plans, intents, and code adhere strictly to canonical domain terms.
    - In parallel multi-agent sessions, declare file claims upfront with `--claim <files>` to prevent lost-update races.
    - Read the briefing pack: inspect in-scope architectural nodes, locked pins, active guardrails, probing guides (`[GUIDE - ADVISORY]`), and ambiguity questions. Note your assigned `turn_hash` and bearer `token`.
    - If `CONTENTION` is returned, another agent holds that file. Do not edit conflicting files concurrently in the same directory.
@@ -90,6 +91,7 @@ When interacting with this codebase:
    - In prototype spikes, explore mode can be temporarily activated via `afwe unlock --reason "..."` and re-armed via `afwe lock`.
    - **Post-Turn Synchronization Obligation**: Whenever code structure, public APIs, rules, or behavior change:
      - Update documentation (`README.md`, `.afwe/docs/`, root `docs/`).
+     - Update Ubiquitous Language: add or update terms in `.afwe/memory/terminology/`, update `docs/UBIQUITOUS_LANGUAGE.md` (and `.afwe/docs/UBIQUITOUS_LANGUAGE.md`), and run `afwe memory sync-terms` (or `node scripts/sync-ubiquitous-language.js`).
      - Update skill instructions (`.afwe/skills/afwe/SKILL.md`) with generalized examples.
      - Update MCP tool specs and handlers (`mcp.rs`, `api.rs`) whenever tool capabilities expand.
      - Persist non-obvious design choices via `afwe memory add --kind decision ...` (or `afwe_memory_add`).

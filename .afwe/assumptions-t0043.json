@@ -1,0 +1,28 @@
+{
+  "intents": [
+    {
+      "id": "studio-controls-and-edge-sync",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Centralized Canvas Controls, Edge Routing Sync, and Blueprint Rewind",
+      "statement": "Centralize floating zoom/hand controls on mid-left canvas, eliminate spacebar viewport reset, add legend icons and routing controls across all visualizers, wire timeline rewind into Blueprint, and fix null pointer on dragging in Topology."
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "pure frontend visual controls synchronization, edge routing options, and null-safety fixes"
+    }
+  ]
+}

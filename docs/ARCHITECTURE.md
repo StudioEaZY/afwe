@@ -31,6 +31,7 @@
 | `sync.rs` | analyse → index → detect → reconcile by policy (auto / soft+uncertain / proposal) → write `state/` + Board items + log → update `sync.json` fingerprints |
 | `ops.rs` | every mutation (blueprint add/move/update/remove/map/relate/constrain, memory add/update/remove, guardrails, workflows incl. `promote`, lenses); each op validates references, writes the file and appends to the log with `origin` |
 | `contract.rs` | select contract by task kind, `task_start` (Board obligations), `mark_step` (ticked by ops), `task_done` (reports unfulfilled obligations), `render_agents_block` |
+| `terminology.rs` | domain ubiquitous language parser, markdown dictionary compiler, and interactive single-file HTML generator (`docs/UBIQUITOUS_LANGUAGE.md`, `.html`) |
 | `lens.rs` | resolve a lens into a view tree of virtual groups |
 | `init.rs` | `afwe init` (empty `.afwe/` with default contracts, README, .gitignore), `bootstrap` (propose a blueprint from directory structure) |
 | `api.rs` | `call()` dispatcher, `OPS` list, `tool_specs()` (MCP tool catalogue with JSON schemas), `graph` (everything the Studio needs in one call), `search`, node detail |

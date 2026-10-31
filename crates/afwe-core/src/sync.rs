@@ -104,6 +104,7 @@ pub fn sync(engine: &Engine, opts: &SyncOptions) -> Result<(SyncReport, Snapshot
         languages: snap.code.languages.clone(),
         duration_ms: started.elapsed().as_millis(),
     };
+    let _ = crate::terminology::sync_ubiquitous_language(&engine.store);
     Ok((report, snap))
 }
 

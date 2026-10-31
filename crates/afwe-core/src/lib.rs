@@ -46,6 +46,7 @@ pub mod rollback;
 pub mod scene;
 pub mod store;
 pub mod sync;
+pub mod terminology;
 pub mod timeline;
 pub mod timeline_4d;
 pub mod turn;

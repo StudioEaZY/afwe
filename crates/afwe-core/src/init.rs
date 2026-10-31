@@ -37,7 +37,7 @@ The engine that reads and writes it is replaceable.
 `afwe turn commit <turn>` → gate, then commit (`AFWE-Turn:` trailer), stage, or REDO.
 History: `afwe timeline`, `afwe timeline losses`, `afwe timeline restore <feature>`.
 
-Read `.afwe/docs/SPEC.md` for formats and `.afwe/docs/TUTORIAL.md` for the developer guide.
+Read `.afwe/docs/SPEC.md` for formats, `.afwe/docs/TUTORIAL.md` for the developer guide, and `.afwe/docs/UBIQUITOUS_LANGUAGE.md` for domain terminology.
 "#;
 
 pub struct InitOptions {
@@ -79,6 +79,8 @@ pub fn init(project_root: &Path, opts: InitOptions) -> Result<Store> {
     store.write_text("docs/TUTORIAL.md", include_str!("../../../docs/TUTORIAL.md"))?;
     store.write_text("docs/WALKTHROUGH.md", include_str!("../../../docs/WALKTHROUGH.md"))?;
     store.write_text("docs/SPEC.md", include_str!("../../../docs/SPEC.md"))?;
+    store.write_text("docs/UBIQUITOUS_LANGUAGE.md", include_str!("../../../docs/UBIQUITOUS_LANGUAGE.md"))?;
+    store.write_text("docs/UBIQUITOUS_LANGUAGE.html", include_str!("../../../docs/UBIQUITOUS_LANGUAGE.html"))?;
     store.write_text("README.md", AFWE_README)?;
     store.write_text(".gitignore", "# derived state is reproducible (rebuilt by `afwe sync`); the rest of .afwe/ is the product and belongs in git\nindex/\nstate/\n")?;
     let engine = Engine { store: store.clone() };

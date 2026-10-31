@@ -265,6 +265,9 @@ pub fn memory_add(engine: &Engine, m: MemoryAdd, origin: &str) -> Result<MemoryE
             engine.store.save_memory(&prev)?;
         }
     }
+    if kind == "terminology" {
+        let _ = crate::terminology::sync_ubiquitous_language(&engine.store);
+    }
     engine.log(origin, "memory_add", format!("Recorded {kind} `{id}`: {}", m.title), Some(json!({"path": entry.path})))?;
     Ok(entry)
 }
@@ -297,6 +300,9 @@ pub fn memory_update(engine: &Engine, id: &str, patch: &Value, origin: &str) -> 
     }
     e.meta.updated = Some(today());
     engine.store.save_memory(&e)?;
+    if e.meta.kind == "terminology" {
+        let _ = crate::terminology::sync_ubiquitous_language(&engine.store);
+    }
     engine.log(origin, "memory_update", format!("Updated memory `{id}`"), None)?;
     Ok(e)
 }
@@ -304,7 +310,14 @@ pub fn memory_update(engine: &Engine, id: &str, patch: &Value, origin: &str) -> 
 pub fn memory_remove(engine: &Engine, id: &str, origin: &str) -> Result<()> {
     let e = engine.store.memory()?.into_iter().find(|e| e.meta.id == id).ok_or_else(|| anyhow!("memory `{id}` not found"))?;
     engine.store.remove(&e.path)?;
+    if e.meta.kind == "terminology" {
+        let _ = crate::terminology::sync_ubiquitous_language(&engine.store);
+    }
     engine.log(origin, "memory_remove", format!("Removed memory `{id}`"), None)
+}
+
+pub fn memory_sync_terms(engine: &Engine) -> Result<crate::terminology::TerminologySyncReport> {
+    crate::terminology::sync_ubiquitous_language(&engine.store)
 }
 
 // ───────────────────────────── guardrails ─────────────────────────────

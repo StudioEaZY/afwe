@@ -1,0 +1,29 @@
+{
+  "intents": [
+    {
+      "id": "ubiquitous-language-and-agent-synchronization",
+      "action": "create",
+      "targets": ["docs", "agents-md", "skills", "terminology"],
+      "title": "Ubiquitous Language Dictionary, AGENTS.md Protocol Ratchet, Human-Readable HTML/MD, and Auto-Update Sync",
+      "statement": "Create the canonical Ubiquitous Language dictionary for AFWE, integrate mandatory protocol read/update directives in AGENTS.md and SKILL.md, link across master documentation and initialization scaffolding, provide modern human-readable Markdown and interactive HTML formats, and implement auto-update synchronization tooling.",
+      "exports": ["TermItem", "load_terms", "generate_markdown", "generate_html", "sync_ubiquitous_language"]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "Maintaining 100% deterministic code without external model calls in afwe-core"
+    }
+  ]
+}

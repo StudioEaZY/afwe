@@ -443,6 +443,8 @@ enum MemoryCmd {
         body_file: Option<String>,
     },
     Remove { id: String },
+    /// Synchronize terminology memory into docs/UBIQUITOUS_LANGUAGE.md and .html
+    SyncTerms,
 }
 
 #[derive(Subcommand)]
@@ -904,6 +906,21 @@ fn run(cli: Cli) -> Result<i32> {
                 MemoryCmd::Remove { id } => {
                     api::call(&engine, "memory.remove", json!({"id": id}), &origin)?;
                     println!("removed `{id}`");
+                }
+                MemoryCmd::SyncTerms => {
+                    let v = api::call(&engine, "memory.sync_terms", json!({}), &origin)?;
+                    if json {
+                        println!("{}", serde_json::to_string_pretty(&v)?);
+                    } else {
+                        println!("Synchronized {} terms across {} categories into:", v["total_terms"], v["categories"].as_object().map(|o| o.len()).unwrap_or(0));
+                        if let Some(files) = v["written_files"].as_array() {
+                            for f in files {
+                                if let Some(p) = f.as_str() {
+                                    println!("  ✓ {}", p);
+                                }
+                            }
+                        }
+                    }
                 }
             }
             Ok(0)

@@ -33,6 +33,9 @@ Developer Prompt ──▶ Harness (Claude / Cursor) ──▶ AFWE Turn Protoco
 - AFWE is not a harness and cannot force one to call it. The `AGENTS.md` contract is advisory. The hard stop is the generated `.github/workflows/afwe-gate.yml`, which runs `afwe gate` in CI. Without CI or a git hook, a harness that ignores the contract is not blocked.
 - Harness-specific hook installers are not built yet. See `docs/INTEGRATION.md` for manual examples.
 
+> [!TIP]
+> **Ubiquitous Language**: To ensure consistency across architectural discussions, prompts, and plans, consult the [Ubiquitous Language Dictionary](UBIQUITOUS_LANGUAGE.md) ([Interactive HTML](UBIQUITOUS_LANGUAGE.html)), which defines canonical terms including Turns, Intents, Claims, Pins, Ratchets, and Tripwires.
+
 ---
 
 ## 2. Onboarding: Initializing a Project

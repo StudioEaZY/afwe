@@ -1,0 +1,28 @@
+{
+  "intents": [
+    {
+      "id": "studio-scrubber-blueprint-diff-and-clamping",
+      "action": "update",
+      "targets": ["studio"],
+      "title": "Unified Dual Timeline Scrubber, Blueprint Diff View, Multi-Visualizer Clamping, and Progress Feedback",
+      "statement": "Unify TimelineDualScrubber on Overview with dual moment binding, add Blueprint to Diff View in TimelinePage, implement spatial drag clamping in Constellation and Topology, replace reset view icon with Maximize2, and add test command progress feedback."
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "a1",
+      "text": "afwe-core does not import afwe-cli",
+      "claim": {
+        "type": "forbid_import",
+        "files": ["crates/afwe-core/**"],
+        "to_nodes": ["afwe-cli"]
+      }
+    }
+  ],
+  "overrides": [
+    {
+      "pin": "pin-5babbe",
+      "reason": "Studio timeline scrubber unification, spatial clamping, and test progress emission"
+    }
+  ]
+}

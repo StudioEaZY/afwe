@@ -179,6 +179,13 @@ Scope resolution for a file `f`: entries whose `files` match `f`, or whose `symb
 `applies_to` contains the node of `f` **or any ancestor**, or with an empty scope (project-wide). The index
 (`index/memory.json`) precomputes this. Bodies are free markdown; the engine never parses them.
 
+### 3.1 Terminology & Ubiquitous Language
+
+Entries in `memory/terminology/*.md` define the project's **Ubiquitous Language**:
+- Standard format: frontmatter with `kind: terminology`, followed by `## Meaning` and `## Not to be confused with`.
+- Compiled automatically via `afwe memory sync-terms` (and during `afwe sync` / memory operations) into `docs/UBIQUITOUS_LANGUAGE.md` and the standalone interactive `docs/UBIQUITOUS_LANGUAGE.html` (and `.afwe/docs/`).
+- Injected into passive guardrail micro-context (`afwe context`) so agents reason with canonical domain terms rather than guessing.
+
 ## 5. Guardrails
 
 ```yaml

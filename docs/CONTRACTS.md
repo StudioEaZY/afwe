@@ -14,6 +14,7 @@ shows the rest on the Board. Contracts live in `.afwe/contracts/*.yaml` and are 
 | 2 | during | `harness` | implement (the harness's own business; not tracked) |
 | 3 | after | `afwe_verify` | `afwe verify --changed <files>` — fix violations, do not silence them |
 | 4 | after | `afwe_update` | if a decision was made / an exception hit / structure changed: `afwe memory add …`, `afwe blueprint map|add|relate …` |
+| 4b | after | `afwe_memory_sync_terms` | if new terms, primitives or concepts were introduced: record in `.afwe/memory/terminology/` and sync `docs/UBIQUITOUS_LANGUAGE.md` & `.html` (`afwe memory sync-terms`) |
 | 5 | after | `afwe_sync` | `afwe sync` — mapping, index and drift are current |
 | 6 | after | `afwe_log` | `afwe task done <task> --message "what changed and why"` |
 

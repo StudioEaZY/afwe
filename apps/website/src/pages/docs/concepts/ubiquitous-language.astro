@@ -1,0 +1,311 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Load directly from .afwe/memory/terminology
+const rootDir = path.resolve(process.cwd(), '../..');
+const termsDir = path.join(rootDir, '.afwe', 'memory', 'terminology');
+
+interface Term {
+  id: string;
+  title: string;
+  category: string;
+  meaning: string;
+  confused: { term: string; desc: string }[];
+  tags: string[];
+}
+
+const terms: Term[] = [];
+
+if (fs.existsSync(termsDir)) {
+  const files = fs.readdirSync(termsDir).filter((f: string) => f.endsWith('.md') && f !== 'README.md');
+  for (const f of files) {
+    const raw = fs.readFileSync(path.join(termsDir, f), 'utf8');
+    const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+    const body = match ? match[2] : raw;
+    const rawMeta = match ? match[1] : '';
+
+    let title = f.replace(/\.md$/, '');
+    const tags: string[] = [];
+
+    for (const line of rawMeta.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('title:')) {
+        title = trimmed.replace(/^title:\s*["']?/, '').replace(/["']$/, '');
+      } else if (trimmed.startsWith('- ') && tags) {
+        tags.push(trimmed.slice(2).trim());
+      }
+    }
+
+    let meaning = '';
+    const confused: { term: string; desc: string }[] = [];
+    let sec = '';
+
+    for (const line of body.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('# ')) continue;
+      if (/^##\s+Meaning/i.test(trimmed)) { sec = 'meaning'; continue; }
+      if (/^##\s+Not to be confused with/i.test(trimmed)) { sec = 'confused'; continue; }
+      if (/^##\s+/.test(trimmed)) { sec = 'other'; continue; }
+
+      if (sec === 'meaning') {
+        if (meaning || trimmed) meaning += line + '\n';
+      } else if (sec === 'confused') {
+        const m = trimmed.match(/^[-*]\s+\*\*([^*]+)\*\*[:\s-]*(.*)$/);
+        if (m) {
+          confused.push({ term: m[1].trim(), desc: m[2].trim() });
+        } else if (trimmed && confused.length > 0) {
+          confused[confused.length - 1].desc += ' ' + trimmed;
+        }
+      }
+    }
+
+    let category = 'Architecture Philosophy & Tenets';
+    const lt = title.toLowerCase();
+    const ltags = tags.map(t => t.toLowerCase()).join(' ');
+
+    if (ltags.includes('turn') || ltags.includes('lifecycle') || ltags.includes('briefing') || lt.includes('turn') || lt.includes('phase')) {
+      category = 'Turn Protocol & Lifecycle';
+    } else if (ltags.includes('blueprint') || ltags.includes('drift') || ltags.includes('context') || lt.includes('blueprint')) {
+      category = 'Blueprint & Cartography';
+    } else if (ltags.includes('claim') || ltags.includes('tripwire') || ltags.includes('materializer')) {
+      category = 'Claims & Tripwires';
+    } else if (ltags.includes('ratchet') || ltags.includes('gate') || ltags.includes('baseline') || lt.includes('ratchet') || lt.includes('dropped') || lt.includes('severed')) {
+      category = 'Ratchets & Integrity Verification';
+    } else if (ltags.includes('confidence') || ltags.includes('advisory') || ltags.includes('explore') || lt.includes('guide') || lt.includes('question')) {
+      category = 'Confidence Bands & Calibration';
+    } else if (ltags.includes('pin') || ltags.includes('intent') || lt.includes('pin') || lt.includes('intent')) {
+      category = 'Memory, Pins & Living Intents';
+    } else if (ltags.includes('multi-agent') || ltags.includes('concurrency') || lt.includes('lease') || lt.includes('mission')) {
+      category = 'Multi-Agent Concurrency & Worktrees';
+    }
+
+    terms.push({
+      id: f.replace(/\.md$/, ''),
+      title,
+      category,
+      meaning: meaning.trim() || body.trim(),
+      confused,
+      tags
+    });
+  }
+}
+
+terms.sort((a, b) => a.title.localeCompare(b.title));
+const categories = Array.from(new Set(terms.map((t: any) => t.category)));
+const headings = [
+  { depth: 2, slug: "overview", text: "Overview & Principles" },
+  { depth: 2, slug: "dictionary", text: "Canonical Vocabulary" },
+  { depth: 2, slug: "sync-mandate", text: "Agent Protocol & Synchronization" }
+];
+---
+
+<DocsLayout
+  title="Ubiquitous Language Dictionary"
+  description="The unambiguous canonical vocabulary governing AFWE-Core, AFWE-Client, automated coding agents, and architecture verification gates."
+  activeSection="ubiquitous-language"
+  headings={headings}
+  wide={true}
+>
+  <div class="space-y-10 py-4 font-sans">
+    <!-- Header -->
+    <header class="border-b border-stone-400/50 dark:border-obsidian-800 pb-6">
+      <nav class="flex items-center gap-2 text-xs font-mono text-graphite/60 dark:text-obsidian-400 mb-2">
+        <a href="/" class="hover:text-emerald-600 dark:hover:text-emerald-400">Docs</a>
+        <span>/</span>
+        <span class="text-graphite/80 dark:text-obsidian-200">Concepts</span>
+        <span>/</span>
+        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">Ubiquitous Language</span>
+      </nav>
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight text-graphite dark:text-white">
+            Ubiquitous Language Dictionary
+          </h1>
+          <p class="mt-2 text-base text-graphite/80 dark:text-obsidian-300 leading-relaxed max-w-3xl">
+            In Domain-Driven Design (DDD), the <strong>Ubiquitous Language</strong> provides an unambiguous, shared semantic vocabulary between software architects, developers, coding agents, and verification gates.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <a
+            href="/docs/UBIQUITOUS_LANGUAGE.html"
+            target="_blank"
+            class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-semibold flex items-center gap-2 shadow-sm transition-colors"
+          >
+            <span>Interactive Single-Page App</span>
+            <span>↗</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Overview Banner -->
+    <section id="overview" class="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-5 text-sm text-graphite dark:text-obsidian-200 space-y-3">
+      <div class="font-bold text-emerald-600 dark:text-emerald-400 font-mono text-xs uppercase tracking-wider">
+        Core Principle: Rust for Project Intent
+      </div>
+      <p>
+        Autonomous coding agents frequently suffer from subtle semantic drift—using generic software terms rather than the precise architectural constructs defined in your project. AFWE strictly rejects guesswork. You can break things on purpose by declaring removals in <code>turn assume</code>, but the gate ensures you can never break things by accident.
+      </p>
+    </section>
+
+    <!-- Interactive Search & Filter Controls -->
+    <div class="sticky top-20 z-20 bg-paper/95 dark:bg-obsidian-950/95 backdrop-blur-md p-4 rounded-xl border border-stone-400/50 dark:border-obsidian-800 shadow-lg space-y-3">
+      <div class="flex items-center gap-3">
+        <input
+          type="text"
+          id="term-search"
+          placeholder="Search terms, concepts, invariants, or confused-with keywords... (e.g. Turn, Ratchet, CAS)"
+          class="flex-1 px-4 py-2 rounded-lg bg-white/70 dark:bg-obsidian-900 border border-stone-400/60 dark:border-obsidian-700 font-mono text-xs text-graphite dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        />
+        <span class="text-xs font-mono text-graphite/60 dark:text-obsidian-400 whitespace-nowrap">
+          <span id="term-counter">{terms.length}</span> / {terms.length} terms
+        </span>
+      </div>
+
+      <div class="flex flex-wrap gap-1.5" id="category-filters">
+        <button class="cat-pill active px-2.5 py-1 rounded text-[11px] font-mono border border-emerald-500 bg-emerald-500 text-white font-semibold transition-all" data-category="all">
+          All Categories
+        </button>
+        {categories.map((cat: any) => (
+          <button class="cat-pill px-2.5 py-1 rounded text-[11px] font-mono border border-stone-300 dark:border-obsidian-700 bg-stone-200/50 dark:bg-obsidian-850 text-graphite/70 dark:text-obsidian-300 hover:text-black dark:hover:text-white transition-all" data-category={cat}>
+            {cat}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <section id="dictionary" class="grid grid-cols-1 md:grid-cols-2 gap-4" id="cards-container">
+      {terms.map((t: any) => {
+        const anchor = t.title.toLowerCase().replace(/[\s()/:&]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+        return (
+          <article
+            class="term-card rounded-xl border border-stone-300 dark:border-obsidian-800 bg-white/70 dark:bg-obsidian-900/60 p-5 flex flex-col justify-between hover:border-emerald-500/50 transition-all shadow-xs"
+            id={anchor}
+            data-category={t.category}
+            data-text={`${t.title} ${t.meaning} ${t.category} ${t.tags.join(' ')} ${t.confused.map((c: any) => `${c.term} ${c.desc}`).join(' ')}`.toLowerCase()}
+          >
+            <div class="space-y-3">
+              <div class="flex items-start justify-between gap-3">
+                <h3 class="text-lg font-bold text-graphite dark:text-white">
+                  <a href={`#${anchor}`} class="hover:text-emerald-500">
+                    {t.title}
+                  </a>
+                </h3>
+                <span class="rounded px-2 py-0.5 text-[10px] font-mono font-medium bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 whitespace-nowrap">
+                  {t.category}
+                </span>
+              </div>
+
+              <p class="text-xs text-graphite/80 dark:text-obsidian-300 leading-relaxed whitespace-pre-line">
+                {t.meaning}
+              </p>
+
+              {t.confused && t.confused.length > 0 && (
+                <div class="rounded-lg bg-amber-500/5 border-l-2 border-amber-500 p-2.5 text-xs text-graphite/80 dark:text-obsidian-300 space-y-1 mt-2">
+                  <div class="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                    Not to be confused with:
+                  </div>
+                  {t.confused.map((c: any) => (
+                    <div class="text-[11px] leading-snug">
+                      <strong class="text-graphite dark:text-white">{c.term}</strong>: {c.desc}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-stone-200 dark:border-obsidian-800 flex items-center justify-between text-[10px] font-mono text-graphite/50 dark:text-obsidian-400">
+              <code>{t.id}</code>
+              <button
+                class="copy-permalink hover:text-emerald-500 transition-colors"
+                data-anchor={anchor}
+              >
+                🔗 permalink
+              </button>
+            </div>
+          </article>
+        );
+      })}
+    </section>
+
+    <!-- Agent Protocol & Synchronization Section -->
+    <section id="sync-mandate" class="rounded-xl border border-stone-300 dark:border-obsidian-800 bg-stone-100/50 dark:bg-obsidian-900/40 p-6 space-y-4">
+      <h2 class="text-xl font-bold text-graphite dark:text-white">
+        Agent Protocol & Synchronization Mandates
+      </h2>
+      <p class="text-xs text-graphite/80 dark:text-obsidian-300 leading-relaxed">
+        To maintain documentation and architecture integrity across turns:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 text-xs text-graphite/80 dark:text-obsidian-300 font-mono">
+        <li>
+          <strong>Pre-Planning Reading:</strong> In Phase 0, all agents must consult <code>docs/UBIQUITOUS_LANGUAGE.md</code> and relevant terms in <code>.afwe/memory/terminology/</code>.
+        </li>
+        <li>
+          <strong>Auto-Update Synchronization:</strong> Whenever code changes introduce or modify domain concepts, run <code>afwe memory sync-terms</code> or <code>node scripts/sync-ubiquitous-language.js</code>.
+        </li>
+        <li>
+          <strong>Strict Intent Declaration:</strong> Undeclared drop of public exports or capabilities fails the commit gate via <code>DROPPED_CAPABILITY</code>.
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <script is:inline>
+    const searchInput = document.getElementById('term-search');
+    const pills = document.querySelectorAll('.cat-pill');
+    const cards = document.querySelectorAll('.term-card');
+    const counter = document.getElementById('term-counter');
+    let currentCategory = 'all';
+
+    function runFilter() {
+      const q = (searchInput?.value || '').toLowerCase().trim();
+      let visible = 0;
+
+      cards.forEach(card => {
+        const text = card.getAttribute('data-text') || '';
+        const cat = card.getAttribute('data-category') || '';
+        const matchSearch = !q || text.includes(q);
+        const matchCat = currentCategory === 'all' || cat === currentCategory;
+
+        if (matchSearch && matchCat) {
+          card.style.display = 'flex';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (counter) counter.textContent = visible;
+    }
+
+    searchInput?.addEventListener('input', runFilter);
+
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => {
+          p.classList.remove('active', 'border-emerald-500', 'bg-emerald-500', 'text-white', 'font-semibold');
+          p.classList.add('border-stone-300', 'dark:border-obsidian-700', 'bg-stone-200/50', 'dark:bg-obsidian-850', 'text-graphite/70', 'dark:text-obsidian-300');
+        });
+        pill.classList.remove('border-stone-300', 'dark:border-obsidian-700', 'bg-stone-200/50', 'dark:bg-obsidian-850', 'text-graphite/70', 'dark:text-obsidian-300');
+        pill.classList.add('active', 'border-emerald-500', 'bg-emerald-500', 'text-white', 'font-semibold');
+        currentCategory = pill.getAttribute('data-category') || 'all';
+        runFilter();
+      });
+    });
+
+    document.querySelectorAll('.copy-permalink').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const anchor = e.currentTarget.getAttribute('data-anchor');
+        const url = `${window.location.origin}${window.location.pathname}#${anchor}`;
+        navigator.clipboard.writeText(url).then(() => {
+          const original = e.currentTarget.textContent;
+          e.currentTarget.textContent = '✓ copied!';
+          setTimeout(() => { e.currentTarget.textContent = original; }, 1500);
+        });
+      });
+    });
+  </script>
+</DocsLayout>

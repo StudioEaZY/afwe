@@ -305,6 +305,7 @@ The turn-protocol test suite verifies the complete loop against live Git plumbin
 
 ## Documentation & Guides
 
+- **[Ubiquitous Language Dictionary](docs/UBIQUITOUS_LANGUAGE.md)**: Canonical domain glossary ([Interactive HTML Version](docs/UBIQUITOUS_LANGUAGE.html)) defining Turns, Intents, Claims, Pins, Ratchets, and Tripwires.
 - **[Developer Tutorial (Zero to Mastery)](docs/TUTORIAL.md)**: Interactive guide covering onboarding, turn protocol, pin budgets, and 3-way timeline restoration.
 - **[Real-World Case Study](docs/WALKTHROUGH.md)**: Step-by-step case study showing how AFWE decomposes complex qualitative prompts into Tree-Sitter AST claims.
 - **[Format Specification](docs/SPEC.md)**: Technical format specification of the `.afwe/` product folder.

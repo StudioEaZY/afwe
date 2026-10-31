@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AFWE Ubiquitous Language Dictionary · Canonical Domain Terminology</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --card-border: #1f293d;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #10b981;
+      --accent-muted: rgba(16, 185, 129, 0.15);
+      --amber: #f59e0b;
+      --cyan: #06b6d4;
+      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 0 1rem 4rem 1rem;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      padding: 3rem 0 2rem 0;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 2rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      background: var(--accent-muted);
+      color: var(--accent);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin-top: 0.75rem;
+      color: #fff;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      max-width: 800px;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      position: sticky;
+      top: 0.5rem;
+      z-index: 20;
+      background: rgba(9, 13, 22, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .search-box {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .search-input {
+      flex: 1;
+      background: #0d131f;
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-muted);
+    }
+    .term-count {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .cat-btn {
+      background: #141c2e;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cat-btn:hover, .cat-btn.active {
+      background: var(--accent);
+      color: #090d16;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.25rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.4);
+    }
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .card-category {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--cyan);
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.25rem;
+      white-space: nowrap;
+    }
+    .card-meaning {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      line-height: 1.55;
+    }
+    .confused-box {
+      margin-top: auto;
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 3px solid var(--amber);
+      padding: 0.75rem 0.85rem;
+      border-radius: 0 0.375rem 0.375rem 0;
+      font-size: 0.825rem;
+    }
+    .confused-title {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--amber);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+    .confused-item {
+      margin-top: 0.35rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+    .confused-item strong {
+      color: #e2e8f0;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .copy-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: color 0.2s;
+    }
+    .copy-btn:hover {
+      color: var(--accent);
+    }
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="badge">⛨ AFWE ReBorn · Domain-Driven Design</span>
+      <h1>Ubiquitous Language Dictionary</h1>
+      <p class="subtitle">The unambiguous canonical vocabulary governing AFWE-Core, AFWE-Client, automated coding agents, and architecture verification gates.</p>
+    </header>
+
+    <div class="controls">
+      <div class="search-box">
+        <input type="text" id="search" class="search-input" placeholder="Search terms, definitions, invariants, or confused-with concepts... (e.g. Turn, Ratchet, CAS)" autofocus />
+        <div class="term-count"><span id="visible-count">35</span> / 35 terms</div>
+      </div>
+      <div class="categories">
+        <button class="cat-btn active" data-cat="all">All Categories</button>
+        <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
+        <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (4)</button>
+        <button class="cat-btn" data-cat="Ratchets & Integrity Verification">Ratchets & Integrity Verification (9)</button>
+        <button class="cat-btn" data-cat="Claims & Tripwires">Claims & Tripwires (3)</button>
+        <button class="cat-btn" data-cat="Multi-Agent Concurrency & Worktrees">Multi-Agent Concurrency & Worktrees (3)</button>
+        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (4)</button>
+        <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (2)</button>
+        <button class="cat-btn" data-cat="Turn Protocol & Lifecycle">Turn Protocol & Lifecycle (7)</button>
+      </div>
+    </div>
+
+    <div class="grid" id="terms-grid">
+      <article class="card" id="ambiguity-question" data-category="Confidence Bands & Calibration" data-title="ambiguity question" data-tags="confidence-bands human-in-the-loop">
+        <div class="card-header">
+          <h2 class="card-title">Ambiguity Question</h2>
+          <span class="card-category">Confidence Bands & Calibration</span>
+        </div>
+        <p class="card-meaning">A high-blast-radius architectural dilemma generated when system confidence falls below 85% (`afwe question list`). Instead of making an unverified guess, AFWE pauses and queues the question for human architect confirmation, persisting the resolution into memory or pins.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Probing Guide</strong>: Probing guides (85%–90%) advise agents without blocking; Ambiguity Questions (&lt;85%) halt high-risk forks for human judgment.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-ambiguity-question</code></span>
+          <button class="copy-btn" onclick="copyAnchor('ambiguity-question')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="blueprint" data-category="Blueprint & Cartography" data-title="blueprint" data-tags="blueprint architecture-tree">
+        <div class="card-header">
+          <h2 class="card-title">Blueprint</h2>
+          <span class="card-category">Blueprint & Cartography</span>
+        </div>
+        <p class="card-meaning">The deterministic hierarchical architecture tree defining the product's structure, declared across `afwe.yaml` and `.afwe/blueprint/` (`blueprint.yaml`, `relations.yaml`, `constraints.yaml`). It maps code files and symbols to architectural nodes, defines permitted relationships, and sets boundaries.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Index</strong>: The index is derived AST metadata generated from code files; the Blueprint is the authoritative structural reality that code is measured against.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-blueprint</code></span>
+          <button class="copy-btn" onclick="copyAnchor('blueprint')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="blueprint-node" data-category="Blueprint & Cartography" data-title="blueprint node" data-tags="blueprint topology">
+        <div class="card-header">
+          <h2 class="card-title">Blueprint Node</h2>
+          <span class="card-category">Blueprint & Cartography</span>
+        </div>
+        <p class="card-meaning">An architectural entity within the Blueprint tree representing a product, subsystem, module, or component. Each node has an ID, human-readable name, purpose statement, implementation mapping (file globs and symbols), status (`active`, `planned`, `deprecated`, `uncharted`), and architectural boundaries.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>File / Directory</strong>: A node is a logical concept. While it maps to files, multiple files can form one module node, or a single file can contain multiple component symbols.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-blueprint-node</code></span>
+          <button class="copy-btn" onclick="copyAnchor('blueprint-node')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="capability-ratchet" data-category="Ratchets & Integrity Verification" data-title="capability ratchet" data-tags="ratchet verification gate">
+        <div class="card-header">
+          <h2 class="card-title">Capability Ratchet</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A monotonic architectural safety mechanism enforced during `afwe turn commit`. It guarantees that codebase capabilities, public API exports, caller references, decisions, and documentation references can only advance or remain stable—never unintentionally degrade. Intentionally breaking a capability requires an explicit declaration in `turn assume`.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Unit Testing</strong>: Unit tests check functional runtime correctness; Capability Ratchets check static architectural reachability, export continuity, and reference graphs.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-capability-ratchet</code></span>
+          <button class="copy-btn" onclick="copyAnchor('capability-ratchet')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="check" data-category="Ratchets & Integrity Verification" data-title="check" data-tags="checks gate">
+        <div class="card-header">
+          <h2 class="card-title">Check</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">An executable verification item registered in `.afwe/checks/*.yaml` evaluated during `afwe verify` and `afwe turn commit`. Checks possess trust ratings, explicit authorship (human, generator, agent), and deterministic pass/fail semantics.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Claim</strong>: A Claim is an assertion declared during `turn assume`; once registered or graduated, it becomes an enforced Check in the registry.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-check</code></span>
+          <button class="copy-btn" onclick="copyAnchor('check')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="claim" data-category="Claims & Tripwires" data-title="claim" data-tags="claims pre-generation">
+        <div class="card-header">
+          <h2 class="card-title">Claim</h2>
+          <span class="card-category">Claims & Tripwires</span>
+        </div>
+        <p class="card-meaning">A pre-generation assertion declared during Phase 1 (`afwe turn assume`) before code is written. Claims include:
+- `forbid_import`: prevents illegal cross-node imports.
+- `forbid_symbol`: disallows blacklisted symbols or deprecated constructs.
+- `export_exists`: guarantees expected public functions or types remain exposed.
+- `symbol_signature`: verifies parameter and return types match contract specifications.
+- `pattern`: applies regex checks with automatic comment blanking.
+- `command`: executes a shell test command.
+- File Claims: locks specific files to avoid concurrent edit collisions.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Intent</strong>: Intent states what behavior is desired; a Claim states concrete structural boundaries that code must satisfy.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-claim</code></span>
+          <button class="copy-btn" onclick="copyAnchor('claim')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="concurrency-lease" data-category="Multi-Agent Concurrency & Worktrees" data-title="concurrency lease" data-tags="multi-agent concurrency">
+        <div class="card-header">
+          <h2 class="card-title">Concurrency Lease</h2>
+          <span class="card-category">Multi-Agent Concurrency & Worktrees</span>
+        </div>
+        <p class="card-meaning">A mutual exclusion mechanism (`afwe lease acquire &lt;node&gt;`) that grants temporary exclusive write permissions on specific Blueprint nodes and their mapped files to an agent or worktree, preventing concurrent agents from generating conflicting changes.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>File Claim</strong>: A File Claim operates at the individual file path level during a turn; a Concurrency Lease operates at the architectural node level across multiple worktrees and missions.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-lease</code></span>
+          <button class="copy-btn" onclick="copyAnchor('concurrency-lease')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="contention" data-category="Multi-Agent Concurrency & Worktrees" data-title="contention" data-tags="multi-agent concurrency">
+        <div class="card-header">
+          <h2 class="card-title">Contention</h2>
+          <span class="card-category">Multi-Agent Concurrency & Worktrees</span>
+        </div>
+        <p class="card-meaning">A concurrency conflict state returned when an agent attempts to begin a turn or acquire claims/leases on files or blueprint nodes already held by another active agent session. When contention occurs, the agent must defer, release overlapping claims, or coordinate via mission boundaries rather than overwriting concurrently.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Merge Conflict</strong>: Git merge conflict occurs after text has diverged; Contention is preemptively prevented before code generation starts.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-contention</code></span>
+          <button class="copy-btn" onclick="copyAnchor('contention')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="context-codename-separation" data-category="Architecture Philosophy & Tenets" data-title="context codename separation" data-tags="architecture-philosophy repository-rules">
+        <div class="card-header">
+          <h2 class="card-title">Context Codename Separation</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">The strict architectural separation governing AFWE development between two distinct contexts:
+1. **AFWE-Core**: This engine repository, its Rust crates (`afwe-core`, `afwe-cli`), binaries, MCP server, Studio, and master documentation in `docs/` and `crates/`.
+2. **AFWE-Client**: Consumer codebases initialized with `afwe init` or `afwe onboard`, whose scaffolds and templates live inside `.afwe/`. Client docs and generator templates must always reference `.afwe/docs/TUTORIAL.md`, never root `docs/`.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Client/Server Networking</strong>: This is not a network protocol; it is an architectural contract distinguishing engine authoring from client consumer scaffolding.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-context-separation</code></span>
+          <button class="copy-btn" onclick="copyAnchor('context-codename-separation')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="dead_on_arrival" data-category="Ratchets & Integrity Verification" data-title="dead_on_arrival" data-tags="ratchet gate-error">
+        <div class="card-header">
+          <h2 class="card-title">DEAD_ON_ARRIVAL</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A blocking commit gate error triggered when a newly introduced exported function or capability is born with 0 callers and no tests exercising it, without an explicit intent declaration.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>DROPPED_CAPABILITY</strong>: DROPPED_CAPABILITY is an export that was deleted; DEAD_ON_ARRIVAL is a new export that was created but left orphaned and unused.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-dead-on-arrival</code></span>
+          <button class="copy-btn" onclick="copyAnchor('dead_on_arrival')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="docs_drift" data-category="Ratchets & Integrity Verification" data-title="docs_drift" data-tags="ratchet documentation gate-error">
+        <div class="card-header">
+          <h2 class="card-title">DOCS_DRIFT</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A commit gate error triggered when markdown documentation files (`README.md`, `docs/*.md`, `.afwe/docs/*.md`) contain broken links to code files, outdated symbol paths, or deleted source files.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Drift</strong>: Blueprint drift is code-to-blueprint divergence; DOCS_DRIFT is documentation-to-code divergence.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-docs-drift</code></span>
+          <button class="copy-btn" onclick="copyAnchor('docs_drift')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="drift" data-category="Blueprint & Cartography" data-title="drift" data-tags="drift reconciliation">
+        <div class="card-header">
+          <h2 class="card-title">Drift</h2>
+          <span class="card-category">Blueprint & Cartography</span>
+        </div>
+        <p class="card-meaning">Any disagreement between the physical codebase (analyzed files, AST imports, symbol definitions) and the Blueprint tree. Detected via `afwe drift` or during `afwe sync`. Disagreements are triaged by confidence:
+- Confidence &gt;= 90%: auto-reconciled.
+- Confidence 50%–90%: presented as soft changes.
+- Confidence &lt; 50% or structural changes: staged as proposals awaiting human confirmation.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Constraint Violation</strong>: A constraint violation is an active rule failure (e.g., forbidden import); Drift is an unmapped or shifted structural divergence between code and blueprint.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-drift</code></span>
+          <button class="copy-btn" onclick="copyAnchor('drift')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="dropped_capability" data-category="Ratchets & Integrity Verification" data-title="dropped_capability" data-tags="ratchet gate-error">
+        <div class="card-header">
+          <h2 class="card-title">DROPPED_CAPABILITY</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A blocking commit gate error triggered when an intra-file public export or capability is deleted or privatized without an explicit removal or replacement declared in `turn assume` (`removes: [...]` or `action: remove / replace`).</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>SEVERED_CAPABILITY</strong>: DROPPED_CAPABILITY occurs when the public export itself disappears; SEVERED_CAPABILITY occurs when external callers are disconnected.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-dropped-capability</code></span>
+          <button class="copy-btn" onclick="copyAnchor('dropped_capability')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="explore-mode" data-category="Confidence Bands & Calibration" data-title="explore mode" data-tags="explore-mode prototyping">
+        <div class="card-header">
+          <h2 class="card-title">Explore Mode</h2>
+          <span class="card-category">Confidence Bands & Calibration</span>
+        </div>
+        <p class="card-meaning">A temporary mode activated via `afwe unlock --reason "..."` that downgrades blocking active checks and capability ratchets into non-blocking warnings during active exploratory refactoring or rapid prototyping. The harness must re-arm the gate before release via `afwe lock`, which triggers full architecture verification.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Bypassing the Gate</strong>: Explore Mode does not disable detection; it downgrades errors to warnings temporarily while recording the explicit reason in the log.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-explore-mode</code></span>
+          <button class="copy-btn" onclick="copyAnchor('explore-mode')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="guardrail" data-category="Architecture Philosophy & Tenets" data-title="guardrail" data-tags="guardrails verification">
+        <div class="card-header">
+          <h2 class="card-title">Guardrail</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">An architectural constraint divided into two complementary forms:
+1. **Passive Guardrail**: Targeted contextual instructions injected into the agent's micro-context (`afwe context &lt;files&gt;`) before editing begins.
+2. **Active Guardrail**: Concrete test, AST inspection, or claim enforced by `afwe verify` and the commit gate.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Pin</strong>: Guardrails can be generated, calibrated, and updated by AFWE tools; Pins are locked by humans under a strict budget.</div>
+          <div class="confused-item"><strong>Check</strong>: A Check is the concrete executable assertion registered in the gate registry implementing an active guardrail or assumption claim.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-guardrail</code></span>
+          <button class="copy-btn" onclick="copyAnchor('guardrail')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="intent" data-category="Memory, Pins & Living Intents" data-title="intent" data-tags="intents architecture">
+        <div class="card-header">
+          <h2 class="card-title">Intent</h2>
+          <span class="card-category">Memory, Pins & Living Intents</span>
+        </div>
+        <p class="card-meaning">A living, persistent statement of architectural purpose and desired behavior stored in `.afwe/intents/*.yaml`. Derived and merged from verbatim user prompts over time, intents capture what the codebase is intended to do, its historical evolution, and its implementation mappings.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Turn</strong>: A Turn is a single transaction that fulfills or updates one or more intents.</div>
+          <div class="confused-item"><strong>Workflow</strong>: In AFWE ReBorn, legacy workflow graphs have graduated into unified living intents.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-intent</code></span>
+          <button class="copy-btn" onclick="copyAnchor('intent')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="materializer" data-category="Claims & Tripwires" data-title="materializer" data-tags="materializer tripwire">
+        <div class="card-header">
+          <h2 class="card-title">Materializer</h2>
+          <span class="card-category">Claims & Tripwires</span>
+        </div>
+        <p class="card-meaning">The engine component invoked via `afwe materialize` (or MCP `afwe_materialize`) that renders AFWE tripwires into native workspace files (`.git/hooks/pre-commit`, `.github/workflows/afwe-gate.yml`, native test suites, `AGENTS.md` markers, and `.afwe/checks/manifest.blake3`). It offers preview-first application (`--dry-run` by default) and rollback capabilities.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>afwe init</strong>: `init` scaffolds `.afwe/`; `materialize` projects active tripwire enforcement into external files outside `.afwe/`.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-materializer</code></span>
+          <button class="copy-btn" onclick="copyAnchor('materializer')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="micro-context" data-category="Blueprint & Cartography" data-title="micro-context" data-tags="context passive-guardrails">
+        <div class="card-header">
+          <h2 class="card-title">Micro-Context</h2>
+          <span class="card-category">Blueprint & Cartography</span>
+        </div>
+        <p class="card-meaning">The targeted, highly scoped architectural context retrieved via `afwe context &lt;files&gt;` (or MCP tool `afwe_context`). Before an agent touches a file, micro-context delivers only the nodes, purpose statements, decisions, exceptions, constraints, ubiquitous terminology, and active guardrails that directly apply to those specific files.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Whole-Repository Prompting</strong>: Micro-context specifically avoids dumping the entire codebase or full architecture into the LLM context, keeping token usage low and focus razor-sharp.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-micro-context</code></span>
+          <button class="copy-btn" onclick="copyAnchor('micro-context')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="mission" data-category="Multi-Agent Concurrency & Worktrees" data-title="mission" data-tags="multi-agent coordination">
+        <div class="card-header">
+          <h2 class="card-title">Mission</h2>
+          <span class="card-category">Multi-Agent Concurrency & Worktrees</span>
+        </div>
+        <p class="card-meaning">A goal-oriented coordination structure stored in `.afwe/missions/*.yaml` that orchestrates multiple autonomous agents across isolated Git worktrees. Missions break complex epics into discrete turn obligations, managing concurrency leases, shared node boundaries, and merge gates.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Turn</strong>: A Turn is executed by a single agent for a single prompt; a Mission coordinates multiple agents and turns toward a composite outcome.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-mission</code></span>
+          <button class="copy-btn" onclick="copyAnchor('mission')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="orphaned_decision" data-category="Ratchets & Integrity Verification" data-title="orphaned_decision" data-tags="ratchet memory gate-error">
+        <div class="card-header">
+          <h2 class="card-title">ORPHANED_DECISION</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A commit gate error triggered when an architectural decision record in `.afwe/memory/decisions/` is anchored to files or symbols that have been deleted or moved without updating or superseding the decision.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>ORPHANED_PIN</strong>: ORPHANED_DECISION applies to ADR memory; ORPHANED_PIN applies to human-locked pins in `.afwe/pins/`.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-orphaned-decision</code></span>
+          <button class="copy-btn" onclick="copyAnchor('orphaned_decision')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="orphaned_pin" data-category="Ratchets & Integrity Verification" data-title="orphaned_pin" data-tags="ratchet pins gate-error">
+        <div class="card-header">
+          <h2 class="card-title">ORPHANED_PIN</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A commit gate error triggered when a human-locked pin in `.afwe/pins/` targets architectural nodes, files, or symbols that no longer exist in the working tree. Pins require explicit human override or retirement.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>ORPHANED_DECISION</strong>: ORPHANED_PIN involves human-locked invariant pins; ORPHANED_DECISION involves persistent ADR memory records.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-orphaned-pin</code></span>
+          <button class="copy-btn" onclick="copyAnchor('orphaned_pin')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="phase-0-briefing-pins" data-category="Turn Protocol & Lifecycle" data-title="phase 0 (briefing & pins)" data-tags="turn-protocol briefing">
+        <div class="card-header">
+          <h2 class="card-title">Phase 0 (Briefing & Pins)</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning">The initial pre-planning phase of a turn initiated via `afwe turn begin "&lt;prompt&gt;" --target &lt;files&gt; [--claim &lt;files&gt;]`. It stores the prompt verbatim, generates a deterministic briefing pack including active pins, guardrails, memory, active intents, and probing guides, issues a bearer security token, and acquires upfront file claims to prevent multi-agent contention.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Phase 1 (turn assume)</strong>: Phase 0 is read-only research and briefing before planning; Phase 1 is intent and claim declaration after planning is complete.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-phase-0-briefing</code></span>
+          <button class="copy-btn" onclick="copyAnchor('phase-0-briefing-pins')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="phase-1-pre-code-declaration" data-category="Turn Protocol & Lifecycle" data-title="phase 1 (pre-code declaration)" data-tags="turn-protocol intent-declaration">
+        <div class="card-header">
+          <h2 class="card-title">Phase 1 (Pre-Code Declaration)</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning">The pre-code declaration phase invoked via `afwe turn assume &lt;turn&gt; --file &lt;json&gt; [--token &lt;tok&gt;]`. Before any code is generated or edited, the agent explicitly registers its architectural intents, file claims, and pre-generation AST assertions (`forbid_import`, `forbid_symbol`, `export_exists`, `symbol_signature`, `pattern`, `command`). Intentional removals must be declared in `removes` to satisfy the strict "Rust for project intent" compiler model.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Phase 2 (turn commit)</strong>: Assume declares expectations before writing code; commit verifies compliance and writes Git trees after code is complete.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-phase-1-assume</code></span>
+          <button class="copy-btn" onclick="copyAnchor('phase-1-pre-code-declaration')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="phase-2-gated-commit" data-category="Turn Protocol & Lifecycle" data-title="phase 2 (gated commit)" data-tags="turn-protocol verification gate">
+        <div class="card-header">
+          <h2 class="card-title">Phase 2 (Gated Commit)</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning">The final gated commit phase invoked via `afwe turn commit &lt;turn&gt; --summary "..." [--token &lt;tok&gt;]`. AFWE isolates working changes via Git plumbing trees with Content-Addressable Storage (CAS) verification and advisory OS commit locks, executing the gate against active pins, claims, and capability ratchets before recording the turn in `.afwe/turns/` and emitting an `AFWE-Turn:` trailer.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>git commit -m</strong>: Standard git commit operates without architectural validation; AFWE turn commit acts as a compiler gate enforcing capability preservation and intent adherence.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-phase-2-commit</code></span>
+          <button class="copy-btn" onclick="copyAnchor('phase-2-gated-commit')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="pin" data-category="Memory, Pins & Living Intents" data-title="pin" data-tags="pins governance">
+        <div class="card-header">
+          <h2 class="card-title">Pin</h2>
+          <span class="card-category">Memory, Pins & Living Intents</span>
+        </div>
+        <p class="card-meaning">A human-locked architectural decision or intentional bug stored in `.afwe/pins/*.yaml`. Pins represent immutable boundaries that automated agents and refactorings are strictly forbidden from breaking or deleting without an explicit override `{pin, reason}`. Pins are capped under a codebase-scaled budget to prevent architectural ossification.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Guardrail</strong>: Guardrails are automated passive contexts or active checks; Pins are human-locked authoritative invariants that cannot be altered without human override.</div>
+          <div class="confused-item"><strong>Decision (Memory)</strong>: An ADR in memory documents reasoning; a Pin actively blocks the gate from passing if violated.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-pin</code></span>
+          <button class="copy-btn" onclick="copyAnchor('pin')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="probing-guide" data-category="Confidence Bands & Calibration" data-title="probing guide" data-tags="confidence-bands advisory">
+        <div class="card-header">
+          <h2 class="card-title">Probing Guide</h2>
+          <span class="card-category">Confidence Bands & Calibration</span>
+        </div>
+        <p class="card-meaning">An advisory architectural hint emitted in Phase 0 briefings with 85%–90% confidence (`[GUIDE - ADVISORY]`). Probing guides steer the agent toward emerging architectural patterns without hard-blocking execution. When repeatedly adhered to, probing guides graduate into active deterministic checks via `afwe guide graduate`.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Active Check</strong>: Active checks block the commit gate; Probing Guides are non-blocking advisory steering.</div>
+          <div class="confused-item"><strong>Ambiguity Question</strong>: Questions have &lt;85% confidence and require human decision; Probing Guides have 85%–90% confidence and steer agents automatically.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-probing-guide</code></span>
+          <button class="copy-btn" onclick="copyAnchor('probing-guide')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="ratchet-baseline" data-category="Ratchets & Integrity Verification" data-title="ratchet baseline" data-tags="ratchet baseline">
+        <div class="card-header">
+          <h2 class="card-title">Ratchet Baseline</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A snapshot mechanism (`afwe baseline snapshot`) used when onboarding legacy codebases to grandfather pre-existing violations, uncalled exports, or circular imports without failing the gate. The gate prevents any *new* regressions from being introduced beyond the recorded baseline.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Ratchet</strong>: The ratchet is the monotonic enforcement rule; the baseline is the grandfathered zero-point snapshot.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-baseline</code></span>
+          <button class="copy-btn" onclick="copyAnchor('ratchet-baseline')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="rust-for-project-intent" data-category="Architecture Philosophy & Tenets" data-title="rust for project intent" data-tags="architecture-philosophy compiler-mental-model">
+        <div class="card-header">
+          <h2 class="card-title">Rust for Project Intent</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">The foundational design philosophy of AFWE: applying the unforgiving, deterministic mental model of the Rust compiler to overall project architecture and intent. Under this paradigm, you can break things on purpose by declaring them explicitly in `turn assume` (`removes: [...]`), but the gate ensures you can never break things by accident.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Programming Language Choice</strong>: This refers to the architectural design philosophy of strictness and explicit declaration, regardless of what programming language the user's project uses.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-rust-for-project-intent</code></span>
+          <button class="copy-btn" onclick="copyAnchor('rust-for-project-intent')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="severed_capability" data-category="Ratchets & Integrity Verification" data-title="severed_capability" data-tags="ratchet gate-error">
+        <div class="card-header">
+          <h2 class="card-title">SEVERED_CAPABILITY</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A blocking commit gate error triggered when cross-module caller severance drops inbound references to an exported function or struct from &gt;0 to 0, turning previously consumed functionality into dead code without declared intent.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>DEAD_ON_ARRIVAL</strong>: SEVERED_CAPABILITY affects previously used code that lost its callers; DEAD_ON_ARRIVAL affects newly introduced code that was never called.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-severed-capability</code></span>
+          <button class="copy-btn" onclick="copyAnchor('severed_capability')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="the-folder-is-the-product" data-category="Architecture Philosophy & Tenets" data-title="the folder is the product" data-tags="architecture-philosophy persistent-model">
+        <div class="card-header">
+          <h2 class="card-title">The Folder is the Product</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">The core tenet of AFWE stating that `.afwe/` itself is the persistent, tool-agnostic structural model of the project. The engine that reads and writes it (CLI, MCP, Studio) is completely replaceable; the folder, its yaml files, markdown memory, and git history remain the durable single source of architectural truth.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Ephemeral Cache or Lockfile</strong>: `.afwe/` (excluding gitignored `index/` and `state/`) is committed to version control and represents the living architecture of the codebase.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-the-folder-is-the-product</code></span>
+          <button class="copy-btn" onclick="copyAnchor('the-folder-is-the-product')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="tripwire" data-category="Claims & Tripwires" data-title="tripwire" data-tags="tripwire materializer">
+        <div class="card-header">
+          <h2 class="card-title">Tripwire</h2>
+          <span class="card-category">Claims & Tripwires</span>
+        </div>
+        <p class="card-meaning">A deterministic, preview-first defensive layer materialized directly into developer and CI harnesses (git hooks, GitHub Actions CI gates, native unit test harnesses, AGENTS.md blocks, and BLAKE3 manifests). Tripwires intercept architectural regressions outside of AFWE commands.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Passive Guardrail</strong>: Passive guardrails advise the agent during context loading; Tripwires hard-block git commits, pushes, and CI builds if invariants fail.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-tripwire</code></span>
+          <button class="copy-btn" onclick="copyAnchor('tripwire')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="turn" data-category="Turn Protocol & Lifecycle" data-title="turn" data-tags="turn-protocol core-lifecycle">
+        <div class="card-header">
+          <h2 class="card-title">Turn</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning">A discrete, atomic engineering lifecycle unit spanning exactly one prompt ("one prompt = one turn"). A turn progresses sequentially through three deterministic phases: Phase 0 (`afwe turn begin`) pre-planning briefing, Phase 1 (`afwe turn assume`) pre-code intent and claims declaration, and Phase 2 (`afwe turn commit`) post-verification gated commit via isolated Git plumbing trees with CAS verification.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Intent</strong>: An Intent is a living, persistent statement of architectural purpose and desire. A Turn is a single transactional execution step that implements or updates intents.</div>
+          <div class="confused-item"><strong>Git Commit</strong>: A Git commit is a low-level VCS snapshot. An AFWE Turn produces an isolated tree commit tagged with an `AFWE-Turn:` trailer only after passing through the full architectural gate, intent alignment, and capability ratchets.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-turn</code></span>
+          <button class="copy-btn" onclick="copyAnchor('turn')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="turn-abandon" data-category="Turn Protocol & Lifecycle" data-title="turn abandon" data-tags="turn-protocol recovery">
+        <div class="card-header">
+          <h2 class="card-title">Turn Abandon</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning">A turn cancellation command (`afwe turn abandon &lt;turn&gt;`) that discards an open uncommitted turn, immediately releasing all file claims, locks, and temporary token reservations without altering the Git tree.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Turn Redo</strong>: Abandon terminates the turn completely; Redo resets the workspace but preserves the open turn session.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-turn-abandon</code></span>
+          <button class="copy-btn" onclick="copyAnchor('turn-abandon')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="turn-receipt" data-category="Turn Protocol & Lifecycle" data-title="turn receipt" data-tags="turn-protocol provenance">
+        <div class="card-header">
+          <h2 class="card-title">Turn Receipt</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning">The immutable record produced upon turn commit, saved in `.afwe/turns/tNNNN.yaml`. It contains the original prompt verbatim, origin, timing, gate evaluation, intent updates, files modified, checks executed, capability ratchets checked, and Git commit hash.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Intent</strong>: The turn receipt is an immutable audit receipt of a single execution; intents are living state documents that evolve over time.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-turn-receipt</code></span>
+          <button class="copy-btn" onclick="copyAnchor('turn-receipt')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="turn-redo" data-category="Turn Protocol & Lifecycle" data-title="turn redo" data-tags="turn-protocol recovery">
+        <div class="card-header">
+          <h2 class="card-title">Turn Redo</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning">A safety command (`afwe turn redo &lt;turn&gt;`) that cleanly reverts uncommitted workspace edits back to the turn's begin baseline (backed up in `.afwe/backups/&lt;turn_hash&gt;/`), while keeping the turn open and retaining locks for rework.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Turn Abandon</strong>: Redo keeps the turn open to try again; Abandon cancels the turn and releases all file claims and locks.</div>
+          <div class="confused-item"><strong>Turn Undo / Revert</strong>: Undo/revert operates on already-committed turns; Redo operates on the current open uncommitted turn.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-turn-redo</code></span>
+          <button class="copy-btn" onclick="copyAnchor('turn-redo')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('search');
+    const catButtons = document.querySelectorAll('.cat-btn');
+    const cards = document.querySelectorAll('.card');
+    const countDisplay = document.getElementById('visible-count');
+    let activeCat = 'all';
+
+    function filterTerms() {
+      const q = searchInput.value.toLowerCase().trim();
+      let visible = 0;
+
+      cards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        const text = card.textContent.toLowerCase();
+        const matchesSearch = !q || text.includes(q);
+        const matchesCat = activeCat === 'all' || cat === activeCat;
+
+        if (matchesSearch && matchesCat) {
+          card.style.display = 'flex';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      countDisplay.textContent = visible;
+    }
+
+    searchInput.addEventListener('input', filterTerms);
+
+    catButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        catButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCat = btn.getAttribute('data-cat');
+        filterTerms();
+      });
+    });
+
+    function copyAnchor(id) {
+      const url = `${window.location.origin}${window.location.pathname}#${id}`;
+      navigator.clipboard.writeText(url).then(() => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.borderColor = 'var(--accent)';
+          setTimeout(() => { el.style.borderColor = ''; }, 1000);
+        }
+      });
+    }
+
+    if (window.location.hash) {
+      const target = document.querySelector(window.location.hash);
+      if (target) {
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.style.borderColor = 'var(--accent)';
+        }, 200);
+      }
+    }
+  </script>
+</body>
+</html>

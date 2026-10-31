@@ -194,6 +194,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             ops::memory_remove(engine, &req(&p, "id")?, &origin(&p, default_origin))?;
             Ok(json!({"ok": true}))
         }
+        "memory.sync_terms" => j(ops::memory_sync_terms(engine)?),
 
         // ───────── guardrails ─────────
         "guardrail.list" => j(engine.store.guardrails()?),
@@ -698,7 +699,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
 pub const OPS: &[&str] = &[
     "status", "stats", "graph", "context", "verify", "sync", "drift", "search", "file.read",
     "blueprint.get", "blueprint.add", "blueprint.move", "blueprint.update", "blueprint.remove", "blueprint.map", "blueprint.unmap", "blueprint.relate", "blueprint.unrelate", "blueprint.constrain", "blueprint.unconstrain", "blueprint.edit",
-    "memory.list", "memory.get", "memory.add", "memory.update", "memory.remove",
+    "memory.list", "memory.get", "memory.add", "memory.update", "memory.remove", "memory.sync_terms",
     "guardrail.list", "guardrail.add", "guardrail.remove",
     "workflow.list", "workflow.get", "workflow.new", "workflow.add_node", "workflow.link", "workflow.set", "workflow.upsert", "workflow.remove", "workflow.promote",
     "lens.list", "lens.get", "lens.save", "lens.remove",
@@ -964,6 +965,7 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_memory_add", op: "memory.add", description: "Record project knowledge with scope: kind=decision|constraint|exception|terminology|problem. applies_to = blueprint nodes; files = globs; symbols = file::Symbol. Body is markdown (Decision / Reason / Trade-off).", schema: obj(json!({"kind": {"type": "string"}, "title": {"type": "string"}, "body": {"type": "string"}, "applies_to": strs, "files": strs, "symbols": strs, "tags": strs, "status": {"type": "string"}, "supersedes": {"type": "string"}, "workflow": {"type": "string"}}), &["kind", "title"]) },
         ToolSpec { name: "afwe_memory_find", op: "memory.list", description: "Find memory entries by kind, node, tag, file or free text.", schema: obj(json!({"kind": {"type": "string"}, "node": {"type": "string"}, "tag": {"type": "string"}, "file": {"type": "string"}, "q": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_memory_update", op: "memory.update", description: "Update a memory entry (title, body, status, applies_to, files, symbols, tags).", schema: obj(json!({"id": {"type": "string"}, "patch": {"type": "object"}}), &["id", "patch"]) },
+        ToolSpec { name: "afwe_memory_sync_terms", op: "memory.sync_terms", description: "Synchronize all domain terminology into docs/UBIQUITOUS_LANGUAGE.md and docs/UBIQUITOUS_LANGUAGE.html.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_guardrail_add", op: "guardrail.add", description: "Add a guardrail. passive = statement + scope (+ exceptions) injected as context; active = checks [{type: command|forbid_import|forbid_pattern|require_pattern|require_file, ...}] enforced by afwe_verify.", schema: obj(json!({"guardrail": {"type": "object"}}), &["guardrail"]) },
         ToolSpec { name: "afwe_lens_get", op: "lens.get", description: "Resolve a custom abstraction (lens) into a view tree.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
         ToolSpec { name: "afwe_proposals", op: "proposals.list", description: "Pending architecture proposals (<50% confidence changes AFWE will not apply on its own).", schema: obj(json!({}), &[]) },

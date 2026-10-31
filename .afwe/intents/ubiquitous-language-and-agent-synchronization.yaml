@@ -1,0 +1,20 @@
+id: ubiquitous-language-and-agent-synchronization
+title: Ubiquitous Language Dictionary, AGENTS.md Protocol Ratchet, Human-Readable HTML/MD, and Auto-Update Sync
+statement: Create the canonical Ubiquitous Language dictionary for AFWE, integrate mandatory protocol read/update directives in AGENTS.md and SKILL.md, link across master documentation and initialization scaffolding, provide modern human-readable Markdown and interactive HTML formats, and implement auto-update synchronization tooling.
+status: active
+origin: human
+attaches:
+  files:
+  - docs
+  - agents-md
+  - skills
+  - terminology
+from_turns:
+- t0046
+history:
+- turn: t0046
+  ts: 2026-10-31T13:24:27Z
+  statement: Create the canonical Ubiquitous Language dictionary for AFWE, integrate mandatory protocol read/update directives in AGENTS.md and SKILL.md, link across master documentation and initialization scaffolding, provide modern human-readable Markdown and interactive HTML formats, and implement auto-update synchronization tooling.
+created: 2026-10-31T13:24:27Z
+updated: 2026-10-31T13:59:15Z
+task: task-t0046
