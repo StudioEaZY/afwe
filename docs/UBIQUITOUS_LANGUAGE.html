@@ -244,22 +244,37 @@
     <div class="controls">
       <div class="search-box">
         <input type="text" id="search" class="search-input" placeholder="Search terms, definitions, invariants, or confused-with concepts... (e.g. Turn, Ratchet, CAS)" autofocus />
-        <div class="term-count"><span id="visible-count">40</span> / 40 terms</div>
+        <div class="term-count"><span id="visible-count">68</span> / 68 terms</div>
       </div>
       <div class="categories">
         <button class="cat-btn active" data-cat="all">All Categories</button>
-        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (9)</button>
+        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (27)</button>
         <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
-        <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (4)</button>
-        <button class="cat-btn" data-cat="Ratchets & Integrity Verification">Ratchets & Integrity Verification (9)</button>
-        <button class="cat-btn" data-cat="Claims & Tripwires">Claims & Tripwires (3)</button>
+        <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (4)</button>
+        <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (7)</button>
+        <button class="cat-btn" data-cat="Ratchets & Integrity Verification">Ratchets & Integrity Verification (10)</button>
+        <button class="cat-btn" data-cat="Claims & Tripwires">Claims & Tripwires (4)</button>
         <button class="cat-btn" data-cat="Multi-Agent Concurrency & Worktrees">Multi-Agent Concurrency & Worktrees (3)</button>
-        <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (2)</button>
-        <button class="cat-btn" data-cat="Turn Protocol & Lifecycle">Turn Protocol & Lifecycle (7)</button>
+        <button class="cat-btn" data-cat="Turn Protocol & Lifecycle">Turn Protocol & Lifecycle (10)</button>
       </div>
     </div>
 
     <div class="grid" id="terms-grid">
+      <article class="card" id="4d-timeline-dial" data-category="Architecture Philosophy & Tenets" data-title="4d timeline dial" data-tags="studio-control timeline 4d">
+        <div class="card-header">
+          <h2 class="card-title">4D Timeline Dial</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">A continuous temporal scrubber control (`TimelineScrubber4D.tsx`) that treats time as a spatial coordinate. Moving backward inspects historical architecture snapshots; moving forward into the future renders planned architectural nodes as translucent "ghost nodes" based on active intent roadmaps and forward constraints.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Dual Timeline Scrubber</strong>: The Dual Scrubber compares two discrete turn receipts; the 4D Dial interpolates continuous temporal frames including future architectural directions.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-4d-timeline-dial</code></span>
+          <button class="copy-btn" onclick="copyAnchor('4d-timeline-dial')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="action-queue" data-category="Architecture Philosophy & Tenets" data-title="action queue" data-tags="">
         <div class="card-header">
           <h2 class="card-title">Action Queue</h2>
@@ -301,6 +316,46 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
           <button class="copy-btn" onclick="copyAnchor('ambiguity-question')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="asset-arena" data-category="Memory, Pins & Living Intents" data-title="asset arena" data-tags="[terminology, performance, memory, engine]">
+        <div class="card-header">
+          <h2 class="card-title">Asset Arena</h2>
+          <span class="card-category">Memory, Pins & Living Intents</span>
+        </div>
+        <p class="card-meaning"># Asset Arena
+
+### Definition
+A contiguous memory pool and monotonic bump allocator used by the AFWE-Core engine and Studio to store, reuse, and bulk-deallocate graph assets, glyphs, and parsed syntax representations.
+
+### Why it Matters
+Frequent allocations and deallocations during rapid AST parsing and graph visualizer frames cause memory fragmentation and garbage collection pauses. The Asset Arena enables zero-fragmentation allocations during a Turn or rendering frame, deallocating the entire arena in a single step upon completion.
+
+### Example in Practice
+During an AST claim pass across 150 source files, tokens and syntax node records are allocated out of a dedicated Turn Asset Arena. Once claims are verified and cached, the entire arena resets instantly without invoking thousands of individual free operations.</p>
+        <div class="card-footer">
+          <span><code>term-asset-arena</code></span>
+          <button class="copy-btn" onclick="copyAnchor('asset-arena')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="bearer-token" data-category="Architecture Philosophy & Tenets" data-title="bearer token" data-tags="[terminology, security, authentication, protocol]">
+        <div class="card-header">
+          <h2 class="card-title">Bearer Token</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Bearer Token
+
+### Definition
+An ephemeral, cryptographically random secret token generated at `afwe turn begin` and scoped to the active Turn lifecycle.
+
+### Why it Matters
+The Bearer Token ensures that only the authorized agent or process that initiated a Turn can assume intents, renew leases, or commit changes for that Turn. It guards against unauthorized writes, cross-subagent interference, and hijacked mutation workflows in multi-agent environments.
+
+### Example in Practice
+When an agent starts a Turn via `afwe turn begin "Refactor auth"`, AFWE issues a bearer token embedded in the briefing pack JSON response. Subsequent calls to `afwe turn assume` and `afwe turn commit` validate this token before granting state modifications.</p>
+        <div class="card-footer">
+          <span><code>term-bearer-token</code></span>
+          <button class="copy-btn" onclick="copyAnchor('bearer-token')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="blueprint" data-category="Blueprint & Cartography" data-title="blueprint" data-tags="blueprint architecture-tree">
         <div class="card-header">
           <h2 class="card-title">Blueprint</h2>
@@ -316,6 +371,21 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
           <button class="copy-btn" onclick="copyAnchor('blueprint')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="blueprint-diff-view" data-category="Blueprint & Cartography" data-title="blueprint diff view" data-tags="studio-view blueprint diff">
+        <div class="card-header">
+          <h2 class="card-title">Blueprint Diff View</h2>
+          <span class="card-category">Blueprint & Cartography</span>
+        </div>
+        <p class="card-meaning">A dedicated architectural visualizer in Studio Timeline (`TimelinePage.tsx`) that renders the structural delta between two turns or branches. It color-codes added nodes/relations (green), modified boundaries (amber), and removed entities (red), complementing textual source code diffs with structural architecture diffs.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Code Diff Viewer</strong>: Code Diff Viewer inspects textual line modifications in files; Blueprint Diff View inspects structural graph modifications in the architecture tree.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-blueprint-diff-view</code></span>
+          <button class="copy-btn" onclick="copyAnchor('blueprint-diff-view')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="blueprint-node" data-category="Blueprint & Cartography" data-title="blueprint node" data-tags="blueprint topology">
         <div class="card-header">
           <h2 class="card-title">Blueprint Node</h2>
@@ -329,6 +399,42 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
         <div class="card-footer">
           <span><code>term-blueprint-node</code></span>
           <button class="copy-btn" onclick="copyAnchor('blueprint-node')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="blueprint-view" data-category="Blueprint & Cartography" data-title="blueprint view" data-tags="studio-view visualization blueprint">
+        <div class="card-header">
+          <h2 class="card-title">Blueprint View</h2>
+          <span class="card-category">Blueprint & Cartography</span>
+        </div>
+        <p class="card-meaning">The primary structural graph visualizer in AFWE Studio (powered by `GraphView.tsx` and ReactFlow) rendering the Blueprint tree in balanced, tiered vertical strata. It features perimeter port distribution to eliminate edge overlap, switchable edge routing geometry (bezier, smoothstep, orthogonal), spacebar hand pan navigation, and progressive leaf disclosure.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Blueprint (Concept)</strong>: The Blueprint is the authoritative tree data structure in `.afwe/blueprint/`; the Blueprint View is the interactive graphical representation inside Studio.</div>
+          <div class="confused-item"><strong>Topology View</strong>: Blueprint View highlights parent-child structural ownership; Topology View highlights inter-module import and caller dependencies.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-blueprint-view</code></span>
+          <button class="copy-btn" onclick="copyAnchor('blueprint-view')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="capability-bridge" data-category="Ratchets & Integrity Verification" data-title="capability bridge" data-tags="[terminology, architecture, capabilities, interoperability]">
+        <div class="card-header">
+          <h2 class="card-title">Capability Bridge</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning"># Capability Bridge
+
+### Definition
+An explicit adapter layer or interface mapping between decoupled subsystems, crates, or runtime boundaries (such as between the Rust AFWE-Core engine and the TypeScript Studio UI, or between MCP and the CLI).
+
+### Why it Matters
+Capability Bridges enforce capability contracts across language and transport boundaries. They prevent implicit API drift, validate serializable JSON-RPC schemas, and ensure that capabilities verified in the engine remain strictly aligned with user-facing tools and external clients.
+
+### Example in Practice
+The MCP server in `crates/afwe-cli/src/mcp.rs` serves as a Capability Bridge between the engine's core turn API (`crates/afwe-core/src/api.rs`) and external AI agent runners, exposing structured tools while preserving validation logic.</p>
+        <div class="card-footer">
+          <span><code>term-capability-bridge</code></span>
+          <button class="copy-btn" onclick="copyAnchor('capability-bridge')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="capability-ratchet" data-category="Ratchets & Integrity Verification" data-title="capability ratchet" data-tags="ratchet verification gate">
@@ -383,6 +489,41 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
           <button class="copy-btn" onclick="copyAnchor('claim')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="comment-aware-claims" data-category="Claims & Tripwires" data-title="comment-aware claims" data-tags="[terminology, claims, ast, verification]">
+        <div class="card-header">
+          <h2 class="card-title">Comment-Aware Claims</h2>
+          <span class="card-category">Claims & Tripwires</span>
+        </div>
+        <p class="card-meaning"># Comment-Aware Claims
+
+### Definition
+A parsing strategy that blanks out, ignores, or differentiates code comments and docstrings when evaluating AST function boundaries, symbol claims, and diff contentions.
+
+### Why it Matters
+Naive regex or raw string search can falsely match commented-out code, references in documentation, or license headers as active symbols. Comment-aware claim extraction ensures that agents only claim and lock genuine semantic AST nodes, preventing false contention and allowing concurrent documentation updates without lock collisions.
+
+### Example in Practice
+If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifies an architectural docstring referencing `execute_turn()` in another file, Comment-Aware Claims recognizes the mention as inert prose rather than a declaration lock violation.</p>
+        <div class="card-footer">
+          <span><code>term-comment-aware-claims</code></span>
+          <button class="copy-btn" onclick="copyAnchor('comment-aware-claims')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="component-inspector" data-category="Architecture Philosophy & Tenets" data-title="component inspector" data-tags="studio-panel inspector">
+        <div class="card-header">
+          <h2 class="card-title">Component Inspector</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">The contextual metadata panel in AFWE Studio (`ComponentInspector.tsx` and `NodeInspector.tsx`) activated upon selecting any node or relation. It renders live purpose statements, implementation file/symbol mappings, caller counts, attached active guardrails, ADR decisions, bookmarks, and structural edit controls (`move`, `relate`, `constrain`).</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Micro-Context</strong>: Micro-context is the formatted markdown context delivered to coding agents before editing; the Component Inspector is the visual GUI interface for developers in Studio.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-component-inspector</code></span>
+          <button class="copy-btn" onclick="copyAnchor('component-inspector')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="concurrency-lease" data-category="Multi-Agent Concurrency & Worktrees" data-title="concurrency lease" data-tags="multi-agent concurrency">
         <div class="card-header">
           <h2 class="card-title">Concurrency Lease</h2>
@@ -396,6 +537,21 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
         <div class="card-footer">
           <span><code>term-lease</code></span>
           <button class="copy-btn" onclick="copyAnchor('concurrency-lease')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="constellation-view" data-category="Architecture Philosophy & Tenets" data-title="constellation view" data-tags="studio-view visualization constellation">
+        <div class="card-header">
+          <h2 class="card-title">Constellation View</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">A force-directed cosmic graph visualization in AFWE Studio (`ConstellationMap.tsx`) modeling architectural gravity, inter-module attraction, and constraint repulsion. It supports directional 3-hop Breadth-First Search (BFS), bidirectional cycle detection, generous 14px hitboxes for edge selection, and spatial drag clamping.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Topology View</strong>: Topology organizes nodes into deterministic rectangular cards in architectural strata; Constellation allows organic physics-driven clustering and orbit visualization.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-constellation-view</code></span>
+          <button class="copy-btn" onclick="copyAnchor('constellation-view')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="contention" data-category="Multi-Agent Concurrency & Worktrees" data-title="contention" data-tags="multi-agent concurrency">
@@ -460,6 +616,26 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
           <button class="copy-btn" onclick="copyAnchor('docs_drift')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="dots-hierarchical-scene-graph" data-category="Architecture Philosophy & Tenets" data-title="dots hierarchical scene graph" data-tags="[terminology, studio, architecture, rendering]">
+        <div class="card-header">
+          <h2 class="card-title">DOTS Hierarchical Scene Graph</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># DOTS Hierarchical Scene Graph
+
+### Definition
+A high-performance, Data-Oriented Technology Stack (DOTS) inspired hierarchical graph model that organizes and computes transformation matrices, node hierarchies, and spatial bounds for visual rendering in AFWE Studio.
+
+### Why it Matters
+As repositories grow to thousands of blueprint nodes, capabilities, and dependencies, traditional object-oriented DOM or tree representations experience severe frame drops and memory overhead. The DOTS scene graph stores entity attributes in flat, contiguous memory arrays, allowing 60 FPS spatial rendering, instant level-of-detail culling, and rapid topological queries.
+
+### Example in Practice
+When Studio renders a repository with 500 modules and 2,000 edge connections in Blueprint View, the DOTS Hierarchical Scene Graph evaluates transform hierarchies in parallel passes, batching canvas draw calls without traversing individual nested object trees.</p>
+        <div class="card-footer">
+          <span><code>term-dots-scene-graph</code></span>
+          <button class="copy-btn" onclick="copyAnchor('dots-hierarchical-scene-graph')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="drift" data-category="Blueprint & Cartography" data-title="drift" data-tags="drift reconciliation">
         <div class="card-header">
           <h2 class="card-title">Drift</h2>
@@ -491,6 +667,59 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
         <div class="card-footer">
           <span><code>term-dropped-capability</code></span>
           <button class="copy-btn" onclick="copyAnchor('dropped_capability')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="dual-timeline-scrubber" data-category="Architecture Philosophy & Tenets" data-title="dual timeline scrubber" data-tags="studio-control timeline scrubbing">
+        <div class="card-header">
+          <h2 class="card-title">Dual Timeline Scrubber</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">An interactive dual-point range slider in AFWE Studio (`TimelineDualScrubber.tsx`) allowing developers to bind two separate moments in codebase history (Turn A vs Turn B). It dynamically updates the active map or diff viewer to compare structural graph transformations, capability gains, or collateral losses between those moments.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>4D Timeline Dial</strong>: The 4D Dial scrubs through time linearly to see the past or projected future ghost nodes; the Dual Scrubber selects a bounded range between two arbitrary turns for side-by-side comparative diffing.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-dual-timeline-scrubber</code></span>
+          <button class="copy-btn" onclick="copyAnchor('dual-timeline-scrubber')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="edge-routing-geometry" data-category="Architecture Philosophy & Tenets" data-title="edge routing geometry" data-tags="studio-layout edge-routing">
+        <div class="card-header">
+          <h2 class="card-title">Edge Routing Geometry</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">The configurable mathematical curvature options applied to relationship lines across Studio maps:
+- **Smoothstep**: Right-angled orthogonal lines with rounded corners, ideal for tiered blueprint strata.
+- **Bezier**: Smooth cubic polynomial curves, ideal for organic dependency networks.
+- **Straight**: Direct Euclidean line segments, ideal for dense constellation networks.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Constraint Violation Routing</strong>: Normal edges use theme-accented neutral tones; violated edges are routed in bright red with upward curves and pulsing warning badges.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-edge-routing</code></span>
+          <button class="copy-btn" onclick="copyAnchor('edge-routing-geometry')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="epoch-id" data-category="Turn Protocol & Lifecycle" data-title="epoch id" data-tags="[terminology, lifecycle, orchestration, concurrency]">
+        <div class="card-header">
+          <h2 class="card-title">Epoch ID</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning"># Epoch ID
+
+### Definition
+A monotonically incrementing or timestamped logical grouping identifier that clusters related Turns, sub-turns, and missions within a shared high-level objective.
+
+### Why it Matters
+When multiple agents or automated pipelines run in parallel across decoupled branches or worktrees, the Epoch ID enables collective rollbacks, cross-turn synchronization points, and coherent telemetry collation across all active worker instances.
+
+### Example in Practice
+An autonomous testing campaign might spin up four subagents across an Epoch tagged `epoch-20261031-1900`. If one subagent discovers an invariant breach, the orchestrator uses the Epoch ID to cancel or quarantine all active sub-turns associated with that mission cluster.</p>
+        <div class="card-footer">
+          <span><code>term-epoch-id</code></span>
+          <button class="copy-btn" onclick="copyAnchor('epoch-id')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="explore-mode" data-category="Confidence Bands & Calibration" data-title="explore mode" data-tags="explore-mode prototyping">
@@ -626,6 +855,21 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
           <button class="copy-btn" onclick="copyAnchor('narrow-self-heal')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="native-dot-notation" data-category="Architecture Philosophy & Tenets" data-title="native dot notation" data-tags="syntax node-addressing">
+        <div class="card-header">
+          <h2 class="card-title">Native Dot Notation</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">The canonical hierarchical address syntax (e.g., `afwe.Core.Analyze` or `project.Billing.Checkout`) used natively across AFWE Studio maps, CLI arguments, and engine queries. It mirrors namespace notation in modern languages, replacing fragile filesystem slash paths (`afwe/core/analyze`) with stable architectural node identities.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>File System Paths</strong>: File system paths (`src/billing/checkout.ts`) locate files on disk; Native Dot Notation addresses abstract Blueprint nodes regardless of file moves.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-native-dot-notation</code></span>
+          <button class="copy-btn" onclick="copyAnchor('native-dot-notation')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="orphaned_decision" data-category="Ratchets & Integrity Verification" data-title="orphaned_decision" data-tags="ratchet memory gate-error">
         <div class="card-header">
           <h2 class="card-title">ORPHANED_DECISION</h2>
@@ -654,6 +898,21 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
         <div class="card-footer">
           <span><code>term-orphaned-pin</code></span>
           <button class="copy-btn" onclick="copyAnchor('orphaned_pin')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="perimeter-port-distribution" data-category="Architecture Philosophy & Tenets" data-title="perimeter port distribution" data-tags="studio-layout edge-routing">
+        <div class="card-header">
+          <h2 class="card-title">Perimeter Port Distribution</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">An architectural layout algorithm in Studio Blueprint and Topology views that dynamically distributes connection handle ports along all four perimeters (top, bottom, left, right) of node cards based on relative target angles. This eliminates overlapping edge bundles, prevents line crossings through node bodies, and maintains clean visual hierarchy.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Single-Anchor Ports</strong>: Traditional flow diagrams route all inputs through the top center and outputs through the bottom center; Perimeter Port Distribution balances connections across the entire node perimeter.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-perimeter-port-distribution</code></span>
+          <button class="copy-btn" onclick="copyAnchor('perimeter-port-distribution')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="phase-0-briefing-pins" data-category="Turn Protocol & Lifecycle" data-title="phase 0 (briefing & pins)" data-tags="turn-protocol briefing">
@@ -717,6 +976,26 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
           <button class="copy-btn" onclick="copyAnchor('pin')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="private-git-plumbing-tree" data-category="Architecture Philosophy & Tenets" data-title="private git plumbing tree" data-tags="[terminology, git, isolation, storage, safety]">
+        <div class="card-header">
+          <h2 class="card-title">Private Git Plumbing Tree</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Private Git Plumbing Tree
+
+### Definition
+An isolated, content-addressed Git object tree constructed directly using low-level Git plumbing commands (`git write-tree`, `git commit-tree`, `git update-ref`) without modifying the developer's active working tree or index.
+
+### Why it Matters
+Autonomous agent mutations must be verified, diffed, and staged in hermetic isolation before touching the developer's dirty workspace. By writing directly to private plumbing trees, AFWE can calculate exact CAS diffs, run verification checks, and stage proposals with zero interference with uncommitted human changes.
+
+### Example in Practice
+During `afwe turn commit`, the engine builds a tree object representing the staged turn changes and records it under `.afwe/refs/turns/&lt;turn-id&gt;`, keeping the developer's working directory untouched until an explicit merge or checkout is requested.</p>
+        <div class="card-footer">
+          <span><code>term-git-plumbing-tree</code></span>
+          <button class="copy-btn" onclick="copyAnchor('private-git-plumbing-tree')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="probing-guide" data-category="Confidence Bands & Calibration" data-title="probing guide" data-tags="confidence-bands advisory">
         <div class="card-header">
           <h2 class="card-title">Probing Guide</h2>
@@ -754,6 +1033,42 @@ A time-bounded, permission-bounded grant from a human prompter to an orchestrato
           <button class="copy-btn" onclick="copyAnchor('prompter-delegation')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="quarantine-grace-system" data-category="Architecture Philosophy & Tenets" data-title="quarantine grace system" data-tags="[terminology, safety, rollback, recovery]">
+        <div class="card-header">
+          <h2 class="card-title">Quarantine Grace System</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Quarantine Grace System
+
+### Definition
+A two-tier safety mechanism that holds unverified or speculative agent mutations in an isolated quarantine state before permanent application or destruction, providing a configurable grace window for inspection and rollback.
+
+### Why it Matters
+Autonomous agent loops occasionally generate malformed, dead-on-arrival, or hallucinated outputs. The Quarantine Grace System ensures that accidental or destructive changes do not immediately overwrite working tree state or corrupt the project history, offering non-destructive recovery.
+
+### Example in Practice
+When an agent attempts to abandon or overwrite a modified file during a contentious turn, the engine places the replaced bytes into `.afwe/quarantine/&lt;timestamp&gt;/` rather than discarding them immediately, retaining a safety grace buffer.</p>
+        <div class="card-footer">
+          <span><code>term-quarantine-grace-system</code></span>
+          <button class="copy-btn" onclick="copyAnchor('quarantine-grace-system')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="radial-view" data-category="Architecture Philosophy & Tenets" data-title="radial view" data-tags="studio-view visualization radial">
+        <div class="card-header">
+          <h2 class="card-title">Radial View</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">A polar concentric cartographic visualization in AFWE Studio (`RadialMap.tsx`) organizing codebase depth into concentric rings. Root nodes sit at the center with child subsystems, modules, and component sectors radiating outward. It features power-law sector weighting, hover lineage ray tracing, autoscaling radial depth, and scaled arc typography.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Flame Graph</strong>: A flame graph displays call stack execution time or profiling samples; Radial View displays static hierarchical architectural depth and boundary distribution.</div>
+          <div class="confused-item"><strong>Blueprint View</strong>: Radial View uses polar polar coordinates (angles and radiuses); Blueprint View uses Cartesian tiered strata.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-radial-view</code></span>
+          <button class="copy-btn" onclick="copyAnchor('radial-view')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="ratchet-baseline" data-category="Ratchets & Integrity Verification" data-title="ratchet baseline" data-tags="ratchet baseline">
         <div class="card-header">
           <h2 class="card-title">Ratchet Baseline</h2>
@@ -769,6 +1084,26 @@ A time-bounded, permission-bounded grant from a human prompter to an orchestrato
           <button class="copy-btn" onclick="copyAnchor('ratchet-baseline')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="ready-mode-checkgen" data-category="Architecture Philosophy & Tenets" data-title="ready mode checkgen" data-tags="[terminology, checks, compilation, automation]">
+        <div class="card-header">
+          <h2 class="card-title">Ready Mode Checkgen</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Ready Mode Checkgen
+
+### Definition
+An automated generator that compiles blueprint invariants, capability contracts, and lint specifications into deterministic, executable test checks whenever a project transitions into or operates in "Ready Mode".
+
+### Why it Matters
+Manual maintenance of CI check scripts frequently lags behind architectural evolution. Ready Mode Checkgen dynamically inspects the blueprint topology and synthesizes hermetic verification scripts ensuring that every active capability has an active check before code changes can be committed.
+
+### Example in Practice
+When a developer adds a new capability `ExportSvg` to the Studio node in `blueprint.dot`, Ready Mode Checkgen immediately emits an automated tripwire check verifying the export function signature and CAS output format.</p>
+        <div class="card-footer">
+          <span><code>term-ready-mode-checkgen</code></span>
+          <button class="copy-btn" onclick="copyAnchor('ready-mode-checkgen')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="rust-for-project-intent" data-category="Architecture Philosophy & Tenets" data-title="rust for project intent" data-tags="architecture-philosophy compiler-mental-model">
         <div class="card-header">
           <h2 class="card-title">Rust for Project Intent</h2>
@@ -782,6 +1117,21 @@ A time-bounded, permission-bounded grant from a human prompter to an orchestrato
         <div class="card-footer">
           <span><code>term-rust-for-project-intent</code></span>
           <button class="copy-btn" onclick="copyAnchor('rust-for-project-intent')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="scene-outliner" data-category="Architecture Philosophy & Tenets" data-title="scene outliner" data-tags="studio-panel dots outliner">
+        <div class="card-header">
+          <h2 class="card-title">Scene Outliner</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">The collapsible tree panel in AFWE Studio (`SceneOutliner.tsx`) displaying all entities, systems, and nodes registered in the DOTS Hierarchical Scene Graph. It provides immediate structural search, visibility toggling, multi-selection, and sync with the active spatial visualizer.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>File Explorer</strong>: A file explorer navigates disk directories; the Scene Outliner navigates logical architectural entities mapped across single or multiple files.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-scene-outliner</code></span>
+          <button class="copy-btn" onclick="copyAnchor('scene-outliner')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="severed_capability" data-category="Ratchets & Integrity Verification" data-title="severed_capability" data-tags="ratchet gate-error">
@@ -817,6 +1167,72 @@ Tripwire mechanisms ensuring that agents and developers cannot bypass architectu
           <button class="copy-btn" onclick="copyAnchor('skipping-resistance')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="spacebar-hand-pan" data-category="Architecture Philosophy & Tenets" data-title="spacebar hand pan" data-tags="studio-control navigation viewport">
+        <div class="card-header">
+          <h2 class="card-title">Spacebar Hand Pan</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">A unified navigation paradigm across all AFWE Studio canvas visualizers (Blueprint, Topology, Radial, Constellation). Holding the `Spacebar` key or selecting the floating Hand Pan tool sets child element `pointer-events: none`, temporarily disabling node dragging, selection, and click interception so the user can fluidly pan the canvas without accidentally moving nodes or resetting zoom.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Node Dragging</strong>: Normal left-click drags nodes to reposition them; Spacebar Pan navigates the entire viewport camera without altering node coordinates.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-spacebar-hand-pan</code></span>
+          <button class="copy-btn" onclick="copyAnchor('spacebar-hand-pan')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="spatial-drag-clamping" data-category="Architecture Philosophy & Tenets" data-title="spatial drag clamping" data-tags="studio-physics interaction">
+        <div class="card-header">
+          <h2 class="card-title">Spatial Drag Clamping</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">A bounding box and physics constraint mechanism in Studio Constellation and Topology maps that clamps manual node dragging within bounded spatial regions. It prevents developers from accidentally flinging nodes into infinite virtual coordinates or breaking parent cluster gravity.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Auto-Layout</strong>: Auto-layout computes resting node coordinates automatically; Spatial Drag Clamping bounds human interactive dragging within reasonable limits.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-spatial-drag-clamping</code></span>
+          <button class="copy-btn" onclick="copyAnchor('spatial-drag-clamping')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="string-interner" data-category="Memory, Pins & Living Intents" data-title="string interner" data-tags="[terminology, performance, memory, engine]">
+        <div class="card-header">
+          <h2 class="card-title">String Interner</h2>
+          <span class="card-category">Memory, Pins & Living Intents</span>
+        </div>
+        <p class="card-meaning"># String Interner
+
+### Definition
+A core data structure that stores only a single copy of each unique string slice, mapping strings to compact 32-bit integer identifiers (`Symbol` or `StringId`).
+
+### Why it Matters
+Identifier names, file paths, and AST symbol names are repeated thousands of times across blueprints, claim trees, and telemetry traces. String interning reduces memory footprints by upwards of 80% and converts expensive string equality checks into instant $O(1)$ integer comparisons.
+
+### Example in Practice
+When AFWE checks node contention across 20 concurrent turns, matching node identifiers like `"crates/afwe-core/src/api.rs"` executes as a single integer comparison between two interned symbols, rather than comparing byte sequences.</p>
+        <div class="card-footer">
+          <span><code>term-string-interner</code></span>
+          <button class="copy-btn" onclick="copyAnchor('string-interner')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="sub-turn" data-category="Turn Protocol & Lifecycle" data-title="sub-turn" data-tags="turn-protocol sub-turn remediation">
+        <div class="card-header">
+          <h2 class="card-title">Sub-Turn</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning">A granular, child execution unit operating underneath a parent turn (formatted as `&lt;parent_turn&gt;.&lt;n&gt;`, e.g., `t0046.1`). Sub-turns are used for atomic remediation actions such as Narrow Self-Heal file restorations (`afwe heal restore`), staged sub-steps within an autonomous multi-agent Mission, or isolated micro-commits that maintain cryptographic linkage to the parent turn without re-running full briefing packs.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Turn</strong>: A top-level Turn spans an entire developer prompt; a Sub-Turn is a child transaction executing a mechanical remediation or sub-task of that turn.</div>
+          <div class="confused-item"><strong>Git Commit</strong>: While a sub-turn produces a Git tree object, it is tagged as a subordinate turn step in the AFWE audit ledger.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-sub-turn</code></span>
+          <button class="copy-btn" onclick="copyAnchor('sub-turn')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="the-folder-is-the-product" data-category="Architecture Philosophy & Tenets" data-title="the folder is the product" data-tags="architecture-philosophy persistent-model">
         <div class="card-header">
           <h2 class="card-title">The Folder is the Product</h2>
@@ -830,6 +1246,38 @@ Tripwire mechanisms ensuring that agents and developers cannot bypass architectu
         <div class="card-footer">
           <span><code>term-the-folder-is-the-product</code></span>
           <button class="copy-btn" onclick="copyAnchor('the-folder-is-the-product')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="timeline-view" data-category="Architecture Philosophy & Tenets" data-title="timeline view" data-tags="studio-view timeline ledger">
+        <div class="card-header">
+          <h2 class="card-title">Timeline View</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">The chronological turn and intent auditing interface in AFWE Studio (`TimelinePage.tsx`). It visualizes turn history by intent, displays git commit receipts, tracks intent drift over time, provides side-by-side diff viewers (Code, Blueprint, Claims), and offers 3-way historical feature restoration (`afwe timeline restore`).</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Action Queue</strong>: Timeline View audits past historical executed turns; Action Queue displays live, pending operational tasks and proposals.</div>
+          <div class="confused-item"><strong>Git Log</strong>: Standard git log only shows commits; Timeline View shows turns, prompt provenance, gate evaluations, and intent mutations.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-timeline-view</code></span>
+          <button class="copy-btn" onclick="copyAnchor('timeline-view')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="topology-view" data-category="Blueprint & Cartography" data-title="topology view" data-tags="studio-view visualization topology">
+        <div class="card-header">
+          <h2 class="card-title">Topology View</h2>
+          <span class="card-category">Blueprint & Cartography</span>
+        </div>
+        <p class="card-meaning">A spatial visualizer in AFWE Studio rendering the codebase as a topological map of architectural subsystems, modules, and cross-boundary dependency flows. It highlights upward constraint violation curves in red, visualizes capability bridges, and supports double-click drill-down to the Constellation graph.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Blueprint View</strong>: Blueprint View renders the static hierarchical containment tree; Topology View renders functional dependency and interaction networks across layers.</div>
+          <div class="confused-item"><strong>Constellation View</strong>: Topology organizes components into structured architectural strata; Constellation uses force-directed physics.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-topology-view</code></span>
+          <button class="copy-btn" onclick="copyAnchor('topology-view')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="tripwire" data-category="Claims & Tripwires" data-title="tripwire" data-tags="tripwire materializer">
@@ -878,6 +1326,26 @@ Tripwire mechanisms ensuring that agents and developers cannot bypass architectu
           <button class="copy-btn" onclick="copyAnchor('turn-abandon')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="turn-hash" data-category="Turn Protocol & Lifecycle" data-title="turn hash" data-tags="[terminology, identity, integrity, protocol]">
+        <div class="card-header">
+          <h2 class="card-title">Turn Hash</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning"># Turn Hash
+
+### Definition
+A cryptographic hash digest (derived via BLAKE3) calculated over the deterministic content of a Turn, including its turn ID, prompt, claims, assumption manifest, and baseline tree hash.
+
+### Why it Matters
+The Turn Hash provides content-addressable identity and tamper evidence for agent executions. It prevents replay attacks, ensures that modifications cannot be injected into an in-flight Turn without invalidating the working context, and enables deterministic verification of receipts across parallel subagents.
+
+### Example in Practice
+When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto the briefing pack. At `afwe turn commit`, the final tree digest and diff are blended into the hash, recorded into `.afwe/receipts/t0057.json`, and cited in the Git commit trailer.</p>
+        <div class="card-footer">
+          <span><code>term-turn-hash</code></span>
+          <button class="copy-btn" onclick="copyAnchor('turn-hash')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="turn-receipt" data-category="Turn Protocol & Lifecycle" data-title="turn receipt" data-tags="turn-protocol provenance">
         <div class="card-header">
           <h2 class="card-title">Turn Receipt</h2>
@@ -907,6 +1375,25 @@ Tripwire mechanisms ensuring that agents and developers cannot bypass architectu
         <div class="card-footer">
           <span><code>term-turn-redo</code></span>
           <button class="copy-btn" onclick="copyAnchor('turn-redo')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="visualizer-switcher-4-lens-overview" data-category="Architecture Philosophy & Tenets" data-title="visualizer switcher (4-lens overview)" data-tags="studio-shell overview lenses">
+        <div class="card-header">
+          <h2 class="card-title">Visualizer Switcher (4-Lens Overview)</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">The segmented icon control bar on the AFWE Studio Overview page allowing instant hot-switching between the four core spatial perspectives:
+1. **Blueprint**: Tiered structural hierarchy.
+2. **Topology**: Strata-based dependency networks and violation curves.
+3. **Radial**: Polar depth and concentric sector arcs.
+4. **Constellation**: Force-directed celestial gravity and clustering.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Studio Page Navigation</strong>: Page navigation moves between high-level tabs (Overview, Timeline, Checks, Decisions, Settings); the Visualizer Switcher alternates lenses within the Overview workspace.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-visualizer-switcher</code></span>
+          <button class="copy-btn" onclick="copyAnchor('visualizer-switcher-4-lens-overview')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
     </div>
