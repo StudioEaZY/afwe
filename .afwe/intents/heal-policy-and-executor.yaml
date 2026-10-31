@@ -1,0 +1,20 @@
+id: heal-policy-and-executor
+title: 'Phase 3: Scope Boundary & Self-Heal (allowlist, derivability check, clean restores as child turns)'
+statement: Implement Section 0 Scope Boundary rules and Remediation Executor. Guarantees byte derivability from recorded blobs, enforce allowlist of corrective actions, zero model calls in kernel, and execute clean file restores as child turns.
+status: active
+origin: human
+attaches:
+  files:
+  - crates/afwe-core/src/heal_policy.rs
+  - crates/afwe-core/src/heal_executor.rs
+  - crates/afwe-core/src/lib.rs
+  - crates/afwe-core/src/api.rs
+from_turns:
+- t0049
+history:
+- turn: t0049
+  ts: 2026-10-31T15:42:13Z
+  statement: Implement Section 0 Scope Boundary rules and Remediation Executor. Guarantees byte derivability from recorded blobs, enforce allowlist of corrective actions, zero model calls in kernel, and execute clean file restores as child turns.
+created: 2026-10-31T15:42:13Z
+updated: 2026-10-31T15:42:13Z
+task: task-t0049

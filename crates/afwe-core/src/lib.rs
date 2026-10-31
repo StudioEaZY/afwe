@@ -30,6 +30,8 @@ pub mod engine;
 pub mod escalation;
 pub mod gate;
 pub mod header;
+pub mod heal_executor;
+pub mod heal_policy;
 pub mod index;
 pub mod init;
 pub mod intent;

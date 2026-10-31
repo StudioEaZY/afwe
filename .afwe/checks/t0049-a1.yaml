@@ -1,0 +1,23 @@
+id: t0049-a1
+title: Every byte written during remediation must match recorded baseline blob hash
+trust: deterministic
+authored_by: checkgen
+attaches:
+  nodes:
+  - afwe-core
+  - crates
+  - demo-project
+  - examples
+  - studio
+  files:
+  - crates/afwe-core/src/heal_executor.rs
+claim:
+  type: forbid_pattern
+  pattern: verify_derivability returns false and proceeds
+  files:
+  - crates/afwe-core/src/heal_executor.rs
+status: active
+origin: afwe:checkgen
+created: 2026-10-31T15:45:19Z
+created_from: t0049
+provenance: confirmed
