@@ -12,12 +12,28 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "AFWE Studio",
         "width": 1480,
         "height": 940,
         "minWidth": 1100,
         "minHeight": 700,
         "resizable": true,
+        "theme": "Dark"
+      },
+      {
+        "label": "card",
+        "title": "AFWE Notification Card",
+        "url": "/?view=card",
+        "width": 380,
+        "height": 260,
+        "resizable": false,
+        "alwaysOnTop": true,
+        "decorations": false,
+        "skipTaskbar": true,
+        "focus": false,
+        "visible": false,
+        "transparent": true,
         "theme": "Dark"
       }
     ],

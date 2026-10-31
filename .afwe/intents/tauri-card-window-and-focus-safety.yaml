@@ -1,0 +1,17 @@
+id: tauri-card-window-and-focus-safety
+title: tauri-card-window-and-focus-safety
+statement: 'Phase 4: Tauri Card Window and Focus Safety'
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio
+from_turns:
+- t0061
+history:
+- turn: t0061
+  ts: 2026-10-31T20:40:39Z
+  statement: 'Phase 4: Tauri Card Window and Focus Safety'
+created: 2026-10-31T20:40:39Z
+updated: 2026-10-31T20:44:36Z
+task: task-t0061

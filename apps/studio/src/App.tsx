@@ -12,6 +12,7 @@ import { SettingsPage } from "./components/SettingsPage";
 import { DriftDrawer } from "./components/DriftDrawer";
 import { SearchPalette } from "./components/SearchPalette";
 import { GovernanceActionModal } from "./components/GovernanceActionModal";
+import { PresenceCard } from "./components/PresenceCard";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { call } from "./api";
 
@@ -32,6 +33,16 @@ export default function App() {
     undo,
     redo,
   } = useStore();
+
+  const isCardView = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("view") === "card";
+
+  if (isCardView) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center bg-transparent">
+        <PresenceCard onDismiss={() => window.close()} />
+      </div>
+    );
+  }
 
   useEffect(() => {
     refresh();
