@@ -10,7 +10,6 @@
 
 use crate::contract;
 use crate::engine::Engine;
-use crate::onboard::CI_TEMPLATE;
 use crate::store::{parse_yaml, to_yaml};
 use crate::util::{hash_bytes, now};
 use anyhow::Result;

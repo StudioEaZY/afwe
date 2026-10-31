@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
 
@@ -83,11 +83,11 @@ impl Default for PresencePolicy {
 impl PresencePolicy {
     pub fn config_path() -> PathBuf {
         if let Ok(app_data) = std::env::var("APPDATA") {
-            PathBuf::from(app_data).join("afwe").join("presence.toml")
+            PathBuf::from(app_data).join("afwe").join("presence.json")
         } else if let Ok(home) = std::env::var("HOME") {
-            PathBuf::from(home).join(".config").join("afwe").join("presence.toml")
+            PathBuf::from(home).join(".config").join("afwe").join("presence.json")
         } else {
-            PathBuf::from("presence.toml")
+            PathBuf::from("presence.json")
         }
     }
 
@@ -97,7 +97,7 @@ impl PresencePolicy {
             return Self::default();
         }
         if let Ok(data) = fs::read_to_string(&p) {
-            if let Ok(cfg) = toml::from_str::<PresencePolicy>(&data) {
+            if let Ok(cfg) = serde_json::from_str::<PresencePolicy>(&data) {
                 return cfg;
             }
         }
@@ -109,7 +109,7 @@ impl PresencePolicy {
         if let Some(parent) = p.parent() {
             fs::create_dir_all(parent)?;
         }
-        let data = toml::to_string_pretty(self)?;
+        let data = serde_json::to_string_pretty(self)?;
         fs::write(&p, data)?;
         Ok(())
     }

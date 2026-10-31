@@ -15,8 +15,8 @@ impl AutostartManager {
     pub fn is_installed() -> Result<bool> {
         #[cfg(target_os = "windows")]
         {
-            let output = Command::new("schtasks")
-                .args(["/query", "/tn", "AFWEPresenceWatcher"])
+            let output = Command::new("reg")
+                .args(["query", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "/v", "AFWEPresenceWatcher"])
                 .output()?;
             Ok(output.status.success())
         }
@@ -51,19 +51,19 @@ impl AutostartManager {
 
         #[cfg(target_os = "windows")]
         {
-            // Create a scheduled task at user logon that runs `afwe presence run`
             let cmd_str = format!("\"{}\" presence run", exe_str);
-            let status = Command::new("schtasks")
+            let status = Command::new("reg")
                 .args([
-                    "/create",
+                    "add",
+                    "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+                    "/v", "AFWEPresenceWatcher",
+                    "/t", "REG_SZ",
+                    "/d", &cmd_str,
                     "/f",
-                    "/sc", "onlogon",
-                    "/tn", "AFWEPresenceWatcher",
-                    "/tr", &cmd_str,
                 ])
                 .status()?;
             if !status.success() {
-                bail!("Failed to register Windows Scheduled Task AFWEPresenceWatcher");
+                bail!("Failed to register Windows Run key AFWEPresenceWatcher");
             }
             Ok(())
         }
@@ -133,8 +133,8 @@ WantedBy=default.target
     pub fn uninstall() -> Result<()> {
         #[cfg(target_os = "windows")]
         {
-            let _ = Command::new("schtasks")
-                .args(["/delete", "/f", "/tn", "AFWEPresenceWatcher"])
+            let _ = Command::new("reg")
+                .args(["delete", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "/v", "AFWEPresenceWatcher", "/f"])
                 .status();
             Ok(())
         }

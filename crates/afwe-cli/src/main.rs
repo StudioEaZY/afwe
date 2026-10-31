@@ -1532,7 +1532,7 @@ fn run(cli: Cli) -> Result<i32> {
 
             // If --delegate was passed, grant prompter delegation right now
             if let Some(agent_id) = delegate {
-                let engine = Engine::load(&root)?;
+                let engine = Engine::open(&root)?;
                 let del_res = api::call(&engine, "authority.delegate", json!({
                     "holder": agent_id,
                     "door": "ui",

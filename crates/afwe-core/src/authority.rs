@@ -131,6 +131,15 @@ impl DelegationValidity {
             true
         }
     }
+
+    pub fn remaining_seconds(&self) -> u64 {
+        if let Ok(exp) = DateTime::parse_from_rfc3339(&self.expires_at) {
+            let diff = (exp.with_timezone(&Utc) - Utc::now()).num_seconds();
+            if diff > 0 { diff as u64 } else { 0 }
+        } else {
+            0
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

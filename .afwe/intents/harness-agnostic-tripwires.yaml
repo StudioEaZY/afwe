@@ -4,15 +4,19 @@ statement: Enforce harness-agnostic invariant and multi-agent hooks across Claud
 status: active
 origin: human
 attaches:
+  nodes:
+  - afwe-core
+  - afwe-cli
   files:
   - .afwe/pins/pin-harness-agnostic.yaml
   - crates/afwe-core/src/materialize.rs
 from_turns:
 - t0067
+- t0069
 history:
 - turn: t0067
   ts: 2026-10-31T21:56:21Z
   statement: Enforce harness-agnostic invariant and multi-agent hooks across Claude Code, Cursor, Windsurf, Aider, and generic environments
 created: 2026-10-31T21:56:21Z
-updated: 2026-10-31T21:56:21Z
+updated: 2026-10-31T23:08:03Z
 task: task-t0067

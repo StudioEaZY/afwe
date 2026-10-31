@@ -7,12 +7,11 @@ use std::path::Path;
 use std::time::Duration;
 use anyhow::Result;
 use afwe_core::Engine;
-use serde_json::json;
 
 pub fn run_watch(project_dir: &Path, interval_secs: u64, once: bool) -> Result<()> {
     loop {
         // Re-instantiate engine to pick up disk state accurately on each tick
-        let mut engine = Engine::load(project_dir)?;
+        let mut engine = Engine::open(project_dir)?;
         render_dashboard(&mut engine)?;
 
         if once {
@@ -28,7 +27,7 @@ fn render_dashboard(engine: &mut Engine) -> Result<()> {
     let project_id = afwe_core::authority_store::compute_project_id(&engine.store.project_root);
     let auth = afwe_core::authority_store::load_authority(&project_id);
     let q = afwe_core::queue::get_action_queue(engine, auth.delegation.as_ref())?;
-    let turns = engine.store.list_turns().unwrap_or_default();
+    let turns = engine.store.turns().unwrap_or_default();
     let active_turn = turns.iter().find(|t| t.status == "open");
 
     // ANSI escape code: clear screen and move cursor to home position
@@ -107,17 +106,16 @@ fn render_dashboard(engine: &mut Engine) -> Result<()> {
         println!("  {:<14} {:<12} {:<24} {:<26}", "KIND", "ITEM", "TITLE / SCOPE", "ALLOWED ACTIONS");
         println!("  {:-<14} {:-<12} {:-<24} {:-<26}", "", "", "", "");
         for item in &q.items {
-            let (kind_color, kind_str) = match item.kind.as_str() {
-                "staged" => ("\x1B[32m", "STAGED"),
-                "ghost_redo" => ("\x1B[33m", "GHOST REDO"),
-                "ready" => ("\x1B[34m", "READY"),
-                "advisory_drift" => ("\x1B[36m", "DRIFT"),
-                "stale_leases" => ("\x1B[35m", "STALE LEASE"),
-                "unattributed" => ("\x1B[31m", "UNATTRIBUTED"),
-                _ => ("\x1B[0m", "UNKNOWN"),
+            let (kind_color, kind_str) = match item.kind {
+                afwe_core::queue::QueueItemKind::Staged => ("\x1B[32m", "STAGED"),
+                afwe_core::queue::QueueItemKind::GhostRedo => ("\x1B[33m", "GHOST REDO"),
+                afwe_core::queue::QueueItemKind::ReadyManual | afwe_core::queue::QueueItemKind::ReadyGitError => ("\x1B[34m", "READY"),
+                afwe_core::queue::QueueItemKind::AdvisoryDrift => ("\x1B[36m", "DRIFT"),
+                afwe_core::queue::QueueItemKind::StaleNodeLease => ("\x1B[35m", "STALE LEASE"),
+                afwe_core::queue::QueueItemKind::Unattributed => ("\x1B[31m", "UNATTRIBUTED"),
             };
             let title_trunc: String = item.title.chars().take(22).collect();
-            let actions = item.allowed_actions.join(", ");
+            let actions = item.actions.iter().map(|a| a.label.as_str()).collect::<Vec<_>>().join(", ");
             println!(
                 "  {}{:<14}\x1B[0m {:<12} {:<24} {:<26}",
                 kind_color, kind_str, item.id, title_trunc, actions

@@ -24,7 +24,8 @@ impl PresenceWatcher {
                 reg = updated;
             }
 
-            for p in &mut reg.projects {
+            let mut seq_updates: Vec<(String, u64)> = Vec::new();
+            for p in &reg.projects {
                 let project_path = Path::new(&p.path);
                 if !project_path.exists() {
                     continue;
@@ -34,10 +35,13 @@ impl PresenceWatcher {
                 if let Ok(events) = feed.read_since(p.last_seen_seq) {
                     for event in events {
                         Self::dispatch_event(&p.name, &event);
-                        p.last_seen_seq = event.seq;
-                        let _ = reg.update_last_seen_seq(&p.id, event.seq);
+                        seq_updates.push((p.id.clone(), event.seq));
                     }
                 }
+            }
+
+            for (id, seq) in seq_updates {
+                let _ = reg.update_last_seen_seq(&id, seq);
             }
 
             thread::sleep(Duration::from_millis(1000));

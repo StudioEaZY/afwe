@@ -1,5 +1,4 @@
-use std::path::{Path, PathBuf};
-use serde_json::Value;
+use std::path::Path;
 use anyhow::{Context, Result};
 use crate::engine::Engine;
 use crate::project_registry::ProjectRegistry;
@@ -34,29 +33,33 @@ impl Installer {
         if !afwe_dir.exists() {
             crate::init::init(
                 &canonical,
-                Some(&project_name),
-                None,
-                None,
-                false,
-                true, // include contract in AGENTS.md
+                crate::init::InitOptions {
+                    name: Some(project_name.clone()),
+                    description: None,
+                    root: None,
+                    force: false,
+                },
             )?;
         }
 
         // 2. Materialize tripwires
-        let engine = Engine::discover(&canonical)
-            .with_context(|| format!("Failed to discover AFWE engine at {:?}", canonical))?;
+        let engine = Engine::open(&canonical)
+            .with_context(|| format!("Failed to open AFWE engine at {:?}", canonical))?;
 
-        let _ = crate::materialize::materialize(
+        let _ = crate::materialize::run(
             &engine,
-            true,  // apply
-            false, // remove
-            false, // check
-            None,
-            true, // native_tests
-            true, // git_hooks
-            true, // ci
-            false, // claude_hooks
-            true, // agents_md
+            crate::materialize::MaterializeOptions {
+                apply: true,
+                remove: false,
+                check: false,
+                base: None,
+                native_tests: true,
+                git_hooks: true,
+                ci: true,
+                agent_hooks: false,
+                claude_hooks: false,
+                agents_md: true,
+            },
         );
 
         // 3. User registry registration

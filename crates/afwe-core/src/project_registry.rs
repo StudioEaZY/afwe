@@ -55,15 +55,16 @@ impl ProjectRegistry {
         let path_str = canonical.to_string_lossy().to_string();
         let host = whoami_host();
 
-        let id = format!("{:x}", blake3::hash(path_str.as_bytes()))[0..12].to_string();
+        let id = blake3::hash(path_str.as_bytes()).to_hex()[0..12].to_string();
         let now = chrono::Utc::now().to_rfc3339();
 
-        if let Some(existing) = self.projects.iter_mut().find(|p| p.path == path_str || p.id == id) {
-            existing.name = project_name.to_string();
-            existing.path = path_str;
-            existing.host_id = host;
+        if let Some(pos) = self.projects.iter().position(|p| p.path == path_str || p.id == id) {
+            self.projects[pos].name = project_name.to_string();
+            self.projects[pos].path = path_str;
+            self.projects[pos].host_id = host;
+            let reg = self.projects[pos].clone();
             self.save()?;
-            return Ok(existing.clone());
+            return Ok(reg);
         }
 
         let reg = ProjectRegistration {
@@ -99,7 +100,7 @@ impl ProjectRegistry {
 }
 
 pub fn whoami_host() -> String {
-    hostname::get()
-        .map(|s| s.to_string_lossy().to_string())
+    std::env::var("COMPUTERNAME")
+        .or_else(|_| std::env::var("HOSTNAME"))
         .unwrap_or_else(|_| "localhost".to_string())
 }
