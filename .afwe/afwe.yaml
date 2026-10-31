@@ -28,5 +28,5 @@ provenance:
 vcs:
   provider: git
   auto_commit: false
-  test_command: cargo test
+  test_command: .\target\debug\deps\end_to_end-cd83c87f2b1bd985.exe
 profile: engineer

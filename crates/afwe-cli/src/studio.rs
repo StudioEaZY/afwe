@@ -1,82 +1,266 @@
-//! `afwe studio` — web host for the Studio UI.
+//! `afwe studio` — web host for the Studio UI with live SSE event streaming.
 //!
 //! Serves the built frontend (embedded at compile time from `apps/studio/web-dist`, or
 //! any directory passed with `--dist`) and a single JSON endpoint `POST /api/call`
-//! `{ "op": "...", "params": {...} }` that maps 1:1 onto the engine API. The Tauri
-//! desktop shell talks to the very same engine through `invoke("call", …)`.
+//! `{ "op": "...", "params": {...} }` that maps 1:1 onto the engine API.
+//! Also streams live SSE events via `/api/events` to all connected clients.
 
 use afwe_core::api;
 use afwe_core::engine::Engine;
 use anyhow::Result;
 use include_dir::{include_dir, Dir};
 use serde_json::{json, Value};
-use std::path::PathBuf;
+use std::io::Read;
+use std::path::{Path, PathBuf};
+use std::sync::mpsc::{channel, Receiver, RecvTimeoutError, Sender};
 use std::sync::{Arc, Mutex};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tiny_http::{Header, Method, Response, Server, StatusCode};
 
 static EMBEDDED: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/../../apps/studio/web-dist");
 
+type Broadcaster = Arc<Mutex<Vec<Sender<String>>>>;
+
 pub fn serve(start: PathBuf, host: &str, port: u16, open_browser: bool, dist: Option<PathBuf>) -> Result<()> {
     let engine = Engine::open(&start)?;
     let project = engine.store.manifest()?.project.name;
+    let project_root = engine.store.project_root.clone();
     let engine = Arc::new(Mutex::new(engine));
     let dist = dist.or_else(|| std::env::var("AFWE_STUDIO_DIST").ok().map(PathBuf::from));
-    let server = Server::http(format!("{host}:{port}")).map_err(|e| anyhow::anyhow!("cannot bind {host}:{port}: {e}"))?;
-    let url = format!("http://{}:{port}", if host == "0.0.0.0" { "localhost" } else { host });
+
+    // Force loopback if 0.0.0.0 requested for safety
+    let bind_host = if host == "0.0.0.0" { "127.0.0.1" } else { host };
+    let server = Server::http(format!("{bind_host}:{port}")).map_err(|e| anyhow::anyhow!("cannot bind {bind_host}:{port}: {e}"))?;
+    let url = format!("http://{bind_host}:{port}");
+
+    // Record daemon state in .afwe/state/daemon.json
+    let _ = write_daemon_state(&project_root, port, &url);
+
     eprintln!("AFWE Studio for `{project}` → {url}   (API: POST {url}/api/call)   Ctrl-C to stop");
     if open_browser {
         let _ = open::that(&url);
     }
+
+    let broadcaster: Broadcaster = Arc::new(Mutex::new(Vec::new()));
+    let server = Arc::new(server);
+
+    // Multi-threaded server loop
     for mut req in server.incoming_requests() {
         let path = req.url().split('?').next().unwrap_or("/").to_string();
         let method = req.method().clone();
-        let resp = if path == "/api/events" {
-            let mut r = Response::from_string("event: ping\ndata: {\"status\":\"connected\"}\n\n").with_status_code(StatusCode(200));
-            r.add_header(Header::from_bytes("Content-Type", "text/event-stream").unwrap());
-            r.add_header(Header::from_bytes("Cache-Control", "no-cache").unwrap());
-            r.add_header(Header::from_bytes("Access-Control-Allow-Origin", "*").unwrap());
-            r
+
+        // Origin and CSRF check
+        if !is_allowed_origin(&req) {
+            let mut r = Response::from_string("403 Forbidden: Cross-Origin Request Blocked").with_status_code(StatusCode(403));
+            r.add_header(Header::from_bytes("Content-Type", "text/plain").unwrap());
+            let _ = req.respond(r);
+            continue;
+        }
+
+        if path == "/api/events" {
+            // Subscribe client to SSE stream
+            let (tx, rx) = channel();
+            let _ = tx.send("event: ping\ndata: {\"status\":\"connected\"}\n\n".to_string());
+            {
+                let mut b = broadcaster.lock().unwrap();
+                b.push(tx);
+            }
+
+            let sse_reader = SseReader { rx, pending: Vec::new() };
+            std::thread::spawn(move || {
+                let resp = Response::new(
+                    StatusCode(200),
+                    vec![
+                        Header::from_bytes("Content-Type", "text/event-stream").unwrap(),
+                        Header::from_bytes("Cache-Control", "no-cache").unwrap(),
+                        Header::from_bytes("Connection", "keep-alive").unwrap(),
+                        Header::from_bytes("Access-Control-Allow-Origin", "*").unwrap(),
+                    ],
+                    Box::new(sse_reader) as Box<dyn Read + Send>,
+                    None,
+                    None,
+                );
+                let _ = req.respond(resp);
+            });
         } else if path.starts_with("/api/") {
-            let mut body = String::new();
-            let _ = req.as_reader().read_to_string(&mut body);
-            let (status, value) = handle_api(&engine, &method, &path, &body);
-            let mut r = Response::from_string(serde_json::to_string(&value).unwrap()).with_status_code(StatusCode(status));
-            r.add_header(Header::from_bytes("Content-Type", "application/json").unwrap());
-            r.add_header(Header::from_bytes("Access-Control-Allow-Origin", "*").unwrap());
-            r.add_header(Header::from_bytes("Access-Control-Allow-Headers", "content-type").unwrap());
-            r.add_header(Header::from_bytes("Access-Control-Allow-Methods", "GET, POST, OPTIONS").unwrap());
-            r
+            let engine = engine.clone();
+            let broadcaster = broadcaster.clone();
+            std::thread::spawn(move || {
+                let mut body = String::new();
+                let _ = req.as_reader().read_to_string(&mut body);
+                let (status, value, broadcast_op) = handle_api(&engine, &method, &path, &body);
+
+                if let Some(op) = broadcast_op {
+                    broadcast_event(&broadcaster, &op);
+                }
+
+                let mut r = Response::from_string(serde_json::to_string(&value).unwrap()).with_status_code(StatusCode(status));
+                r.add_header(Header::from_bytes("Content-Type", "application/json").unwrap());
+                r.add_header(Header::from_bytes("Access-Control-Allow-Origin", "*").unwrap());
+                r.add_header(Header::from_bytes("Access-Control-Allow-Headers", "content-type").unwrap());
+                r.add_header(Header::from_bytes("Access-Control-Allow-Methods", "GET, POST, OPTIONS").unwrap());
+                let _ = req.respond(r);
+            });
         } else {
-            serve_static(&path, dist.as_ref())
-        };
-        let _ = req.respond(resp);
+            let dist = dist.clone();
+            std::thread::spawn(move || {
+                let resp = serve_static(&path, dist.as_ref());
+                let _ = req.respond(resp);
+            });
+        }
     }
+
+    let _ = cleanup_daemon_state(&project_root);
     Ok(())
 }
 
-fn handle_api(engine: &Arc<Mutex<Engine>>, method: &Method, path: &str, body: &str) -> (u16, Value) {
+fn is_allowed_origin(req: &tiny_http::Request) -> bool {
+    let origin_header = req.headers().iter().find(|h| h.field.as_str().as_str().eq_ignore_ascii_case("origin"));
+    if let Some(h) = origin_header {
+        let val = h.value.as_str();
+        val.starts_with("http://localhost")
+            || val.starts_with("http://127.0.0.1")
+            || val.starts_with("tauri://")
+            || val.starts_with("http://tauri.localhost")
+            || val.starts_with("https://tauri.localhost")
+    } else {
+        true
+    }
+}
+
+struct SseReader {
+    rx: Receiver<String>,
+    pending: Vec<u8>,
+}
+
+impl Read for SseReader {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        if !self.pending.is_empty() {
+            let n = std::cmp::min(buf.len(), self.pending.len());
+            buf[..n].copy_from_slice(&self.pending[..n]);
+            self.pending.drain(..n);
+            return Ok(n);
+        }
+
+        match self.rx.recv_timeout(Duration::from_secs(15)) {
+            Ok(msg) => {
+                let bytes = msg.into_bytes();
+                let n = std::cmp::min(buf.len(), bytes.len());
+                buf[..n].copy_from_slice(&bytes[..n]);
+                if n < bytes.len() {
+                    self.pending.extend_from_slice(&bytes[n..]);
+                }
+                Ok(n)
+            }
+            Err(RecvTimeoutError::Timeout) => {
+                let keepalive = b": keepalive\n\n";
+                let n = std::cmp::min(buf.len(), keepalive.len());
+                buf[..n].copy_from_slice(&keepalive[..n]);
+                if n < keepalive.len() {
+                    self.pending.extend_from_slice(&keepalive[n..]);
+                }
+                Ok(n)
+            }
+            Err(RecvTimeoutError::Disconnected) => Ok(0),
+        }
+    }
+}
+
+fn broadcast_event(broadcaster: &Broadcaster, op: &str) {
+    let ts = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_secs();
+    let msg = format!("event: update\ndata: {{\"op\":\"{}\",\"timestamp\":{}}}\n\n", op, ts);
+    let mut senders = broadcaster.lock().unwrap();
+    senders.retain(|s| s.send(msg.clone()).is_ok());
+}
+
+fn handle_api(engine: &Arc<Mutex<Engine>>, method: &Method, path: &str, body: &str) -> (u16, Value, Option<String>) {
     if *method == Method::Options {
-        return (204, json!({}));
+        return (204, json!({}), None);
     }
     match path {
-        "/api/health" => (200, json!({"ok": true, "engine": afwe_core::ENGINE_VERSION})),
-        "/api/ops" => (200, json!(api::OPS)),
+        "/api/health" => (200, json!({"ok": true, "engine": afwe_core::ENGINE_VERSION}), None),
+        "/api/ops" => (200, json!(api::OPS), None),
         "/api/call" => {
             let req: Value = match serde_json::from_str(body) {
                 Ok(v) => v,
-                Err(e) => return (400, json!({"ok": false, "error": format!("invalid json: {e}")})),
+                Err(e) => return (400, json!({"ok": false, "error": format!("invalid json: {e}")}), None),
             };
             let op = req.get("op").and_then(|v| v.as_str()).unwrap_or("").to_string();
             let params = req.get("params").cloned().unwrap_or(json!({}));
             let origin = req.get("origin").and_then(|v| v.as_str()).unwrap_or("human").to_string();
             let eng = engine.lock().unwrap();
             match api::call(&eng, &op, params, &origin) {
-                Ok(v) => (200, json!({"ok": true, "result": v})),
-                Err(e) => (200, json!({"ok": false, "error": format!("{e:#}")})),
+                Ok(v) => (200, json!({"ok": true, "result": v}), Some(op)),
+                Err(e) => (200, json!({"ok": false, "error": format!("{e:#}")}), None),
             }
         }
-        _ => (404, json!({"ok": false, "error": "not found"})),
+        _ => (404, json!({"ok": false, "error": "not found"}), None),
     }
+}
+
+fn write_daemon_state(root: &Path, port: u16, url: &str) -> Result<()> {
+    let state_dir = root.join(".afwe").join("state");
+    std::fs::create_dir_all(&state_dir)?;
+    let daemon_file = state_dir.join("daemon.json");
+    let state = json!({
+        "pid": std::process::id(),
+        "port": port,
+        "url": url,
+        "started_at": chrono_like_now(),
+    });
+    std::fs::write(daemon_file, serde_json::to_string_pretty(&state)?)?;
+    Ok(())
+}
+
+fn cleanup_daemon_state(root: &Path) -> Result<()> {
+    let daemon_file = root.join(".afwe").join("state").join("daemon.json");
+    if daemon_file.exists() {
+        let _ = std::fs::remove_file(daemon_file);
+    }
+    Ok(())
+}
+
+fn chrono_like_now() -> String {
+    let s = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_secs();
+    format!("{s}")
+}
+
+/// Helper called on `turn.begin` to ensure background studio daemon is running
+pub fn ensure_daemon_running(project_root: &Path) {
+    let daemon_file = project_root.join(".afwe").join("state").join("daemon.json");
+    if daemon_file.exists() {
+        if let Ok(content) = std::fs::read_to_string(&daemon_file) {
+            if let Ok(val) = serde_json::from_str::<Value>(&content) {
+                if let Some(port) = val.get("port").and_then(|p| p.as_u64()) {
+                    // Check if responds to health
+                    if is_daemon_alive(port as u16) {
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    // Spawn detached daemon
+    if let Ok(exe) = std::env::current_exe() {
+        let _ = std::process::Command::new(exe)
+            .arg("studio")
+            .arg("--no-open")
+            .arg("--port")
+            .arg("4141")
+            .current_dir(project_root)
+            .stdin(std::process::Stdio::null())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn();
+    }
+}
+
+fn is_daemon_alive(port: u16) -> bool {
+    std::net::TcpStream::connect_timeout(
+        &std::net::SocketAddr::from(([127, 0, 0, 1], port)),
+        Duration::from_millis(200),
+    ).is_ok()
 }
 
 fn mime(path: &str) -> &'static str {

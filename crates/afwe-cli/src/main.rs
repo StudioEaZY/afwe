@@ -1254,6 +1254,7 @@ fn run(cli: Cli) -> Result<i32> {
                         "parent": parent,
                         "claims": strs(&claim),
                     }), &origin)?;
+                    crate::studio::ensure_daemon_running(&engine.store.project_root);
                     out(json, &v, render::turn_briefing);
                     0
                 }

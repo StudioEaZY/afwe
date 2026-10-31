@@ -1,0 +1,18 @@
+id: daemon-and-event-stream
+title: daemon-and-event-stream
+statement: 'Phase 6: Daemon and Event Stream (background daemon, SSE broadcaster, loopback-only binding, origin checks, and auto-spawn on turn begin)'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+  - afwe-core
+from_turns:
+- t0052
+history:
+- turn: t0052
+  ts: 2026-10-31T16:41:42Z
+  statement: 'Phase 6: Daemon and Event Stream (background daemon, SSE broadcaster, loopback-only binding, origin checks, and auto-spawn on turn begin)'
+created: 2026-10-31T16:41:42Z
+updated: 2026-10-31T16:41:42Z
+task: task-t0052
