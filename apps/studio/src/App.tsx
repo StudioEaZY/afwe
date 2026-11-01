@@ -47,6 +47,20 @@ export default function App() {
   useEffect(() => {
     refresh();
     refreshScene();
+
+    // Deep link query params: ?turn=t0070 or ?view=timeline&turn=t0070
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const turnParam = params.get("turn") || params.get("id");
+      const viewParam = params.get("view") || params.get("page");
+      if (viewParam && ["timeline", "overview", "blueprint", "checks", "decisions", "settings"].includes(viewParam)) {
+        useStore.getState().setView(viewParam as any);
+      }
+      if (turnParam) {
+        useStore.getState().jumpToTurn(turnParam);
+      }
+    }
+
     call("onboard.detect", {})
       .then((d: any) => {
         setConfigured(!!d.configured);

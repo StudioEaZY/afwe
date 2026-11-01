@@ -82,15 +82,23 @@ pub fn serve(start: PathBuf, host: &str, port: u16, open_browser: bool, dist: Op
                 );
                 let _ = req.respond(resp);
             });
-        } else if path.starts_with("/api/action") {
+        } else if path.starts_with("/api/action") || path == "/api/approve" || path == "/api/revert" {
             let engine = engine.clone();
             let broadcaster = broadcaster.clone();
             let full_url = req.url().to_string();
+            let is_json = req.headers().iter().any(|h| h.field.as_str().as_str().eq_ignore_ascii_case("accept") && h.value.as_str().contains("application/json"));
             std::thread::spawn(move || {
-                let html = handle_toast_action(&engine, &full_url, &broadcaster);
-                let mut r = Response::from_string(html).with_status_code(StatusCode(200));
-                r.add_header(Header::from_bytes("Content-Type", "text/html; charset=utf-8").unwrap());
-                let _ = req.respond(r);
+                let (html, json_val) = handle_toast_action(&engine, &full_url, &broadcaster);
+                if is_json {
+                    let mut r = Response::from_string(serde_json::to_string(&json_val).unwrap()).with_status_code(StatusCode(200));
+                    r.add_header(Header::from_bytes("Content-Type", "application/json").unwrap());
+                    r.add_header(Header::from_bytes("Access-Control-Allow-Origin", "*").unwrap());
+                    let _ = req.respond(r);
+                } else {
+                    let mut r = Response::from_string(html).with_status_code(StatusCode(200));
+                    r.add_header(Header::from_bytes("Content-Type", "text/html; charset=utf-8").unwrap());
+                    let _ = req.respond(r);
+                }
             });
         } else if path.starts_with("/api/") {
             let engine = engine.clone();
@@ -98,7 +106,7 @@ pub fn serve(start: PathBuf, host: &str, port: u16, open_browser: bool, dist: Op
             std::thread::spawn(move || {
                 let mut body = String::new();
                 let _ = req.as_reader().read_to_string(&mut body);
-                let (status, value, broadcast_op) = handle_api(&engine, &method, &path, &body);
+                let (status, value, broadcast_op) = handle_api(&engine, &method, &path, &body, &broadcaster);
 
                 if let Some(op) = broadcast_op {
                     broadcast_event(&broadcaster, &op);
@@ -183,13 +191,18 @@ fn broadcast_event(broadcaster: &Broadcaster, op: &str) {
     senders.retain(|s| s.send(msg.clone()).is_ok());
 }
 
-fn handle_api(engine: &Arc<Mutex<Engine>>, method: &Method, path: &str, body: &str) -> (u16, Value, Option<String>) {
+fn handle_api(engine: &Arc<Mutex<Engine>>, method: &Method, path: &str, body: &str, broadcaster: &Broadcaster) -> (u16, Value, Option<String>) {
     if *method == Method::Options {
         return (204, json!({}), None);
     }
     match path {
         "/api/health" => (200, json!({"ok": true, "engine": afwe_core::ENGINE_VERSION}), None),
         "/api/ops" => (200, json!(api::OPS), None),
+        "/api/action" | "/api/approve" | "/api/revert" => {
+            let full_url = format!("{path}?{body}");
+            let (_, json_val) = handle_toast_action(engine, &full_url, broadcaster);
+            (200, json_val, Some("action".to_string()))
+        }
         "/api/call" => {
             let req: Value = match serde_json::from_str(body) {
                 Ok(v) => v,
@@ -212,7 +225,7 @@ fn handle_toast_action(
     engine: &Arc<Mutex<Engine>>,
     path: &str,
     broadcaster: &Arc<Mutex<Vec<Sender<String>>>>,
-) -> String {
+) -> (String, Value) {
     let query_str = path.split_once('?').map(|(_, q)| q).unwrap_or("");
     let mut act = String::new();
     let mut id = String::new();
@@ -233,14 +246,54 @@ fn handle_toast_action(
     if act == "approve" {
         let mut committed = false;
         if id.starts_with('t') {
-            match api::call(&eng, "turn.commit", json!({"turn": id, "summary": "Approved via Windows Toast"}), "human") {
-                Ok(_) => {
-                    result_msg = format!("Turn {} successfully committed and approved.", id);
+            let turn_status = eng.store.turn(&id).ok().flatten().map(|t| t.status);
+            if let Some(status) = turn_status {
+                if status == "staged" {
+                    match api::call(&eng, "turn.confirm", json!({"turn": id}), "human") {
+                        Ok(_) => {
+                            result_msg = format!("Turn {} proposal confirmed and committed.", id);
+                            success = true;
+                            committed = true;
+                        }
+                        Err(e) => {
+                            result_msg = format!("turn.confirm note: {e}");
+                        }
+                    }
+                } else if status == "committed" || status == "ready" {
+                    result_msg = format!("Turn {} is already committed and approved.", id);
                     success = true;
                     committed = true;
+                } else {
+                    match api::call(&eng, "turn.commit", json!({"turn": id, "summary": "Approved via Windows notification", "footer_shown": true, "confirmed": true}), "human") {
+                        Ok(_) => {
+                            result_msg = format!("Turn {} committed and approved.", id);
+                            success = true;
+                            committed = true;
+                        }
+                        Err(e) => {
+                            result_msg = format!("turn.commit note: {e}");
+                        }
+                    }
                 }
-                Err(e) => {
-                    result_msg = format!("turn.commit note: {e}");
+            } else {
+                match api::call(&eng, "turn.confirm", json!({"turn": id}), "human") {
+                    Ok(_) => {
+                        result_msg = format!("Turn {} confirmed.", id);
+                        success = true;
+                        committed = true;
+                    }
+                    Err(_) => {
+                        match api::call(&eng, "turn.commit", json!({"turn": id, "summary": "Approved via Windows notification", "footer_shown": true, "confirmed": true}), "human") {
+                            Ok(_) => {
+                                result_msg = format!("Turn {} committed.", id);
+                                success = true;
+                                committed = true;
+                            }
+                            Err(e) => {
+                                result_msg = format!("turn commit note: {e}");
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -303,7 +356,7 @@ fn handle_toast_action(
     let status_color = if success { "#4A6150" } else { "#C4513F" };
     let status_badge = if success { "✔ SUCCESS" } else { "✕ ACTION NOTICE" };
 
-    format!(r#"<!DOCTYPE html>
+    let html = format!(r#"<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -405,12 +458,14 @@ fn handle_toast_action(
     <h1>ACTION: {act}</h1>
     <p>{result_msg}</p>
     <div>
-      <a href="/" class="btn">Open Studio</a>
+      <a href="/?view=timeline&turn={id}" class="btn">View Turn in Studio</a>
       <button class="btn btn-secondary" onclick="window.close()">Close Window</button>
     </div>
   </div>
 </body>
-</html>"#)
+</html>"#);
+
+    (html, json!({"ok": success, "message": result_msg, "turn": id, "action": act}))
 }
 
 fn write_daemon_state(root: &Path, port: u16, url: &str) -> Result<()> {

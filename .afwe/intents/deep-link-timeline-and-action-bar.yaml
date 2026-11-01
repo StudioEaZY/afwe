@@ -1,0 +1,19 @@
+id: deep-link-timeline-and-action-bar
+title: Deep-link notifications to Timeline turn view, add Action Bar to Timeline inspector, fix action endpoint
+statement: Deep-link notifications to Timeline turn view, add Action Bar to Timeline inspector, fix action endpoint
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-cli
+  - studio-timeline
+  - studio-shell
+from_turns:
+- t0071
+history:
+- turn: t0071
+  ts: 2026-11-01T10:29:05Z
+  statement: Deep-link notifications to Timeline turn view, add Action Bar to Timeline inspector, fix action endpoint
+created: 2026-11-01T10:29:05Z
+updated: 2026-11-01T10:29:05Z
+task: task-t0071

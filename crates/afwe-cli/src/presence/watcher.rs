@@ -90,8 +90,8 @@ impl PresenceWatcher {
             let icon_uri = "file:///C:/Users/eazy4/.cargo/afwe-icon.png";
 
             let toast_xml = format!(
-                r#"<toast duration="long"><visual><binding template="ToastGeneric"><image placement="appLogoOverride" src="{}" hint-crop="circle"/><text>{}</text><text>{}</text></binding></visual><actions><action content="Approve" arguments="http://127.0.0.1:4242/api/action?act=approve&amp;id={}" activationType="protocol"/><action content="Revert" arguments="http://127.0.0.1:4242/api/action?act=revert&amp;id={}" activationType="protocol"/><action content="Reply" arguments="http://127.0.0.1:4242/?view=card&amp;focus=reply&amp;id={}" activationType="protocol"/><action content="Open Studio" arguments="http://127.0.0.1:4242" activationType="protocol"/></actions></toast>"#,
-                icon_uri, xml_title, xml_detail, id, id, id
+                r#"<toast duration="long"><visual><binding template="ToastGeneric"><image placement="appLogoOverride" src="{}" hint-crop="circle"/><text>{}</text><text>{}</text></binding></visual><actions><action content="Approve" arguments="http://127.0.0.1:4242/api/action?act=approve&amp;id={}" activationType="protocol"/><action content="Revert" arguments="http://127.0.0.1:4242/api/action?act=revert&amp;id={}" activationType="protocol"/><action content="Reply" arguments="http://127.0.0.1:4242/?view=timeline&amp;turn={}&amp;focus=reply" activationType="protocol"/><action content="Open Studio" arguments="http://127.0.0.1:4242/?view=timeline&amp;turn={}" activationType="protocol"/></actions></toast>"#,
+                icon_uri, xml_title, xml_detail, id, id, id, id
             );
 
             let ps_script = format!(

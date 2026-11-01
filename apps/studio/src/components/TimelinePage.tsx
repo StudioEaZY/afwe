@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { ConstellationGlyph } from "../lib/lucideSvgPaths";
 import { useStore } from "../store";
-import { api, SceneData, Graph } from "../api";
+import { api, call, SceneData, Graph } from "../api";
 import { TimelineDualScrubber, TimelineTurnItem } from "./TimelineDualScrubber";
 import { CodeDiffViewer } from "./CodeDiffViewer";
 import { TopologyMap, TopologyDiffMode } from "./TopologyMap";
@@ -49,6 +49,78 @@ export const TimelinePage: React.FC = () => {
   const [activeInspectorTab, setActiveInspectorTab] = useState<"summary" | "changes" | "decisions" | "checks">("summary");
   const [diffText, setDiffText] = useState<string>("");
   const [turnRecord, setTurnRecord] = useState<any | null>(null);
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [replyInput, setReplyInput] = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search);
+      if (p.get("focus") === "reply" || p.get("reply") === "true") {
+        setReplyOpen(true);
+      }
+    }
+  }, []);
+
+  const handleTurnApprove = async (id: string, status: string) => {
+    setActionLoading(true);
+    setActionFeedback(null);
+    try {
+      if (status === "staged") {
+        await call("turn.confirm", { turn: id });
+        notify(`✔ Staged proposal #${id} approved and committed.`);
+        setActionFeedback("✔ Proposal confirmed & committed");
+      } else {
+        await call("turn.commit", { turn: id, summary: "Approved via Studio Timeline", footer_shown: true, confirmed: true });
+        notify(`✔ Turn #${id} committed.`);
+        setActionFeedback("✔ Turn committed");
+      }
+      loadData();
+    } catch (e: any) {
+      notify(`Approve error: ${e.message}`);
+      setActionFeedback(`Error: ${e.message}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleTurnRevert = async (id: string) => {
+    setActionLoading(true);
+    setActionFeedback(null);
+    try {
+      await call("turn.redo", { turn: id });
+      notify(`✔ Turn #${id} reset to baseline.`);
+      setActionFeedback("✔ Turn reset to baseline");
+      loadData();
+    } catch (e: any) {
+      notify(`Revert error: ${e.message}`);
+      setActionFeedback(`Error: ${e.message}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleTurnReply = async (id: string) => {
+    if (!replyInput.trim()) return;
+    setActionLoading(true);
+    try {
+      await call("memory.add", {
+        kind: "decision",
+        title: `Steering instruction for Turn #${id}`,
+        body: replyInput.trim(),
+      });
+      notify(`✔ Steering instruction recorded for #${id}`);
+      setActionFeedback("✔ Steering instruction recorded");
+      setReplyInput("");
+      setReplyOpen(false);
+    } catch (e: any) {
+      notify(`Reply error: ${e.message}`);
+      setActionFeedback(`Error: ${e.message}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   // Scenes for Before vs After live topology comparison
   const [beforeScene, setBeforeScene] = useState<SceneData | null>(null);
@@ -906,6 +978,127 @@ export const TimelinePage: React.FC = () => {
                     {turnData?.strength || "deterministic"} · {Math.round((turnData?.confidence ?? 0.9) * 100)}%
                   </span>
                 </div>
+
+                {/* Action Bar for Pending / Staged / Open Turns */}
+                {(gateDecision === "staged" || gateDecision === "open" || turnData?.status === "staged" || turnData?.status === "open") && (
+                  <div
+                    style={{
+                      marginTop: "12px",
+                      padding: "10px",
+                      background: "rgba(192, 122, 18, 0.08)",
+                      border: "1px solid var(--amber)",
+                      borderRadius: "8px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--amber)", textTransform: "uppercase" }}>
+                        ⚡ Human Action Required ({gateDecision})
+                      </span>
+                      {actionFeedback && (
+                        <span style={{ fontSize: "11px", color: "var(--ink)", fontWeight: 500 }}>
+                          {actionFeedback}
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                      <button
+                        type="button"
+                        disabled={actionLoading}
+                        onClick={() => handleTurnApprove(selectedTurn.id, gateDecision)}
+                        style={{
+                          flex: 1,
+                          padding: "6px 12px",
+                          background: "var(--accent)",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "6px",
+                          fontSize: "11.5px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                        }}
+                      >
+                        ✔ {gateDecision === "staged" ? "Approve Proposal" : "Commit Turn"}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={actionLoading}
+                        onClick={() => handleTurnRevert(selectedTurn.id)}
+                        style={{
+                          padding: "6px 12px",
+                          background: "var(--redbg)",
+                          color: "var(--red)",
+                          border: "1px solid var(--line)",
+                          borderRadius: "6px",
+                          fontSize: "11.5px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                        }}
+                      >
+                        ↺ Revert
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReplyOpen(!replyOpen)}
+                        style={{
+                          padding: "6px 12px",
+                          background: "var(--side)",
+                          color: "var(--ink)",
+                          border: "1px solid var(--line)",
+                          borderRadius: "6px",
+                          fontSize: "11.5px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                        }}
+                      >
+                        💬 Reply
+                      </button>
+                    </div>
+
+                    {replyOpen && (
+                      <div style={{ marginTop: "4px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                        <textarea
+                          rows={2}
+                          value={replyInput}
+                          onChange={(e) => setReplyInput(e.target.value)}
+                          placeholder="Type steering instruction for agent (e.g. 'Only edit frontend CSS, leave Rust backend untouched')..."
+                          style={{
+                            width: "100%",
+                            padding: "8px",
+                            fontSize: "11.5px",
+                            background: "var(--panel)",
+                            color: "var(--ink)",
+                            border: "1px solid var(--line)",
+                            borderRadius: "6px",
+                            boxSizing: "border-box",
+                            resize: "vertical",
+                          }}
+                        />
+                        <button
+                          type="button"
+                          disabled={actionLoading || !replyInput.trim()}
+                          onClick={() => handleTurnReply(selectedTurn.id)}
+                          style={{
+                            alignSelf: "flex-end",
+                            padding: "5px 12px",
+                            background: "var(--accent)",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "6px",
+                            fontSize: "11px",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Send Steering Instruction
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Inspector tabs */}

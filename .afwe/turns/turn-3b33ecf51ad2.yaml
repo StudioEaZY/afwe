@@ -93,6 +93,7 @@ overrides:
 status: ready
 touched:
   nodes:
+  - afwe-cli
   - afwe-core
   - crates
   - demo-project
@@ -100,6 +101,8 @@ touched:
   - scripts
   - studio
   - studio-maps
+  - studio-shell
+  - studio-timeline
   files:
   - .afwe/assumptions-t0042.json
   - .afwe/intents/blueprint-tiered-layout.yaml
@@ -111,8 +114,11 @@ touched:
   - .gitignore
   - AGENTS.md
   - apps/studio/src-tauri/.gitignore
+  - apps/studio/src/App.tsx
   - apps/studio/src/components/ConstellationMap.tsx
   - apps/studio/src/components/GraphView.tsx
+  - apps/studio/src/components/PresenceCard.tsx
+  - apps/studio/src/components/TimelinePage.tsx
   - apps/studio/src/components/TopologyMap.tsx
   - apps/studio/web-dist/assets/index-BcZFaYrz.js
   - apps/studio/web-dist/assets/index-Dzc5PWMi.js
@@ -165,6 +171,8 @@ touched:
   - apps/website/src/styles/global.css
   - apps/website/src/styles/stage-global.css
   - apps/website/tailwind.config.mjs
+  - crates/afwe-cli/src/presence/watcher.rs
+  - crates/afwe-cli/src/studio.rs
   - crates/afwe-core/src/contract.rs
   - docs/TUTORIAL.md
   - docs/blog-an-interesting-turns-architecture.md
@@ -360,6 +368,9 @@ touched:
   - scripts/demo.ps1
   - scripts/demo.sh
   symbols:
+  - apps/studio/src/App.tsx::App
+  - apps/studio/src/components/PresenceCard.tsx::PresenceCard
+  - apps/studio/src/components/TimelinePage.tsx::TimelinePage
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::$
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::$$
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::$0
@@ -4756,6 +4767,10 @@ touched:
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::zx
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::zy
   - apps/studio/web-dist/assets/index-BcZFaYrz.js::zz
+  - crates/afwe-cli/src/presence/watcher.rs::PresenceWatcher.dispatch_event
+  - crates/afwe-cli/src/studio.rs::handle_api
+  - crates/afwe-cli/src/studio.rs::handle_toast_action
+  - crates/afwe-cli/src/studio.rs::serve
 implements:
   afwe-2:
   - packages/afwe/README.md
@@ -6266,10 +6281,10 @@ checks:
   passed: true
   blocking: true
 strength: deterministic
-confidence: 0.53
+confidence: 0.58
 confidence_parts:
   clarity: 1.0
-  mapping: 0.59
+  mapping: 0.64
   pins: 0.9
   verification: 1.0
 gate:
@@ -6279,7 +6294,7 @@ gate:
   - 'OVERRIDDEN pin pin-harness-agnostic (AFWE core, verification, and tripwires must remain 100% harness-agnostic without vendor-specific agent lock-in or harness-dependent execution paths): Preserves 100% harness-agnostic architecture'
   - 'PIN_WARN pin-studio-bookmarks-wired: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector'
 footer_shown: true
-summary: Brand presence toast notifications, Studio sidebar and card HUD with official emblem and wordmark
+summary: Approved via Windows notification
 turn_token: afwe_tok_61032fc7504398ef3e1922647466103b
 session_id: sess-cbf30d
 held_out_guides:

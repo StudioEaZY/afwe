@@ -144,16 +144,34 @@ export const PresenceCard: React.FC<PresenceCardProps> = ({
     setLoading(true);
     try {
       if (ev.turn_id && ev.turn_id.startsWith('t')) {
-        await call("turn.commit", { turn: ev.turn_id, summary: "Approved via Card HUD", footer_shown: true });
+        try {
+          await call("turn.confirm", { turn: ev.turn_id });
+          setActionStatus("✔ Proposal approved & confirmed");
+          setLoading(false);
+          return;
+        } catch {
+          // fallback to turn.commit if not staged
+        }
+        await call("turn.commit", { turn: ev.turn_id, summary: "Approved via Card HUD", footer_shown: true, confirmed: true });
+        setActionStatus("✔ Approved successfully");
       } else {
         await call("queue.act", { item: ev.turn_id || "active", action: "approve" });
+        setActionStatus("✔ Approved successfully");
       }
-      setActionStatus("✔ Approved successfully");
     } catch (e: any) {
       setActionStatus(`Error: ${e.message}`);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenStudio = () => {
+    if (onOpen) {
+      onOpen();
+      return;
+    }
+    const targetUrl = ev.turn_id ? `/?view=timeline&turn=${ev.turn_id}` : '/';
+    window.location.href = `${window.location.origin}${targetUrl}`;
   };
 
   const handleRevert = async () => {
@@ -198,14 +216,6 @@ export const PresenceCard: React.FC<PresenceCardProps> = ({
       setActionStatus(`Error: ${e.message}`);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleOpenStudio = () => {
-    if (onOpen) {
-      onOpen();
-    } else {
-      window.location.href = window.location.origin;
     }
   };
 
