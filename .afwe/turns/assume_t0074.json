@@ -1,0 +1,43 @@
+{
+  "intents": [
+    {
+      "id": "reconcile-commit-sha-first",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Identify undone turns by commit_sha across every ref",
+      "statement": "Replace the HEAD-only git log -n 50 scan and the 15-turn window with one reachability set from git rev-list --all, checked against Turn.commit_sha first, and a lazy all-refs AFWE-Turn trailer index only when the sha is absent or unreachable."
+    },
+    {
+      "id": "reconcile-never-destroys",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Rewind reconciliation annotates instead of deleting",
+      "statement": "Stop deleting generated checks and flagging memory on a rewind classification; mark affected checks dormant, leave memory untouched, and log a receipt. A git failure yields no verdict rather than an undo."
+    },
+    {
+      "id": "baseline-heuristic-advisory",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "File-hash mismatch becomes advisory only",
+      "statement": "Keep the pre-commit baseline hash comparison as a non-mutating possible-rewind annotation until tree snapshots land in P2, so file-level rewinds stay visible without triggering a status change."
+    },
+    {
+      "id": "rewind-verdict-label",
+      "action": "create",
+      "targets": [
+        "crates/afwe-core/src/rollback.rs",
+        "RewindVerdict"
+      ],
+      "title": "New RewindVerdict label for reconciliation events",
+      "statement": "RewindVerdict distinguishes a confirmed rewind from an advisory possible one and is carried in every RollbackEvent returned to turn.begin."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

@@ -1,0 +1,17 @@
+id: reconcile-commit-sha-first
+title: Identify undone turns by commit_sha across every ref
+statement: Replace the HEAD-only git log -n 50 scan and the 15-turn window with one reachability set from git rev-list --all, checked against Turn.commit_sha first, and a lazy all-refs AFWE-Turn trailer index only when the sha is absent or unreachable.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0074
+history:
+- turn: t0074
+  ts: 2026-11-01T23:39:42Z
+  statement: Replace the HEAD-only git log -n 50 scan and the 15-turn window with one reachability set from git rev-list --all, checked against Turn.commit_sha first, and a lazy all-refs AFWE-Turn trailer index only when the sha is absent or unreachable.
+created: 2026-11-01T23:39:42Z
+updated: 2026-11-01T23:45:45Z
+task: task-t0074

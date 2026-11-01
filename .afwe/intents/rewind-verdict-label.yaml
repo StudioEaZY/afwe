@@ -1,0 +1,18 @@
+id: rewind-verdict-label
+title: New RewindVerdict label for reconciliation events
+statement: RewindVerdict distinguishes a confirmed rewind from an advisory possible one and is carried in every RollbackEvent returned to turn.begin.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  files:
+  - crates/afwe-core/src/rollback.rs
+  - RewindVerdict
+from_turns:
+- t0074
+history:
+- turn: t0074
+  ts: 2026-11-01T23:45:45Z
+  statement: RewindVerdict distinguishes a confirmed rewind from an advisory possible one and is carried in every RollbackEvent returned to turn.begin.
+created: 2026-11-01T23:45:45Z
+updated: 2026-11-01T23:45:45Z
+task: task-t0074

@@ -1,0 +1,17 @@
+id: reconcile-never-destroys
+title: Rewind reconciliation annotates instead of deleting
+statement: Stop deleting generated checks and flagging memory on a rewind classification; mark affected checks dormant, leave memory untouched, and log a receipt. A git failure yields no verdict rather than an undo.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0074
+history:
+- turn: t0074
+  ts: 2026-11-01T23:39:42Z
+  statement: Stop deleting generated checks and flagging memory on a rewind classification; mark affected checks dormant, leave memory untouched, and log a receipt. A git failure yields no verdict rather than an undo.
+created: 2026-11-01T23:39:42Z
+updated: 2026-11-01T23:45:45Z
+task: task-t0074

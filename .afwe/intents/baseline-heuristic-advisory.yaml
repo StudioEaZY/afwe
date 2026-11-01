@@ -1,0 +1,17 @@
+id: baseline-heuristic-advisory
+title: File-hash mismatch becomes advisory only
+statement: Keep the pre-commit baseline hash comparison as a non-mutating possible-rewind annotation until tree snapshots land in P2, so file-level rewinds stay visible without triggering a status change.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0074
+history:
+- turn: t0074
+  ts: 2026-11-01T23:39:42Z
+  statement: Keep the pre-commit baseline hash comparison as a non-mutating possible-rewind annotation until tree snapshots land in P2, so file-level rewinds stay visible without triggering a status change.
+created: 2026-11-01T23:39:42Z
+updated: 2026-11-01T23:45:45Z
+task: task-t0074

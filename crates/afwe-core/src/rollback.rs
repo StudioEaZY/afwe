@@ -1,7 +1,14 @@
 //! External undo detection and rollback reconciliation.
 //!
 //! Reconciles AFWE ledger state when git commits or file edits are reverted
-//! out-of-band (e.g. IDE Ctrl+Z, git reset --hard, or git checkout).
+//! out-of-band (e.g. IDE Ctrl+Z, `git reset --hard`, or a harness "revert files").
+//!
+//! P0 policy: a classification never destroys anything.
+//!
+//! * A **confirmed** rewind (the turn's commit is reachable from no ref) marks the turn
+//!   `undone_externally` and puts its generated checks to sleep. Memory is untouched.
+//! * A **possible** rewind (files match the pre-commit baseline) is reported only.
+//! * A git failure produces no verdict at all, never a mass undo.
 
 use crate::engine::Engine;
 use crate::model::*;
@@ -9,140 +16,267 @@ use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::BTreeSet;
+use std::path::Path;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum RewindVerdict {
+    /// The commit is gone from every ref. The turn was undone outside AFWE.
+    Confirmed,
+    /// Files match the pre-commit baseline. Reported, never acted on.
+    Possible,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RollbackEvent {
     pub turn_id: String,
     pub reason: String,
-    pub pruned_checks: usize,
-    pub flagged_memory: usize,
+    pub verdict: RewindVerdict,
+    /// Checks put to sleep. Always 0 for `Possible`.
+    pub dormant_checks: usize,
+}
+
+/// What the commit graph says about a turn.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CommitVerdict {
+    /// The recorded commit is reachable from some local ref.
+    Present,
+    /// The recorded commit is gone, but a trailer still names the turn: an amend, rebase or
+    /// squash rewrote it, or it lives on another ref.
+    Rewritten,
+    /// No ref holds it and no trailer names it.
+    Undone,
+    /// Git could not answer. Never treated as an undo.
+    Unknown,
+}
+
+fn git(root: &Path, args: &[&str]) -> Option<String> {
+    let out = std::process::Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(args)
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    Some(String::from_utf8_lossy(&out.stdout).into_owned())
+}
+
+/// Every commit reachable from any local ref. No fixed window, no HEAD-only scan, so a branch
+/// switch or a rebase no longer hides a turn.
+fn reachable_commits(root: &Path) -> Option<BTreeSet<String>> {
+    let text = git(root, &["rev-list", "--all"])?;
+    Some(
+        text.lines()
+            .map(str::trim)
+            .filter(|line| !line.is_empty())
+            .map(str::to_string)
+            .collect(),
+    )
+}
+
+/// Turn identities found in `AFWE-Turn:` / `AFWE-Turn-Hash:` trailers across every local ref.
+/// Built once per pass, and only when a recorded commit sha cannot answer on its own.
+fn trailer_index(root: &Path) -> Option<BTreeSet<String>> {
+    let text = git(root, &["log", "--all", "--format=%B"])?;
+    let mut found = BTreeSet::new();
+    for line in text.lines() {
+        let line = line.trim();
+        if let Some(rest) = line.strip_prefix("AFWE-Turn:") {
+            let value = rest.trim();
+            found.insert(value.to_string());
+            if let Some(alias) = value.split_whitespace().next() {
+                found.insert(alias.to_string());
+            }
+        } else if let Some(rest) = line.strip_prefix("AFWE-Turn-Hash:") {
+            found.insert(rest.trim().to_string());
+        }
+    }
+    Some(found)
+}
+
+/// Decide purely from the two indexes, so the policy is testable without a repository.
+fn commit_verdict(
+    turn: &Turn,
+    reachable: Option<&BTreeSet<String>>,
+    trailers: Option<&BTreeSet<String>>,
+) -> CommitVerdict {
+    let sha = turn.commit_sha.as_deref().filter(|s| !s.is_empty());
+    if let (Some(sha), Some(set)) = (sha, reachable) {
+        if set.contains(sha) {
+            return CommitVerdict::Present;
+        }
+    }
+
+    // Without a sha and without recorded file state there is nothing to test against.
+    if sha.is_none() && turn.post_hashes.is_empty() {
+        return CommitVerdict::Unknown;
+    }
+
+    let Some(index) = trailers else {
+        return CommitVerdict::Unknown;
+    };
+    let named = index.contains(&turn.id)
+        || turn
+            .alias
+            .as_deref()
+            .map(|alias| index.contains(alias))
+            .unwrap_or(false)
+        || (!turn.turn_hash.is_empty() && index.contains(&turn.turn_hash));
+    if named {
+        CommitVerdict::Rewritten
+    } else {
+        CommitVerdict::Undone
+    }
+}
+
+fn undone_reason(turn: &Turn) -> String {
+    match turn.commit_sha.as_deref().filter(|s| !s.is_empty()) {
+        Some(sha) => {
+            format!("commit {sha} is unreachable from every ref and no trailer names the turn")
+        }
+        None => "no reachable commit and no trailer names the turn".to_string(),
+    }
+}
+
+/// Put a rewound turn's generated checks to sleep. Nothing is deleted, so restoring the turn
+/// can revive them.
+fn put_checks_to_sleep(engine: &Engine, turn_id: &str) -> Result<usize> {
+    let mut dormant = 0;
+    for mut check in engine.store.checks()? {
+        if check.created_from.as_deref() == Some(turn_id) && check.status == "active" {
+            check.status = "dormant".into();
+            engine.store.save_check(&check)?;
+            dormant += 1;
+        }
+    }
+    Ok(dormant)
+}
+
+/// Advisory only: do the files still look like the state the turn started from?
+fn baseline_mismatch(engine: &Engine, turn: &Turn) -> Option<String> {
+    if turn.post_hashes.is_empty() {
+        return None;
+    }
+    let baseline = engine.store.baseline(&turn.id).ok().flatten()?;
+    let root = &engine.store.project_root;
+    let (mut matches_pre, mut matches_post) = (0usize, 0usize);
+
+    for (file, post_hash) in &turn.post_hashes {
+        let Ok(bytes) = std::fs::read(root.join(file)) else {
+            continue;
+        };
+        let current = crate::util::hash_bytes(&bytes);
+        if &current == post_hash {
+            matches_post += 1;
+        } else if baseline.files.get(file) == Some(&current) {
+            matches_pre += 1;
+        }
+    }
+
+    if matches_pre > 0 && matches_post == 0 {
+        Some(format!(
+            "{matches_pre} file(s) match the pre-commit baseline instead of the committed state; possible file rewind, nothing was changed"
+        ))
+    } else {
+        None
+    }
 }
 
 pub fn reconcile(engine: &Engine) -> Result<Vec<RollbackEvent>> {
     let turns = engine.store.turns()?;
-    let committed: Vec<&Turn> = turns
-        .iter()
-        .filter(|t| t.status == "committed")
-        .rev()
-        .take(15)
-        .collect();
+    let committed: Vec<&Turn> = turns.iter().filter(|t| t.status == "committed").collect();
 
     if committed.is_empty() {
         return Ok(vec![]);
     }
 
-    let root = &engine.store.project_root;
+    let root = engine.store.project_root.as_path();
     let vcs_active = root.join(".git").exists();
-    let mut git_trailers = BTreeSet::new();
+    let reachable = if vcs_active {
+        reachable_commits(root)
+    } else {
+        None
+    };
 
-    if vcs_active {
-        // Query recent git commit messages for trailers
-        let out = std::process::Command::new("git")
-            .arg("-C")
-            .arg(root)
-            .args(["log", "-n", "50", "--format=%B"])
-            .output();
-        if let Ok(o) = out {
-            let text = String::from_utf8_lossy(&o.stdout);
-            for line in text.lines() {
-                if let Some(trailer) = line.trim().strip_prefix("AFWE-Turn:") {
-                    let val = trailer.trim();
-                    let alias = val.split_whitespace().next().unwrap_or(val);
-                    git_trailers.insert(alias.to_string());
-                    git_trailers.insert(val.to_string());
-                }
-                if let Some(trailer) = line.trim().strip_prefix("AFWE-Turn-Hash:") {
-                    git_trailers.insert(trailer.trim().to_string());
-                }
-            }
-        }
-    }
-
-    let mut events = vec![];
+    // Built at most once per pass, and only for turns a sha cannot answer for.
+    let mut trailers: Option<Option<BTreeSet<String>>> = None;
+    let mut events = Vec::new();
 
     for turn in committed {
-        let mut reverted = false;
-        let mut reason = String::new();
-
-        // 1. Check if git commit trailer disappeared from git log
-        let has_trailer = git_trailers.contains(&turn.id)
-            || turn.alias.as_ref().map(|a| git_trailers.contains(a)).unwrap_or(false)
-            || (!turn.turn_hash.is_empty() && git_trailers.contains(&turn.turn_hash));
-
-        if vcs_active && !has_trailer {
-            reverted = true;
-            reason = format!("commit trailer AFWE-Turn: {} not found in recent git history", turn.id);
-        } else if !turn.post_hashes.is_empty() {
-            // 2. Check if disk files match pre-commit baseline rather than post_hashes
-            let mut matches_pre = 0;
-            let mut matches_post = 0;
-            let baseline = engine.store.baseline(&turn.id).ok().flatten();
-
-            for (f, post_hash) in &turn.post_hashes {
-                let p = root.join(f);
-                if let Ok(bytes) = std::fs::read(&p) {
-                    let cur_hash = crate::util::hash_bytes(&bytes);
-                    if &cur_hash == post_hash {
-                        matches_post += 1;
-                    } else if let Some(base) = &baseline {
-                        if base.files.get(f) == Some(&cur_hash) {
-                            matches_pre += 1;
-                        }
-                    }
-                }
+        let verdict = if vcs_active {
+            let answered_by_sha = match (reachable.as_ref(), turn.commit_sha.as_deref()) {
+                (Some(set), Some(sha)) if !sha.is_empty() => set.contains(sha),
+                _ => false,
+            };
+            if !answered_by_sha && trailers.is_none() {
+                trailers = Some(trailer_index(root));
             }
+            let index = trailers.as_ref().and_then(|entry| entry.as_ref());
+            commit_verdict(turn, reachable.as_ref(), index)
+        } else {
+            CommitVerdict::Unknown
+        };
 
-            if matches_pre > 0 && matches_post == 0 {
-                reverted = true;
-                reason = format!("files for {} match pre-commit state instead of post-commit", turn.id);
-            }
-        }
+        if verdict == CommitVerdict::Undone {
+            let reason = undone_reason(turn);
+            let dormant = put_checks_to_sleep(engine, &turn.id)?;
 
-        if reverted {
-            let mut t = turn.clone();
-            t.status = "undone_externally".into();
+            let mut updated = turn.clone();
+            updated.status = "undone_externally".into();
+            engine.store.save_turn(&updated)?;
 
-            // Prune checks generated by this turn
-            let checks = engine.store.checks()?;
-            let mut pruned_checks = 0;
-            for c in &checks {
-                if c.created_from.as_deref() == Some(&turn.id) {
-                    let _ = engine.store.remove_check_file(&c.id);
-                    pruned_checks += 1;
-                }
-            }
-
-            // Flag memory items created in this turn
-            let mut mems = engine.store.memory()?;
-            let mut flagged_memory = 0;
-            for m in &mut mems {
-                if m.meta.tags.contains(&format!("turn:{}", turn.id)) {
-                    m.meta.status = Some("unconfirmed_rollback".into());
-                    flagged_memory += 1;
-                }
-            }
-            if flagged_memory > 0 {
-                for m in &mems {
-                    if m.meta.tags.contains(&format!("turn:{}", turn.id)) {
-                        let _ = engine.store.save_memory(m);
-                    }
-                }
-            }
-
-            engine.store.save_turn(&t)?;
             engine.log(
                 "afwe:reconcile",
                 "turn_rewound",
-                format!("{} was reverted outside AFWE; state reconciled ({reason})", turn.id),
-                Some(json!({"turn": turn.id, "reason": reason, "pruned_checks": pruned_checks, "flagged_memory": flagged_memory})),
+                format!(
+                    "{} was reverted outside AFWE; {dormant} check(s) marked dormant ({reason})",
+                    turn.id
+                ),
+                Some(json!({
+                    "turn": turn.id,
+                    "verdict": "confirmed",
+                    "reason": reason,
+                    "dormant_checks": dormant,
+                })),
             )?;
 
             events.push(RollbackEvent {
                 turn_id: turn.id.clone(),
                 reason,
-                pruned_checks,
-                flagged_memory,
+                verdict: RewindVerdict::Confirmed,
+                dormant_checks: dormant,
             });
+        } else if verdict == CommitVerdict::Rewritten {
+            engine.log(
+                "afwe:reconcile",
+                "turn_commit_rewritten",
+                format!(
+                    "{} is not at its recorded commit any more, but a trailer still names it; nothing was changed",
+                    turn.id
+                ),
+                Some(json!({"turn": turn.id, "commit_sha": turn.commit_sha})),
+            )?;
+        }
+
+        // Advisory only: never mutates and never gates. Keeps file-level rewinds visible
+        // until tree snapshots land in P2.
+        if verdict != CommitVerdict::Undone {
+            if let Some(reason) = baseline_mismatch(engine, turn) {
+                engine.log(
+                    "afwe:reconcile",
+                    "turn_possible_rewind",
+                    format!("{}: {reason}", turn.id),
+                    Some(json!({"turn": turn.id, "verdict": "possible"})),
+                )?;
+                events.push(RollbackEvent {
+                    turn_id: turn.id.clone(),
+                    reason,
+                    verdict: RewindVerdict::Possible,
+                    dormant_checks: 0,
+                });
+            }
         }
     }
 
@@ -197,6 +331,88 @@ pub fn undo_turn(engine: &Engine, turn_id: &str, origin: &str) -> Result<Value> 
 mod tests {
     use super::*;
     use crate::init::{init, InitOptions};
+
+    fn set(items: &[&str]) -> BTreeSet<String> {
+        items.iter().map(|s| s.to_string()).collect()
+    }
+
+    fn turn_with(sha: Option<&str>, turn_hash: &str, post: &[(&str, &str)]) -> Turn {
+        let mut turn = Turn {
+            id: "t0100".into(),
+            status: "committed".into(),
+            prompt: "test".into(),
+            ..Default::default()
+        };
+        turn.commit_sha = sha.map(str::to_string);
+        turn.turn_hash = turn_hash.into();
+        for (file, hash) in post {
+            turn.post_hashes.insert((*file).to_string(), (*hash).to_string());
+        }
+        turn
+    }
+
+    #[test]
+    fn reachable_commit_is_present() {
+        let turn = turn_with(Some("aaa"), "turn-x", &[]);
+        let reachable = set(&["aaa", "bbb"]);
+        assert_eq!(commit_verdict(&turn, Some(&reachable), None), CommitVerdict::Present);
+    }
+
+    #[test]
+    fn rewritten_commit_is_found_by_trailer() {
+        let turn = turn_with(Some("aaa"), "turn-x", &[("src/lib.rs", "h1")]);
+        let reachable = set(&["ccc"]);
+        let trailers = set(&["AFWE-Turn: t0100", "t0100"]);
+        assert_eq!(
+            commit_verdict(&turn, Some(&reachable), Some(&trailers)),
+            CommitVerdict::Rewritten
+        );
+    }
+
+    #[test]
+    fn missing_commit_and_missing_trailer_is_undone() {
+        let turn = turn_with(Some("aaa"), "turn-x", &[("src/lib.rs", "h1")]);
+        let reachable = set(&["ccc"]);
+        let trailers = set(&["t9999"]);
+        assert_eq!(
+            commit_verdict(&turn, Some(&reachable), Some(&trailers)),
+            CommitVerdict::Undone
+        );
+    }
+
+    #[test]
+    fn git_failure_is_unknown_not_undone() {
+        let turn = turn_with(Some("aaa"), "turn-x", &[("src/lib.rs", "h1")]);
+        assert_eq!(commit_verdict(&turn, None, None), CommitVerdict::Unknown);
+    }
+
+    #[test]
+    fn turn_without_sha_or_state_is_unknown() {
+        let turn = turn_with(None, "turn-x", &[]);
+        assert_eq!(commit_verdict(&turn, Some(&set(&[])), None), CommitVerdict::Unknown);
+    }
+
+    #[test]
+    fn reconcile_outside_git_touches_nothing() {
+        let dir = std::env::temp_dir().join(format!("afwe-reconcile-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let store = init(
+            &dir,
+            InitOptions { name: Some("reconcile-test".into()), description: None, root: None, force: true },
+        )
+        .unwrap();
+        let engine = Engine { store };
+
+        let mut turn = turn_with(Some("deadbeef"), "turn-x", &[("src/lib.rs", "h1")]);
+        turn.id = "t0101".into();
+        engine.store.save_turn(&turn).unwrap();
+
+        let events = reconcile(&engine).unwrap();
+        assert!(events.is_empty(), "no git means no verdict");
+        assert_eq!(engine.store.turn("t0101").unwrap().unwrap().status, "committed");
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 
     #[test]
     fn test_undo_prunes_generated_checks() {
