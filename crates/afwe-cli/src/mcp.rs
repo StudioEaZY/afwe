@@ -122,7 +122,37 @@ fn call_tool(engine: &mut Option<Engine>, start: &PathBuf, origin: &str, name: &
         origin.to_string()
     };
     params["origin"] = json!(forced_origin);
-    let result = api::call(eng, spec.op, params, &forced_origin)?;
+    let mut result = api::call(eng, spec.op, params.clone(), &forced_origin)?;
+
+    // Mid-turn pause reactive wait loop (0 token burn)
+    if spec.op == "turn.pause" && result.get("status").and_then(|v| v.as_str()) == Some("paused") {
+        let turn_id = params.get("turn").and_then(|v| v.as_str()).unwrap_or("");
+        let timeout_secs = params.get("timeout_seconds").and_then(|v| v.as_u64()).unwrap_or(3600);
+        let start_time = std::time::Instant::now();
+        let mut sleep_ms = 500;
+
+        while start_time.elapsed().as_secs() < timeout_secs {
+            std::thread::sleep(std::time::Duration::from_millis(sleep_ms));
+            if sleep_ms < 3000 {
+                sleep_ms = (sleep_ms as f64 * 1.5) as u64;
+            }
+
+            if let Ok(current_turn) = afwe_core::turn::get(eng, turn_id) {
+                if current_turn.status != "paused" {
+                    // Turn was resumed by human or delegated prompter
+                    let answer = current_turn.pause.as_ref().and_then(|p| p.response.clone()).unwrap_or_else(|| "Resumed".into());
+                    result = json!({
+                        "status": "resumed",
+                        "turn": turn_id,
+                        "answer": answer,
+                        "question": current_turn.pause.as_ref().map(|p| p.question.clone()),
+                    });
+                    break;
+                }
+            }
+        }
+    }
+
     let mut content = vec![];
     let mut is_error = false;
     match spec.op {

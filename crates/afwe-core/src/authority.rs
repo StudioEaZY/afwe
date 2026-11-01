@@ -292,6 +292,11 @@ pub fn is_loosening_op(op: &str, params: &Value) -> Option<String> {
         "materialize" if params.get("remove").and_then(|v| v.as_bool()).unwrap_or(false) => {
             Some("Removing materialized tripwires (`afwe materialize --remove`)".into())
         }
+        "drift.verdict" if params.get("verdict").and_then(|v| v.as_str()).map(|s| s == "adopt").unwrap_or(false)
+            || params.get("action").and_then(|v| v.as_str()).map(|s| s == "adopt").unwrap_or(false) => {
+            let id = params.get("id").and_then(|v| v.as_str()).unwrap_or("unknown");
+            Some(format!("Adopting architectural drift `{id}`"))
+        }
         _ => None,
     }
 }

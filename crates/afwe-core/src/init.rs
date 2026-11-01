@@ -40,6 +40,7 @@ History: `afwe timeline`, `afwe timeline losses`, `afwe timeline restore <featur
 Read `.afwe/docs/SPEC.md` for formats, `.afwe/docs/TUTORIAL.md` for the developer guide, and `.afwe/docs/UBIQUITOUS_LANGUAGE.md` for domain terminology.
 "#;
 
+#[derive(Default, Debug, Clone)]
 pub struct InitOptions {
     pub name: Option<String>,
     pub description: Option<String>,

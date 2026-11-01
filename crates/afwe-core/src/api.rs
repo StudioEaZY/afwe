@@ -123,6 +123,40 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let items: Vec<Value> = findings.iter().map(|f| json!({"finding": f, "bucket": bucket(f), "describe": f.change.as_ref().map(|c| crate::verify::describe_change(c, &snap.table))})).collect();
             Ok(json!({"count": findings.len(), "findings": items, "policy": policy}))
         }
+        "drift.verdict" => {
+            let id = req(&p, "id")?;
+            let verdict: DriftVerdict = if let Some(v_obj) = p.get("verdict") {
+                if v_obj.is_string() {
+                    match v_obj.as_str().unwrap() {
+                        "adopt" => DriftVerdict::Adopt { tune: b(&p, "tune", false) },
+                        "tolerate" => DriftVerdict::Tolerate { note: s(&p, "note") },
+                        "restore" => DriftVerdict::Reject { mode: DriftRejectMode::Restore, instruction: None },
+                        "steer" => DriftVerdict::Reject { mode: DriftRejectMode::Steer, instruction: s(&p, "instruction") },
+                        "rewrite" => DriftVerdict::Reject { mode: DriftRejectMode::Rewrite, instruction: s(&p, "instruction") },
+                        other => return Err(anyhow!("unsupported drift verdict string `{other}`")),
+                    }
+                } else {
+                    serde_json::from_value(v_obj.clone())?
+                }
+            } else if let Some(action) = s(&p, "action") {
+                match action.as_str() {
+                    "adopt" => DriftVerdict::Adopt { tune: b(&p, "tune", false) },
+                    "tolerate" => DriftVerdict::Tolerate { note: s(&p, "note") },
+                    "restore" => DriftVerdict::Reject { mode: DriftRejectMode::Restore, instruction: None },
+                    "steer" => DriftVerdict::Reject { mode: DriftRejectMode::Steer, instruction: s(&p, "instruction") },
+                    "rewrite" => DriftVerdict::Reject { mode: DriftRejectMode::Rewrite, instruction: s(&p, "instruction") },
+                    other => return Err(anyhow!("unsupported drift action `{other}`")),
+                }
+            } else {
+                return Err(anyhow!("missing `verdict` or `action` parameter"));
+            };
+            drift::apply_verdict(engine, &id, verdict, &origin(&p, default_origin))
+        }
+        "drift.ledger" => j(drift::load_ledger(engine)?),
+        "drift.dismiss" => {
+            let id = req(&p, "id")?;
+            drift::apply_verdict(engine, &id, DriftVerdict::Tolerate { note: s(&p, "note") }, &origin(&p, default_origin))
+        }
         "search" => search(engine, &req(&p, "q")?),
         "file.read" => {
             let m = engine.store.manifest()?;
@@ -387,6 +421,18 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         "turn.redo" => turn::redo(engine, &req(&p, "turn")?, s(&p, "token").as_deref(), &origin(&p, default_origin)),
         "turn.abandon" => turn::abandon(engine, &req(&p, "turn")?, s(&p, "token").as_deref(), &origin(&p, default_origin)),
         "turn.undo" => crate::rollback::undo_turn(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
+        "turn.pause" => {
+            let turn_id = req(&p, "turn")?;
+            let question = req(&p, "question")?;
+            let options = list(&p, "options");
+            let timeout = p.get("timeout_seconds").and_then(|v| v.as_u64()).unwrap_or(3600);
+            turn::pause(engine, &turn_id, &question, options, timeout, &origin(&p, default_origin))
+        }
+        "turn.resume" => {
+            let turn_id = req(&p, "turn")?;
+            let answer = req(&p, "answer").or_else(|_| req(&p, "reply"))?;
+            turn::resume(engine, &turn_id, &answer, &origin(&p, default_origin))
+        }
         "rollback.reconcile" => j(crate::rollback::reconcile(engine)?),
         "turn.get" => j(turn::get(engine, &req(&p, "turn")?)?),
         "turn.list" => j(turn::list(engine)?),
@@ -612,6 +658,27 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
                 }
                 "abandon" => {
                     call(engine, "turn.abandon", json!({"turn": item}), default_origin)?
+                }
+                "resume" => {
+                    let answer = s(&p, "answer").or_else(|| s(&p, "reply")).unwrap_or_else(|| "Resumed via action queue".into());
+                    call(engine, "turn.resume", json!({"turn": item, "answer": answer}), default_origin)?
+                }
+                "adopt" | "drift.adopt" => {
+                    call(engine, "drift.verdict", json!({"id": item, "verdict": {"verdict": "adopt", "tune": false}}), default_origin)?
+                }
+                "adopt_tune" | "drift.adopt_tune" => {
+                    call(engine, "drift.verdict", json!({"id": item, "verdict": {"verdict": "adopt", "tune": true}}), default_origin)?
+                }
+                "restore" | "drift.restore" => {
+                    call(engine, "drift.verdict", json!({"id": item, "verdict": {"verdict": "reject", "mode": "restore"}}), default_origin)?
+                }
+                "steer" | "drift.steer" => {
+                    let instruction = s(&p, "instruction");
+                    call(engine, "drift.verdict", json!({"id": item, "verdict": {"verdict": "reject", "mode": "steer", "instruction": instruction}}), default_origin)?
+                }
+                "tolerate" | "drift.tolerate" | "drift.dismiss" => {
+                    let note = s(&p, "note");
+                    call(engine, "drift.verdict", json!({"id": item, "verdict": {"verdict": "tolerate", "note": note}}), default_origin)?
                 }
                 "prune" => {
                     call(engine, "lease.release", json!({"node": item, "mission": "any", "agent": "any"}), default_origin)?
@@ -1159,6 +1226,10 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_turn_revert", op: "turn.revert", description: "Undo a turn as far as that is safe (files clean at turn.begin go back to HEAD; the rest becomes a Board item).", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_redo", op: "turn.redo", description: "Reset uncommitted changes made during a turn back to its baseline, keeping the turn open for clean rework.", schema: obj(json!({"turn": {"type": "string"}, "token": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_abandon", op: "turn.abandon", description: "Abandon an open turn, cleanly releasing all held file claims and lock reservations without committing.", schema: obj(json!({"turn": {"type": "string"}, "token": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_pause", op: "turn.pause", description: "MID-TURN PAUSE: Suspend execution awaiting human decision or delegated approval with 0 tokens. Emits desktop toast / Presence notification.", schema: obj(json!({"turn": {"type": "string"}, "question": {"type": "string"}, "options": strs, "timeout_seconds": {"type": "integer"}}), &["turn", "question"]) },
+        ToolSpec { name: "afwe_turn_resume", op: "turn.resume", description: "RESUME a paused turn with human answer or steering instruction.", schema: obj(json!({"turn": {"type": "string"}, "answer": {"type": "string"}}), &["turn", "answer"]) },
+        ToolSpec { name: "afwe_drift_verdict", op: "drift.verdict", description: "Apply a verdict on an architectural drift finding: adopt (in favor), adopt+tune (provisional), tolerate (7-14d), restore (revert to baseline), or steer (spawn new remediation turn).", schema: obj(json!({"id": {"type": "string"}, "action": {"type": "string"}, "tune": {"type": "boolean"}, "instruction": {"type": "string"}, "note": {"type": "string"}}), &["id", "action"]) },
+        ToolSpec { name: "afwe_drift_ledger", op: "drift.ledger", description: "List all active and expired tolerated drift entries from the Drift Ledger.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_turn_undo", op: "turn.undo", description: "Undo a committed turn explicitly, reverting its git commit and pruning generated checks.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_rollback_reconcile", op: "rollback.reconcile", description: "Reconcile AFWE ledger with external undos (git reset/revert or Ctrl+Z) by detecting missing git trailers or pre-commit hash matches.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_turn_get", op: "turn.get", description: "Read one turn: prompt, intents, assumptions, checks, strength, confidence and gate reasons.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },

@@ -60,6 +60,8 @@ flowchart TD
 | [**DOCS_DRIFT**](#docs_drift) | Ratchets & Integrity Verification | A commit gate error triggered when markdown documentation files (`README.md`, `docs/*.md`, `.afwe/docs/*.md`) contain broken links to code files, outdated symbol paths, or deleted source files. | Drift |
 | [**DOTS Hierarchical Scene Graph**](#dots-hierarchical-scene-graph) | Architecture Philosophy & Tenets | # DOTS Hierarchical Scene Graph | — |
 | [**Drift**](#drift) | Blueprint & Cartography | Any disagreement between the physical codebase (analyzed files, AST imports, symbol definitions) and the Blueprint tree. Detected via `afwe drift` or during `afwe sync`. Disagreements are triaged by confidence: | Constraint Violation |
+| [**Drift Ledger**](#drift-ledger) | Architecture Philosophy & Tenets | # Drift Ledger | — |
+| [**Drift Verdict**](#drift-verdict) | Architecture Philosophy & Tenets | # Drift Verdict | — |
 | [**DROPPED_CAPABILITY**](#dropped_capability) | Ratchets & Integrity Verification | A blocking commit gate error triggered when an intra-file public export or capability is deleted or privatized without an explicit removal or replacement declared in `turn assume` (`removes: [...]` or `action: remove / replace`). | SEVERED_CAPABILITY |
 | [**Dual Timeline Scrubber**](#dual-timeline-scrubber) | Architecture Philosophy & Tenets | An interactive dual-point range slider in AFWE Studio (`TimelineDualScrubber.tsx`) allowing developers to bind two separate moments in codebase history (Turn A vs Turn B). It dynamically updates the active map or diff viewer to compare structural graph transformations, capability gains, or collateral losses between those moments. | 4D Timeline Dial |
 | [**Edge Routing Geometry**](#edge-routing-geometry) | Architecture Philosophy & Tenets | The configurable mathematical curvature options applied to relationship lines across Studio maps: | Constraint Violation Routing |
@@ -106,6 +108,7 @@ flowchart TD
 | [**Turn**](#turn) | Turn Protocol & Lifecycle | A discrete, atomic engineering lifecycle unit spanning exactly one prompt ("one prompt = one turn"). A turn progresses sequentially through three deterministic phases: Phase 0 (`afwe turn begin`) pre-planning briefing, Phase 1 (`afwe turn assume`) pre-code intent and claims declaration, and Phase 2 (`afwe turn commit`) post-verification gated commit via isolated Git plumbing trees with CAS verification. | Intent, Git Commit |
 | [**Turn Abandon**](#turn-abandon) | Turn Protocol & Lifecycle | A turn cancellation command (`afwe turn abandon <turn>`) that discards an open uncommitted turn, immediately releasing all file claims, locks, and temporary token reservations without altering the Git tree. | Turn Redo |
 | [**Turn Hash**](#turn-hash) | Turn Protocol & Lifecycle | # Turn Hash | — |
+| [**Turn Pause**](#turn-pause) | Turn Protocol & Lifecycle | # Turn Pause | — |
 | [**Turn Receipt**](#turn-receipt) | Turn Protocol & Lifecycle | The immutable record produced upon turn commit, saved in `.afwe/turns/tNNNN.yaml`. It contains the original prompt verbatim, origin, timing, gate evaluation, intent updates, files modified, checks executed, capability ratchets checked, and Git commit hash. | Intent |
 | [**Turn Redo**](#turn-redo) | Turn Protocol & Lifecycle | A safety command (`afwe turn redo <turn>`) that cleanly reverts uncommitted workspace edits back to the turn's begin baseline (backed up in `.afwe/backups/<turn_hash>/`), while keeping the turn open and retaining locks for rework. | Turn Abandon, Turn Undo / Revert |
 | [**Visualizer Switcher (4-Lens Overview)**](#visualizer-switcher-4-lens-overview) | Architecture Philosophy & Tenets | The segmented icon control bar on the AFWE Studio Overview page allowing instant hot-switching between the four core spatial perspectives: | Studio Page Navigation |
@@ -248,6 +251,40 @@ As repositories grow to thousands of blueprint nodes, capabilities, and dependen
 
 ### Example in Practice
 When Studio renders a repository with 500 modules and 2,000 edge connections in Blueprint View, the DOTS Hierarchical Scene Graph evaluates transform hierarchies in parallel passes, batching canvas draw calls without traversing individual nested object trees.
+
+---
+
+#### Drift Ledger <a id="drift-ledger"></a>
+
+- **ID**: `term-drift-ledger`
+
+**Meaning:**
+# Drift Ledger
+
+## Definition
+The **Drift Ledger** is a versioned state repository located at `.afwe/state/drift_ledger.json` that stores all tolerated drift occurrences along with their entry timestamps, target paths, rationale, and expiration deadlines.
+
+## Behavior
+- **Toleration Window**: Governed by `policy.drift_tolerate_days` (default 7 days, configurable up to 14 days in `afwe.yaml`).
+- **Amber Re-surfacing**: Once the toleration deadline elapses, the engine elevates the drift from silent tracking to an Amber warning in the Action Queue (`ToleratedDriftExpired`), prompting the developer to either formalize adoption, trigger a steering turn, or extend toleration.
+- **Batch Processing**: Supports bulk operations (`batch.tolerate_drift`, `batch.adopt_drift`) for high-velocity refactorings.
+
+---
+
+#### Drift Verdict <a id="drift-verdict"></a>
+
+- **ID**: `term-drift-verdict`
+
+**Meaning:**
+# Drift Verdict
+
+## Definition
+A **Drift Verdict** is an explicit tri-state governance action required whenever code deviates structurally from declared architectural blueprints without an automated mechanical rename match ($\ge 90\%$).
+
+## The 3 Verdict Pathways
+1. **Adopt**: Accepts the code mutation into the architectural blueprint. Optionally flags the change for fine-tuning (`tune: true`), generating a tracking card in the governance board.
+2. **Reject**: Declines the drift. Either restores the exact pre-drift baseline bytes (`Restore`) or spawns an isolated remediation turn (`Steer` / `Rewrite`) with batch queue support.
+3. **Tolerate**: Acknowledges the divergence without mutating the blueprint or failing gates, recording the drift into the Drift Ledger for a configurable grace window (default 7 days, up to 14 days) before surfacing as Amber for review.
 
 ---
 
@@ -1225,6 +1262,23 @@ The Turn Hash provides content-addressable identity and tamper evidence for agen
 
 ### Example in Practice
 When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto the briefing pack. At `afwe turn commit`, the final tree digest and diff are blended into the hash, recorded into `.afwe/receipts/t0057.json`, and cited in the Git commit trailer.
+
+---
+
+#### Turn Pause <a id="turn-pause"></a>
+
+- **ID**: `term-turn-pause`
+
+**Meaning:**
+# Turn Pause
+
+## Definition
+**Turn Pause** is a first-class state within the AFWE turn lifecycle where an in-flight turn (`open`) transitions to `paused`. During a Turn Pause, the agent's MCP or runner tool suspends reactively without consuming LLM tokens, broadcasting a `mid_turn.pause` presence notification to the desktop and Studio HUD.
+
+## Mechanics
+- **Zero-Token Wait**: The engine or MCP runner holds the connection in a reactive loop with exponential backoff rather than polling prompts or invoking LLMs.
+- **Interactive Options**: Provides structured option pills (e.g. choice alternatives), free-form reply steering, or Studio inspection.
+- **Resumption**: Resumed via `afwe turn resume <turn> --reply "..."` or `/api/action?act=resume`, immediately waking the agent and injecting the human's choice or steering directive into the turn context.
 
 ---
 

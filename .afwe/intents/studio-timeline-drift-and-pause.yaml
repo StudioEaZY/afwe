@@ -1,0 +1,18 @@
+id: studio-timeline-drift-and-pause
+title: Studio UI Drift Verdicts and Paused Turn HUD
+statement: Add Drift Verdict controls, Drift Ledger tab, and Paused Turn UI in Studio
+status: active
+origin: human
+attaches:
+  nodes:
+  - studio-timeline
+  - studio-governance
+from_turns:
+- t0072
+history:
+- turn: t0072
+  ts: 2026-11-01T22:27:01Z
+  statement: Add Drift Verdict controls, Drift Ledger tab, and Paused Turn UI in Studio
+created: 2026-11-01T22:27:01Z
+updated: 2026-11-01T22:27:01Z
+task: task-t0072

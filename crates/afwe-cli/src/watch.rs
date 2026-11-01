@@ -108,9 +108,11 @@ fn render_dashboard(engine: &mut Engine) -> Result<()> {
         for item in &q.items {
             let (kind_color, kind_str) = match item.kind {
                 afwe_core::queue::QueueItemKind::Staged => ("\x1B[32m", "STAGED"),
+                afwe_core::queue::QueueItemKind::PausedTurn => ("\x1B[33m", "PAUSED"),
                 afwe_core::queue::QueueItemKind::GhostRedo => ("\x1B[33m", "GHOST REDO"),
                 afwe_core::queue::QueueItemKind::ReadyManual | afwe_core::queue::QueueItemKind::ReadyGitError => ("\x1B[34m", "READY"),
                 afwe_core::queue::QueueItemKind::AdvisoryDrift => ("\x1B[36m", "DRIFT"),
+                afwe_core::queue::QueueItemKind::ToleratedDriftExpired => ("\x1B[33m", "EXPIRED DRIFT"),
                 afwe_core::queue::QueueItemKind::StaleNodeLease => ("\x1B[35m", "STALE LEASE"),
                 afwe_core::queue::QueueItemKind::Unattributed => ("\x1B[31m", "UNATTRIBUTED"),
             };

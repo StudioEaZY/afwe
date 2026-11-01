@@ -221,6 +221,30 @@ fn handle_api(engine: &Arc<Mutex<Engine>>, method: &Method, path: &str, body: &s
     }
 }
 
+fn url_decode(s: &str) -> String {
+    let mut out = String::new();
+    let mut chars = s.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c == '%' {
+            let h1 = chars.next().unwrap_or('0');
+            let h2 = chars.next().unwrap_or('0');
+            let hex = format!("{h1}{h2}");
+            if let Ok(byte) = u8::from_str_radix(&hex, 16) {
+                out.push(byte as char);
+            } else {
+                out.push('%');
+                out.push(h1);
+                out.push(h2);
+            }
+        } else if c == '+' {
+            out.push(' ');
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
+
 fn handle_toast_action(
     engine: &Arc<Mutex<Engine>>,
     path: &str,
@@ -229,12 +253,15 @@ fn handle_toast_action(
     let query_str = path.split_once('?').map(|(_, q)| q).unwrap_or("");
     let mut act = String::new();
     let mut id = String::new();
+    let mut reply = String::new();
     for pair in query_str.split('&') {
         if let Some((k, v)) = pair.split_once('=') {
             if k == "act" {
                 act = v.to_string();
             } else if k == "id" {
                 id = v.to_string();
+            } else if k == "reply" || k == "answer" {
+                reply = url_decode(v);
             }
         }
     }
@@ -347,6 +374,50 @@ fn handle_toast_action(
         }
         if success {
             broadcast_event(broadcaster, "turn.redo");
+            broadcast_event(broadcaster, "queue.act");
+        }
+    } else if act == "resume" {
+        let answer = if reply.is_empty() { "Approved via desktop notification".to_string() } else { reply };
+        match api::call(&eng, "turn.resume", json!({"turn": id, "answer": answer}), "human") {
+            Ok(_) => {
+                result_msg = format!("Turn {} resumed with answer: {}", id, answer);
+                success = true;
+            }
+            Err(e) => {
+                result_msg = format!("turn.resume error: {e}");
+            }
+        }
+        if success {
+            broadcast_event(broadcaster, "turn.resume");
+            broadcast_event(broadcaster, "queue.act");
+        }
+    } else if act == "adopt" {
+        match api::call(&eng, "drift.verdict", json!({"id": id, "verdict": {"verdict": "adopt", "tune": false}}), "human") {
+            Ok(_) => {
+                result_msg = format!("Drift {} adopted.", id);
+                success = true;
+            }
+            Err(e) => {
+                result_msg = format!("drift.verdict error: {e}");
+            }
+        }
+        if success {
+            broadcast_event(broadcaster, "drift.verdict");
+            broadcast_event(broadcaster, "queue.act");
+        }
+    } else if act == "tolerate" {
+        let note = if reply.is_empty() { None } else { Some(reply) };
+        match api::call(&eng, "drift.verdict", json!({"id": id, "verdict": {"verdict": "tolerate", "note": note}}), "human") {
+            Ok(_) => {
+                result_msg = format!("Drift {} tolerated.", id);
+                success = true;
+            }
+            Err(e) => {
+                result_msg = format!("drift.verdict error: {e}");
+            }
+        }
+        if success {
+            broadcast_event(broadcaster, "drift.verdict");
             broadcast_event(broadcaster, "queue.act");
         }
     } else {

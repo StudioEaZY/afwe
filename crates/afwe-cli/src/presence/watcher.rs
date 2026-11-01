@@ -89,9 +89,35 @@ impl PresenceWatcher {
 
             let icon_uri = "file:///C:/Users/eazy4/.cargo/afwe-icon.png";
 
+            let actions_xml = if event.kind == "mid_turn.pause" {
+                let mut acts = String::new();
+                if let Some(opts) = event.metadata.get("options").and_then(|v| v.as_array()) {
+                    for opt_val in opts.iter().take(3) {
+                        if let Some(opt_str) = opt_val.as_str() {
+                            let escaped_opt = xml_escape(opt_str);
+                            let encoded_opt = opt_str.replace(' ', "+");
+                            acts.push_str(&format!(
+                                r#"<action content="{}" arguments="http://127.0.0.1:4242/api/action?act=resume&amp;id={}&amp;reply={}" activationType="protocol"/>"#,
+                                escaped_opt, id, encoded_opt
+                            ));
+                        }
+                    }
+                }
+                acts.push_str(&format!(
+                    r#"<action content="Reply" arguments="http://127.0.0.1:4242/?view=timeline&amp;turn={}&amp;focus=reply" activationType="protocol"/><action content="Open Studio" arguments="http://127.0.0.1:4242/?view=timeline&amp;turn={}" activationType="protocol"/>"#,
+                    id, id
+                ));
+                acts
+            } else {
+                format!(
+                    r#"<action content="Approve" arguments="http://127.0.0.1:4242/api/action?act=approve&amp;id={}" activationType="protocol"/><action content="Revert" arguments="http://127.0.0.1:4242/api/action?act=revert&amp;id={}" activationType="protocol"/><action content="Reply" arguments="http://127.0.0.1:4242/?view=timeline&amp;turn={}&amp;focus=reply" activationType="protocol"/><action content="Open Studio" arguments="http://127.0.0.1:4242/?view=timeline&amp;turn={}" activationType="protocol"/>"#,
+                    id, id, id, id
+                )
+            };
+
             let toast_xml = format!(
-                r#"<toast duration="long"><visual><binding template="ToastGeneric"><image placement="appLogoOverride" src="{}" hint-crop="circle"/><text>{}</text><text>{}</text></binding></visual><actions><action content="Approve" arguments="http://127.0.0.1:4242/api/action?act=approve&amp;id={}" activationType="protocol"/><action content="Revert" arguments="http://127.0.0.1:4242/api/action?act=revert&amp;id={}" activationType="protocol"/><action content="Reply" arguments="http://127.0.0.1:4242/?view=timeline&amp;turn={}&amp;focus=reply" activationType="protocol"/><action content="Open Studio" arguments="http://127.0.0.1:4242/?view=timeline&amp;turn={}" activationType="protocol"/></actions></toast>"#,
-                icon_uri, xml_title, xml_detail, id, id, id, id
+                r#"<toast duration="long"><visual><binding template="ToastGeneric"><image placement="appLogoOverride" src="{}" hint-crop="circle"/><text>{}</text><text>{}</text></binding></visual><actions>{}</actions></toast>"#,
+                icon_uri, xml_title, xml_detail, actions_xml
             );
 
             let ps_script = format!(

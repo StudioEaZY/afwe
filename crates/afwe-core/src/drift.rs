@@ -4,7 +4,7 @@
 use crate::engine::{Engine, Snapshot};
 use crate::mapping::{find_node_mut, NodeTable};
 use crate::model::*;
-use crate::util::{clamp01, hash_str, now};
+use crate::util::{clamp01, hash_str, now, short_id};
 use anyhow::{anyhow, Result};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::Path;
@@ -511,8 +511,9 @@ pub fn reconcile(engine: &Engine, snap: &Snapshot, findings: Vec<Finding>, origi
             report.findings.push(f);
             continue;
         };
-        let auto = f.confidence >= policy.auto_reconcile_min;
-        let soft = !auto && f.confidence >= policy.soft_reconcile_min;
+        let is_mechanical_rename = matches!(change, Change::RemapFile { .. }) && f.confidence >= 0.90;
+        let auto = (f.confidence >= policy.auto_reconcile_min && policy.drift_auto_adopt) || is_mechanical_rename;
+        let soft = !auto && policy.drift_auto_adopt && f.confidence >= policy.soft_reconcile_min;
         // CreateNode / RemoveRelation are never applied automatically: structural interpretation
         let structural = matches!(change, Change::CreateNode { .. } | Change::RemoveRelation { .. } | Change::UnmapFile { .. } | Change::UnmapSymbol { .. });
         if (auto || soft) && !structural {
@@ -902,6 +903,149 @@ pub fn detect_orphaned_governance(
     out
 }
 
+pub const DRIFT_LEDGER_PATH: &str = "state/drift_ledger.json";
+
+pub fn load_ledger(engine: &Engine) -> Result<Vec<DriftLedgerEntry>> {
+    let text = match engine.store.read_text(DRIFT_LEDGER_PATH)? {
+        Some(t) => t,
+        None => return Ok(vec![]),
+    };
+    let items: Vec<DriftLedgerEntry> = serde_json::from_str(&text).unwrap_or_default();
+    Ok(items)
+}
+
+pub fn save_ledger(engine: &Engine, items: &[DriftLedgerEntry]) -> Result<()> {
+    let json = serde_json::to_string_pretty(items)?;
+    engine.store.write_text(DRIFT_LEDGER_PATH, &json)
+}
+
+pub fn apply_verdict(engine: &Engine, finding_id: &str, verdict: DriftVerdict, origin: &str) -> Result<serde_json::Value> {
+    let snap = engine.snapshot(false)?;
+    let findings = detect(&snap, None);
+    let finding = findings.into_iter().find(|f| f.id == finding_id)
+        .ok_or_else(|| anyhow!("drift finding `{finding_id}` not found or already reconciled"))?;
+
+    match verdict {
+        DriftVerdict::Adopt { tune } => {
+            let Some(change) = finding.change.clone() else {
+                return Err(anyhow!("drift finding `{finding_id}` has no applicable structural change"));
+            };
+            let mut blueprint = engine.store.blueprint()?;
+            let mut relations = engine.store.relations()?;
+            let applied = apply_change(&mut blueprint, &mut relations, &snap.table, &change, finding.confidence, origin)?;
+            if applied {
+                match &change {
+                    Change::AddRelation { .. } | Change::RemoveRelation { .. } => {
+                        engine.store.save_relations(&relations)?;
+                    }
+                    _ => {
+                        engine.store.save_blueprint(&blueprint)?;
+                    }
+                }
+                if tune {
+                    let mut board = engine.store.board()?;
+                    crate::contract::upsert_system_item(
+                        &mut board,
+                        "drift",
+                        &format!("{finding_id}:tune"),
+                        &format!("Fine-tune adopted drift: {}", finding.summary),
+                        Some("provisional adoption: verify symbol visibility, test boundaries, and node purpose".into()),
+                    );
+                    engine.store.save_board(&board)?;
+                }
+            }
+
+            // Remove from ledger if it was previously tolerated
+            let mut ledger = load_ledger(engine)?;
+            ledger.retain(|entry| entry.finding_id != finding_id);
+            save_ledger(engine, &ledger)?;
+
+            engine.log(origin, "drift_verdict_adopt", format!("Adopted drift `{finding_id}` (tune={tune}): {}", finding.summary), None)?;
+            Ok(serde_json::json!({
+                "status": "adopted",
+                "finding_id": finding_id,
+                "applied": applied,
+                "tuned": tune
+            }))
+        }
+        DriftVerdict::Tolerate { note } => {
+            let mut ledger = load_ledger(engine)?;
+            let days = snap.manifest.policy.drift_tolerate_days.clamp(1, 14);
+            let review_date = (chrono::Utc::now() + chrono::Duration::days(days as i64)).to_rfc3339();
+
+            // Update existing or add new
+            if let Some(existing) = ledger.iter_mut().find(|e| e.finding_id == finding_id) {
+                existing.review_by = review_date.clone();
+                existing.note = note.clone();
+                existing.tolerated_at = now();
+            } else {
+                ledger.push(DriftLedgerEntry {
+                    id: short_id("drf"),
+                    finding_id: finding_id.to_string(),
+                    file: finding.files.first().cloned().unwrap_or_default(),
+                    summary: finding.summary.clone(),
+                    verdict: "tolerated".into(),
+                    tolerated_at: now(),
+                    review_by: review_date.clone(),
+                    note,
+                });
+            }
+            save_ledger(engine, &ledger)?;
+
+            engine.log(origin, "drift_verdict_tolerate", format!("Tolerated drift `{finding_id}` until {review_date}: {}", finding.summary), None)?;
+            Ok(serde_json::json!({
+                "status": "tolerated",
+                "finding_id": finding_id,
+                "review_by": review_date
+            }))
+        }
+        DriftVerdict::Reject { mode, instruction } => {
+            let mut ledger = load_ledger(engine)?;
+            ledger.retain(|entry| entry.finding_id != finding_id);
+            save_ledger(engine, &ledger)?;
+
+            match mode {
+                DriftRejectMode::Restore => {
+                    let root = engine.store.project_root.clone();
+                    let m = engine.store.manifest()?;
+                    let vcs = crate::vcs::open(&m.vcs.provider);
+                    let mut restored = Vec::new();
+                    for f in &finding.files {
+                        if let Some(content) = vcs.show(&root, "HEAD", f) {
+                            std::fs::write(root.join(f), content)?;
+                            restored.push(f.clone());
+                        } else if root.join(f).exists() {
+                            std::fs::remove_file(root.join(f))?;
+                            restored.push(format!("deleted uncommitted `{f}`"));
+                        }
+                    }
+                    engine.log(origin, "drift_verdict_restore", format!("Rejected and restored drift `{finding_id}`: {}", finding.summary), None)?;
+                    Ok(serde_json::json!({
+                        "status": "restored",
+                        "finding_id": finding_id,
+                        "restored_files": restored
+                    }))
+                }
+                DriftRejectMode::Steer | DriftRejectMode::Rewrite => {
+                    let prompt = format!("Remediation for drift: {}. Instruction: {}", finding.summary, instruction.as_deref().unwrap_or("align code back to architectural intent"));
+                    let new_turn = crate::turn::begin(engine, crate::turn::BeginRequest {
+                        prompt,
+                        targets: finding.files.clone(),
+                        origin: origin.to_string(),
+                        ..Default::default()
+                    })?;
+                    engine.log(origin, "drift_verdict_steer", format!("Rejected drift `{finding_id}` and spawned new turn",), None)?;
+                    Ok(serde_json::json!({
+                        "status": "steered",
+                        "finding_id": finding_id,
+                        "new_turn": new_turn
+                    }))
+                }
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -997,5 +1141,35 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].kind, "ORPHANED_PIN");
         assert_eq!(violations[0].target, "crates/core/src/lib.rs");
+    }
+
+    #[test]
+    fn test_drift_ledger_save_load() {
+        let dir = std::env::temp_dir().join(format!("afwe-ledger-{}", crate::util::short_id("t")));
+        let _ = std::fs::remove_dir_all(&dir);
+        crate::init::init(&dir, crate::init::InitOptions { name: Some("ledger-test".into()), ..Default::default() }).unwrap();
+        let engine = Engine::open(&dir).unwrap();
+
+        let entries = vec![
+            DriftLedgerEntry {
+                id: "drf-1".into(),
+                finding_id: "fid-1".into(),
+                file: "src/orphan.rs".into(),
+                summary: "orphan file".into(),
+                verdict: "tolerated".into(),
+                tolerated_at: now(),
+                review_by: (chrono::Utc::now() + chrono::Duration::days(7)).to_rfc3339(),
+                note: Some("revisit next week".into()),
+            }
+        ];
+        save_ledger(&engine, &entries).unwrap();
+
+        let loaded = load_ledger(&engine).unwrap();
+        assert_eq!(loaded.len(), 1);
+        assert_eq!(loaded[0].id, "drf-1");
+        assert_eq!(loaded[0].verdict, "tolerated");
+        assert_eq!(loaded[0].note.as_deref(), Some("revisit next week"));
+
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

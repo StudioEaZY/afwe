@@ -137,6 +137,15 @@ pub struct Policy {
     /// Explore mode (`afwe unlock` / `afwe lock`): temporarily converts blocking checks into warnings while prototyping.
     #[serde(default, skip_serializing_if = "is_false")]
     pub explore_mode: bool,
+    /// Days to tolerate drift before re-surfacing as amber (default 7, max 14).
+    #[serde(default = "d_drift_tolerate_days")]
+    pub drift_tolerate_days: u32,
+    /// Whether to auto-adopt structural drift (default false). Mechanical renames at >=90% always auto-remap.
+    #[serde(default)]
+    pub drift_auto_adopt: bool,
+}
+fn d_drift_tolerate_days() -> u32 {
+    7
 }
 fn d_auto() -> f64 {
     0.70
@@ -155,6 +164,8 @@ impl Default for Policy {
             checkgen: true,
             graduation: GraduationPolicy::default(),
             explore_mode: false,
+            drift_tolerate_days: d_drift_tolerate_days(),
+            drift_auto_adopt: false,
         }
     }
 }
@@ -1420,6 +1431,68 @@ pub struct Turn {
     /// Silent local/leaf rationales recorded below 0.85 without interrupting the developer.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub agent_zone_rationales: Vec<String>,
+    /// Mid-turn pause record when suspended awaiting human or delegated prompter decision.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pause: Option<TurnPause>,
+}
+
+/// Mid-turn pause state for zero-token suspension and reactive wake-up.
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+pub struct TurnPause {
+    pub question: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub options: Vec<String>,
+    pub paused_at: String,
+    #[serde(default)]
+    pub timeout_seconds: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub response: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub responded_at: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub responded_by: Option<String>,
+}
+
+/// Drift rejection mode.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DriftRejectMode {
+    Restore,
+    Steer,
+    Rewrite,
+}
+
+/// Verdict on an architectural drift finding.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(tag = "verdict", rename_all = "snake_case")]
+pub enum DriftVerdict {
+    Adopt {
+        #[serde(default)]
+        tune: bool,
+    },
+    Reject {
+        mode: DriftRejectMode,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        instruction: Option<String>,
+    },
+    Tolerate {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        note: Option<String>,
+    },
+}
+
+/// Persistent ledger entry for tolerated drifts.
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+pub struct DriftLedgerEntry {
+    pub id: String,
+    pub finding_id: String,
+    pub file: String,
+    pub summary: String,
+    pub verdict: String,
+    pub tolerated_at: String,
+    pub review_by: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
 }
 
 /// Optional provenance metadata linking a turn to an external conversational workspace.

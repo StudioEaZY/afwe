@@ -203,8 +203,8 @@ export const Sidebar: React.FC = () => {
               style={{ width: "26px", height: "26px", objectFit: "contain", flexShrink: 0 }}
             />
             <svg
-              viewBox="0 0 240 50"
-              style={{ width: "88px", height: "18px", color: "var(--ink)", flexShrink: 0 }}
+              viewBox="0 0 230 52"
+              style={{ width: "88px", height: "20px", color: "var(--ink)", flexShrink: 0 }}
               fill="none"
               stroke="currentColor"
               strokeWidth="5"
@@ -212,16 +212,19 @@ export const Sidebar: React.FC = () => {
               strokeLinejoin="miter"
               aria-label="AFWE"
             >
-              <path d="M 6,45 L 26,7 L 46,45" />
-              <path d="M 64,7 L 100,7" />
-              <path d="M 66,22 L 66,45" />
-              <path d="M 64,22 L 100,22" />
-              <path d="M 120,4 L 120,45" />
-              <path d="M 136,12 L 136,45" />
-              <path d="M 152,4 L 152,45" />
-              <path d="M 172,11 L 210,11" />
-              <path d="M 172,26 L 210,26" />
-              <path d="M 172,41 L 210,41" />
+              {/* A: Chevron ^ */}
+              <path d="M 16,44 L 34,8 L 52,44" />
+              {/* F: Detached top bar and lower stem with arm */}
+              <path d="M 70,8 L 106,8" />
+              <path d="M 70,44 L 70,26 L 106,26" />
+              {/* W: Three vertical bars with offset center */}
+              <path d="M 124,8 L 124,44" />
+              <path d="M 142,20 L 142,44" />
+              <path d="M 160,8 L 160,44" />
+              {/* E: Three parallel horizontal bars */}
+              <path d="M 178,8 L 214,8" />
+              <path d="M 178,26 L 214,26" />
+              <path d="M 178,44 L 214,44" />
             </svg>
           </div>
           <div style={{ fontSize: "11.5px", color: "var(--mute)", marginTop: "4px" }}>

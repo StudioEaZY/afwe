@@ -218,6 +218,26 @@ fn assume_refuses_bad_schema_and_registers_nothing() {
 }
 
 #[test]
+fn test_drift_ledger_persistence() {
+    let dir = fresh("drift-ledger");
+    init(&dir, InitOptions { name: Some("Shop".into()), description: None, root: None, force: false }).unwrap();
+    let engine = Engine::open(&dir).unwrap();
+    let entry = afwe_core::model::DriftLedgerEntry {
+        file: "src/unknown.ts".into(),
+        verdict: afwe_core::model::DriftVerdict::Tolerate,
+        entered_at: "2026-11-01T00:00:00Z".into(),
+        expires_at: "2026-11-08T00:00:00Z".into(),
+        note: Some("Temporary test drift".into()),
+    };
+    afwe_core::drift::save_ledger(&engine, &[entry.clone()]).unwrap();
+    assert_eq!(afwe_core::drift::DRIFT_LEDGER_PATH, "state/drift_ledger.json");
+    let loaded = afwe_core::drift::load_ledger(&engine).unwrap();
+    assert_eq!(loaded.len(), 1);
+    assert_eq!(loaded[0].file, "src/unknown.ts");
+    let _ = fs::remove_dir_all(&dir);
+}
+
+#[test]
 fn projects_without_version_control_record_turns_without_a_commit() {
     let dir = fresh("novcs");
     init(&dir, InitOptions { name: Some("Shop".into()), description: None, root: None, force: false }).unwrap();
@@ -233,5 +253,25 @@ fn projects_without_version_control_record_turns_without_a_commit() {
     assert!(k["reasons"].to_string().contains("NO_VCS"), "{k}");
     let bud = c(&e, "pin.budget", json!({}));
     assert!(bud["limit"].as_u64().unwrap() >= 3, "{bud}");
+    let _ = fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn test_drift_ledger_persistence() {
+    let dir = fresh("drift-ledger");
+    init(&dir, InitOptions { name: Some("Shop".into()), description: None, root: None, force: false }).unwrap();
+    let engine = Engine::open(&dir).unwrap();
+    let entry = afwe_core::model::DriftLedgerEntry {
+        file: "src/unknown.ts".into(),
+        verdict: afwe_core::model::DriftVerdict::Tolerate,
+        entered_at: "2026-11-01T00:00:00Z".into(),
+        expires_at: "2026-11-08T00:00:00Z".into(),
+        note: Some("Temporary test drift".into()),
+    };
+    afwe_core::drift::save_ledger(&engine, &[entry.clone()]).unwrap();
+    assert_eq!(afwe_core::drift::DRIFT_LEDGER_PATH, "state/drift_ledger.json");
+    let loaded = afwe_core::drift::load_ledger(&engine).unwrap();
+    assert_eq!(loaded.len(), 1);
+    assert_eq!(loaded[0].file, "src/unknown.ts");
     let _ = fs::remove_dir_all(&dir);
 }

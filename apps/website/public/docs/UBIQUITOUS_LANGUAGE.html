@@ -244,18 +244,18 @@
     <div class="controls">
       <div class="search-box">
         <input type="text" id="search" class="search-input" placeholder="Search terms, definitions, invariants, or confused-with concepts... (e.g. Turn, Ratchet, CAS)" autofocus />
-        <div class="term-count"><span id="visible-count">73</span> / 73 terms</div>
+        <div class="term-count"><span id="visible-count">76</span> / 76 terms</div>
       </div>
       <div class="categories">
         <button class="cat-btn active" data-cat="all">All Categories</button>
-        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (32)</button>
+        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (34)</button>
         <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
         <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (4)</button>
         <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (7)</button>
         <button class="cat-btn" data-cat="Ratchets & Integrity Verification">Ratchets & Integrity Verification (10)</button>
         <button class="cat-btn" data-cat="Claims & Tripwires">Claims & Tripwires (4)</button>
         <button class="cat-btn" data-cat="Multi-Agent Concurrency & Worktrees">Multi-Agent Concurrency & Worktrees (3)</button>
-        <button class="cat-btn" data-cat="Turn Protocol & Lifecycle">Turn Protocol & Lifecycle (10)</button>
+        <button class="cat-btn" data-cat="Turn Protocol & Lifecycle">Turn Protocol & Lifecycle (11)</button>
       </div>
     </div>
 
@@ -671,6 +671,44 @@ When Studio renders a repository with 500 modules and 2,000 edge connections in 
         <div class="card-footer">
           <span><code>term-drift</code></span>
           <button class="copy-btn" onclick="copyAnchor('drift')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="drift-ledger" data-category="Architecture Philosophy & Tenets" data-title="drift ledger" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Drift Ledger</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Drift Ledger
+
+## Definition
+The **Drift Ledger** is a versioned state repository located at `.afwe/state/drift_ledger.json` that stores all tolerated drift occurrences along with their entry timestamps, target paths, rationale, and expiration deadlines.
+
+## Behavior
+- **Toleration Window**: Governed by `policy.drift_tolerate_days` (default 7 days, configurable up to 14 days in `afwe.yaml`).
+- **Amber Re-surfacing**: Once the toleration deadline elapses, the engine elevates the drift from silent tracking to an Amber warning in the Action Queue (`ToleratedDriftExpired`), prompting the developer to either formalize adoption, trigger a steering turn, or extend toleration.
+- **Batch Processing**: Supports bulk operations (`batch.tolerate_drift`, `batch.adopt_drift`) for high-velocity refactorings.</p>
+        <div class="card-footer">
+          <span><code>term-drift-ledger</code></span>
+          <button class="copy-btn" onclick="copyAnchor('drift-ledger')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="drift-verdict" data-category="Architecture Philosophy & Tenets" data-title="drift verdict" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Drift Verdict</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Drift Verdict
+
+## Definition
+A **Drift Verdict** is an explicit tri-state governance action required whenever code deviates structurally from declared architectural blueprints without an automated mechanical rename match ($\ge 90\%$).
+
+## The 3 Verdict Pathways
+1. **Adopt**: Accepts the code mutation into the architectural blueprint. Optionally flags the change for fine-tuning (`tune: true`), generating a tracking card in the governance board.
+2. **Reject**: Declines the drift. Either restores the exact pre-drift baseline bytes (`Restore`) or spawns an isolated remediation turn (`Steer` / `Rewrite`) with batch queue support.
+3. **Tolerate**: Acknowledges the divergence without mutating the blueprint or failing gates, recording the drift into the Drift Ledger for a configurable grace window (default 7 days, up to 14 days) before surfacing as Amber for review.</p>
+        <div class="card-footer">
+          <span><code>term-drift-verdict</code></span>
+          <button class="copy-btn" onclick="copyAnchor('drift-verdict')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="dropped_capability" data-category="Ratchets & Integrity Verification" data-title="dropped_capability" data-tags="ratchet gate-error">
@@ -1420,6 +1458,25 @@ When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto
         <div class="card-footer">
           <span><code>term-turn-hash</code></span>
           <button class="copy-btn" onclick="copyAnchor('turn-hash')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="turn-pause" data-category="Turn Protocol & Lifecycle" data-title="turn pause" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Turn Pause</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning"># Turn Pause
+
+## Definition
+**Turn Pause** is a first-class state within the AFWE turn lifecycle where an in-flight turn (`open`) transitions to `paused`. During a Turn Pause, the agent's MCP or runner tool suspends reactively without consuming LLM tokens, broadcasting a `mid_turn.pause` presence notification to the desktop and Studio HUD.
+
+## Mechanics
+- **Zero-Token Wait**: The engine or MCP runner holds the connection in a reactive loop with exponential backoff rather than polling prompts or invoking LLMs.
+- **Interactive Options**: Provides structured option pills (e.g. choice alternatives), free-form reply steering, or Studio inspection.
+- **Resumption**: Resumed via `afwe turn resume &lt;turn&gt; --reply "..."` or `/api/action?act=resume`, immediately waking the agent and injecting the human's choice or steering directive into the turn context.</p>
+        <div class="card-footer">
+          <span><code>term-turn-pause</code></span>
+          <button class="copy-btn" onclick="copyAnchor('turn-pause')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="turn-receipt" data-category="Turn Protocol & Lifecycle" data-title="turn receipt" data-tags="turn-protocol provenance">

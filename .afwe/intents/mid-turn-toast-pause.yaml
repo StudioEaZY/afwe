@@ -1,0 +1,18 @@
+id: mid-turn-toast-pause
+title: Mid-Turn Toast Pause and Zero-Token Reactive Wait
+statement: Implement turn.pause, turn.resume, zero-token reactive wait in MCP, and interactive toast buttons
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+  - afwe-cli
+from_turns:
+- t0072
+history:
+- turn: t0072
+  ts: 2026-11-01T22:27:01Z
+  statement: Implement turn.pause, turn.resume, zero-token reactive wait in MCP, and interactive toast buttons
+created: 2026-11-01T22:27:01Z
+updated: 2026-11-01T22:27:01Z
+task: task-t0072

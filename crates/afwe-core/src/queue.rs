@@ -20,10 +20,12 @@ use crate::authority::{BlastRadius, PrompterDelegation};
 #[serde(rename_all = "snake_case")]
 pub enum QueueItemKind {
     Staged,
+    PausedTurn,
     GhostRedo,
     ReadyManual,
     ReadyGitError,
     AdvisoryDrift,
+    ToleratedDriftExpired,
     StaleNodeLease,
     Unattributed,
 }
@@ -61,9 +63,11 @@ pub struct QueueItem {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActionQueueSummary {
     pub staged_count: usize,
+    pub paused_count: usize,
     pub ghost_redo_count: usize,
     pub ready_count: usize,
     pub advisory_drift_count: usize,
+    pub expired_drift_count: usize,
     pub stale_leases_count: usize,
     pub unattributed_count: usize,
     pub total_actionable: usize,
@@ -120,6 +124,30 @@ pub fn get_action_queue(engine: &Engine, delegation: Option<&PrompterDelegation>
                     },
                     QueueAction {
                         label: "Reject".into(),
+                        op: "turn.abandon".into(),
+                        requires_human: false,
+                    },
+                ],
+            });
+        } else if t.status == "paused" {
+            let question = t.pause.as_ref().map(|p| p.question.clone()).unwrap_or_else(|| "Mid-turn decision required".into());
+            items.push(QueueItem {
+                id: t.id.clone(),
+                kind: QueueItemKind::PausedTurn,
+                badge: QueueBadge::Amber,
+                title: format!("{}: [PAUSED] {}", t.id, t.prompt),
+                detail: question,
+                blast_radius: BlastRadius::Medium,
+                requires_human: true,
+                pin_conflict: false,
+                actions: vec![
+                    QueueAction {
+                        label: "Resume".into(),
+                        op: "turn.resume".into(),
+                        requires_human: false,
+                    },
+                    QueueAction {
+                        label: "Abandon".into(),
                         op: "turn.abandon".into(),
                         requires_human: false,
                     },
@@ -208,24 +236,81 @@ pub fn get_action_queue(engine: &Engine, delegation: Option<&PrompterDelegation>
         }
     }
 
-    // 2. Advisory Drift
+    // 2. Advisory & Tolerated Drift
     let snap = engine.snapshot(false)?;
     let drift_findings = crate::drift::detect(&snap, None);
+    let ledger = crate::drift::load_ledger(engine).unwrap_or_default();
     for d in drift_findings {
         let file_name = d.files.first().cloned().unwrap_or_else(|| "workspace".into());
+        let ledger_entry = ledger.iter().find(|e| e.finding_id == d.id);
+        
+        let mut is_expired = false;
+        let mut review_by_str = String::new();
+        if let Some(entry) = ledger_entry {
+            review_by_str = entry.review_by.clone();
+            if let Ok(exp) = DateTime::parse_from_rfc3339(&entry.review_by) {
+                if now > exp {
+                    is_expired = true;
+                }
+            }
+        }
+
+        let (kind, badge, title, detail) = if is_expired {
+            (
+                QueueItemKind::ToleratedDriftExpired,
+                QueueBadge::Amber,
+                format!("Expired Tolerated Drift on `{}`", file_name),
+                format!("Review window expired on {}; original: {}", review_by_str, d.summary),
+            )
+        } else if ledger_entry.is_some() {
+            (
+                QueueItemKind::AdvisoryDrift,
+                QueueBadge::Grey,
+                format!("Tolerated Drift on `{}`", file_name),
+                format!("Tolerated until {}; {}", review_by_str, d.summary),
+            )
+        } else {
+            (
+                QueueItemKind::AdvisoryDrift,
+                QueueBadge::Blue,
+                format!("Drift on `{}`", file_name),
+                d.summary.clone(),
+            )
+        };
+
         items.push(QueueItem {
-            id: format!("drift-{}", blake3::hash(file_name.as_bytes()).to_hex().to_string().chars().take(8).collect::<String>()),
-            kind: QueueItemKind::AdvisoryDrift,
-            badge: QueueBadge::Blue,
-            title: format!("Drift on `{}`", file_name),
-            detail: d.summary.clone(),
+            id: d.id.clone(),
+            kind,
+            badge,
+            title,
+            detail,
             blast_radius: BlastRadius::Low,
             requires_human: false,
             pin_conflict: false,
             actions: vec![
                 QueueAction {
-                    label: "Dismiss".into(),
-                    op: "drift.dismiss".into(),
+                    label: "Adopt".into(),
+                    op: "drift.adopt".into(),
+                    requires_human: false,
+                },
+                QueueAction {
+                    label: "Adopt + Tune".into(),
+                    op: "drift.adopt_tune".into(),
+                    requires_human: false,
+                },
+                QueueAction {
+                    label: "Restore Original".into(),
+                    op: "drift.restore".into(),
+                    requires_human: false,
+                },
+                QueueAction {
+                    label: "Steer (New Turn)".into(),
+                    op: "drift.steer".into(),
+                    requires_human: false,
+                },
+                QueueAction {
+                    label: "Tolerate".into(),
+                    op: "drift.tolerate".into(),
                     requires_human: false,
                 },
             ],
@@ -289,31 +374,37 @@ pub fn get_action_queue(engine: &Engine, delegation: Option<&PrompterDelegation>
 
     // Compute summary counts
     let mut staged_count = 0;
+    let mut paused_count = 0;
     let mut ghost_redo_count = 0;
     let mut ready_count = 0;
     let mut advisory_drift_count = 0;
+    let mut expired_drift_count = 0;
     let mut stale_leases_count = 0;
     let mut unattributed_count = 0;
 
     for item in &items {
         match item.kind {
             QueueItemKind::Staged => staged_count += 1,
+            QueueItemKind::PausedTurn => paused_count += 1,
             QueueItemKind::GhostRedo => ghost_redo_count += 1,
             QueueItemKind::ReadyManual | QueueItemKind::ReadyGitError => ready_count += 1,
             QueueItemKind::AdvisoryDrift => advisory_drift_count += 1,
+            QueueItemKind::ToleratedDriftExpired => expired_drift_count += 1,
             QueueItemKind::StaleNodeLease => stale_leases_count += 1,
             QueueItemKind::Unattributed => unattributed_count += 1,
         }
     }
 
-    let total_actionable = staged_count + ghost_redo_count + unattributed_count;
+    let total_actionable = staged_count + paused_count + ghost_redo_count + expired_drift_count + unattributed_count;
 
     Ok(ActionQueue {
         summary: ActionQueueSummary {
             staged_count,
+            paused_count,
             ghost_redo_count,
             ready_count,
             advisory_drift_count,
+            expired_drift_count,
             stale_leases_count,
             unattributed_count,
             total_actionable,
@@ -408,6 +499,25 @@ pub fn batch_act(
                     let node = item.id.trim_start_matches("lease-");
                     let _ = crate::lease::release(engine, node, "", "");
                     res.succeeded.push(item.id);
+                }
+            }
+        }
+        "batch.tolerate_drift" => {
+            for item in queue.items {
+                if item.kind == QueueItemKind::AdvisoryDrift || item.kind == QueueItemKind::ToleratedDriftExpired {
+                    let _ = crate::drift::apply_verdict(engine, &item.id, crate::model::DriftVerdict::Tolerate { note: Some("batch tolerated".into()) }, "batch");
+                    res.succeeded.push(item.id);
+                }
+            }
+        }
+        "batch.adopt_drift" => {
+            for item in queue.items {
+                if item.kind == QueueItemKind::AdvisoryDrift || item.kind == QueueItemKind::ToleratedDriftExpired {
+                    if crate::drift::apply_verdict(engine, &item.id, crate::model::DriftVerdict::Adopt { tune: false }, "batch").is_ok() {
+                        res.succeeded.push(item.id);
+                    } else {
+                        res.failed.push((item.id, "adopt failed".into()));
+                    }
                 }
             }
         }

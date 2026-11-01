@@ -16,6 +16,7 @@ export interface PresenceEventPayload {
   detail: string;
   touched_files: string[];
   agent_quote?: string;
+  metadata?: Record<string, any>;
 }
 
 interface PresenceCardProps {
@@ -194,6 +195,21 @@ export const PresenceCard: React.FC<PresenceCardProps> = ({
     }
   };
 
+  const handleOptionClick = async (option: string) => {
+    setLoading(true);
+    try {
+      await call("turn.resume", {
+        turn: ev.turn_id,
+        answer: option,
+      });
+      setActionStatus(`✔ Resumed with ${option}`);
+    } catch (e: any) {
+      setActionStatus(`Error: ${e.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleReply = async () => {
     if (!replyText.trim()) return;
     if (onReply) {
@@ -204,14 +220,24 @@ export const PresenceCard: React.FC<PresenceCardProps> = ({
     }
     setLoading(true);
     try {
-      await call("memory.add", {
-        kind: "decision",
-        title: `Steering instruction for ${ev.turn_id || "turn"}`,
-        body: replyText.trim(),
-      });
-      setShowReplyInput(false);
-      setReplyText('');
-      setActionStatus("✔ Steering reply recorded");
+      if (ev.kind === "mid_turn.pause") {
+        await call("turn.resume", {
+          turn: ev.turn_id,
+          answer: replyText.trim(),
+        });
+        setShowReplyInput(false);
+        setReplyText('');
+        setActionStatus("✔ Resumed with steering answer");
+      } else {
+        await call("memory.add", {
+          kind: "decision",
+          title: `Steering instruction for ${ev.turn_id || "turn"}`,
+          body: replyText.trim(),
+        });
+        setShowReplyInput(false);
+        setReplyText('');
+        setActionStatus("✔ Steering reply recorded");
+      }
     } catch (e: any) {
       setActionStatus(`Error: ${e.message}`);
     } finally {
@@ -318,38 +344,56 @@ export const PresenceCard: React.FC<PresenceCardProps> = ({
         </div>
       ) : (
         /* Action Buttons */
-        <div className="flex items-center justify-between gap-2 pt-3 mt-3 border-t border-slate-800/80">
-          <div className="flex items-center gap-1.5">
-            {ev.requires_human && (
+        <div className="flex flex-col gap-2 pt-3 mt-3 border-t border-slate-800/80">
+          {ev.kind === "mid_turn.pause" && Array.isArray(ev.metadata?.options) && ev.metadata.options.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pb-1">
+              {ev.metadata.options.map((opt: string) => (
+                <button
+                  key={opt}
+                  disabled={loading}
+                  onClick={() => handleOptionClick(opt)}
+                  className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg text-xs font-medium transition"
+                >
+                  ✔ {opt}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5">
+              {ev.requires_human && ev.kind !== "mid_turn.pause" && (
+                <button
+                  disabled={loading}
+                  onClick={handleApprove}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition shadow-sm disabled:opacity-50"
+                >
+                  Approve
+                </button>
+              )}
+              {ev.kind !== "mid_turn.pause" && (
+                <button
+                  disabled={loading}
+                  onClick={handleRevert}
+                  className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-rose-300 rounded-lg text-xs font-medium transition disabled:opacity-50"
+                >
+                  Revert
+                </button>
+              )}
               <button
-                disabled={loading}
-                onClick={handleApprove}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition shadow-sm disabled:opacity-50"
+                onClick={() => setShowReplyInput(true)}
+                className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition"
               >
-                Approve
+                Reply
               </button>
-            )}
+            </div>
+
             <button
-              disabled={loading}
-              onClick={handleRevert}
-              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-rose-300 rounded-lg text-xs font-medium transition disabled:opacity-50"
+              onClick={handleOpenStudio}
+              className="px-3 py-1.5 bg-blue-900/40 hover:bg-blue-900/60 text-blue-300 border border-blue-700/50 rounded-lg text-xs font-medium transition flex items-center gap-1"
             >
-              Revert
-            </button>
-            <button
-              onClick={() => setShowReplyInput(true)}
-              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition"
-            >
-              Reply
+              Open Studio &rarr;
             </button>
           </div>
-
-          <button
-            onClick={handleOpenStudio}
-            className="px-3 py-1.5 bg-blue-900/40 hover:bg-blue-900/60 text-blue-300 border border-blue-700/50 rounded-lg text-xs font-medium transition flex items-center gap-1"
-          >
-            Open Studio &rarr;
-          </button>
         </div>
       )}
     </div>

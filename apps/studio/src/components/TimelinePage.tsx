@@ -101,17 +101,40 @@ export const TimelinePage: React.FC = () => {
     }
   };
 
+  const handleTurnResume = async (id: string, answer: string) => {
+    setActionLoading(true);
+    try {
+      await call("turn.resume", { turn: id, answer });
+      notify(`✔ Turn #${id} resumed with: ${answer}`);
+      setActionFeedback(`✔ Turn #${id} resumed with: ${answer}`);
+    } catch (e: any) {
+      notify(`Resume error: ${e.message}`);
+      setActionFeedback(`Error: ${e.message}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleTurnReply = async (id: string) => {
     if (!replyInput.trim()) return;
     setActionLoading(true);
     try {
-      await call("memory.add", {
-        kind: "decision",
-        title: `Steering instruction for Turn #${id}`,
-        body: replyInput.trim(),
-      });
-      notify(`✔ Steering instruction recorded for #${id}`);
-      setActionFeedback("✔ Steering instruction recorded");
+      if (selectedTurn?.status === "paused") {
+        await call("turn.resume", {
+          turn: id,
+          answer: replyInput.trim(),
+        });
+        notify(`✔ Turn #${id} resumed with answer`);
+        setActionFeedback("✔ Turn resumed with your answer");
+      } else {
+        await call("memory.add", {
+          kind: "decision",
+          title: `Steering instruction for Turn #${id}`,
+          body: replyInput.trim(),
+        });
+        notify(`✔ Steering instruction recorded for #${id}`);
+        setActionFeedback("✔ Steering instruction recorded");
+      }
       setReplyInput("");
       setReplyOpen(false);
     } catch (e: any) {
@@ -979,13 +1002,13 @@ export const TimelinePage: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Action Bar for Pending / Staged / Open Turns */}
-                {(gateDecision === "staged" || gateDecision === "open" || turnData?.status === "staged" || turnData?.status === "open") && (
+                {/* Action Bar for Pending / Staged / Open / Paused Turns */}
+                {(gateDecision === "staged" || gateDecision === "open" || turnData?.status === "staged" || turnData?.status === "open" || turnData?.status === "paused") && (
                   <div
                     style={{
                       marginTop: "12px",
                       padding: "10px",
-                      background: "rgba(192, 122, 18, 0.08)",
+                      background: turnData?.status === "paused" ? "rgba(224, 138, 20, 0.12)" : "rgba(192, 122, 18, 0.08)",
                       border: "1px solid var(--amber)",
                       borderRadius: "8px",
                       display: "flex",
@@ -995,7 +1018,7 @@ export const TimelinePage: React.FC = () => {
                   >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--amber)", textTransform: "uppercase" }}>
-                        ⚡ Human Action Required ({gateDecision})
+                        ⚡ {turnData?.status === "paused" ? "Human Decision Required (Paused)" : `Human Action Required (${gateDecision})`}
                       </span>
                       {actionFeedback && (
                         <span style={{ fontSize: "11px", color: "var(--ink)", fontWeight: 500 }}>
@@ -1004,25 +1027,54 @@ export const TimelinePage: React.FC = () => {
                       )}
                     </div>
 
+                    {turnData?.status === "paused" && turnData?.pause?.question && (
+                      <div style={{ fontSize: "12px", color: "var(--ink)", fontWeight: 600, padding: "4px 0" }}>
+                        ❓ {turnData.pause.question}
+                      </div>
+                    )}
+
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                      <button
-                        type="button"
-                        disabled={actionLoading}
-                        onClick={() => handleTurnApprove(selectedTurn.id, gateDecision)}
-                        style={{
-                          flex: 1,
-                          padding: "6px 12px",
-                          background: "var(--accent)",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "6px",
-                          fontSize: "11.5px",
-                          fontWeight: 600,
-                          cursor: "pointer",
-                        }}
-                      >
-                        ✔ {gateDecision === "staged" ? "Approve Proposal" : "Commit Turn"}
-                      </button>
+                      {turnData?.status === "paused" && turnData?.pause?.options && turnData.pause.options.length > 0 ? (
+                        turnData.pause.options.map((opt: string) => (
+                          <button
+                            key={opt}
+                            type="button"
+                            disabled={actionLoading}
+                            onClick={() => handleTurnResume(selectedTurn.id, opt)}
+                            style={{
+                              padding: "6px 12px",
+                              background: "var(--accent)",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: "6px",
+                              fontSize: "11.5px",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                            }}
+                          >
+                            ✔ {opt}
+                          </button>
+                        ))
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={actionLoading}
+                          onClick={() => handleTurnApprove(selectedTurn.id, gateDecision)}
+                          style={{
+                            flex: 1,
+                            padding: "6px 12px",
+                            background: "var(--accent)",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "6px",
+                            fontSize: "11.5px",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                          }}
+                        >
+                          ✔ {gateDecision === "staged" ? "Approve Proposal" : "Commit Turn"}
+                        </button>
+                      )}
                       <button
                         type="button"
                         disabled={actionLoading}

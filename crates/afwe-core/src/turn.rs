@@ -53,6 +53,7 @@ const AFWE_SOURCE_DIRS: &[&str] = &[
     ".afwe/README.md",
 ];
 
+#[derive(Default, Debug, Clone)]
 pub struct BeginRequest {
     pub prompt: String,
     pub origin: String,
@@ -64,6 +65,7 @@ pub struct BeginRequest {
     pub claims: Vec<String>,
 }
 
+#[derive(Default, Debug, Clone)]
 pub struct AssumeRequest {
     pub intents: Vec<TurnIntent>,
     pub assumptions: Vec<Assumption>,
@@ -609,6 +611,9 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
 pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
     let mut turn = load(engine, id)?;
     verify_token(engine, &turn, req.token.as_deref(), &req.origin)?;
+    if turn.status == "paused" {
+        return Err(anyhow!("turn {id} is currently paused awaiting a decision; call turn.resume first"));
+    }
     if !matches!(turn.status.as_str(), "open" | "ready" | "staged") {
         return Err(anyhow!("turn {id} is {}; start a new turn for further work", turn.status));
     }
@@ -802,6 +807,9 @@ pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
 pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     let mut turn = load(engine, id)?;
     verify_token(engine, &turn, req.token.as_deref(), &req.origin)?;
+    if turn.status == "paused" {
+        return Err(anyhow!("turn {id} is currently paused awaiting a decision; call turn.resume first"));
+    }
     if !matches!(turn.status.as_str(), "open" | "ready" | "staged") {
         return Err(anyhow!("turn {id} is already {}; nothing to commit", turn.status));
     }
@@ -1686,6 +1694,104 @@ pub fn confirm(engine: &Engine, id: &str, origin: &str) -> Result<Value> {
     commit(engine, id, CommitRequest { footer_shown: true, origin: origin.to_string(), confirmed: true, ..Default::default() })
 }
 
+pub fn pause(engine: &Engine, id: &str, question: &str, options: Vec<String>, timeout_seconds: u64, origin: &str) -> Result<Value> {
+    let mut turn = load(engine, id)?;
+    if turn.status != "open" {
+        return Err(anyhow!("turn {id} is {}; only open turns can be paused", turn.status));
+    }
+    turn.status = "paused".into();
+    let timeout = if timeout_seconds == 0 { 3600 } else { timeout_seconds };
+    turn.pause = Some(TurnPause {
+        question: question.to_string(),
+        options: options.clone(),
+        paused_at: now(),
+        timeout_seconds: timeout,
+        response: None,
+        responded_at: None,
+        responded_by: None,
+    });
+    turn.last_activity = now();
+    engine.store.save_turn(&turn)?;
+
+    // Emit mid_turn.pause presence event
+    let feed = crate::events::EventFeed::for_project(&engine.store.project_root);
+    let _ = feed.emit(crate::events::PresenceEvent {
+        seq: 0,
+        timestamp: String::new(),
+        project_id: engine.store.project_root.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_else(|| "project".to_string()),
+        host_id: crate::project_registry::whoami_host(),
+        turn_hash: Some(turn.turn_hash.clone()),
+        turn_id: Some(turn.alias.clone().unwrap_or(turn.id.clone())),
+        kind: "mid_turn.pause".to_string(),
+        outcome: None,
+        blast_radius: "medium".to_string(),
+        requires_human: true,
+        title: format!("Turn {}: Action Required", turn.alias.clone().unwrap_or(turn.id.clone())),
+        detail: question.to_string(),
+        touched_files: turn.claims.iter().map(|c| c.path.clone()).collect(),
+        agent_quote: Some(question.to_string()),
+        metadata: serde_json::json!({
+            "options": options,
+            "timeout_seconds": timeout,
+            "origin": origin,
+        }),
+    });
+
+    engine.log(origin, "turn_pause", format!("{id} paused: {question}"), Some(serde_json::json!({"turn": id, "options": options})))?;
+    Ok(json!({
+        "status": "paused",
+        "turn": id,
+        "question": question,
+        "options": options,
+        "timeout_seconds": timeout
+    }))
+}
+
+pub fn resume(engine: &Engine, id: &str, answer: &str, origin: &str) -> Result<Value> {
+    let mut turn = load(engine, id)?;
+    if turn.status != "paused" {
+        return Err(anyhow!("turn {id} is {}; only paused turns can be resumed", turn.status));
+    }
+    if let Some(p) = &mut turn.pause {
+        p.response = Some(answer.to_string());
+        p.responded_at = Some(now());
+        p.responded_by = Some(origin.to_string());
+    }
+    turn.status = "open".into();
+    turn.last_activity = now();
+    engine.store.save_turn(&turn)?;
+
+    // Emit mid_turn.resume event
+    let feed = crate::events::EventFeed::for_project(&engine.store.project_root);
+    let _ = feed.emit(crate::events::PresenceEvent {
+        seq: 0,
+        timestamp: String::new(),
+        project_id: engine.store.project_root.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_else(|| "project".to_string()),
+        host_id: crate::project_registry::whoami_host(),
+        turn_hash: Some(turn.turn_hash.clone()),
+        turn_id: Some(turn.alias.clone().unwrap_or(turn.id.clone())),
+        kind: "mid_turn.resume".to_string(),
+        outcome: None,
+        blast_radius: "low".to_string(),
+        requires_human: false,
+        title: format!("Turn {}: Resumed", turn.alias.clone().unwrap_or(turn.id.clone())),
+        detail: format!("Answer: {answer}"),
+        touched_files: vec![],
+        agent_quote: Some(answer.to_string()),
+        metadata: serde_json::json!({
+            "answer": answer,
+            "origin": origin,
+        }),
+    });
+
+    engine.log(origin, "turn_resume", format!("{id} resumed by {origin}: {answer}"), Some(serde_json::json!({"turn": id, "answer": answer})))?;
+    Ok(json!({
+        "status": "resumed",
+        "turn": id,
+        "answer": answer
+    }))
+}
+
 /// Undo what a turn did, as far as that is safe: files that were clean at turn.begin go back to HEAD,
 /// files the turn created are removed. Anything the user had already changed before the turn began
 /// cannot be reverted mechanically, so it becomes a Board item for the harness to reconcile.
@@ -1854,7 +1960,7 @@ mod tests {
 
     #[test]
     fn code_prefix_and_relative_paths() {
-        let mut m = Manifest { format: "afwe/2".into(), project: ProjectMeta { name: "x".into(), description: None, root: ".".into() }, analyzer: AnalyzerConfig::default(), policy: Policy::default(), provenance: ProvenanceConfig::default(), vcs: VcsConfig::default(), profile: None };
+        let mut m = Manifest { format: "afwe/2".into(), project: ProjectMeta { name: "x".into(), description: None, root: ".".into() }, analyzer: AnalyzerConfig::default(), policy: Policy::default(), provenance: ProvenanceConfig::default(), vcs: VcsConfig::default(), profile: None, ci: CiConfig::default() };
         assert_eq!(code_prefix(&m), "");
         m.project.root = "app/".into();
         assert_eq!(code_prefix(&m), "app/");
@@ -1946,6 +2052,74 @@ mod tests {
         assert!(!saved_turn.checkgen.is_empty());
         assert_eq!(engine.store.checks().unwrap().len(), 1);
         assert!(!saved_turn.pin_proposals.is_empty());
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_turn_pause_and_resume_lifecycle() {
+        let dir = std::env::temp_dir().join(format!("afwe-pause-{}", crate::util::short_id("t")));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(dir.join("src")).unwrap();
+        std::fs::write(dir.join("src/lib.rs"), "pub fn init() {}\n").unwrap();
+        crate::init::init(
+            &dir,
+            crate::init::InitOptions {
+                name: Some("pause-test".into()),
+                root: Some("src".into()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        let engine = Engine::open(&dir).unwrap();
+        let begin_res = begin(
+            &engine,
+            BeginRequest {
+                prompt: "Test turn pause".into(),
+                origin: "human".into(),
+                targets: vec![],
+                refines: vec![],
+                kind: "feature".into(),
+                agent: None,
+                parent: None,
+                claims: vec![],
+            },
+        )
+        .unwrap();
+        let tid = begin_res["turn"].as_str().unwrap().to_string();
+
+        // 1. Pause the open turn
+        let pause_res = pause(
+            &engine,
+            &tid,
+            "Should we use Redis or InMemory?",
+            vec!["Redis".into(), "InMemory".into()],
+            60,
+            "agent",
+        )
+        .unwrap();
+        assert_eq!(pause_res["status"], "paused");
+
+        // 2. Commit must fail while paused
+        let commit_err = commit(
+            &engine,
+            &tid,
+            CommitRequest {
+                origin: "human".into(),
+                ..Default::default()
+            },
+        );
+        assert!(commit_err.is_err());
+        assert!(commit_err.unwrap_err().to_string().contains("currently paused"));
+
+        // 3. Resume the turn with human answer
+        let resume_res = resume(&engine, &tid, "Redis", "human").unwrap();
+        assert_eq!(resume_res["status"], "resumed");
+        assert_eq!(resume_res["answer"], "Redis");
+
+        let resumed_turn = engine.store.turn(&tid).unwrap().unwrap();
+        assert_eq!(resumed_turn.status, "open");
+        assert_eq!(resumed_turn.pause.unwrap().response.as_deref(), Some("Redis"));
 
         let _ = std::fs::remove_dir_all(&dir);
     }
