@@ -582,13 +582,13 @@ pub fn ensure_daemon_running(project_root: &Path) {
         }
     }
 
-    // Spawn detached daemon
+    // Spawn detached daemon on default studio port 4242
     if let Ok(exe) = std::env::current_exe() {
         let _ = std::process::Command::new(exe)
             .arg("studio")
             .arg("--no-open")
             .arg("--port")
-            .arg("4141")
+            .arg("4242")
             .current_dir(project_root)
             .stdin(std::process::Stdio::null())
             .stdout(std::process::Stdio::null())

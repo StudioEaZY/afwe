@@ -139,6 +139,16 @@ If an assumption violates a locked Pin or has an invalid schema, AFWE returns **
 - **Safe Redo**: Call `afwe turn redo <turn>` to cleanly reset touched files back to baseline. Affected files are automatically backed up to `.afwe/backups/<turn_hash>/`.
 - **Abandon Turn**: Call `afwe turn abandon <turn>` to release all reserved claims and mark the turn abandoned.
 
+### Step 2.5: Mid-Turn Toast Pause & Zero-Token Reactive Wait
+When an agent reaches an ambiguous decision mid-turn or requires human confirmation:
+```bash
+afwe turn pause <turn> --reason "Choose authentication provider" --options "OAuth2,JWT,Passkey"
+```
+Or via MCP tool `afwe_turn_pause`.
+- **Zero-Token Suspend**: The MCP runner loops reactively with exponential backoff (500ms to 3s) at **0 LLM token consumption**.
+- **Interactive Toast Buttons**: Windows desktop toasts and the Studio HUD render interactive option pills (up to 3 direct buttons), plus `[Reply]` and `[Open Studio]`.
+- **Resumption**: Clicking a button or running `afwe turn resume <turn> --reply "OAuth2"` immediately wakes the suspended runner and passes your decision directly into the active turn context.
+
 ### Step 3: `afwe turn commit`
 After writing code, the harness calls `turn commit`:
 ```bash
@@ -313,4 +323,34 @@ Inspect gate metrics, parse times, and calibration telemetry:
 ```bash
 afwe stats
 ```
+
+---
+
+## 11. Drift 3-Way Governance & Drift Ledger
+
+When code deviates structurally from declared architectural blueprints without an automated mechanical rename match ($\ge 90\%$), AFWE enforces explicit human governance instead of silent auto-adoption:
+
+### The 3 Drift Verdicts
+1. **Adopt**: Incorporates the code mutation into the architectural blueprint.
+   ```bash
+   afwe drift verdict src/payments/braintree.ts --verdict adopt [--tune]
+   ```
+   Passing `--tune` marks the node for fine-tuning, creating a tracking card in the Studio Board.
+2. **Reject**: Declines the architectural drift.
+   - **Restore**: Restores the pre-drift baseline bytes on disk.
+     ```bash
+     afwe drift verdict src/payments/braintree.ts --verdict reject --mode restore
+     ```
+   - **Steer / Rewrite**: Spawns a brand new standalone remediation turn (supporting batch queues) to rework the implementation to match the blueprint.
+     ```bash
+     afwe drift verdict src/payments/braintree.ts --verdict reject --mode steer --note "Rewrite to use existing Stripe provider"
+     ```
+3. **Tolerate**: Acknowledges the deviation as intentional without mutating the blueprint or failing gates:
+   ```bash
+   afwe drift verdict src/payments/braintree.ts --verdict tolerate --note "Legacy migration in progress"
+   ```
+   - Stored in `.afwe/state/drift_ledger.json`.
+   - Governed by `policy.drift_tolerate_days` (default 7 days, up to 14 days in `afwe.yaml`).
+   - When the toleration period expires, the Action Queue re-surfaces the drift as an **Amber** warning (`ToleratedDriftExpired`) for re-evaluation.
+
 

@@ -8,6 +8,65 @@ use afwe_core::project_registry::ProjectRegistry;
 pub struct PresenceWatcher;
 
 impl PresenceWatcher {
+    /// Ensure the headless presence watcher background daemon is running
+    pub fn ensure_watcher_running(project_root: &Path) {
+        let watcher_state = project_root.join(".afwe").join("state").join("presence_watcher.json");
+        if watcher_state.exists() {
+            if let Ok(content) = std::fs::read_to_string(&watcher_state) {
+                if let Ok(val) = serde_json::from_str::<serde_json::Value>(&content) {
+                    if let Some(pid) = val.get("pid").and_then(|p| p.as_u64()) {
+                        #[cfg(target_os = "windows")]
+                        {
+                            let out = std::process::Command::new("powershell")
+                                .args(["-NoProfile", "-Command", &format!("Get-Process -Id {} -ErrorAction SilentlyContinue", pid)])
+                                .output();
+                            if let Ok(o) = out {
+                                if o.status.success() && !o.stdout.is_empty() {
+                                    return;
+                                }
+                            }
+                        }
+                        #[cfg(not(target_os = "windows"))]
+                        {
+                            if unsafe { libc::kill(pid as libc::pid_t, 0) } == 0 {
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Auto-register project in registry if missing
+        if let Ok(mut reg) = ProjectRegistry::load() {
+            if !reg.projects.iter().any(|p| Path::new(&p.path) == project_root) {
+                let name = project_root.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_else(|| "project".into());
+                let _ = reg.register(project_root, &name);
+            }
+        }
+
+        // Spawn detached presence watcher daemon
+        if let Ok(exe) = std::env::current_exe() {
+            let child = std::process::Command::new(exe)
+                .arg("presence")
+                .arg("run")
+                .current_dir(project_root)
+                .stdin(std::process::Stdio::null())
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::null())
+                .spawn();
+
+            if let Ok(c) = child {
+                let _ = std::fs::create_dir_all(project_root.join(".afwe").join("state"));
+                let json_data = serde_json::json!({
+                    "pid": c.id(),
+                    "started_at": chrono::Utc::now().to_rfc3339()
+                });
+                let _ = std::fs::write(&watcher_state, json_data.to_string());
+            }
+        }
+    }
+
     /// Run the headless presence loop, monitoring all registered projects
     pub fn run() -> Result<()> {
         println!("⛨ AFWE Presence Watcher started (headless mode)");

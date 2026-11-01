@@ -1,0 +1,17 @@
+id: afwe-client-and-docs-sync
+title: Synchronize AFWE Client Scaffolds, Skills, and Docs
+statement: Update embedded templates in contract.rs and init.rs, update TUTORIAL.md and SPEC.md, and sync .afwe/ client harness with pause and drift governance
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0073
+history:
+- turn: t0073
+  ts: 2026-11-01T23:03:59Z
+  statement: Update embedded templates in contract.rs and init.rs, update TUTORIAL.md and SPEC.md, and sync .afwe/ client harness with pause and drift governance
+created: 2026-11-01T23:03:59Z
+updated: 2026-11-01T23:03:59Z
+task: task-t0073

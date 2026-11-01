@@ -379,8 +379,10 @@ Attachments are nodes first, then files (globs, code-root-relative) and symbols 
 2. `turn.assume { turn, intents?, assumptions?, removes?, overrides? }` → validates the schema (codes `SCHEMA_INVALID`,
    `DUPLICATE_ID`, `UNKNOWN_TARGET`, `BAD_CLAIM`) and destructive intents against active pins (`PIN_CONFLICT`). Any error
    → `redo`, nothing registered. Otherwise intents are upserted (history appended) and claims are queued.
-3. `turn.commit { turn, summary?, footer_shown?, removes?, touched?, overrides? }` → attribution = changes since the
-   baseline (+ declared extras, + folded proposals). Then, in order: `FOOTER_REQUIRED`, verify (`VERIFY_FAILED`),
+3. `turn.pause { turn, reason, options? }` → transitions open turn to `paused`, broadcasting a `mid_turn.pause` presence event with choice options. In MCP mode, reactively suspends the runner connection with exponential backoff (0 LLM token cost) until `turn.resume` is called.
+4. `turn.resume { turn, reply?, option? }` → unpauses turn back to `open`, emitting `mid_turn.resume` and unblocking the suspended agent runner with the prompter's decision/instruction.
+5. `turn.commit { turn, summary?, footer_shown?, removes?, touched?, overrides? }` → attribution = changes since the
+   baseline (+ declared extras, + folded proposals). Blocked if `status == "paused"`. Then, in order: `FOOTER_REQUIRED`, verify (`VERIFY_FAILED`),
    project tests, pins (`PIN_CONFLICT` / confirm), collateral loss (`COLLATERAL_LOSS`), claims (`CLAIM_FAILED`),
    registered checks (`CHECK_FAILED`), restore markers (`RESTORE_CONFLICT`). Then the decision:
    * any blocking failure → **redo**: nothing is written to git;
@@ -390,7 +392,7 @@ Attachments are nodes first, then files (globs, code-root-relative) and symbols 
    * otherwise **committed**: the turn record, the checkgen checks, pin proposals from keyword phrases, task steps, a
      sync, then one git commit of exactly the attributed files plus the `.afwe/` source directories, with trailers
      `AFWE-Turn: tNNNN`, `AFWE-Strength`, `AFWE-Confidence`.
-4. `turn.confirm` commits a staged proposal through the gate with confirm-level pins treated as confirmed.
+6. `turn.confirm` commits a staged proposal through the gate with confirm-level pins treated as confirmed.
    `turn.revert` restores files that were clean at begin, removes files the turn created, and turns anything else
    into a Board item.
 
@@ -593,6 +595,15 @@ AFWE detects, organizes, routes, and safely executes mechanical corrective actio
 - **User Notification Policy**: Configured via `%APPDATA%\afwe\presence.toml` or `~/.config/afwe/presence.toml` supporting quiet hours, custom styles (Sticky Card vs. Toast), and wildcard routing (`mid_turn.* -> prompter_delegated`, `turn_end.* -> human`).
 - **Presence Proof (`floor_only`)**: Physical OS biometric/credential verification (Windows Hello, Touch ID, PAM challenge) required for human-floor mutations and pin overrides, keeping routine turns frictionless.
 - **Git Channel**: Zero-relay two-way notification and steering protocol for inbound-restricted sandboxes via lightweight Git refs (`refs/afwe/outbox/<project>` and `refs/afwe/inbox/<project>`).
+
+### 16.7 Drift 3-Way Governance & Drift Ledger
+- **Separation of Concerns**: Mechanical file renames ($\ge 90\%$ symbol match) remain automated path updates. Structural code-blueprint drifts strictly mandate an explicit human verdict.
+- **Drift Verdicts (`drift.verdict`)**:
+  - `adopt`: Mutates the architectural blueprint to encompass the newly introduced code structure. When `tune: true`, creates a tracking item on the Governance Board.
+  - `reject`: Rejects the change with either `mode: "restore"` (reverting baseline bytes from disk) or `mode: "steer"` (spawning a standalone remediation turn with batch support).
+  - `tolerate`: Acknowledges the divergence without altering the blueprint, appending an entry to `.afwe/state/drift_ledger.json`.
+- **Drift Ledger (`state/drift_ledger.json`)**: Persistent storage of tolerated drifts governed by `policy.drift_tolerate_days` (default 7 days, up to 14 days in `afwe.yaml`). Expired entries automatically elevate to Amber warnings in the Action Queue (`ToleratedDriftExpired`).
+
 
 
 

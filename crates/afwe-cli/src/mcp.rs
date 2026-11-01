@@ -124,6 +124,11 @@ fn call_tool(engine: &mut Option<Engine>, start: &PathBuf, origin: &str, name: &
     params["origin"] = json!(forced_origin);
     let mut result = api::call(eng, spec.op, params.clone(), &forced_origin)?;
 
+    if spec.op == "turn.begin" {
+        crate::studio::ensure_daemon_running(&eng.store.project_root);
+        crate::presence::watcher::PresenceWatcher::ensure_watcher_running(&eng.store.project_root);
+    }
+
     // Mid-turn pause reactive wait loop (0 token burn)
     if spec.op == "turn.pause" && result.get("status").and_then(|v| v.as_str()) == Some("paused") {
         let turn_id = params.get("turn").and_then(|v| v.as_str()).unwrap_or("");

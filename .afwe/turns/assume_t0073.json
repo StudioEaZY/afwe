@@ -1,0 +1,24 @@
+{
+  "intents": [
+    {
+      "id": "autostart-studio-and-watcher",
+      "action": "refine",
+      "targets": [
+        "Afwe Cli"
+      ],
+      "title": "Auto-start Studio and Presence Watcher on Turn Begin",
+      "statement": "Ensure Studio daemon (port 4242) and Presence Watcher are automatically started as background daemons on turn begin in both CLI and MCP"
+    },
+    {
+      "id": "afwe-client-and-docs-sync",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Synchronize AFWE Client Scaffolds, Skills, and Docs",
+      "statement": "Update embedded templates in contract.rs and init.rs, update TUTORIAL.md and SPEC.md, and sync .afwe/ client harness with pause and drift governance"
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

@@ -35,10 +35,15 @@ When interacting with this codebase:
    - Obey active pins and active guardrails; never delete pinned behavior without an explicit override (`{pin, reason}`).
    - Answer pending questions or review probing guides (`afwe question list`, `afwe guide list`).
    - **Fast-Path Edit Verification**: When using tool hooks that fire on every edit, run `afwe verify --no-commands` to get immediate fail-fast architectural feedback in < 20ms without paying the test-suite execution tax.
+   - **Mid-Turn Pause & Zero-Token Reactive Wait**: When hitting branching decisions or requiring human confirmation mid-turn, call `afwe turn pause <turn> --reason "..." [--options ...]` (or MCP tool `afwe_turn_pause`). This suspends execution at 0 tokens in a reactive loop until the human replies via Windows desktop toast buttons, Studio Action Bar, or `afwe turn resume <turn> --reply "..."`.
 
 4. **Phase 3: Post-Editing (Verification & Mandatory Synchronization)**:
    - Run verification via `afwe verify --changed <files>` (or MCP `afwe_verify`).
    - In prototype spikes, explore mode can be temporarily activated via `afwe unlock --reason "..."` and re-armed via `afwe lock`.
+   - **Drift 3-Way Governance**: Structural code changes require an explicit tri-state verdict via `afwe drift verdict <file> --verdict adopt|reject|tolerate` (or MCP `afwe_drift_verdict`):
+     - `adopt`: accepts code into the blueprint (with optional `--tune` flag creating a fine-tuning Board card).
+     - `reject`: rejects the drift with either `restore` (reverts disk baseline) or `steer` (spawns a brand new standalone remediation turn).
+     - `tolerate`: records the drift into `.afwe/state/drift_ledger.json` for a configurable 7–14 day window before surfacing as Amber.
    - **Post-Turn Synchronization Obligation**: Whenever code structure, public APIs, rules, or behavior change:
      - Update documentation (`README.md`, `.afwe/docs/`, root `docs/`).
      - Update Ubiquitous Language: add or update terms in `.afwe/memory/terminology/`, update `docs/UBIQUITOUS_LANGUAGE.md` (and `.afwe/docs/UBIQUITOUS_LANGUAGE.md`), and run `afwe memory sync-terms` (or `node scripts/sync-ubiquitous-language.js`).

@@ -1323,6 +1323,7 @@ fn run(cli: Cli) -> Result<i32> {
                         "claims": strs(&claim),
                     }), &origin)?;
                     crate::studio::ensure_daemon_running(&engine.store.project_root);
+                    crate::presence::watcher::PresenceWatcher::ensure_watcher_running(&engine.store.project_root);
                     out(json, &v, render::turn_briefing);
                     0
                 }
