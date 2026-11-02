@@ -1,0 +1,17 @@
+id: client-format-docs
+title: Report the current format and onboarding truth
+statement: The generated README reports FORMAT_VERSION (afwe/3); SPEC documents afwe/3 and the implicit-root rule; TUTORIAL explains init vs onboard and the real --legacy bootstrap behaviour.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0087
+history:
+- turn: t0087
+  ts: 2026-11-02T17:42:17Z
+  statement: The generated README reports FORMAT_VERSION (afwe/3); SPEC documents afwe/3 and the implicit-root rule; TUTORIAL explains init vs onboard and the real --legacy bootstrap behaviour.
+created: 2026-11-02T17:42:17Z
+updated: 2026-11-02T17:42:17Z
+task: task-t0087

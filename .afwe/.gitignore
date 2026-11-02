@@ -3,3 +3,5 @@ index/
 state/
 # local safety copies made by `afwe repair` / `turn redo`; never committed
 backups/
+# local audit; the engine ledger is the authoritative history
+log/

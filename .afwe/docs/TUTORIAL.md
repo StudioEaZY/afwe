@@ -48,12 +48,18 @@ afwe onboard --profile engineer
 
 What `afwe onboard` does automatically:
 1. Detects your tech stack (Rust, TypeScript/Node, Python, Go, etc.).
-2. Creates `.afwe/` with `afwe.yaml`, `blueprint/`, `memory/`, and `guardrails/`.
-3. Scaffolds an initial structural blueprint tree from your folder layout.
-4. Appends the non-negotiable contract block to `AGENTS.md` (and `CLAUDE.md`).
-5. Configures your profile:
+2. Creates `.afwe/` with `afwe.yaml`, `blueprint/`, `memory/`, `guardrails/`, docs and the skill.
+3. Writes `.github/workflows/afwe-gate.yml`, the `AGENTS.md` contract, the skill template, and the
+   selected profile. A brand-new blueprint has one root node, which implicitly owns all code, so
+   the first turn maps and commits; once you add a second node, mapping becomes explicit. Pass
+   `--legacy` to bootstrap a multi-node blueprint from the folder layout and grandfather
+   pre-existing violations.
+4. Configures your profile:
    - `normie`: Auto-commits turns when verification passes.
    - `engineer`: Stages passing turns for manual `git commit` review.
+
+`afwe init` is the minimal variant: it writes the same `.afwe/` sources and client docs without the
+CI gate or AGENTS.md contract. Both are idempotent.
 
 You can inspect your project status at any time:
 ```bash
@@ -178,6 +184,18 @@ AFWE executes the deterministic commit engine:
 > - **The Guarantee**: AFWE will never falsely block live code.
 > - **The Trade-off**: Generic names (`new`, `len`, `init`, `run`, `default`, `get`, `set`) are intentionally treated as always referenced and unflaggable.
 > - **Language-Adaptive**: Weakly typed languages (Python/JS) leverage identifier token matching across files; typed languages (Rust/Go/TS) leverage module-scoped import specifiers where available.
+
+### Turn-start side effects
+
+`turn begin` deterministically starts the Studio daemon (port 4242) and the headless presence
+watcher after the briefing is written. It applies to the CLI `afwe turn begin`, the raw
+`afwe call turn.begin`, and the MCP `afwe_turn_begin` tool. No model decision is involved.
+
+- The Studio daemon is reused only when its `/api/health` reports **this** project root; a Studio
+  serving another project on 4242 is reported, not silently reused.
+- Startup failures are written to stderr and `.afwe/log` as `studio_autostart_failed` or
+  `watcher_autostart_failed`.
+- Set `AFWE_NO_AUTOSTART=1` for CI or headless runs that must not spawn daemons.
 
 ---
 
@@ -352,5 +370,76 @@ When code deviates structurally from declared architectural blueprints without a
    - Stored in `.afwe/state/drift_ledger.json`.
    - Governed by `policy.drift_tolerate_days` (default 7 days, up to 14 days in `afwe.yaml`).
    - When the toleration period expires, the Action Queue re-surfaces the drift as an **Amber** warning (`ToleratedDriftExpired`) for re-evaluation.
+
+---
+
+## 12. The Engine Ledger, Repair & Transport
+
+The engine keeps an append-only ledger at `refs/afwe/ledger/<project_id>`. It is the record; the
+`.afwe/` folder is a projection that can be regenerated. Every turn writes a compacted record, the
+expected path → blake3 tree, and its baseline in the same ledger commit, so a `git reset --hard`,
+`git stash -u`, or a harness "revert files" no longer erases engine history.
+
+```bash
+afwe ledger show                 # project id, ref, tip, schema, event/turn counts
+afwe ledger bootstrap            # one-time import of an existing .afwe/turns projection
+afwe repair                      # regenerate .afwe/turns from the ledger
+afwe ledger push origin          # only refs/afwe/ledger/<id> travels
+afwe ledger fetch origin         # fast-forward, ahead/behind, or record a fork
+```
+
+- **Bootstrap** imports the tracked projection as `provenance: imported`. It refuses when a ledger
+  already exists, so it can never overwrite one silently.
+- **Repair** rewrites `.afwe/turns` byte for byte from the ledger. Duplicate legacy
+  `turn-<hash>.yaml` files and stale turn files are moved to `.afwe/backups/`, never deleted.
+- **Push / fetch** use an explicit ledger refspec. A fast-forward is adopted; a divergence writes a
+  `forked` event carrying both tips and never merges or rewrites either chain.
+- **Schema** is `ledger_version: 1`. A binary that sees a newer version refuses to read or write
+  rather than partially interpreting the ledger.
+
+---
+
+## 13. Snapshots: Local Evidence for Rewinds
+
+The ledger records what the tree *should* look like. Snapshots record what it *did* look like.
+
+```bash
+afwe snapshot take --phase manual --turn t0082
+afwe snapshot list
+afwe snapshot show snap-c16f0ee6404d
+```
+
+- A snapshot is a **parentless commit** under `refs/afwe/snapshots/<project_id>/<snap_id>`. Pruning
+  is `update-ref -d` plus a prune; lineage lives in the ledger, not in parent pointers.
+- The tree is built through a **private per-worktree index** under
+  `<git-common-dir>/afwe/snapshots/index-<worktree>`, never the user's index.
+- Excluded and reported: `.afwe/index`, `state`, `turns`, `log` and `backups`; nested repositories;
+  LFS paths; symlinks; files over 50 MB.
+- `turn begin` and `turn ready`/`turn commit` take a snapshot best effort. A failure is logged and
+  never blocks the turn.
+- Snapshot refs are **local only**. `afwe ledger push` moves the ledger, never snapshots.
+
+---
+
+## 14. Rewind Classification & Receipts
+
+At `turn begin`, AFWE compares the current tree `C` with the ledger's expected tree `E` and uses the
+local snapshot history to explain any difference:
+
+- **REWOUND**: every changed path matches one earlier snapshot, and the tree matches it exactly.
+- **COMPOUND**: some paths match older content while others are new.
+- **UNATTRIBUTED**: changed content matches no recorded snapshot.
+
+```bash
+afwe rewind list     # recorded receipts
+afwe rewind check    # classify the current tree now
+```
+
+A receipt names the matched snapshot, the changed paths and the turns that may have been undone. It
+is **advisory**: nothing is restored, no turn is refused, and `turn commit` continues normally. The
+next `turn.begin` briefing carries `rewind_receipts` plus a one-line `rewind_notice`. Identical
+differences are receipted once.
+
+
 
 

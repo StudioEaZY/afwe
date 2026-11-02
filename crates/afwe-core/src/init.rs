@@ -25,7 +25,6 @@ The engine that reads and writes it is replaceable.
 - `checks/*.yaml` — what the gate must pass: shell commands or claims, with trust and authorship.
 - `turns/tNNNN.yaml` — the projection of one prompt per turn, its gate outcome and what it touched.
 - `workflows/`, `abstractions/`, `contracts/` — node graphs (legacy), lenses, contract steps.
-- `log/changes.jsonl` — append-only change log.
 
 The authoritative record is the **engine ledger** at `refs/afwe/ledger/<project_id>`; `.afwe/turns/` is
 a projection that `afwe repair` regenerates from it. Snapshots are local parentless commits under
@@ -33,9 +32,9 @@ a projection that `afwe repair` regenerates from it. Snapshots are local parentl
 
 ## Derived (rebuildable, never committed)
 
-- `index/`, `state/` and `backups/` — code model, index, drift, board, proposals, baselines, snapshot
-  hashes, rewind receipts and local repair backups. `afwe sync` rebuilds the derived graph; `afwe
-  repair` regenerates `turns/` from the ledger.
+- `index/`, `state/`, `backups/` and `log/` — code model, index, drift, board, proposals, baselines,
+  snapshot hashes, rewind receipts, local repair backups and the local audit log. `afwe sync`
+  rebuilds the derived graph; `afwe repair` regenerates `turns/` from the ledger.
 
 ## The turn protocol
 
@@ -93,8 +92,8 @@ pub fn init(project_root: &Path, opts: InitOptions) -> Result<Store> {
     store.write_text("docs/SPEC.md", include_str!("../../../docs/SPEC.md"))?;
     store.write_text("docs/UBIQUITOUS_LANGUAGE.md", include_str!("../../../docs/UBIQUITOUS_LANGUAGE.md"))?;
     store.write_text("docs/UBIQUITOUS_LANGUAGE.html", include_str!("../../../docs/UBIQUITOUS_LANGUAGE.html"))?;
-    store.write_text("README.md", AFWE_README)?;
-    store.write_text(".gitignore", "# derived state is reproducible (rebuilt by `afwe sync`); the rest of .afwe/ is the product and belongs in git\nindex/\nstate/\nbackups/\n")?;
+    store.write_text("README.md", &AFWE_README.replace("(format afwe/2)", &format!("(format {FORMAT_VERSION})")))?;
+    store.write_text(".gitignore", "# derived state is reproducible (rebuilt by `afwe sync`); the rest of .afwe/ is the product and belongs in git\nindex/\nstate/\nbackups/\nlog/\n")?;
     let engine = Engine { store: store.clone() };
     engine.log("human", "init", format!("Initialised .afwe for `{name}`"), None)?;
     Ok(store)
@@ -195,11 +194,15 @@ mod tests {
         .unwrap();
         let read = |rel: &str| store.read_text(rel).unwrap().unwrap_or_default();
         assert!(read("README.md").contains("engine ledger"), "{}", read("README.md"));
+        assert!(read("README.md").contains(FORMAT_VERSION), "stale format in README");
         assert!(read("docs/TUTORIAL.md").contains("Rewind Classification"));
         assert!(read("docs/SPEC.md").contains("Engine Ledger"));
         assert!(read("docs/UBIQUITOUS_LANGUAGE.md").contains("Snapshot Ref"));
         assert!(read("skills/afwe/SKILL.md").contains("Rewind Receipts"));
         assert!(read(".gitignore").contains("backups/"));
+        assert!(read(".gitignore").contains("log/"));
+        let blueprint = store.blueprint().unwrap();
+        assert_eq!(blueprint.nodes.len(), 1, "a fresh client starts with one root node");
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

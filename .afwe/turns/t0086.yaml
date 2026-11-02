@@ -80,7 +80,7 @@ overrides:
   reason: no model calls were added; autostart and scaffold changes are deterministic
 - pin: pin-harness-agnostic
   reason: autostart stays in the CLI shell, not the core engine
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -1634,6 +1634,8 @@ gate:
   - 'OVERRIDDEN pin pin-harness-agnostic (AFWE core, verification, and tripwires must remain 100% harness-agnostic without vendor-specific agent lock-in or harness-dependent execution paths): autostart stays in the CLI shell, not the core engine'
 footer_shown: true
 summary: Refresh the embedded client scaffold with ledger/snapshot/rewind docs and make turn-start autostart deterministic, project-scoped and observable
+committed_at: 2026-11-02T17:39:50Z
+commit_sha: 630e86fb125867b631480da1f0ec675a4a77ba78
 turn_token: afwe_tok_37cb9bcffbbee6aee5bc36adef350ef9
 post_hashes:
   .afwe/intents/autostart-all-entry-points.yaml: 1f1d7349d3ba218b

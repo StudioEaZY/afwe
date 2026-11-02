@@ -91,7 +91,7 @@ fn file_revert_is_rewound_and_the_next_commit_succeeds() {
     assert_eq!(typed[0].verdict, "REWOUND");
 
     // Advisory action queue integration
-    let queue = c(&engine, "queue", json!({}));
+    let queue = c(&engine, "queue.get", json!({}));
     let items = queue["items"].as_array().expect("queue items");
     let rewind_item = items.iter().find(|i| i["kind"] == "external_rewind");
     assert!(rewind_item.is_some(), "rewind receipt must surface in action queue: {queue}");

@@ -329,6 +329,9 @@ unknown values as opaque strings.
 
 ## 12. v2 additions (`afwe/2`)
 
+> Current manifest format is **`afwe/3`**; see §21. The v2 additions below still apply and v2 folders
+> are read unchanged.
+
 `afwe/1` folders are read unchanged. `afwe migrate` upgrades the format and moves legacy `workflows/` into
 `intents/`. The folder is still the product; everything below is a file you can read.
 
@@ -678,6 +681,20 @@ AFWE detects, organizes, routes, and safely executes mechanical corrective actio
 - **Boundary**: the core engine API does not spawn processes. Only the CLI (which hosts Studio and
   the watcher) performs auto-start, so a harness that calls the core API directly must start them
   itself.
+
+## 21. Current format (`afwe/3`)
+
+- `FORMAT_VERSION` is `afwe/3`. `afwe init` writes it; `afwe migrate` rewrites an older manifest to
+  it. `afwe/1` and `afwe/2` folders are read unchanged.
+- v3 adds the authority/turn-token fields, missions and shared leases, queue/action state, and the
+  Studio/presence surfaces that consume them.
+- A brand-new blueprint has exactly one node; that root implicitly owns all code (`specificity 0`),
+  so a fresh project's first turn maps and commits. Once a second node exists, mapping is explicit
+  and specific claims beat root catch-alls. `afwe bootstrap` remains the way to propose a multi-node
+  blueprint from an existing tree.
+- The generated client README reports the actual `FORMAT_VERSION`; it is not hardcoded in the
+  template.
+
 
 
 

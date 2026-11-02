@@ -1,0 +1,17 @@
+id: ci-template-current
+title: Cache the real manifest and install from ReBorn
+statement: The generated CI gate hashes .afwe/afwe.yaml (not the nonexistent manifest.yaml) and installs afwe-cli from the ReBorn branch.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0087
+history:
+- turn: t0087
+  ts: 2026-11-02T17:42:17Z
+  statement: The generated CI gate hashes .afwe/afwe.yaml (not the nonexistent manifest.yaml) and installs afwe-cli from the ReBorn branch.
+created: 2026-11-02T17:42:17Z
+updated: 2026-11-02T17:42:17Z
+task: task-t0087

@@ -1,0 +1,17 @@
+id: index-sync-after-commit
+title: Keep git status clean after an isolated commit
+statement: After commit_isolated updates the branch, the main index is reset to the new commit for exactly the expanded paths the turn committed, preserving unrelated staged work. A fresh client no longer wakes with .afwe staged as deleted plus untracked.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0087
+history:
+- turn: t0087
+  ts: 2026-11-02T17:42:17Z
+  statement: After commit_isolated updates the branch, the main index is reset to the new commit for exactly the expanded paths the turn committed, preserving unrelated staged work. A fresh client no longer wakes with .afwe staged as deleted plus untracked.
+created: 2026-11-02T17:42:17Z
+updated: 2026-11-02T17:42:17Z
+task: task-t0087

@@ -215,7 +215,7 @@ pub fn unique_id(existing: &[String], base: &str) -> String {
 #[derive(Debug, Clone)]
 pub struct Claim {
     pub node: String,
-    /// 4 symbol, 3 explicit file, 2 shallow glob, 1 deep glob (**)
+    /// 4 symbol, 3 explicit file, 2 shallow glob, 1 deep glob (**), 0 implicit single root
     pub specificity: u8,
     pub depth: usize,
     pub via: String,
@@ -246,6 +246,20 @@ impl MappingResult {
 
 pub fn compute_mapping(table: &NodeTable, code: &CodeModel) -> Result<MappingResult> {
     let mut res = MappingResult::default();
+    // A brand-new project has exactly one node. Treat that root as the implicit owner of all
+    // code so its first turn maps and commits; once a second node exists, mapping is explicit.
+    if table.ids().len() == 1 {
+        if let Some(root) = table.ids().first() {
+            for f in &code.files {
+                res.files.entry(f.path.clone()).or_default().push(Claim {
+                    node: root.clone(),
+                    specificity: 0,
+                    depth: 0,
+                    via: "implicit:single-root".into(),
+                });
+            }
+        }
+    }
     let symbol_ids: HashMap<&str, &SymbolInfo> = code.files.iter().flat_map(|f| f.symbols.iter()).map(|s| (s.id.as_str(), s)).collect();
     for id in table.ids() {
         let n = &table.nodes[id];
@@ -254,7 +268,16 @@ pub fn compute_mapping(table: &NodeTable, code: &CodeModel) -> Result<MappingRes
             if is_glob(&entry_norm) {
                 let gs = build_globset(&[entry_norm.clone()])?;
                 let deep = entry_norm.contains("**");
-                let spec = if deep { 1 } else { 2 };
+                // A root catch-all is a useful default, not a claim. It must lose to every
+                // specific file, directory or deeper glob, including a top-level sibling node.
+                let catch_all = matches!(entry_norm.as_str(), "**" | "*" | "**/*");
+                let spec = if catch_all {
+                    0
+                } else if deep {
+                    1
+                } else {
+                    2
+                };
                 for f in &code.files {
                     if gs.is_match(&f.path) {
                         res.files.entry(f.path.clone()).or_default().push(Claim { node: id.clone(), specificity: spec, depth: n.depth, via: entry_norm.clone() });
@@ -296,7 +319,8 @@ pub fn compute_mapping(table: &NodeTable, code: &CodeModel) -> Result<MappingRes
                 3 => 0,
                 2 => 1,
                 1 => 2,
-                _ => 3,
+                0 => 3,
+                _ => 4,
             };
             rank(a).cmp(&rank(b)).then(b.depth.cmp(&a.depth)).then(a.node.cmp(&b.node))
         });
@@ -339,6 +363,86 @@ nodes:
         assert_eq!(t.resolve("Authentication.Sessions").as_deref(), Some("sessions"));
         assert_eq!(t.resolve("Payments").as_deref(), Some("payments"));
         assert_eq!(t.ancestors("sessions"), vec!["authentication", "product"]);
+    }
+
+    #[test]
+    fn root_catch_all_loses_to_a_specific_child() {
+        let bp: Blueprint = serde_yaml::from_str(
+            r#"
+nodes:
+  - id: product
+    name: Product
+    implements: { files: ["**/*"] }
+    children:
+      - id: ui
+        name: UI
+        implements: { files: ["src/ui/**"] }
+      - id: payments
+        name: Payments
+        implements: { files: ["src/payments/**"] }
+"#,
+        )
+        .unwrap();
+        let t = NodeTable::from_blueprint(&bp);
+        let code = CodeModel {
+            files: vec![
+                FileInfo { path: "src/ui/Button.tsx".into(), ..Default::default() },
+                FileInfo { path: "src/payments/checkout.ts".into(), ..Default::default() },
+            ],
+            ..Default::default()
+        };
+        let m = compute_mapping(&t, &code).unwrap();
+        assert_eq!(m.primary("src/ui/Button.tsx"), Some("ui"));
+        assert_eq!(m.primary("src/payments/checkout.ts"), Some("payments"));
+    }
+
+    #[test]
+    fn single_root_implicitly_maps_new_code() {
+        let bp: Blueprint = serde_yaml::from_str(
+            r#"
+nodes:
+  - id: shop
+    name: Shop
+"#,
+        )
+        .unwrap();
+        let t = NodeTable::from_blueprint(&bp);
+        let code = CodeModel {
+            files: vec![FileInfo { path: "src/a.rs".into(), ..Default::default() }],
+            ..Default::default()
+        };
+        let m = compute_mapping(&t, &code).unwrap();
+        assert_eq!(m.primary("src/a.rs"), Some("shop"));
+    }
+
+    #[test]
+    fn root_catch_all_loses_to_a_sibling() {
+        let bp: Blueprint = serde_yaml::from_str(
+            r#"
+nodes:
+  - id: shop
+    name: Shop
+    implements: { files: ["**/*"] }
+  - id: ui
+    name: UI
+    implements: { files: ["src/ui/**"] }
+  - id: payments
+    name: Payments
+    implements: { files: ["src/payments/**"] }
+"#,
+        )
+        .unwrap();
+        let t = NodeTable::from_blueprint(&bp);
+        let code = CodeModel {
+            files: vec![
+                FileInfo { path: "src/ui/Button.tsx".into(), ..Default::default() },
+                FileInfo { path: "src/payments/checkout.ts".into(), ..Default::default() },
+            ],
+            ..Default::default()
+        };
+        let m = compute_mapping(&t, &code).unwrap();
+        assert_eq!(m.primary("src/ui/Button.tsx"), Some("ui"));
+        assert_eq!(m.primary("src/payments/checkout.ts"), Some("payments"));
     }
 
     #[test]

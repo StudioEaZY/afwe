@@ -1,0 +1,55 @@
+{
+  "intents": [
+    {
+      "id": "fresh-client-mapping",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "A fresh single-root client maps its code",
+      "statement": "A blueprint with exactly one node implicitly owns all code, so the first turn maps and commits. Once a second node exists mapping is explicit; a root **/* catch-all has the lowest priority and never beats a specific node."
+    },
+    {
+      "id": "one-hash-world",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Hash code files as raw working-tree bytes",
+      "statement": "tree_hashes uses the raw file bytes for code as well as .afwe sources, matching post_hashes, snapshots and rewind classification. The analyzer's normalized parse hash is not used for the expected tree."
+    },
+    {
+      "id": "index-sync-after-commit",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Keep git status clean after an isolated commit",
+      "statement": "After commit_isolated updates the branch, the main index is reset to the new commit for exactly the expanded paths the turn committed, preserving unrelated staged work. A fresh client no longer wakes with .afwe staged as deleted plus untracked."
+    },
+    {
+      "id": "client-local-log",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Keep the local audit out of the client repo",
+      "statement": "The generated client ignores .afwe/log and turns no longer stage it, so the append-only engine ledger remains the committed history and a normal turn leaves git status clean."
+    },
+    {
+      "id": "client-format-docs",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Report the current format and onboarding truth",
+      "statement": "The generated README reports FORMAT_VERSION (afwe/3); SPEC documents afwe/3 and the implicit-root rule; TUTORIAL explains init vs onboard and the real --legacy bootstrap behaviour."
+    },
+    {
+      "id": "ci-template-current",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Cache the real manifest and install from ReBorn",
+      "statement": "The generated CI gate hashes .afwe/afwe.yaml (not the nonexistent manifest.yaml) and installs afwe-cli from the ReBorn branch."
+    },
+    {
+      "id": "fresh-client-tests",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Test the generated client and the mapping rules",
+      "statement": "Unit tests assert the generated scaffold carries the new docs, format, backups/log ignore and one root node; mapping tests cover implicit single-root, catch-all priority and specific children; the rewind/P3 integration test uses the real queue.get op."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

@@ -1,0 +1,17 @@
+id: one-hash-world
+title: Hash code files as raw working-tree bytes
+statement: tree_hashes uses the raw file bytes for code as well as .afwe sources, matching post_hashes, snapshots and rewind classification. The analyzer's normalized parse hash is not used for the expected tree.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0087
+history:
+- turn: t0087
+  ts: 2026-11-02T17:42:17Z
+  statement: tree_hashes uses the raw file bytes for code as well as .afwe sources, matching post_hashes, snapshots and rewind classification. The analyzer's normalized parse hash is not used for the expected tree.
+created: 2026-11-02T17:42:17Z
+updated: 2026-11-02T17:42:17Z
+task: task-t0087

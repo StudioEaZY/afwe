@@ -48,12 +48,18 @@ afwe onboard --profile engineer
 
 What `afwe onboard` does automatically:
 1. Detects your tech stack (Rust, TypeScript/Node, Python, Go, etc.).
-2. Creates `.afwe/` with `afwe.yaml`, `blueprint/`, `memory/`, and `guardrails/`.
-3. Scaffolds an initial structural blueprint tree from your folder layout.
-4. Appends the non-negotiable contract block to `AGENTS.md` (and `CLAUDE.md`).
-5. Configures your profile:
+2. Creates `.afwe/` with `afwe.yaml`, `blueprint/`, `memory/`, `guardrails/`, docs and the skill.
+3. Writes `.github/workflows/afwe-gate.yml`, the `AGENTS.md` contract, the skill template, and the
+   selected profile. A brand-new blueprint has one root node, which implicitly owns all code, so
+   the first turn maps and commits; once you add a second node, mapping becomes explicit. Pass
+   `--legacy` to bootstrap a multi-node blueprint from the folder layout and grandfather
+   pre-existing violations.
+4. Configures your profile:
    - `normie`: Auto-commits turns when verification passes.
    - `engineer`: Stages passing turns for manual `git commit` review.
+
+`afwe init` is the minimal variant: it writes the same `.afwe/` sources and client docs without the
+CI gate or AGENTS.md contract. Both are idempotent.
 
 You can inspect your project status at any time:
 ```bash

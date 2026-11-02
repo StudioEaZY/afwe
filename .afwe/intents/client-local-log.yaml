@@ -1,0 +1,17 @@
+id: client-local-log
+title: Keep the local audit out of the client repo
+statement: The generated client ignores .afwe/log and turns no longer stage it, so the append-only engine ledger remains the committed history and a normal turn leaves git status clean.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0087
+history:
+- turn: t0087
+  ts: 2026-11-02T17:42:17Z
+  statement: The generated client ignores .afwe/log and turns no longer stage it, so the append-only engine ledger remains the committed history and a normal turn leaves git status clean.
+created: 2026-11-02T17:42:17Z
+updated: 2026-11-02T17:42:17Z
+task: task-t0087

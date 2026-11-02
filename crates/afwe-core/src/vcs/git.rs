@@ -247,6 +247,14 @@ impl VcsProvider for GitProvider {
             }
         }
 
+        // The commit was written through a private index. Bring the main index in line with the
+        // new commit for exactly the paths this turn committed, so a fresh client does not wake up
+        // with `.afwe/` staged as deleted plus untracked. Unrelated staged work is preserved.
+        let mut reset_args: Vec<String> = vec!["reset".into(), "--mixed".into(), new_commit_sha.clone(), "--".into()];
+        reset_args.extend(expanded.iter().cloned());
+        let reset_refs: Vec<&str> = reset_args.iter().map(String::as_str).collect();
+        let _ = run(root, &args(&reset_refs));
+
         Ok(Some(new_commit_sha))
     }
 

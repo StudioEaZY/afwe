@@ -47,8 +47,10 @@ const AFWE_SOURCE_DIRS: &[&str] = &[
     ".afwe/checks",
     ".afwe/abstractions",
     ".afwe/contracts",
+    ".afwe/skills",
+    ".afwe/docs",
+    ".afwe/assets",
     ".afwe/turns",
-    ".afwe/log",
     ".afwe/.gitignore",
     ".afwe/README.md",
 ];
@@ -141,11 +143,23 @@ pub(crate) fn to_code_rel(prefix: &str, project_rel: &str) -> Option<String> {
 }
 
 /// project-relative path → content hash, for code files and `.afwe/` sources (not derived state).
+/// Code hashes are the **raw working-tree bytes**, the same world as `post_hashes`, snapshots and
+/// rewind classification. The analyzer's `f.hash` is normalized for parsing; using it here would
+/// make a CRLF file look changed forever against its own snapshot.
 pub(crate) fn tree_hashes(engine: &Engine, snap: &Snapshot) -> BTreeMap<String, String> {
     let prefix = code_prefix(&snap.manifest);
+    let code_root = engine.store.code_root(&snap.manifest);
     let mut out = BTreeMap::new();
     for f in &snap.code.files {
-        out.insert(format!("{prefix}{}", f.path), f.hash.clone());
+        let key = format!("{prefix}{}", f.path);
+        match std::fs::read(code_root.join(&f.path)) {
+            Ok(bytes) => {
+                out.insert(key, hash_bytes(&bytes));
+            }
+            Err(_) => {
+                out.insert(key, f.hash.clone());
+            }
+        }
     }
     for path in crate::store::walk_all(&engine.store.afwe_dir) {
         let rel = crate::store::rel_to(&engine.store.project_root, &path);

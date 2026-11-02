@@ -1,0 +1,17 @@
+id: fresh-client-mapping
+title: A fresh single-root client maps its code
+statement: A blueprint with exactly one node implicitly owns all code, so the first turn maps and commits. Once a second node exists mapping is explicit; a root **/* catch-all has the lowest priority and never beats a specific node.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0087
+history:
+- turn: t0087
+  ts: 2026-11-02T17:42:17Z
+  statement: A blueprint with exactly one node implicitly owns all code, so the first turn maps and commits. Once a second node exists mapping is explicit; a root **/* catch-all has the lowest priority and never beats a specific node.
+created: 2026-11-02T17:42:17Z
+updated: 2026-11-02T17:42:17Z
+task: task-t0087

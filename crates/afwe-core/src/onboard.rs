@@ -30,7 +30,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cargo/bin/afwe
-          key: ${{ runner.os }}-afwe-${{ hashFiles('.afwe/manifest.yaml') }}
+          key: ${{ runner.os }}-afwe-${{ hashFiles('.afwe/afwe.yaml') }}
       - name: Install or Acquire AFWE Binary
         if: steps.cache-afwe.outputs.cache-hit != 'true'
         env:
@@ -273,5 +273,14 @@ mod tests {
         assert_eq!(stacks[0]["stack"], "rust");
         assert_eq!(stacks[0]["test"], "cargo test");
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn ci_template_caches_the_real_manifest_and_installs_from_reborn() {
+        let template = render_ci_template("ubuntu-latest");
+        assert!(template.contains("hashFiles('.afwe/afwe.yaml')"), "{template}");
+        assert!(!template.contains("manifest.yaml"), "stale manifest path");
+        assert!(template.contains("--branch ReBorn"), "{template}");
+        assert!(template.contains("afwe-gate"));
     }
 }

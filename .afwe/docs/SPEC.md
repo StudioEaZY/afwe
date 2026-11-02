@@ -329,6 +329,9 @@ unknown values as opaque strings.
 
 ## 12. v2 additions (`afwe/2`)
 
+> Current manifest format is **`afwe/3`**; see §21. The v2 additions below still apply and v2 folders
+> are read unchanged.
+
 `afwe/1` folders are read unchanged. `afwe migrate` upgrades the format and moves legacy `workflows/` into
 `intents/`. The folder is still the product; everything below is a file you can read.
 
@@ -603,6 +606,99 @@ AFWE detects, organizes, routes, and safely executes mechanical corrective actio
   - `reject`: Rejects the change with either `mode: "restore"` (reverting baseline bytes from disk) or `mode: "steer"` (spawning a standalone remediation turn with batch support).
   - `tolerate`: Acknowledges the divergence without altering the blueprint, appending an entry to `.afwe/state/drift_ledger.json`.
 - **Drift Ledger (`state/drift_ledger.json`)**: Persistent storage of tolerated drifts governed by `policy.drift_tolerate_days` (default 7 days, up to 14 days in `afwe.yaml`). Expired entries automatically elevate to Amber warnings in the Action Queue (`ToleratedDriftExpired`).
+
+## 17. Engine Ledger, Expected Tree & Transport
+
+- **Ref**: `refs/afwe/ledger/<project_id>`, an append-only git commit chain written with plumbing and
+  a compare-and-swap `update-ref` (three retries on collision). `project_id` is a stable lowercase
+  hex id in `afwe.yaml`, never the display name.
+- **Tree (`ledger_version: 1`)**: `meta.json`, `turns/<alias>.json`, `events/<seq>-<kind>.json`,
+  `state/expected.json` and `baselines/<alias>.json`. Every commit carries the previous tree forward.
+- **Expected tree (`E`)**: the path → blake3 map the ledger expects on disk, stored in
+  `state/expected.json`. `E` advances at turn begin (`E := C`), turn end or commit (merged touched
+  paths), and `afwe repair`; no other event moves it.
+- **Compaction**: a turn record stores the full `touched` and `implements` maps every 20th event and
+  a delta (`since` + added/removed) otherwise. A no-change turn adds under 2 KB to the chain.
+- **Projection**: `.afwe/turns` is one file per turn. `afwe repair` regenerates it from the ledger,
+  moves duplicate or stale files to `.afwe/backups/`, and never deletes them.
+- **Bootstrap**: a repository with no ledger imports its tracked projection once, marked
+  `provenance: imported`; a later real ledger supersedes it.
+- **Transport**: `afwe ledger push [remote]` and `afwe ledger fetch [remote]` move only the ledger ref.
+  A fetch that finds a tip neither ancestor nor descendant writes a `forked` event, keeps both tips
+  visible, and never merges, rewrites, or silently picks a chain.
+- **Failure behaviour**: unreadable/corrupt ledger → refuse writes and report; newer
+  `ledger_version` → read-only refusal; CAS collision → re-read, retry three times, then report.
+
+## 18. Parentless Snapshots
+
+- **Ref**: `refs/afwe/snapshots/<project_id>/<snap_id>`, one parentless commit per snapshot. Pruning
+  is `update-ref -d` plus a prune; lineage lives in the ledger, not in parent pointers.
+- **Private index**: `<git-common-dir>/afwe/snapshots/index-<worktree>`, derived from the canonical
+  worktree path. The user's index is never read or written.
+- **Index build**: `git ls-files -co --exclude-standard` selects tracked plus untracked non-ignored
+  paths; the engine hashes them with `git hash-object -w --stdin-paths` and writes the index with
+  `update-index --index-info`. This avoids `add -A` failing on an ignored engine directory or a
+  nested repository with no commit.
+- **Exclusions, all reported**: `.afwe/index`, `state`, `turns`, `log`, `backups`; nested
+  repositories; LFS paths; symlinks; files over 50 MB. Engine-owned and symlink counts are
+  aggregated, individual paths are named for LFS, oversized and nested exclusions.
+- **Lifecycle**: `turn begin` takes a `begin` snapshot; `turn ready`/`turn commit` take an `end`
+  snapshot. A snapshot failure is logged as `snapshot_failed` and never blocks the turn. Each
+  snapshot is recorded as a `snapshot_taken` ledger event.
+- **Transport**: snapshot refs are local only. `afwe ledger push` / `fetch` never move them, and a
+  normal clone does not receive them.
+- **Surface**: `afwe snapshot take|list|show`, `snapshot.*` API ops and the `afwe_snapshot_*` MCP
+  tools.
+
+## 19. Rewind Classification & Receipts
+
+- **At turn begin**: compute `C` for the ledger's `E` paths by hashing the files on disk (blake3),
+  diff `E` against `C`, and explain the changed paths from local snapshot hashes.
+- **Verdicts**: `REWOUND` when every changed path matches one snapshot and the tree matches it
+  exactly; `COMPOUND` when some paths match older content and others are new; `UNATTRIBUTED` when no
+  changed path matches a recorded snapshot. Multiple historical matches mark the path ambiguous and
+  the receipt picks the most recent.
+- **Turns undone**: derived from the matched snapshot's turn and phase in ledger order. A `begin`
+  snapshot means that turn and later; an `end` snapshot means later turns only.
+- **Receipt**: one aggregated record per difference (id, verdict, exact, from turn, matched snapshot,
+  paths, candidate turns, note, state hash). It is stored in `state/rewind.json`, capped at 20, and
+  appended to the ledger as `rewind_confirmed` (exact) or `rewind_possible`.
+- **Dedupe**: the same changed-path/content hash is receipted once.
+- **Never block, never restore**: classification does not change files, gate a turn, or refuse a
+  commit. The next `turn.begin` briefing carries `rewind_receipts` and `rewind_notice`.
+- **Surface**: `afwe rewind list|check`, `rewind.*` API ops and `afwe_rewind_*` MCP tools.
+
+## 20. Turn-Start Side Effects
+
+- **Deterministic auto-start**: after every supported `turn.begin` (CLI `afwe turn begin`, raw
+  `afwe call turn.begin`, MCP `afwe_turn_begin`), the CLI process starts the Studio daemon on
+  127.0.0.1:4242 and the headless presence watcher. No model call or extra prompt is involved.
+- **Project identity**: Studio `/api/health` returns the project root. A daemon is reused only when
+  that root matches this project; a Studio serving another project on 4242 is reported as a conflict.
+- **Observable failure**: spawn or readiness failures are printed to stderr and appended to
+  `.afwe/log` as `studio_autostart_failed` / `watcher_autostart_failed`; the turn still opens.
+- **Kill switch**: `AFWE_NO_AUTOSTART=1` disables both spawns for CI/headless runs.
+- **Boundary**: the core engine API does not spawn processes. Only the CLI (which hosts Studio and
+  the watcher) performs auto-start, so a harness that calls the core API directly must start them
+  itself.
+
+## 21. Current format (`afwe/3`)
+
+- `FORMAT_VERSION` is `afwe/3`. `afwe init` writes it; `afwe migrate` rewrites an older manifest to
+  it. `afwe/1` and `afwe/2` folders are read unchanged.
+- v3 adds the authority/turn-token fields, missions and shared leases, queue/action state, and the
+  Studio/presence surfaces that consume them.
+- A brand-new blueprint has exactly one node; that root implicitly owns all code (`specificity 0`),
+  so a fresh project's first turn maps and commits. Once a second node exists, mapping is explicit
+  and specific claims beat root catch-alls. `afwe bootstrap` remains the way to propose a multi-node
+  blueprint from an existing tree.
+- The generated client README reports the actual `FORMAT_VERSION`; it is not hardcoded in the
+  template.
+
+
+
+
+
 
 
 
