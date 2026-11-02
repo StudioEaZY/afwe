@@ -86,7 +86,7 @@ overrides:
   reason: no model calls were added; the change is string parsing, one timestamp helper and git plumbing
 - pin: pin-harness-agnostic
   reason: no harness or vendor names were added; the ledger runs at AFWE entry points only
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -1647,6 +1647,8 @@ gate:
   - 'OVERRIDDEN pin pin-harness-agnostic (AFWE core, verification, and tripwires must remain 100% harness-agnostic without vendor-specific agent lock-in or harness-dependent execution paths): no harness or vendor names were added; the ledger runs at AFWE entry points only'
 footer_shown: true
 summary: 'Complete the P1 engine ledger: cumulative tree, compact turn records, expected tree, repair, bootstrap and push/fetch with the fork rule'
+committed_at: 2026-11-02T12:36:57Z
+commit_sha: e97da1bdc18db8a88f19dc9a08bd8a695495d3df
 turn_token: afwe_tok_03bd99ba19132f2557454c5ab023d442
 post_hashes:
   .afwe/.gitignore: 197286885ce8f2b3

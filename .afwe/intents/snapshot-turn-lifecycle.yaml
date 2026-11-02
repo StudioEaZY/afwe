@@ -1,0 +1,17 @@
+id: snapshot-turn-lifecycle
+title: Snapshot at turn begin and end
+statement: turn begin and turn ready/commit take a snapshot best effort, never block the turn on failure, and record the snapshot id, tree and phase in the ledger event.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0082
+history:
+- turn: t0082
+  ts: 2026-11-02T12:39:08Z
+  statement: turn begin and turn ready/commit take a snapshot best effort, never block the turn on failure, and record the snapshot id, tree and phase in the ledger event.
+created: 2026-11-02T12:39:08Z
+updated: 2026-11-02T12:39:08Z
+task: task-t0082

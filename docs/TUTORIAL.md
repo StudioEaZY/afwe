@@ -379,4 +379,27 @@ afwe ledger fetch origin         # fast-forward, ahead/behind, or record a fork
 - **Schema** is `ledger_version: 1`. A binary that sees a newer version refuses to read or write
   rather than partially interpreting the ledger.
 
+---
+
+## 13. Snapshots: Local Evidence for Rewinds
+
+The ledger records what the tree *should* look like. Snapshots record what it *did* look like.
+
+```bash
+afwe snapshot take --phase manual --turn t0082
+afwe snapshot list
+afwe snapshot show snap-c16f0ee6404d
+```
+
+- A snapshot is a **parentless commit** under `refs/afwe/snapshots/<project_id>/<snap_id>`. Pruning
+  is `update-ref -d` plus a prune; lineage lives in the ledger, not in parent pointers.
+- The tree is built through a **private per-worktree index** under
+  `<git-common-dir>/afwe/snapshots/index-<worktree>`, never the user's index.
+- Excluded and reported: `.afwe/index`, `state`, `turns`, `log` and `backups`; nested repositories;
+  LFS paths; symlinks; files over 50 MB.
+- `turn begin` and `turn ready`/`turn commit` take a snapshot best effort. A failure is logged and
+  never blocks the turn.
+- Snapshot refs are **local only**. `afwe ledger push` moves the ledger, never snapshots.
+
+
 

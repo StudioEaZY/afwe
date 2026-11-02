@@ -53,6 +53,7 @@ pub mod queue;
 pub mod registry;
 pub mod rollback;
 pub mod scene;
+pub mod snapshots;
 pub mod store;
 pub mod sync;
 pub mod terminology;

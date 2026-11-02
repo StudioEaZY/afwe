@@ -1,0 +1,17 @@
+id: document-snapshots
+title: Document snapshot refs and exclusions
+statement: README, TUTORIAL, SPEC and the skill describe parentless snapshot refs, the private index, the exclusion list, local-only transport and restore-forward coming next.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0082
+history:
+- turn: t0082
+  ts: 2026-11-02T12:39:08Z
+  statement: README, TUTORIAL, SPEC and the skill describe parentless snapshot refs, the private index, the exclusion list, local-only transport and restore-forward coming next.
+created: 2026-11-02T12:39:08Z
+updated: 2026-11-02T12:39:08Z
+task: task-t0082

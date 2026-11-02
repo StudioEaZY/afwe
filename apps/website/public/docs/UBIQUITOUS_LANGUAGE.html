@@ -244,11 +244,11 @@
     <div class="controls">
       <div class="search-box">
         <input type="text" id="search" class="search-input" placeholder="Search terms, definitions, invariants, or confused-with concepts... (e.g. Turn, Ratchet, CAS)" autofocus />
-        <div class="term-count"><span id="visible-count">81</span> / 81 terms</div>
+        <div class="term-count"><span id="visible-count">82</span> / 82 terms</div>
       </div>
       <div class="categories">
         <button class="cat-btn active" data-cat="all">All Categories</button>
-        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (36)</button>
+        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (37)</button>
         <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (6)</button>
         <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
         <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (7)</button>
@@ -1364,6 +1364,26 @@ blocks a turn and never restores files automatically.</p>
         <div class="card-footer">
           <span><code>term-skipping-resistance</code></span>
           <button class="copy-btn" onclick="copyAnchor('skipping-resistance')" title="Copy permalink">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="snapshot-ref" data-category="Architecture Philosophy & Tenets" data-title="snapshot ref" data-tags="snapshot rewind ledger">
+        <div class="card-header">
+          <h2 class="card-title">Snapshot Ref</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning">A local, parentless git commit under `refs/afwe/snapshots/&lt;project_id&gt;/&lt;snap_id&gt;` that records the
+working tree at turn begin and turn end. Parentless means pruning is one `update-ref -d` followed by
+a prune, and lineage lives in the engine ledger rather than in parent pointers. Snapshot refs never
+travel with `afwe ledger push` or a normal `git fetch`/`git push`.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Engine ledger</strong>: the authoritative record of turns and expected state; snapshots are local evidence for restore-forward and classification.</div>
+          <div class="confused-item"><strong>Ratchet baseline</strong>: (`afwe baseline snapshot`): grandfathering pre-existing violations.</div>
+          <div class="confused-item"><strong>Analysis snapshot</strong>: (`Engine::snapshot`): the in-memory code graph, unrelated to git commits.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-snapshot-ref</code></span>
+          <button class="copy-btn" onclick="copyAnchor('snapshot-ref')" title="Copy permalink">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="spacebar-hand-pan" data-category="Architecture Philosophy & Tenets" data-title="spacebar hand pan" data-tags="studio-control navigation viewport">

@@ -272,7 +272,16 @@ afwe ledger push origin   # only refs/afwe/ledger/<project_id> travels
 afwe ledger fetch origin  # fast-forward, ahead/behind, or record a fork
 ```
 
-### 6. Launch the Studio
+### 6. Snapshots
+```bash
+afwe snapshot take        # parentless commit under refs/afwe/snapshots/<project_id>/
+afwe snapshot list
+afwe snapshot show <id>
+```
+Snapshots are local evidence: they exclude engine-owned state, nested repositories, LFS paths,
+symlinks and oversized files, and are taken automatically at turn begin and end.
+
+### 7. Launch the Studio
 ```bash
 afwe studio
 ```

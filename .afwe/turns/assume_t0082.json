@@ -1,0 +1,48 @@
+{
+  "intents": [
+    {
+      "id": "parentless-snapshot-refs",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Parentless snapshot refs",
+      "statement": "Each snapshot is a parentless commit under refs/afwe/snapshots/<project_id>/<snap_id>, so pruning is one update-ref delete plus prune and lineage lives in the ledger rather than in parent pointers."
+    },
+    {
+      "id": "private-snapshot-index",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Private per-worktree snapshot index",
+      "statement": "Snapshots build through a private index under the common git dir derived from the worktree path, never the user's index, with core.safecrlf=false so mixed line endings cannot fail the snapshot."
+    },
+    {
+      "id": "snapshot-exclusions",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Exclude engine-owned, nested and oversized content",
+      "statement": "The snapshot tree excludes .afwe/index, state, turns, log and backups, removes nested repository gitlinks after add, and removes oversized files, reporting every exclusion instead of silently dropping it."
+    },
+    {
+      "id": "snapshot-turn-lifecycle",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Snapshot at turn begin and end",
+      "statement": "turn begin and turn ready/commit take a snapshot best effort, never block the turn on failure, and record the snapshot id, tree and phase in the ledger event."
+    },
+    {
+      "id": "snapshot-surface",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Snapshot listing and lookup",
+      "statement": "afwe snapshot list and snapshot show expose snapshot id, commit, tree, turn, phase, file count and exclusions through the API and MCP."
+    },
+    {
+      "id": "document-snapshots",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Document snapshot refs and exclusions",
+      "statement": "README, TUTORIAL, SPEC and the skill describe parentless snapshot refs, the private index, the exclusion list, local-only transport and restore-forward coming next."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

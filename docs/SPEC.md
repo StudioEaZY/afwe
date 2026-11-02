@@ -626,6 +626,28 @@ AFWE detects, organizes, routes, and safely executes mechanical corrective actio
 - **Failure behaviour**: unreadable/corrupt ledger → refuse writes and report; newer
   `ledger_version` → read-only refusal; CAS collision → re-read, retry three times, then report.
 
+## 18. Parentless Snapshots
+
+- **Ref**: `refs/afwe/snapshots/<project_id>/<snap_id>`, one parentless commit per snapshot. Pruning
+  is `update-ref -d` plus a prune; lineage lives in the ledger, not in parent pointers.
+- **Private index**: `<git-common-dir>/afwe/snapshots/index-<worktree>`, derived from the canonical
+  worktree path. The user's index is never read or written.
+- **Index build**: `git ls-files -co --exclude-standard` selects tracked plus untracked non-ignored
+  paths; the engine hashes them with `git hash-object -w --stdin-paths` and writes the index with
+  `update-index --index-info`. This avoids `add -A` failing on an ignored engine directory or a
+  nested repository with no commit.
+- **Exclusions, all reported**: `.afwe/index`, `state`, `turns`, `log`, `backups`; nested
+  repositories; LFS paths; symlinks; files over 50 MB. Engine-owned and symlink counts are
+  aggregated, individual paths are named for LFS, oversized and nested exclusions.
+- **Lifecycle**: `turn begin` takes a `begin` snapshot; `turn ready`/`turn commit` take an `end`
+  snapshot. A snapshot failure is logged as `snapshot_failed` and never blocks the turn. Each
+  snapshot is recorded as a `snapshot_taken` ledger event.
+- **Transport**: snapshot refs are local only. `afwe ledger push` / `fetch` never move them, and a
+  normal clone does not receive them.
+- **Surface**: `afwe snapshot take|list|show`, `snapshot.*` API ops and the `afwe_snapshot_*` MCP
+  tools.
+
+
 
 
 

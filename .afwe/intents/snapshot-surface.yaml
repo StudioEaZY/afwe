@@ -1,0 +1,17 @@
+id: snapshot-surface
+title: Snapshot listing and lookup
+statement: afwe snapshot list and snapshot show expose snapshot id, commit, tree, turn, phase, file count and exclusions through the API and MCP.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0082
+history:
+- turn: t0082
+  ts: 2026-11-02T12:39:08Z
+  statement: afwe snapshot list and snapshot show expose snapshot id, commit, tree, turn, phase, file count and exclusions through the API and MCP.
+created: 2026-11-02T12:39:08Z
+updated: 2026-11-02T12:39:08Z
+task: task-t0082

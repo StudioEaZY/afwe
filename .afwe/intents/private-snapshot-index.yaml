@@ -1,0 +1,17 @@
+id: private-snapshot-index
+title: Private per-worktree snapshot index
+statement: Snapshots build through a private index under the common git dir derived from the worktree path, never the user's index, with core.safecrlf=false so mixed line endings cannot fail the snapshot.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0082
+history:
+- turn: t0082
+  ts: 2026-11-02T12:39:08Z
+  statement: Snapshots build through a private index under the common git dir derived from the worktree path, never the user's index, with core.safecrlf=false so mixed line endings cannot fail the snapshot.
+created: 2026-11-02T12:39:08Z
+updated: 2026-11-02T12:39:08Z
+task: task-t0082

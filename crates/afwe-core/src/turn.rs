@@ -302,6 +302,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     if req.prompt.trim().is_empty() {
         return Err(anyhow!("turn.begin needs the prompt text (it is stored verbatim)"));
     }
+    let _ = crate::ledger::project_id(engine);
     let promotions = crate::rollback::promote_manual_commits(engine).unwrap_or_default();
     let backfilled = crate::ledger::backfill(engine).unwrap_or(0);
     let rollback_events = crate::rollback::reconcile(engine).unwrap_or_default();
@@ -547,6 +548,20 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     };
     engine.store.save_baseline(&id, &baseline)?;
 
+    // Parentless working-tree snapshot. Best effort: a snapshot failure never blocks a turn.
+    let begin_snapshot = match crate::snapshots::create(engine, "begin", Some(&id)) {
+        Ok(meta) => Some(json!(meta)),
+        Err(err) => {
+            let _ = engine.log(
+                "afwe:snapshot",
+                "snapshot_failed",
+                format!("begin snapshot was not taken: {err}"),
+                None,
+            );
+            None
+        }
+    };
+
     // Emit presence lifecycle event
     let feed = crate::events::EventFeed::for_project(&engine.store.project_root);
     let _ = feed.emit(crate::events::PresenceEvent {
@@ -592,6 +607,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         "reconciled_rollbacks": rollback_events,
         "reconciled_promotions": promotions,
         "ledger_backfilled": backfilled,
+        "snapshot": begin_snapshot,
         "task": task_id,
         "scope": {"nodes": nodes, "files": brief_files},
         "unresolved_targets": unresolved,
@@ -1537,6 +1553,19 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         }
         turn.post_hashes = post_hashes;
         engine.store.save_turn(&turn)?;
+        let snapshot_label = turn.alias.clone().unwrap_or_else(|| turn.id.clone());
+        let end_snapshot = match crate::snapshots::create(engine, "end", Some(&snapshot_label)) {
+            Ok(meta) => Some(json!(meta)),
+            Err(err) => {
+                let _ = engine.log(
+                    "afwe:snapshot",
+                    "snapshot_failed",
+                    format!("end snapshot was not taken: {err}"),
+                    None,
+                );
+                None
+            }
+        };
         if let Err(err) = crate::ledger::record_turn(
             engine,
             &turn,
@@ -1565,6 +1594,7 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
             "questions": open_questions,
             "reasons": reasons,
             "files": turn.touched.files,
+            "snapshot": end_snapshot,
             "next": "engineer manual mode: commit with git; keep the `AFWE-Turn:` trailer from this record",
         }));
     }
@@ -1656,6 +1686,20 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         }
     }
 
+    let snapshot_label = turn.alias.clone().unwrap_or_else(|| turn.id.clone());
+    let end_snapshot = match crate::snapshots::create(engine, "end", Some(&snapshot_label)) {
+        Ok(meta) => Some(json!(meta)),
+        Err(err) => {
+            let _ = engine.log(
+                "afwe:snapshot",
+                "snapshot_failed",
+                format!("end snapshot was not taken: {err}"),
+                None,
+            );
+            None
+        }
+    };
+
     if let Err(err) =
         crate::ledger::record_turn(engine, &turn, "turn_committed", Some(&turn.post_hashes), false)
     {
@@ -1719,6 +1763,7 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         "notices": notices,
         "reasons": reasons,
         "folded": turn.folded,
+        "snapshot": end_snapshot,
         "implicitly_accepted": folded.iter().map(|f| json!({"turn": f.id, "why": "this turn works on the same nodes; proposals are accepted implicitly and reported here"})).collect::<Vec<_>>(),
         "checkgen": made_checks,
         "pin_proposals": turn.pin_proposals,

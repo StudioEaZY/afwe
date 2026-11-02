@@ -333,8 +333,26 @@ enum Cmd {
     /// Append-only engine ledger: show, bootstrap, repair, push and fetch
     #[command(subcommand)]
     Ledger(LedgerCmd),
+    /// Local parentless working-tree snapshots
+    #[command(subcommand)]
+    Snapshot(SnapshotCmd),
     /// Regenerate the engine-owned `.afwe/turns` projection from the ledger
     Repair,
+}
+
+#[derive(Subcommand)]
+enum SnapshotCmd {
+    /// List snapshots for this project
+    List,
+    /// Show one snapshot by id or prefix
+    Show { id: String },
+    /// Take a snapshot now
+    Take {
+        #[arg(long, default_value = "manual")]
+        phase: String,
+        #[arg(long)]
+        turn: Option<String>,
+    },
 }
 
 #[derive(Subcommand)]
@@ -2008,6 +2026,18 @@ fn run(cli: Cli) -> Result<i32> {
             } else {
                 println!("{}", serde_json::to_string_pretty(&v)?);
             }
+            Ok(0)
+        }
+        Cmd::Snapshot(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            let v = match cmd {
+                SnapshotCmd::List => api::call(&engine, "snapshot.list", json!({}), &origin)?,
+                SnapshotCmd::Show { id } => api::call(&engine, "snapshot.show", json!({"id": id}), &origin)?,
+                SnapshotCmd::Take { phase, turn } => {
+                    api::call(&engine, "snapshot.take", json!({"phase": phase, "turn": turn}), &origin)?
+                }
+            };
+            println!("{}", serde_json::to_string_pretty(&v)?);
             Ok(0)
         }
     }

@@ -113,6 +113,7 @@ When interacting with this codebase:
      Remember: "Rust for project intent" — you can break things on purpose by declaring them in `turn assume`, but you can never break them by accident.
    - Inspect stats and gate telemetry with `afwe stats`.
    - **Engine Ledger & Recovery**: Inspect the append-only ledger with `afwe ledger show` (project id, ref, tip, schema, event/turn counts). In a repository that predates the ledger, run `afwe ledger bootstrap` once; it imports the tracked turns as `provenance: imported`. Run `afwe repair` (or `afwe ledger repair`) after an external rollback of `.afwe/`: it regenerates `.afwe/turns` from the ledger and moves duplicate or stale files to `.afwe/backups/`, never deleting them. Move the ledger between clones with `afwe ledger push [remote]` and `afwe ledger fetch [remote]`; a divergence is recorded as `forked` and both tips are kept, never merged.
+   - **Snapshots**: `afwe snapshot list` / `afwe snapshot show <id>` reads local parentless snapshots under `refs/afwe/snapshots/<project_id>/`; `afwe snapshot take` takes one now. Turn begin and end take them automatically. They are local only: never pushed with the ledger, and they exclude engine-owned state, nested repositories, LFS paths, symlinks and oversized files.
 
 5. **Prompter Authority & Agentic Loops (Autonomous Workflows)**:
    - **Default Mode (`human_only`)**: System starts in deterministic `human_only`. Direct human presence is required for all gate overrides, mode changes, and baseline resets.

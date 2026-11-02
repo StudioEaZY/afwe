@@ -449,6 +449,16 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let remote = req(&p, "remote")?;
             crate::ledger::fetch(engine, &remote)
         }
+        "snapshot.list" => j(crate::snapshots::list(engine)?),
+        "snapshot.show" => {
+            let id = req(&p, "id")?;
+            j(crate::snapshots::show(engine, &id)?)
+        }
+        "snapshot.take" => {
+            let phase = s(&p, "phase").unwrap_or_else(|| "manual".to_string());
+            let turn = s(&p, "turn");
+            j(crate::snapshots::create(engine, &phase, turn.as_deref())?)
+        }
         "turn.get" => j(turn::get(engine, &req(&p, "turn")?)?),
         "turn.list" => j(turn::list(engine)?),
         "gate" => {
@@ -1252,6 +1262,9 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_ledger_bootstrap", op: "ledger.bootstrap", description: "Create a genesis ledger from the existing tracked turn projection, marked provenance=imported. Refuses when a ledger already exists.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_ledger_push", op: "ledger.push", description: "Push only `refs/afwe/ledger/<project_id>` to a git remote (never snapshots or branches).", schema: obj(json!({"remote": {"type": "string"}}), &["remote"]) },
         ToolSpec { name: "afwe_ledger_fetch", op: "ledger.fetch", description: "Fetch `refs/afwe/ledger/<project_id>` from a git remote. Fast-forwards when possible; a divergence is recorded as `forked` and both tips are kept.", schema: obj(json!({"remote": {"type": "string"}}), &["remote"]) },
+        ToolSpec { name: "afwe_snapshot_list", op: "snapshot.list", description: "List local parentless working-tree snapshots for this project: id, commit, tree, turn, phase, file count and exclusions.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_snapshot_show", op: "snapshot.show", description: "Show one local snapshot by id or unique prefix.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
+        ToolSpec { name: "afwe_snapshot_take", op: "snapshot.take", description: "Take a local parentless snapshot now. Excludes engine-owned state, nested repositories, LFS paths and oversized files.", schema: obj(json!({"phase": {"type": "string"}, "turn": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_turn_get", op: "turn.get", description: "Read one turn: prompt, intents, assumptions, checks, strength, confidence and gate reasons.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_list", op: "turn.list", description: "List all turns (ledger).", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_intent_list", op: "intent.list", description: "Living intents: merged statements derived from the raw prompts, with history and the turns they came from.", schema: obj(json!({}), &[]) },

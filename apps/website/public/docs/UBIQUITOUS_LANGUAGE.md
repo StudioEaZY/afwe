@@ -102,6 +102,7 @@ flowchart TD
 | [**Scene Outliner**](#scene-outliner) | Architecture Philosophy & Tenets | The collapsible tree panel in AFWE Studio (`SceneOutliner.tsx`) displaying all entities, systems, and nodes registered in the DOTS Hierarchical Scene Graph. It provides immediate structural search, visibility toggling, multi-selection, and sync with the active spatial visualizer. | File Explorer |
 | [**SEVERED_CAPABILITY**](#severed_capability) | Ratchets & Integrity Verification | A blocking commit gate error triggered when cross-module caller severance drops inbound references to an exported function or struct from >0 to 0, turning previously consumed functionality into dead code without declared intent. | DEAD_ON_ARRIVAL |
 | [**Skipping Resistance**](#skipping-resistance) | Claims & Tripwires | Tripwire mechanisms ensuring that agents and developers cannot bypass architectural governance by circumventing AFWE CLI calls. | — |
+| [**Snapshot Ref**](#snapshot-ref) | Architecture Philosophy & Tenets | A local, parentless git commit under `refs/afwe/snapshots/<project_id>/<snap_id>` that records the | Engine ledger, Ratchet baseline, Analysis snapshot |
 | [**Spacebar Hand Pan**](#spacebar-hand-pan) | Architecture Philosophy & Tenets | A unified navigation paradigm across all AFWE Studio canvas visualizers (Blueprint, Topology, Radial, Constellation). Holding the `Spacebar` key or selecting the floating Hand Pan tool sets child element `pointer-events: none`, temporarily disabling node dragging, selection, and click interception so the user can fluidly pan the canvas without accidentally moving nodes or resetting zoom. | Node Dragging |
 | [**Spatial Drag Clamping**](#spatial-drag-clamping) | Architecture Philosophy & Tenets | A bounding box and physics constraint mechanism in Studio Constellation and Topology maps that clamps manual node dragging within bounded spatial regions. It prevents developers from accidentally flinging nodes into infinite virtual coordinates or breaking parent cluster gravity. | Auto-Layout |
 | [**String Interner**](#string-interner) | Memory, Pins & Living Intents | # String Interner | — |
@@ -618,6 +619,25 @@ The collapsible tree panel in AFWE Studio (`SceneOutliner.tsx`) displaying all e
 
 **Not to be confused with:**
 - **File Explorer**: A file explorer navigates disk directories; the Scene Outliner navigates logical architectural entities mapped across single or multiple files.
+
+---
+
+#### Snapshot Ref <a id="snapshot-ref"></a>
+
+- **ID**: `term-snapshot-ref`
+- **Tags**: `snapshot`, `rewind`, `ledger`
+- **Applies to**: `afwe-core`
+
+**Meaning:**
+A local, parentless git commit under `refs/afwe/snapshots/<project_id>/<snap_id>` that records the
+working tree at turn begin and turn end. Parentless means pruning is one `update-ref -d` followed by
+a prune, and lineage lives in the engine ledger rather than in parent pointers. Snapshot refs never
+travel with `afwe ledger push` or a normal `git fetch`/`git push`.
+
+**Not to be confused with:**
+- **Engine ledger**: the authoritative record of turns and expected state; snapshots are local evidence for restore-forward and classification.
+- **Ratchet baseline**: (`afwe baseline snapshot`): grandfathering pre-existing violations.
+- **Analysis snapshot**: (`Engine::snapshot`): the in-memory code graph, unrelated to git commits.
 
 ---
 

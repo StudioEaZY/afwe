@@ -1,0 +1,17 @@
+id: parentless-snapshot-refs
+title: Parentless snapshot refs
+statement: Each snapshot is a parentless commit under refs/afwe/snapshots/<project_id>/<snap_id>, so pruning is one update-ref delete plus prune and lineage lives in the ledger rather than in parent pointers.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0082
+history:
+- turn: t0082
+  ts: 2026-11-02T12:39:08Z
+  statement: Each snapshot is a parentless commit under refs/afwe/snapshots/<project_id>/<snap_id>, so pruning is one update-ref delete plus prune and lineage lives in the ledger rather than in parent pointers.
+created: 2026-11-02T12:39:08Z
+updated: 2026-11-02T12:39:08Z
+task: task-t0082
