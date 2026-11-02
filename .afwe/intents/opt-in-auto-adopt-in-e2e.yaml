@@ -1,0 +1,17 @@
+id: opt-in-auto-adopt-in-e2e
+title: Exercise drift policy tests with auto-adopt enabled
+statement: t0072 made drift_auto_adopt default to false, so two end_to_end assertions that expect automatic mapping now describe an opt-in mode. Enable the policy flag explicitly in the drift and rename tests and assert on the specific findings instead of exact counts.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  files:
+  - crates/afwe-core/tests/end_to_end.rs
+from_turns:
+- t0075
+history:
+- turn: t0075
+  ts: 2026-11-02T00:51:00Z
+  statement: t0072 made drift_auto_adopt default to false, so two end_to_end assertions that expect automatic mapping now describe an opt-in mode. Enable the policy flag explicitly in the drift and rename tests and assert on the specific findings instead of exact counts.
+created: 2026-11-02T00:51:00Z
+updated: 2026-11-02T00:51:00Z
+task: task-t0075

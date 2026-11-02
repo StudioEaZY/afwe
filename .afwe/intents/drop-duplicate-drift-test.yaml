@@ -1,0 +1,17 @@
+id: drop-duplicate-drift-test
+title: Remove the duplicated drift ledger test
+statement: test_drift_ledger_persistence is defined twice in turn_flow.rs, which fails the whole integration target with E0428. Keep one definition and delete the other.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  files:
+  - crates/afwe-core/tests/turn_flow.rs
+from_turns:
+- t0075
+history:
+- turn: t0075
+  ts: 2026-11-02T00:48:06Z
+  statement: test_drift_ledger_persistence is defined twice in turn_flow.rs, which fails the whole integration target with E0428. Keep one definition and delete the other.
+created: 2026-11-02T00:48:06Z
+updated: 2026-11-02T00:51:00Z
+task: task-t0075

@@ -32,6 +32,14 @@ fn engine(dir: &Path) -> Engine {
     Engine::open(dir).unwrap()
 }
 
+/// Automatic drift adoption is opt-in since the 3-way governance work. The two policy tests below
+/// are about what the policy engine does when it is enabled, so they turn it on explicitly.
+fn enable_auto_adopt(e: &Engine) {
+    let mut manifest = e.store.manifest().unwrap();
+    manifest.policy.drift_auto_adopt = true;
+    e.store.save_manifest(&manifest).unwrap();
+}
+
 fn c(e: &Engine, op: &str, p: Value) -> Value {
     call(e, op, p, "human").unwrap_or_else(|err| panic!("{op} failed: {err:#}"))
 }
@@ -90,6 +98,7 @@ fn blueprint_sync_context_verify_roundtrip() {
 fn drift_policy_maps_confident_files_and_proposes_uncertain_ones() {
     let dir = tmp_project("drift");
     let e = engine(&dir);
+    enable_auto_adopt(&e);
     // Only list explicit files, so a new sibling is drift.
     c(&e, "blueprint.add", json!({"name": "Payments", "files": ["src/payments/checkout.ts", "src/payments/stripe.ts"]}));
     c(&e, "blueprint.add", json!({"name": "Identity", "files": ["src/identity/user.ts"]}));
@@ -111,8 +120,15 @@ fn drift_policy_maps_confident_files_and_proposes_uncertain_ones() {
     assert_eq!(mailer["bucket"], "proposal", "{mailer}");
 
     let s = c(&e, "sync", json!({}));
-    assert_eq!(s["applied"].as_array().unwrap().len(), 1, "{s}");
-    assert_eq!(s["proposed"].as_array().unwrap().len(), 1, "{s}");
+    let applied = s["applied"].as_array().unwrap();
+    assert!(
+        applied.iter().any(|f| f["files"].to_string().contains("src/payments/refunds.ts")),
+        "a confident sibling mapping should be applied when auto-adopt is on: {s}"
+    );
+    assert!(
+        s["proposed"].to_string().contains("src/notifications/mailer.ts"),
+        "an uncertain file should become a proposal: {s}"
+    );
 
     // refunds.ts is now part of Payments in the blueprint file itself
     let bp = fs::read_to_string(dir.join(".afwe/blueprint/blueprint.yaml")).unwrap();
@@ -141,6 +157,7 @@ fn drift_policy_maps_confident_files_and_proposes_uncertain_ones() {
 fn rename_detection_keeps_identity_without_line_numbers() {
     let dir = tmp_project("rename");
     let e = engine(&dir);
+    enable_auto_adopt(&e);
     c(&e, "blueprint.add", json!({"name": "Payments", "files": ["src/payments/checkout.ts"], "symbols": ["src/payments/stripe.ts::charge"]}));
     c(&e, "blueprint.add", json!({"name": "Identity", "files": ["src/identity/**"]}));
     c(&e, "blueprint.add", json!({"name": "UI", "files": ["src/ui/**"]}));

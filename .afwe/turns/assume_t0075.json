@@ -1,0 +1,33 @@
+{
+  "intents": [
+    {
+      "id": "drop-duplicate-drift-test",
+      "action": "refine",
+      "targets": [
+        "crates/afwe-core/tests/turn_flow.rs"
+      ],
+      "title": "Remove the duplicated drift ledger test",
+      "statement": "test_drift_ledger_persistence is defined twice in turn_flow.rs, which fails the whole integration target with E0428. Keep one definition and delete the other."
+    },
+    {
+      "id": "port-drift-ledger-test",
+      "action": "update",
+      "targets": [
+        "crates/afwe-core/tests/turn_flow.rs"
+      ],
+      "title": "Port the drift ledger test to the current model",
+      "statement": "Rewrite the surviving test against DriftLedgerEntry { id, finding_id, file, summary, verdict: String, tolerated_at, review_by, note } instead of the removed { file, verdict: DriftVerdict, entered_at, expires_at } shape."
+    },
+    {
+      "id": "opt-in-auto-adopt-in-e2e",
+      "action": "refine",
+      "targets": [
+        "crates/afwe-core/tests/end_to_end.rs"
+      ],
+      "title": "Exercise drift policy tests with auto-adopt enabled",
+      "statement": "t0072 made drift_auto_adopt default to false, so two end_to_end assertions that expect automatic mapping now describe an opt-in mode. Enable the policy flag explicitly in the drift and rename tests and assert on the specific findings instead of exact counts."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

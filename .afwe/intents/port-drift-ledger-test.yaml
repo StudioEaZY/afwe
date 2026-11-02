@@ -1,0 +1,17 @@
+id: port-drift-ledger-test
+title: Port the drift ledger test to the current model
+statement: 'Rewrite the surviving test against DriftLedgerEntry { id, finding_id, file, summary, verdict: String, tolerated_at, review_by, note } instead of the removed { file, verdict: DriftVerdict, entered_at, expires_at } shape.'
+status: active
+origin: llm:deepseek-flash
+attaches:
+  files:
+  - crates/afwe-core/tests/turn_flow.rs
+from_turns:
+- t0075
+history:
+- turn: t0075
+  ts: 2026-11-02T00:48:06Z
+  statement: 'Rewrite the surviving test against DriftLedgerEntry { id, finding_id, file, summary, verdict: String, tolerated_at, review_by, note } instead of the removed { file, verdict: DriftVerdict, entered_at, expires_at } shape.'
+created: 2026-11-02T00:48:06Z
+updated: 2026-11-02T00:51:00Z
+task: task-t0075

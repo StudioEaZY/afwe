@@ -32,18 +32,6 @@ nodes:
         - apps/studio/src/components/TopBar.tsx
       status: active
       origin: human
-    - id: studio-maps
-      name: Studio Maps
-      kind: module
-      description: Codebase overview maps (Radial pill-wedge atlas, Organic multi-lobe topology hulls, Constellation graph).
-      implements:
-        files:
-        - apps/studio/src/components/OverviewPage.tsx
-        - apps/studio/src/components/RadialMap.tsx
-        - apps/studio/src/components/TopologyMap.tsx
-        - apps/studio/src/components/ConstellationMap.tsx
-      status: active
-      origin: human
     - id: studio-inspector
       name: Studio Inspector & Remediation
       kind: module
@@ -55,6 +43,19 @@ nodes:
         - apps/studio/src/components/BlueprintModals.tsx
       status: active
       origin: human
+      children:
+      - id: studio-maps
+        name: Studio Maps
+        kind: module
+        description: Codebase overview maps (Radial pill-wedge atlas, Organic multi-lobe topology hulls, Constellation graph).
+        implements:
+          files:
+          - apps/studio/src/components/OverviewPage.tsx
+          - apps/studio/src/components/RadialMap.tsx
+          - apps/studio/src/components/TopologyMap.tsx
+          - apps/studio/src/components/ConstellationMap.tsx
+        status: active
+        origin: human
     - id: studio-timeline
       name: Studio Timeline
       kind: module
