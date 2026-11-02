@@ -1,0 +1,42 @@
+{
+  "intents": [
+    {
+      "id": "ledger-ref-chain",
+      "action": "create",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Append-only ledger under refs/afwe/ledger",
+      "statement": "Add ledger.rs: one event per commit under refs/afwe/ledger/<project_id>, built through a private index, advanced with update-ref compare-and-swap and retried three times. Schema version 1, and a newer version is refused rather than read partially."
+    },
+    {
+      "id": "stable-project-id",
+      "action": "create",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Stable project id in the manifest",
+      "statement": "Generate a lowercase hex project id once at first ledger use and persist it in project.id, so clones and worktrees agree on the ref name without using the display name."
+    },
+    {
+      "id": "record-turns-in-ledger",
+      "action": "create",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Record every opened turn",
+      "statement": "turn.begin appends a turn_recorded event best effort: a repo without git or a ledger error logs and never stops the turn from opening."
+    },
+    {
+      "id": "expose-ledger-read",
+      "action": "create",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Read the ledger through the API",
+      "statement": "Expose ledger.show through api::call so the CLI, MCP and Studio can read the chain without new plumbing."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

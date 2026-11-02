@@ -1,0 +1,17 @@
+id: ledger-ref-chain
+title: Append-only ledger under refs/afwe/ledger
+statement: 'Add ledger.rs: one event per commit under refs/afwe/ledger/<project_id>, built through a private index, advanced with update-ref compare-and-swap and retried three times. Schema version 1, and a newer version is refused rather than read partially.'
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0078
+history:
+- turn: t0078
+  ts: 2026-11-02T02:00:53Z
+  statement: 'Add ledger.rs: one event per commit under refs/afwe/ledger/<project_id>, built through a private index, advanced with update-ref compare-and-swap and retried three times. Schema version 1, and a newer version is refused rather than read partially.'
+created: 2026-11-02T02:00:53Z
+updated: 2026-11-02T02:00:53Z
+task: task-t0078

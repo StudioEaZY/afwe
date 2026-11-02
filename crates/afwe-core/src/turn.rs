@@ -568,6 +568,26 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         }),
     });
 
+    // Durable record of the turn. Best effort: a repo without git, or a ledger failure, must never
+    // stop a turn from opening.
+    if let Err(err) = crate::ledger::append(
+        engine,
+        "turn_recorded",
+        json!({
+            "turn": turn.alias.clone().unwrap_or_else(|| turn.id.clone()),
+            "turn_hash": &turn.turn_hash,
+            "prompt_hash": &turn.prompt_hash,
+            "base_head": &base_head,
+        }),
+    ) {
+        let _ = engine.log(
+            "afwe:ledger",
+            "ledger_append_failed",
+            format!("turn_recorded was not written to the ledger: {err}"),
+            None,
+        );
+    }
+
     Ok(json!({
         "turn": turn.alias.clone().unwrap_or(turn.id.clone()),
         "turn_hash": turn.turn_hash,
@@ -1960,7 +1980,7 @@ mod tests {
 
     #[test]
     fn code_prefix_and_relative_paths() {
-        let mut m = Manifest { format: "afwe/2".into(), project: ProjectMeta { name: "x".into(), description: None, root: ".".into() }, analyzer: AnalyzerConfig::default(), policy: Policy::default(), provenance: ProvenanceConfig::default(), vcs: VcsConfig::default(), profile: None, ci: CiConfig::default() };
+        let mut m = Manifest { format: "afwe/2".into(), project: ProjectMeta { name: "x".into(), id: None, description: None, root: ".".into() }, analyzer: AnalyzerConfig::default(), policy: Policy::default(), provenance: ProvenanceConfig::default(), vcs: VcsConfig::default(), profile: None, ci: CiConfig::default() };
         assert_eq!(code_prefix(&m), "");
         m.project.root = "app/".into();
         assert_eq!(code_prefix(&m), "app/");

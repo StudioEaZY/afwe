@@ -60,6 +60,10 @@ impl Default for Manifest {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ProjectMeta {
     pub name: String,
+    /// Stable lowercase hex id used for `refs/afwe/ledger/<id>`. Generated once, stored here so
+    /// every clone and worktree derives the same ref name.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     /// Root of the code relative to the directory containing `.afwe/`.

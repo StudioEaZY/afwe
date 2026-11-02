@@ -1,6 +1,7 @@
 format: afwe/2
 project:
   name: afwe
+  id: p22b7ff24a2064917
   root: .
 analyzer:
   include: []
@@ -23,6 +24,12 @@ policy:
   pins:
     slider: 4
   checkgen: true
+  graduation:
+    require_human: true
+    min_probe_sessions: 3
+    require_hold_out: true
+  drift_tolerate_days: 7
+  drift_auto_adopt: false
 provenance:
   retain_prompts: true
 vcs:

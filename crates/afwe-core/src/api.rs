@@ -434,6 +434,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             turn::resume(engine, &turn_id, &answer, &origin(&p, default_origin))
         }
         "rollback.reconcile" => j(crate::rollback::reconcile(engine)?),
+        "ledger.show" => j(crate::ledger::events(engine)?),
         "turn.get" => j(turn::get(engine, &req(&p, "turn")?)?),
         "turn.list" => j(turn::list(engine)?),
         "gate" => {

@@ -39,6 +39,7 @@ pub mod install;
 pub mod intent;
 pub mod judgment;
 pub mod lease;
+pub mod ledger;
 pub mod lens;
 pub mod mapping;
 pub mod materialize;

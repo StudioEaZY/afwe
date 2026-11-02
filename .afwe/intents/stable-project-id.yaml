@@ -1,0 +1,17 @@
+id: stable-project-id
+title: Stable project id in the manifest
+statement: Generate a lowercase hex project id once at first ledger use and persist it in project.id, so clones and worktrees agree on the ref name without using the display name.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0078
+history:
+- turn: t0078
+  ts: 2026-11-02T02:00:53Z
+  statement: Generate a lowercase hex project id once at first ledger use and persist it in project.id, so clones and worktrees agree on the ref name without using the display name.
+created: 2026-11-02T02:00:53Z
+updated: 2026-11-02T02:00:53Z
+task: task-t0078

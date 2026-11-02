@@ -54,7 +54,7 @@ pub fn init(project_root: &Path, opts: InitOptions) -> Result<Store> {
         return Err(anyhow!(".afwe/ already exists at {} (use --force to reset the manifest)", store.afwe_dir.display()));
     }
     let name = opts.name.unwrap_or_else(|| project_root.canonicalize().ok().and_then(|p| p.file_name().map(|s| s.to_string_lossy().to_string())).unwrap_or("project".into()));
-    let manifest = Manifest { format: FORMAT_VERSION.into(), project: ProjectMeta { name: name.clone(), description: opts.description, root: opts.root.unwrap_or(".".into()) }, analyzer: AnalyzerConfig::default(), policy: Policy::default(), provenance: ProvenanceConfig::default(), vcs: VcsConfig::default(), ci: CiConfig::default(), profile: None };
+    let manifest = Manifest { format: FORMAT_VERSION.into(), project: ProjectMeta { name: name.clone(), id: None, description: opts.description, root: opts.root.unwrap_or(".".into()) }, analyzer: AnalyzerConfig::default(), policy: Policy::default(), provenance: ProvenanceConfig::default(), vcs: VcsConfig::default(), ci: CiConfig::default(), profile: None };
     store.save_manifest(&manifest)?;
     if !store.p("blueprint/blueprint.yaml").exists() {
         let root = BlueprintNode { id: slug(&name), name: name.clone(), kind: "product".into(), purpose: Some("Root of the architecture. Everything the project is lives beneath this node.".into()), description: None, implements: Implementation::default(), tags: vec![], status: Some("active".into()), origin: Some("human".into()), children: vec![] };
