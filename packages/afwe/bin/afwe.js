@@ -26,7 +26,10 @@ function getBinaryName() {
 
   if (!target) {
     throw new Error(
-      `Unsupported platform or architecture: ${platform}-${arch}. You can build from source with 'cargo install --path crates/afwe-cli'.`
+      `Unsupported platform or architecture: ${platform}-${arch}.\n` +
+      `Note: Windows ARM64 and Linux musl/Alpine are planned for an upcoming release.\n` +
+      `Supported platforms: Windows x64, macOS x64/arm64, Linux glibc x64/arm64.\n` +
+      `You can build from source with: cargo install --path crates/afwe-cli`
     );
   }
 
@@ -48,12 +51,17 @@ function getCacheDir() {
 }
 
 function findLocalDevBinary() {
-  // If running in development inside the repo, check local target directory
+  // Only look for local build when explicitly requested via AFWE_DEV=1
+  if (process.env.AFWE_DEV !== "1") {
+    return null;
+  }
   const possiblePaths = [
     path.resolve(__dirname, "../../../target/release/afwe.exe"),
     path.resolve(__dirname, "../../../target/release/afwe"),
     path.resolve(__dirname, "../../../target/debug/afwe.exe"),
-    path.resolve(__dirname, "../../../target/debug/afwe")
+    path.resolve(__dirname, "../../../target/debug/afwe"),
+    path.resolve(__dirname, "../../../.build3/debug/afwe.exe"),
+    path.resolve(__dirname, "../../../.build3/debug/afwe")
   ];
 
   for (const p of possiblePaths) {
@@ -66,45 +74,86 @@ function findLocalDevBinary() {
 
 function downloadBinary(url, destPath) {
   return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(destPath);
+    const tmpPath = `${destPath}.tmp.${process.pid}.${Date.now()}`;
+    const file = fs.createWriteStream(tmpPath);
+    let cleanedUp = false;
+
+    const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      try {
+        file.close();
+      } catch (_) {}
+      try {
+        if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
+      } catch (_) {}
+    };
+
+    let redirectCount = 0;
+    const maxRedirects = 5;
+
     const request = (targetUrl) => {
-      https
-        .get(
-          targetUrl,
-          {
-            headers: {
-              "User-Agent": "afwe-npm-installer"
-            }
+      const req = https.get(
+        targetUrl,
+        {
+          headers: {
+            "User-Agent": "afwe-npm-installer"
           },
-          (res) => {
-            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-              return request(res.headers.location);
+          timeout: 15000 // 15s connection timeout
+        },
+        (res) => {
+          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+            redirectCount++;
+            if (redirectCount > maxRedirects) {
+              cleanup();
+              return reject(new Error(`Too many redirects while downloading from ${url}`));
             }
-            if (res.statusCode !== 200) {
-              file.close();
-              fs.unlinkSync(destPath);
-              return reject(
-                new Error(`Download failed from ${targetUrl} with status code ${res.statusCode}`)
-              );
-            }
-            res.pipe(file);
-            file.on("finish", () => {
-              file.close(() => {
-                if (os.platform() !== "win32") {
-                  fs.chmodSync(destPath, 0o755);
-                }
-                resolve();
-              });
-            });
+            return request(res.headers.location);
           }
-        )
-        .on("error", (err) => {
-          file.close();
-          try {
-            if (fs.existsSync(destPath)) fs.unlinkSync(destPath);
-          } catch (_) {}
-          reject(err);
-        });
+          if (res.statusCode !== 200) {
+            cleanup();
+            return reject(
+              new Error(`Download failed from ${targetUrl} with status code ${res.statusCode}`)
+            );
+          }
+
+          res.setTimeout(60000, () => {
+            req.destroy(new Error("Download timed out after 60 seconds of inactivity"));
+          });
+
+          res.pipe(file);
+          file.on("finish", () => {
+            file.close(() => {
+              try {
+                const stat = fs.statSync(tmpPath);
+                // Sanity check: compiled binary should be at least 1MB
+                if (stat.size < 1000000) {
+                  cleanup();
+                  return reject(new Error(`Downloaded binary is corrupt or too small (${stat.size} bytes)`));
+                }
+                if (os.platform() !== "win32") {
+                  fs.chmodSync(tmpPath, 0o755);
+                }
+                fs.renameSync(tmpPath, destPath);
+                cleanedUp = true;
+                resolve();
+              } catch (err) {
+                cleanup();
+                reject(err);
+              }
+            });
+          });
+        }
+      );
+
+      req.on("timeout", () => {
+        req.destroy(new Error("Connection timed out after 15 seconds"));
+      });
+
+      req.on("error", (err) => {
+        cleanup();
+        reject(err);
+      });
     };
 
     request(url);

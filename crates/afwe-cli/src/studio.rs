@@ -590,18 +590,38 @@ pub fn ensure_daemon_running(project_root: &Path) -> Result<()> {
     if daemon_serves(project_root, requested_port) {
         return Ok(());
     }
-    if daemon_health(requested_port).is_some() {
-        return Err(anyhow::anyhow!(
-            "port {requested_port} is already served by another project's Studio; stop it before starting this project"
-        ));
+
+    // Check if an existing daemon is already running for this project on any port in range
+    for port in 4242..=4260 {
+        if daemon_serves(project_root, port) {
+            let url = format!("http://127.0.0.1:{port}");
+            let _ = write_daemon_state(project_root, port, &url);
+            return Ok(());
+        }
     }
+
+    // Find the first available port not occupied by another project or process
+    let mut chosen_port = None;
+    for port in 4242..=4260 {
+        if daemon_health(port).is_none() && std::net::TcpListener::bind(("127.0.0.1", port)).is_ok() {
+            chosen_port = Some(port);
+            break;
+        }
+    }
+
+    let target_port = match chosen_port {
+        Some(p) => p,
+        None => return Err(anyhow::anyhow!(
+            "all Studio ports in range 4242-4260 are currently occupied; cannot auto-start Studio"
+        )),
+    };
 
     let exe = std::env::current_exe()?;
     std::process::Command::new(exe)
         .arg("studio")
         .arg("--no-open")
         .arg("--port")
-        .arg("4242")
+        .arg(target_port.to_string())
         .current_dir(project_root)
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())
@@ -610,12 +630,12 @@ pub fn ensure_daemon_running(project_root: &Path) -> Result<()> {
 
     for _ in 0..30 {
         std::thread::sleep(Duration::from_millis(100));
-        if daemon_serves(project_root, 4242) {
+        if daemon_serves(project_root, target_port) {
             return Ok(());
         }
     }
     Err(anyhow::anyhow!(
-        "studio daemon was spawned but is not answering for this project on 127.0.0.1:4242"
+        "studio daemon was spawned on port {target_port} but is not answering for this project on 127.0.0.1:{target_port}"
     ))
 }
 

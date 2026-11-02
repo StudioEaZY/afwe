@@ -537,7 +537,8 @@ pub fn show(engine: &Engine, id: &str) -> Result<Option<Value>> {
         .map(|snap| json!(snap)))
 }
 
-/// Prune snapshots according to retention limit `keep_k`, deleting older refs and running git prune.
+/// Prune snapshots according to retention limit `keep_k`, deleting older refs and running safe ref packing.
+/// Snapshots referenced by active rewind receipts are preserved to prevent evidence loss.
 pub fn prune(engine: &Engine, keep_k: usize) -> Result<Value> {
     let root = engine.store.project_root.as_path();
     let manifest = engine.store.manifest()?;
@@ -553,9 +554,30 @@ pub fn prune(engine: &Engine, keep_k: usize) -> Result<Value> {
         }));
     }
 
+    // Protect snapshots referenced by active rewind receipts
+    let active_receipts = crate::rewind::receipts(engine).unwrap_or_default();
+    let protected_ids: std::collections::BTreeSet<String> = active_receipts
+        .iter()
+        .flat_map(|r| {
+            let mut ids = Vec::new();
+            if let Some(s) = &r.to_snapshot {
+                ids.push(s.clone());
+            }
+            for p in &r.paths {
+                if let Some(s) = &p.matched_snapshot {
+                    ids.push(s.clone());
+                }
+            }
+            ids
+        })
+        .collect();
+
     let to_prune = &all[keep_k..];
     let mut pruned_ids = Vec::new();
     for snap in to_prune {
+        if protected_ids.contains(&snap.id) {
+            continue;
+        }
         let refname = format!("{REF_PREFIX}{project}/{}", snap.id);
         let _ = git_ok(root, &["update-ref", "-d", &refname]);
         let _ = engine.store.remove(&format!("state/snapshots/{}.json", snap.id));
@@ -563,9 +585,9 @@ pub fn prune(engine: &Engine, keep_k: usize) -> Result<Value> {
         pruned_ids.push(snap.id.clone());
     }
 
-    // Git object reclaim and ref packing
+    // Git ref packing to reclaim deleted ref files, followed by safe auto gc
     let _ = git(root, &["pack-refs", "--all", "--prune"]);
-    let _ = git(root, &["prune", "--expire=now"]);
+    let _ = git(root, &["gc", "--auto"]);
 
     let _ = ledger::append(
         engine,
@@ -577,10 +599,11 @@ pub fn prune(engine: &Engine, keep_k: usize) -> Result<Value> {
         }),
     );
 
+    let remaining = all.len().saturating_sub(pruned_ids.len());
     Ok(json!({
         "pruned": pruned_ids.len(),
         "pruned_ids": pruned_ids,
-        "remaining": keep_k,
+        "remaining": remaining,
     }))
 }
 

@@ -685,6 +685,15 @@ impl Store {
                 || t.alias.as_deref() == Some(identifier)
         }))
     }
+    /// Returns true if `id` is a safe relative file identifier (no path traversal, separators, or disallowed chars).
+    pub fn is_safe_identifier(id: &str) -> bool {
+        !id.is_empty()
+            && !id.contains('/')
+            && !id.contains('\\')
+            && !id.contains("..")
+            && id.chars().all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '_' || c == '-')
+    }
+
     /// Write one record per turn. The alias (or id, when there is no alias) is the canonical file
     /// name. Legacy duplicate files are left untouched here; `afwe repair` moves them to a backup
     /// after proving they describe the same turn.
@@ -698,6 +707,9 @@ impl Store {
             .unwrap_or_else(|| t.turn_hash.clone());
         if key.is_empty() {
             return Err(anyhow!("cannot save a turn with no id, alias or turn_hash"));
+        }
+        if !Self::is_safe_identifier(&key) {
+            return Err(anyhow!("unsafe turn identifier `{key}`: must not contain path traversal or disallowed characters"));
         }
         self.write_yaml_atomic(&format!("turns/{key}.yaml"), t)?;
         Ok(())
@@ -758,9 +770,15 @@ impl Store {
 
     // ── baselines (derived; never committed) ──
     pub fn save_baseline(&self, turn: &str, b: &Baseline) -> Result<()> {
+        if !Self::is_safe_identifier(turn) {
+            return Err(anyhow!("unsafe turn identifier `{turn}`: must not contain path traversal or disallowed characters"));
+        }
         self.write_json(&format!("index/baselines/{turn}.json"), b)
     }
     pub fn baseline(&self, turn: &str) -> Result<Option<Baseline>> {
+        if !Self::is_safe_identifier(turn) {
+            return Ok(None);
+        }
         self.read_json(&format!("index/baselines/{turn}.json"))
     }
 

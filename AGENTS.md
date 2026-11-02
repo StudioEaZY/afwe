@@ -21,7 +21,10 @@ The canonical domain dictionary lives at [`docs/UBIQUITOUS_LANGUAGE.md`](docs/UB
 1. `afwe turn begin "<prompt>" --target <files> [--claim <files>]` (MCP `afwe_turn_begin`) → Phase 0 pre-planning briefing pack & pins (claims reserved upfront). Read `docs/UBIQUITOUS_LANGUAGE.md` for in-scope domain terms.
 2. `afwe turn assume <turn> --file <json> [--claim <files>]` (MCP `afwe_turn_assume`) → Phase 1 declare intents & claims BEFORE writing code (call `afwe turn redo <turn>` to reset to baseline or `afwe turn abandon <turn>` to release claims). Explicitly declare removals in `removes` to satisfy the "Rust for project intent" compiler model.
 3. `afwe turn commit <turn> --summary "…"` (MCP `afwe_turn_commit`) → Phase 2 gated commit AFTER code is written and verified (isolated Git plumbing trees with CAS verification).
-4. **Post-Turn Documentation, Skills & MCP Synchronization**:
+4. **Test & CI Generation Mandate**:
+   - **Overlay Correctness**: When writing tests or CI automation, ensure comprehensive coverage across file lifecycle events: new, deleted, renamed, gitignored, and CRLF line-ending files. If overlay state is incomplete, fall back to a one-time full workspace analysis and record the fallback.
+   - **Tree Deduplication**: Classification and rewind tests MUST verify identical trees across multiple turns while preserving turn and phase metadata.
+5. **Post-Turn Documentation, Skills & MCP Synchronization**:
    - Whenever an update changes AFWE behavior, CLI flags, schema, or capabilities:
      - **Ubiquitous Language**: Add or update term files in `.afwe/memory/terminology/`, update `docs/UBIQUITOUS_LANGUAGE.md` (and `.afwe/docs/UBIQUITOUS_LANGUAGE.md`), and run `afwe memory sync-terms` to auto-update Markdown and HTML formats.
      - **MCP Tools**: Update the MCP tool definitions in `crates/afwe-cli/src/mcp.rs` and engine specs in `crates/afwe-core/src/api.rs` if tool schemas or capabilities expanded.

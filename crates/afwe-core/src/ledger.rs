@@ -21,6 +21,7 @@
 
 use crate::engine::Engine;
 use crate::model::Turn;
+use crate::store::Store;
 use anyhow::{anyhow, Context, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -381,6 +382,11 @@ fn read_stored_turns(root: &Path, commit: &str) -> Result<Vec<StoredTurn>> {
                 "turn record schema version {} is newer than this binary ({LEDGER_VERSION}); upgrade AFWE",
                 stored.version
             ));
+        }
+        let alias = alias_of(&stored.turn);
+        if !Store::is_safe_identifier(&alias) {
+            eprintln!("afwe: skipping untrusted turn `{alias}` with unsafe identifier");
+            continue;
         }
         out.push(stored);
     }
@@ -799,9 +805,16 @@ pub fn repair(engine: &Engine) -> Result<Value> {
     let mut known: BTreeSet<(String, String)> = BTreeSet::new();
     for turn in &turns {
         let alias = alias_of(turn);
+        if !Store::is_safe_identifier(&alias) {
+            eprintln!("afwe repair: skipping turn with unsafe identifier `{alias}`");
+            continue;
+        }
         canonical.insert(format!("turns/{alias}.yaml"));
         known.insert((turn.id.clone(), turn.turn_hash.clone()));
-        engine.store.save_turn(turn)?;
+        if let Err(e) = engine.store.save_turn(turn) {
+            eprintln!("afwe repair: could not save turn {alias}: {e}");
+            continue;
+        }
         // Restore the derived baseline too, so `repair` heals a wiped index/ folder.
         if let Some(raw) = read_at(root, &tip_sha, &format!("baselines/{alias}.json"))? {
             if let Ok(baseline) = serde_json::from_str::<crate::model::Baseline>(&raw) {

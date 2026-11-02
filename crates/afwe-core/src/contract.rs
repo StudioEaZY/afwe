@@ -115,7 +115,10 @@ When interacting with this codebase:
    - **Engine Ledger & Recovery**: Inspect the append-only ledger with `afwe ledger show` (project id, ref, tip, schema, event/turn counts). In a repository that predates the ledger, run `afwe ledger bootstrap` once; it imports the tracked turns as `provenance: imported`. Run `afwe repair` (or `afwe ledger repair`) after an external rollback of `.afwe/`: it regenerates `.afwe/turns` from the ledger and moves duplicate or stale files to `.afwe/backups/`, never deleting them. Move the ledger between clones with `afwe ledger push [remote]` and `afwe ledger fetch [remote]`; a divergence is recorded as `forked` and both tips are kept, never merged.
    - **Snapshots**: `afwe snapshot list` / `afwe snapshot show <id>` reads local parentless snapshots under `refs/afwe/snapshots/<project_id>/`; `afwe snapshot take` takes one now. Turn begin and end take them automatically. They are local only: never pushed with the ledger, and they exclude engine-owned state, nested repositories, LFS paths, symlinks and oversized files.
    - **Rewind Receipts**: `turn.begin` compares the current tree with the ledger expected tree and classifies a difference as `REWOUND`, `COMPOUND` or `UNATTRIBUTED` using snapshot history. Read `rewind_receipts` / `rewind_notice` in the briefing, or run `afwe rewind list` / `afwe rewind check`. A receipt is advisory: it never restores a file, never blocks a turn, and never refuses a commit.
-   - **Turn-start side effects**: every supported `turn begin` (CLI, raw `afwe call turn.begin`, MCP) starts the Studio daemon on port 4242 and the presence watcher deterministically. Failures are logged, not swallowed. Set `AFWE_NO_AUTOSTART=1` for CI/headless runs.
+   - **Test & CI Generation Mandate**: When authoring tests or CI automation:
+     - Overlay Correctness: Test suites and CI workflows MUST cover all file lifecycle variants: newly created files, deleted files, renamed files, gitignore patterns, and CRLF line endings. If overlay analysis is incomplete, fall back to a one-time full analysis and record the fallback.
+     - Tree Deduplication: Snapshot and rewind tests MUST cover identical trees across consecutive turns while preserving distinct turn and phase metadata.
+   - **Turn-start side effects**: every supported `turn begin` (CLI, raw `afwe call turn.begin`, MCP) starts the Studio daemon (dynamically allocating an open port in 4242..4260) and the user-space presence watcher deterministically. No deep OS autostart service or registry manipulation is used; if the watcher is killed, AFWE automatically restarts it on the next turn. Set `AFWE_NO_AUTOSTART=1` for CI/headless runs.
 
 5. **Prompter Authority & Agentic Loops (Autonomous Workflows)**:
    - **Default Mode (`human_only`)**: System starts in deterministic `human_only`. Direct human presence is required for all gate overrides, mode changes, and baseline resets.
@@ -127,7 +130,7 @@ When interacting with this codebase:
    - **Narrow Self-Heal**: Mechanical restores of undeclared file drops run as sub-turns `<parent>.1` via `afwe heal restore` (MCP `afwe_heal_restore`).
    - **Attribution & CI Verification**: Validate git commit trailers via `afwe gate --ci`. Attribute manual developer commits via `afwe attribute <commit>`.
    - **Revoke**: Prompter delegation can be revoked instantly at any time via `afwe authority revoke` (MCP `afwe_authority_revoke`).
-   - **Human Presence & Watcher**: The headless presence watcher (`afwe presence run`) starts at login, tracks events across registered projects, applies user notification routing (`presence.toml`), and enforces `floor_only` biometric presence proof (Windows Hello / Touch ID) for high-blast-radius actions. For remote sandboxes without inbound access, the Git Channel (`refs/afwe/outbox/` and `refs/afwe/inbox/`) provides zero-relay two-way notification and steering.
+   - **Human Presence & Watcher**: The headless presence watcher (`afwe presence run`) runs in user space, tracks events across registered projects, applies user notification routing (`presence.toml`), and enforces `floor_only` biometric presence proof (Windows Hello / Touch ID) for high-blast-radius actions. For remote sandboxes without inbound access, the Git Channel (`refs/afwe/outbox/` and `refs/afwe/inbox/`) provides zero-relay two-way notification and steering.
 "#;
 
 pub fn render_agents_block(project: &str, _contracts: &[Contract]) -> String {
@@ -140,7 +143,10 @@ pub fn render_agents_block(project: &str, _contracts: &[Contract]) -> String {
     s.push_str("1. `afwe turn begin \"<prompt>\" --target <files> [--claim <files>]` (MCP `afwe_turn_begin`) → read briefing pack & pins (reserve claimed files).\n");
     s.push_str("2. `afwe turn assume <turn> --file <json> [--claim <files>]` (MCP `afwe_turn_assume`) → declare intents & claims BEFORE writing code (call `afwe turn redo <turn>` to reset to baseline or `afwe turn abandon <turn>` to cancel).\n");
     s.push_str("3. `afwe turn commit <turn> --summary \"…\"` (MCP `afwe_turn_commit`) → gated commit AFTER code is written (isolated Git plumbing trees).\n");
-    s.push_str("4. **Documentation Sync**: Update relevant `.afwe/docs/` or skills after each update when architecture or behavior changes.\n\n");
+    s.push_str("4. **Test & CI Generation Rules**:\n");
+    s.push_str("   - Overlay Correctness: CI workflows and tests MUST cover new, deleted, renamed, ignored, and CRLF line-ending files. If an overlay is incomplete, fall back to a full analysis.\n");
+    s.push_str("   - Tree Deduplication: Turn classification and rewind tests MUST cover identical tree states across distinct turns while keeping turn/phase metadata.\n");
+    s.push_str("5. **Documentation Sync**: Update relevant `.afwe/docs/` or skills after each update when architecture or behavior changes.\n\n");
     s.push_str("If skills or MCP are unavailable in your harness, execute the CLI commands above directly via terminal.\n");
     s.push_str("Consult `.afwe/docs/TUTORIAL.md` for complete protocol instructions and `.afwe/docs/WALKTHROUGH.md` for real-world case studies.\n");
     s.push_str("<!-- afwe:end -->\n");

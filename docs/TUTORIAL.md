@@ -440,6 +440,20 @@ is **advisory**: nothing is restored, no turn is refused, and `turn commit` cont
 next `turn.begin` briefing carries `rewind_receipts` plus a one-line `rewind_notice`. Identical
 differences are receipted once.
 
+---
 
+## 15. Backups, Hygiene & Planned Portability
 
+- **Local Backups (`.afwe/backups/`)**: Working-tree copies captured before `afwe repair` or `afwe turn redo` are kept strictly locally in `.afwe/backups/`. They may contain uncommitted code, secrets, or temporary files and are never pushed to the engine ledger or tracked in Git.
+- **Planned Retention & Pruning**: Automated backup retention policies (`policy.backup_keep`, `policy.backup_older_than`), `afwe backup prune`, and sanitized private/enterprise backup export are planned features in `.afwe-client`.
+- **Platform Support & Roadmap**:
+  - **Currently Supported**: Windows x86_64, macOS x86_64 / arm64, Linux glibc x86_64 / aarch64.
+  - **Planned**: Windows arm64 (`aarch64-pc-windows-msvc`) and Linux musl/Alpine (`x86_64-unknown-linux-musl`, `aarch64-unknown-linux-musl`).
 
+---
+
+## 16. Test & CI Generation Rules for Coding Agents
+
+When authoring test suites or CI workflows for projects governed by AFWE:
+1. **Overlay Correctness**: All file lifecycle states must be covered in test assertions: new files, deleted files, renamed files, `.gitignore` entries, and CRLF line endings. If overlay analysis is incomplete, the engine falls back to a one-time full workspace analysis and records the fallback.
+2. **Tree Deduplication**: Rewind and classification tests must explicitly cover scenarios with identical trees across consecutive turns/phases, ensuring metadata deduplication preserves distinct turn and phase identities.
