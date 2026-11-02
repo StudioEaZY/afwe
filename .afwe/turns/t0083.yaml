@@ -96,7 +96,7 @@ overrides:
   reason: no model calls were added; classification is deterministic hashing and snapshot lookup
 - pin: pin-harness-agnostic
   reason: no harness or vendor names were added; classification runs at turn begin only
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -1663,6 +1663,8 @@ gate:
   - 'OVERRIDDEN pin pin-harness-agnostic (AFWE core, verification, and tripwires must remain 100% harness-agnostic without vendor-specific agent lock-in or harness-dependent execution paths): no harness or vendor names were added; classification runs at turn begin only'
 footer_shown: true
 summary: 'P2 rewind classification: per-snapshot path hashes, REWOUND/COMPOUND/UNATTRIBUTED verdicts, deduped advisory receipts in the briefing, and E := C at turn end to stop false rewinds'
+committed_at: 2026-11-02T16:29:52Z
+commit_sha: 20950de1b33681468930a9647a659156d53b276c
 turn_token: afwe_tok_db93eed11c2c44376c3eb6feca8bf178
 post_hashes:
   .afwe/docs/UBIQUITOUS_LANGUAGE.html: 3c8ce8e09bfefbb3

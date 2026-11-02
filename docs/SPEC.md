@@ -665,6 +665,21 @@ AFWE detects, organizes, routes, and safely executes mechanical corrective actio
   commit. The next `turn.begin` briefing carries `rewind_receipts` and `rewind_notice`.
 - **Surface**: `afwe rewind list|check`, `rewind.*` API ops and `afwe_rewind_*` MCP tools.
 
+## 20. Turn-Start Side Effects
+
+- **Deterministic auto-start**: after every supported `turn.begin` (CLI `afwe turn begin`, raw
+  `afwe call turn.begin`, MCP `afwe_turn_begin`), the CLI process starts the Studio daemon on
+  127.0.0.1:4242 and the headless presence watcher. No model call or extra prompt is involved.
+- **Project identity**: Studio `/api/health` returns the project root. A daemon is reused only when
+  that root matches this project; a Studio serving another project on 4242 is reported as a conflict.
+- **Observable failure**: spawn or readiness failures are printed to stderr and appended to
+  `.afwe/log` as `studio_autostart_failed` / `watcher_autostart_failed`; the turn still opens.
+- **Kill switch**: `AFWE_NO_AUTOSTART=1` disables both spawns for CI/headless runs.
+- **Boundary**: the core engine API does not spawn processes. Only the CLI (which hosts Studio and
+  the watcher) performs auto-start, so a harness that calls the core API directly must start them
+  itself.
+
+
 
 
 

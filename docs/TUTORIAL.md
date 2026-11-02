@@ -179,6 +179,18 @@ AFWE executes the deterministic commit engine:
 > - **The Trade-off**: Generic names (`new`, `len`, `init`, `run`, `default`, `get`, `set`) are intentionally treated as always referenced and unflaggable.
 > - **Language-Adaptive**: Weakly typed languages (Python/JS) leverage identifier token matching across files; typed languages (Rust/Go/TS) leverage module-scoped import specifiers where available.
 
+### Turn-start side effects
+
+`turn begin` deterministically starts the Studio daemon (port 4242) and the headless presence
+watcher after the briefing is written. It applies to the CLI `afwe turn begin`, the raw
+`afwe call turn.begin`, and the MCP `afwe_turn_begin` tool. No model decision is involved.
+
+- The Studio daemon is reused only when its `/api/health` reports **this** project root; a Studio
+  serving another project on 4242 is reported, not silently reused.
+- Startup failures are written to stderr and `.afwe/log` as `studio_autostart_failed` or
+  `watcher_autostart_failed`.
+- Set `AFWE_NO_AUTOSTART=1` for CI or headless runs that must not spawn daemons.
+
 ---
 
 ## 4. Protecting Decisions with Pins

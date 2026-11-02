@@ -1,0 +1,18 @@
+id: autostart-observable
+title: Make autostart observable and project-scoped
+statement: Studio health reports its project root, so a daemon for another project is reported instead of silently reused. Spawn or readiness failures are printed and logged as studio_autostart_failed or watcher_autostart_failed, and AFWE_NO_AUTOSTART disables both.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe
+from_turns:
+- t0085
+- t0086
+history:
+- turn: t0085
+  ts: 2026-11-02T16:32:25Z
+  statement: Studio health reports its project root, so a daemon for another project is reported instead of silently reused. Spawn or readiness failures are printed and logged as studio_autostart_failed or watcher_autostart_failed, and AFWE_NO_AUTOSTART disables both.
+created: 2026-11-02T16:32:25Z
+updated: 2026-11-02T16:38:45Z
+task: task-t0085

@@ -10,7 +10,7 @@ use afwe_core::engine::Engine;
 use anyhow::Result;
 use include_dir::{include_dir, Dir};
 use serde_json::{json, Value};
-use std::io::Read;
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::sync::mpsc::{channel, Receiver, RecvTimeoutError, Sender};
 use std::sync::{Arc, Mutex};
@@ -196,7 +196,13 @@ fn handle_api(engine: &Arc<Mutex<Engine>>, method: &Method, path: &str, body: &s
         return (204, json!({}), None);
     }
     match path {
-        "/api/health" => (200, json!({"ok": true, "engine": afwe_core::ENGINE_VERSION}), None),
+        "/api/health" => {
+            let root = engine
+                .lock()
+                .map(|guard| guard.store.project_root.to_string_lossy().to_string())
+                .unwrap_or_default();
+            (200, json!({"ok": true, "engine": afwe_core::ENGINE_VERSION, "root": root}), None)
+        }
         "/api/ops" => (200, json!(api::OPS), None),
         "/api/action" | "/api/approve" | "/api/revert" => {
             let full_url = format!("{path}?{body}");
@@ -547,6 +553,7 @@ fn write_daemon_state(root: &Path, port: u16, url: &str) -> Result<()> {
         "pid": std::process::id(),
         "port": port,
         "url": url,
+        "root": root.canonicalize().unwrap_or_else(|_| root.to_path_buf()).to_string_lossy(),
         "started_at": chrono_like_now(),
     });
     std::fs::write(daemon_file, serde_json::to_string_pretty(&state)?)?;
@@ -566,42 +573,85 @@ fn chrono_like_now() -> String {
     format!("{s}")
 }
 
-/// Helper called on `turn.begin` to ensure background studio daemon is running
-pub fn ensure_daemon_running(project_root: &Path) {
-    let daemon_file = project_root.join(".afwe").join("state").join("daemon.json");
-    if daemon_file.exists() {
-        if let Ok(content) = std::fs::read_to_string(&daemon_file) {
-            if let Ok(val) = serde_json::from_str::<Value>(&content) {
-                if let Some(port) = val.get("port").and_then(|p| p.as_u64()) {
-                    // Check if responds to health
-                    if is_daemon_alive(port as u16) {
-                        return;
-                    }
-                }
-            }
+/// Helper called on `turn.begin` to ensure background studio daemon is running.
+/// Returns an error when the daemon could not be spawned or did not answer, so auto-start is
+/// observable instead of silently failing.
+pub fn ensure_daemon_running(project_root: &Path) -> Result<()> {
+    if std::env::var_os("AFWE_NO_AUTOSTART").is_some() {
+        return Ok(());
+    }
+    let requested_port = std::fs::read_to_string(project_root.join(".afwe").join("state").join("daemon.json"))
+        .ok()
+        .and_then(|content| serde_json::from_str::<Value>(&content).ok())
+        .and_then(|value| value.get("port").and_then(|port| port.as_u64()))
+        .map(|port| port as u16)
+        .unwrap_or(4242);
+
+    if daemon_serves(project_root, requested_port) {
+        return Ok(());
+    }
+    if daemon_health(requested_port).is_some() {
+        return Err(anyhow::anyhow!(
+            "port {requested_port} is already served by another project's Studio; stop it before starting this project"
+        ));
+    }
+
+    let exe = std::env::current_exe()?;
+    std::process::Command::new(exe)
+        .arg("studio")
+        .arg("--no-open")
+        .arg("--port")
+        .arg("4242")
+        .current_dir(project_root)
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()?;
+
+    for _ in 0..30 {
+        std::thread::sleep(Duration::from_millis(100));
+        if daemon_serves(project_root, 4242) {
+            return Ok(());
         }
     }
-
-    // Spawn detached daemon on default studio port 4242
-    if let Ok(exe) = std::env::current_exe() {
-        let _ = std::process::Command::new(exe)
-            .arg("studio")
-            .arg("--no-open")
-            .arg("--port")
-            .arg("4242")
-            .current_dir(project_root)
-            .stdin(std::process::Stdio::null())
-            .stdout(std::process::Stdio::null())
-            .stderr(std::process::Stdio::null())
-            .spawn();
-    }
+    Err(anyhow::anyhow!(
+        "studio daemon was spawned but is not answering for this project on 127.0.0.1:4242"
+    ))
 }
 
-fn is_daemon_alive(port: u16) -> bool {
-    std::net::TcpStream::connect_timeout(
+fn daemon_health(port: u16) -> Option<Value> {
+    let mut stream = std::net::TcpStream::connect_timeout(
         &std::net::SocketAddr::from(([127, 0, 0, 1], port)),
-        Duration::from_millis(200),
-    ).is_ok()
+        Duration::from_millis(300),
+    )
+    .ok()?;
+    stream.set_read_timeout(Some(Duration::from_millis(700))).ok()?;
+    write!(
+        stream,
+        "GET /api/health HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n"
+    )
+    .ok()?;
+    let mut response = String::new();
+    stream.read_to_string(&mut response).ok()?;
+    let body = response.split("\r\n\r\n").nth(1)?;
+    serde_json::from_str(body.trim()).ok()
+}
+
+fn daemon_serves(project_root: &Path, port: u16) -> bool {
+    let expected = project_root
+        .canonicalize()
+        .unwrap_or_else(|_| project_root.to_path_buf())
+        .to_string_lossy()
+        .replace('\\', "/")
+        .to_lowercase();
+    daemon_health(port)
+        .and_then(|health| {
+            health
+                .get("root")
+                .and_then(|root| root.as_str())
+                .map(|root| root.replace('\\', "/").to_lowercase() == expected)
+        })
+        .unwrap_or(false)
 }
 
 fn mime(path: &str) -> &'static str {

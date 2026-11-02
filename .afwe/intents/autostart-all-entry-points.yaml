@@ -1,0 +1,18 @@
+id: autostart-all-entry-points
+title: Start Studio and watcher from every turn begin
+statement: CLI turn begin, raw afwe call turn.begin and MCP afwe_turn_begin all call the same deterministic autostart path; no model decision is involved.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe
+from_turns:
+- t0085
+- t0086
+history:
+- turn: t0085
+  ts: 2026-11-02T16:32:25Z
+  statement: CLI turn begin, raw afwe call turn.begin and MCP afwe_turn_begin all call the same deterministic autostart path; no model decision is involved.
+created: 2026-11-02T16:32:25Z
+updated: 2026-11-02T16:38:45Z
+task: task-t0085

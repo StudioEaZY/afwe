@@ -946,6 +946,31 @@ fn engine_for(dir: &Option<PathBuf>) -> Result<Engine> {
     Engine::open(start)
 }
 
+/// Deterministic turn-start side effects: start the Studio daemon and the presence watcher.
+/// Called after every supported `turn.begin` entry point (CLI, raw call, MCP). Failures are
+/// reported to stderr and the engine log instead of being swallowed.
+pub(crate) fn ensure_autostart(engine: &Engine) {
+    let root = engine.store.project_root.as_path();
+    if let Err(error) = crate::studio::ensure_daemon_running(root) {
+        eprintln!("afwe: warning: Studio auto-start failed: {error}");
+        let _ = engine.log(
+            "afwe:autostart",
+            "studio_autostart_failed",
+            format!("Studio auto-start failed: {error}"),
+            None,
+        );
+    }
+    if let Err(error) = crate::presence::watcher::PresenceWatcher::ensure_watcher_running(root) {
+        eprintln!("afwe: warning: Presence watcher auto-start failed: {error}");
+        let _ = engine.log(
+            "afwe:autostart",
+            "watcher_autostart_failed",
+            format!("Presence watcher auto-start failed: {error}"),
+            None,
+        );
+    }
+}
+
 fn out(json: bool, v: &Value, human: impl FnOnce(&Value) -> String) {
     use std::io::Write;
     let text = if json { serde_json::to_string_pretty(v).unwrap() } else { human(v) };
@@ -1389,8 +1414,7 @@ fn run(cli: Cli) -> Result<i32> {
                         "parent": parent,
                         "claims": strs(&claim),
                     }), &origin)?;
-                    crate::studio::ensure_daemon_running(&engine.store.project_root);
-                    crate::presence::watcher::PresenceWatcher::ensure_watcher_running(&engine.store.project_root);
+                    crate::ensure_autostart(&engine);
                     out(json, &v, render::turn_briefing);
                     0
                 }
@@ -2011,6 +2035,9 @@ fn run(cli: Cli) -> Result<i32> {
                 None => json!({}),
             };
             let v = api::call(&engine, &op, params, &origin)?;
+            if op == "turn.begin" {
+                ensure_autostart(&engine);
+            }
             println!("{}", serde_json::to_string_pretty(&v)?);
             Ok(0)
         }

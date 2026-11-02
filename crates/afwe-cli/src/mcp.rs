@@ -125,8 +125,7 @@ fn call_tool(engine: &mut Option<Engine>, start: &PathBuf, origin: &str, name: &
     let mut result = api::call(eng, spec.op, params.clone(), &forced_origin)?;
 
     if spec.op == "turn.begin" {
-        crate::studio::ensure_daemon_running(&eng.store.project_root);
-        crate::presence::watcher::PresenceWatcher::ensure_watcher_running(&eng.store.project_root);
+        crate::ensure_autostart(eng);
     }
 
     // Mid-turn pause reactive wait loop (0 token burn)

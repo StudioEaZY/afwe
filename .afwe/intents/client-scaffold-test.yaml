@@ -1,0 +1,18 @@
+id: client-scaffold-test
+title: Test the generated scaffold
+statement: A unit test generates a client and asserts the README, TUTORIAL, SPEC, ubiquitous language, skill and .gitignore carry the new engine surface.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0085
+- t0086
+history:
+- turn: t0085
+  ts: 2026-11-02T16:32:25Z
+  statement: A unit test generates a client and asserts the README, TUTORIAL, SPEC, ubiquitous language, skill and .gitignore carry the new engine surface.
+created: 2026-11-02T16:32:25Z
+updated: 2026-11-02T16:38:45Z
+task: task-t0085

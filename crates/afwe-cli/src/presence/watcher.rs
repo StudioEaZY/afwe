@@ -7,30 +7,35 @@ use afwe_core::project_registry::ProjectRegistry;
 
 pub struct PresenceWatcher;
 
+fn process_alive(pid: u64) -> bool {
+    #[cfg(target_os = "windows")]
+    {
+        let out = std::process::Command::new("powershell")
+            .args(["-NoProfile", "-Command", &format!("Get-Process -Id {} -ErrorAction SilentlyContinue", pid)])
+            .output();
+        matches!(out, Ok(o) if o.status.success() && !o.stdout.is_empty())
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        unsafe { libc::kill(pid as libc::pid_t, 0) == 0 }
+    }
+}
+
 impl PresenceWatcher {
-    /// Ensure the headless presence watcher background daemon is running
-    pub fn ensure_watcher_running(project_root: &Path) {
+    /// Ensure the headless presence watcher background daemon is running.
+    /// Returns an error when it could not be spawned or exited immediately, so auto-start is
+    /// observable instead of silently failing.
+    pub fn ensure_watcher_running(project_root: &Path) -> Result<()> {
+        if std::env::var_os("AFWE_NO_AUTOSTART").is_some() {
+            return Ok(());
+        }
         let watcher_state = project_root.join(".afwe").join("state").join("presence_watcher.json");
         if watcher_state.exists() {
             if let Ok(content) = std::fs::read_to_string(&watcher_state) {
                 if let Ok(val) = serde_json::from_str::<serde_json::Value>(&content) {
                     if let Some(pid) = val.get("pid").and_then(|p| p.as_u64()) {
-                        #[cfg(target_os = "windows")]
-                        {
-                            let out = std::process::Command::new("powershell")
-                                .args(["-NoProfile", "-Command", &format!("Get-Process -Id {} -ErrorAction SilentlyContinue", pid)])
-                                .output();
-                            if let Ok(o) = out {
-                                if o.status.success() && !o.stdout.is_empty() {
-                                    return;
-                                }
-                            }
-                        }
-                        #[cfg(not(target_os = "windows"))]
-                        {
-                            if unsafe { libc::kill(pid as libc::pid_t, 0) } == 0 {
-                                return;
-                            }
+                        if process_alive(pid) {
+                            return Ok(());
                         }
                     }
                 }
@@ -45,26 +50,28 @@ impl PresenceWatcher {
             }
         }
 
-        // Spawn detached presence watcher daemon
-        if let Ok(exe) = std::env::current_exe() {
-            let child = std::process::Command::new(exe)
-                .arg("presence")
-                .arg("run")
-                .current_dir(project_root)
-                .stdin(std::process::Stdio::null())
-                .stdout(std::process::Stdio::null())
-                .stderr(std::process::Stdio::null())
-                .spawn();
+        let exe = std::env::current_exe()?;
+        let mut child = std::process::Command::new(exe)
+            .arg("presence")
+            .arg("run")
+            .current_dir(project_root)
+            .stdin(std::process::Stdio::null())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()?;
 
-            if let Ok(c) = child {
-                let _ = std::fs::create_dir_all(project_root.join(".afwe").join("state"));
-                let json_data = serde_json::json!({
-                    "pid": c.id(),
-                    "started_at": afwe_core::util::now()
-                });
-                let _ = std::fs::write(&watcher_state, json_data.to_string());
-            }
+        let _ = std::fs::create_dir_all(project_root.join(".afwe").join("state"));
+        let json_data = serde_json::json!({
+            "pid": child.id(),
+            "started_at": afwe_core::util::now()
+        });
+        let _ = std::fs::write(&watcher_state, json_data.to_string());
+
+        std::thread::sleep(Duration::from_millis(300));
+        if let Ok(Some(status)) = child.try_wait() {
+            return Err(anyhow::anyhow!("presence watcher exited immediately ({status})"));
         }
+        Ok(())
     }
 
     /// Run the headless presence loop, monitoring all registered projects

@@ -1,0 +1,34 @@
+{
+  "intents": [
+    {
+      "id": "client-scaffold-current",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Ship the new engine surface in the generated client",
+      "statement": "afwe init writes a client README and .gitignore that name the engine ledger, snapshots, rewind receipts and backups, and embeds the current TUTORIAL, SPEC, ubiquitous language and skill with ledger/snapshot/rewind sections."
+    },
+    {
+      "id": "autostart-all-entry-points",
+      "action": "create",
+      "targets": ["Afwe"],
+      "title": "Start Studio and watcher from every turn begin",
+      "statement": "CLI turn begin, raw afwe call turn.begin and MCP afwe_turn_begin all call the same deterministic autostart path; no model decision is involved."
+    },
+    {
+      "id": "autostart-observable",
+      "action": "create",
+      "targets": ["Afwe"],
+      "title": "Make autostart observable and project-scoped",
+      "statement": "Studio health reports its project root, so a daemon for another project is reported instead of silently reused. Spawn or readiness failures are printed and logged as studio_autostart_failed or watcher_autostart_failed, and AFWE_NO_AUTOSTART disables both."
+    },
+    {
+      "id": "client-scaffold-test",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Test the generated scaffold",
+      "statement": "A unit test generates a client and asserts the README, TUTORIAL, SPEC, ubiquitous language, skill and .gitignore carry the new engine surface."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

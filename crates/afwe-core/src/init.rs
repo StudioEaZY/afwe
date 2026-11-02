@@ -23,19 +23,30 @@ The engine that reads and writes it is replaceable.
 - `intents/*.yaml` — living intents: the merged statement of what is wanted, with its history and its raw prompts.
 - `pins/*.yaml` — human-locked decisions and intentional bugs. The only part a human must lock.
 - `checks/*.yaml` — what the gate must pass: shell commands or claims, with trust and authorship.
-- `turns/tNNNN.yaml` — the ledger: one prompt per turn, its gate outcome and what it touched.
+- `turns/tNNNN.yaml` — the projection of one prompt per turn, its gate outcome and what it touched.
 - `workflows/`, `abstractions/`, `contracts/` — node graphs (legacy), lenses, contract steps.
 - `log/changes.jsonl` — append-only change log.
 
+The authoritative record is the **engine ledger** at `refs/afwe/ledger/<project_id>`; `.afwe/turns/` is
+a projection that `afwe repair` regenerates from it. Snapshots are local parentless commits under
+`refs/afwe/snapshots/<project_id>/`, and rewind receipts are advisory records in `state/rewind.json`.
+
 ## Derived (rebuildable, never committed)
 
-- `index/` and `state/` — code model, index, drift, board, proposals, baselines. `afwe sync` rebuilds them.
+- `index/`, `state/` and `backups/` — code model, index, drift, board, proposals, baselines, snapshot
+  hashes, rewind receipts and local repair backups. `afwe sync` rebuilds the derived graph; `afwe
+  repair` regenerates `turns/` from the ledger.
 
 ## The turn protocol
 
 `afwe turn begin "<prompt>"` → briefing · `afwe turn assume <turn> --file <json>` → intents and claims ·
 `afwe turn commit <turn>` → gate, then commit (`AFWE-Turn:` trailer), stage, or REDO.
-History: `afwe timeline`, `afwe timeline losses`, `afwe timeline restore <feature>`.
+
+`turn begin` deterministically starts the Studio daemon (port 4242) and the presence watcher; a
+rewind receipt, if any, is carried in the briefing as `rewind_receipts` / `rewind_notice`.
+
+History and recovery: `afwe timeline`, `afwe timeline losses`, `afwe timeline restore <feature>`,
+`afwe ledger show|repair|push|fetch`, `afwe snapshot list|take`, `afwe rewind list|check`.
 
 Read `.afwe/docs/SPEC.md` for formats, `.afwe/docs/TUTORIAL.md` for the developer guide, and `.afwe/docs/UBIQUITOUS_LANGUAGE.md` for domain terminology.
 "#;
@@ -83,7 +94,7 @@ pub fn init(project_root: &Path, opts: InitOptions) -> Result<Store> {
     store.write_text("docs/UBIQUITOUS_LANGUAGE.md", include_str!("../../../docs/UBIQUITOUS_LANGUAGE.md"))?;
     store.write_text("docs/UBIQUITOUS_LANGUAGE.html", include_str!("../../../docs/UBIQUITOUS_LANGUAGE.html"))?;
     store.write_text("README.md", AFWE_README)?;
-    store.write_text(".gitignore", "# derived state is reproducible (rebuilt by `afwe sync`); the rest of .afwe/ is the product and belongs in git\nindex/\nstate/\n")?;
+    store.write_text(".gitignore", "# derived state is reproducible (rebuilt by `afwe sync`); the rest of .afwe/ is the product and belongs in git\nindex/\nstate/\nbackups/\n")?;
     let engine = Engine { store: store.clone() };
     engine.log("human", "init", format!("Initialised .afwe for `{name}`"), None)?;
     Ok(store)
@@ -167,4 +178,28 @@ fn humanise(s: &str) -> String {
         }
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn generated_client_carries_the_ledger_snapshot_and_rewind_scaffold() {
+        let dir = std::env::temp_dir().join(format!("afwe-client-scaffold-{}", crate::util::short_id("t")));
+        let _ = std::fs::remove_dir_all(&dir);
+        let store = init(
+            &dir,
+            InitOptions { name: Some("scaffold".into()), description: None, root: None, force: true },
+        )
+        .unwrap();
+        let read = |rel: &str| store.read_text(rel).unwrap().unwrap_or_default();
+        assert!(read("README.md").contains("engine ledger"), "{}", read("README.md"));
+        assert!(read("docs/TUTORIAL.md").contains("Rewind Classification"));
+        assert!(read("docs/SPEC.md").contains("Engine Ledger"));
+        assert!(read("docs/UBIQUITOUS_LANGUAGE.md").contains("Snapshot Ref"));
+        assert!(read("skills/afwe/SKILL.md").contains("Rewind Receipts"));
+        assert!(read(".gitignore").contains("backups/"));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 }

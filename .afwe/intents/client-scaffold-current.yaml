@@ -1,0 +1,18 @@
+id: client-scaffold-current
+title: Ship the new engine surface in the generated client
+statement: afwe init writes a client README and .gitignore that name the engine ledger, snapshots, rewind receipts and backups, and embeds the current TUTORIAL, SPEC, ubiquitous language and skill with ledger/snapshot/rewind sections.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0085
+- t0086
+history:
+- turn: t0085
+  ts: 2026-11-02T16:32:25Z
+  statement: afwe init writes a client README and .gitignore that name the engine ledger, snapshots, rewind receipts and backups, and embeds the current TUTORIAL, SPEC, ubiquitous language and skill with ledger/snapshot/rewind sections.
+created: 2026-11-02T16:32:25Z
+updated: 2026-11-02T16:38:45Z
+task: task-t0085
