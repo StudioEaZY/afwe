@@ -1,0 +1,17 @@
+id: rewind-terminology
+title: Register the rewind vocabulary
+statement: Add terminology records for a dormant check, a rewind receipt and the expected tree, each with a not-to-be-confused-with note, then recompile the ubiquitous language dictionary.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0076
+history:
+- turn: t0076
+  ts: 2026-11-02T01:35:17Z
+  statement: Add terminology records for a dormant check, a rewind receipt and the expected tree, each with a not-to-be-confused-with note, then recompile the ubiquitous language dictionary.
+created: 2026-11-02T01:35:17Z
+updated: 2026-11-02T01:35:17Z
+task: task-t0076

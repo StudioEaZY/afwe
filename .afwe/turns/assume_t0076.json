@@ -1,0 +1,33 @@
+{
+  "intents": [
+    {
+      "id": "shadow-ledger-plan-doc",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Write the shadow ledger plan as a proposed decision record",
+      "statement": "Add .afwe/memory/decisions/shadow-ledger-plan.md as status proposed, covering the ledger schema, manual-mode lifecycle, record compaction, expected tree E for P1, API surface, migration, failure behaviour and per-phase acceptance criteria."
+    },
+    {
+      "id": "rewind-terminology",
+      "action": "create",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Register the rewind vocabulary",
+      "statement": "Add terminology records for a dormant check, a rewind receipt and the expected tree, each with a not-to-be-confused-with note, then recompile the ubiquitous language dictionary."
+    },
+    {
+      "id": "manual-mode-first-class",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Make ready turns first-class in the plan",
+      "statement": "Record that turn commit ends ready in engineer mode, that rewind detection must cover ready turns, and that promotion to committed is an event plus a projection rewrite rather than a silent status edit."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

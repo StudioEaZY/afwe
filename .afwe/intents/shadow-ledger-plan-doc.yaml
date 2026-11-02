@@ -1,0 +1,17 @@
+id: shadow-ledger-plan-doc
+title: Write the shadow ledger plan as a proposed decision record
+statement: Add .afwe/memory/decisions/shadow-ledger-plan.md as status proposed, covering the ledger schema, manual-mode lifecycle, record compaction, expected tree E for P1, API surface, migration, failure behaviour and per-phase acceptance criteria.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0076
+history:
+- turn: t0076
+  ts: 2026-11-02T01:35:17Z
+  statement: Add .afwe/memory/decisions/shadow-ledger-plan.md as status proposed, covering the ledger schema, manual-mode lifecycle, record compaction, expected tree E for P1, API surface, migration, failure behaviour and per-phase acceptance criteria.
+created: 2026-11-02T01:35:17Z
+updated: 2026-11-02T01:35:17Z
+task: task-t0076
