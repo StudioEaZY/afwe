@@ -1,0 +1,17 @@
+id: rewind-proposals
+title: Restore-forward proposals for REWOUND and COMPOUND receipts
+statement: When a rewind is classified, generate an advisory proposal to restore-forward from the matched snapshot (materializing a forward commit with AFWE-Rewind-Of) or accept the rewind.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0084
+history:
+- turn: t0084
+  ts: 2026-11-02T15:37:57Z
+  statement: When a rewind is classified, generate an advisory proposal to restore-forward from the matched snapshot (materializing a forward commit with AFWE-Rewind-Of) or accept the rewind.
+created: 2026-11-02T15:37:57Z
+updated: 2026-11-02T16:03:32Z
+task: task-t0084

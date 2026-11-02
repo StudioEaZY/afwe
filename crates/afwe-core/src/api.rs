@@ -459,8 +459,21 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let turn = s(&p, "turn");
             j(crate::snapshots::create(engine, &phase, turn.as_deref())?)
         }
+        "snapshot.prune" => {
+            let keep = p.get("keep").and_then(|v| v.as_u64()).map(|n| n as usize).unwrap_or(10);
+            crate::snapshots::prune(engine, keep)
+        }
         "rewind.list" => crate::rewind::list(engine),
         "rewind.classify" => j(crate::rewind::classify(engine)?),
+        "rewind.resolve" => {
+            let id = req(&p, "id")?;
+            let action = s(&p, "action").unwrap_or_else(|| "materialize".to_string());
+            crate::rewind::resolve(engine, &id, &action, &origin(&p, default_origin))
+        }
+        "rewind.dismiss" => {
+            let id = req(&p, "id")?;
+            crate::rewind::resolve(engine, &id, "dismiss", &origin(&p, default_origin))
+        }
         "turn.get" => j(turn::get(engine, &req(&p, "turn")?)?),
         "turn.list" => j(turn::list(engine)?),
         "gate" => {
@@ -1267,8 +1280,11 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_snapshot_list", op: "snapshot.list", description: "List local parentless working-tree snapshots for this project: id, commit, tree, turn, phase, file count and exclusions.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_snapshot_show", op: "snapshot.show", description: "Show one local snapshot by id or unique prefix.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
         ToolSpec { name: "afwe_snapshot_take", op: "snapshot.take", description: "Take a local parentless snapshot now. Excludes engine-owned state, nested repositories, LFS paths and oversized files.", schema: obj(json!({"phase": {"type": "string"}, "turn": {"type": "string"}}), &[]) },
+        ToolSpec { name: "afwe_snapshot_prune", op: "snapshot.prune", description: "Prune older local parentless snapshots beyond retention limit `keep`, cleaning up references and loose git objects.", schema: obj(json!({"keep": {"type": "integer"}}), &[]) },
         ToolSpec { name: "afwe_rewind_list", op: "rewind.list", description: "List recorded rewind receipts: verdict, matched snapshot, changed paths and turns possibly undone.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_rewind_classify", op: "rewind.classify", description: "Compare the current tree with the ledger expected tree and classify it as REWOUND, COMPOUND or UNATTRIBUTED using local snapshot history. Advisory only: nothing is restored or blocked.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_rewind_resolve", op: "rewind.resolve", description: "Resolve an advisory rewind receipt: 'materialize' creates a forward revert commit with trailer `AFWE-Rewind-Of`, 'dismiss' acknowledges and removes it from the queue.", schema: obj(json!({"id": {"type": "string"}, "action": {"type": "string"}}), &["id"]) },
+        ToolSpec { name: "afwe_rewind_dismiss", op: "rewind.dismiss", description: "Acknowledge and dismiss an advisory rewind receipt.", schema: obj(json!({"id": {"type": "string"}}), &["id"]) },
         ToolSpec { name: "afwe_turn_get", op: "turn.get", description: "Read one turn: prompt, intents, assumptions, checks, strength, confidence and gate reasons.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_list", op: "turn.list", description: "List all turns (ledger).", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_intent_list", op: "intent.list", description: "Living intents: merged statements derived from the raw prompts, with history and the turns they came from.", schema: obj(json!({}), &[]) },

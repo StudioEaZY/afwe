@@ -89,5 +89,30 @@ fn file_revert_is_rewound_and_the_next_commit_succeeds() {
     let typed: Vec<afwe_core::rewind::RewindReceipt> = afwe_core::rewind::receipts(&engine).unwrap();
     assert_eq!(typed.len(), 1);
     assert_eq!(typed[0].verdict, "REWOUND");
+
+    // Advisory action queue integration
+    let queue = c(&engine, "queue", json!({}));
+    let items = queue["items"].as_array().expect("queue items");
+    let rewind_item = items.iter().find(|i| i["kind"] == "external_rewind");
+    assert!(rewind_item.is_some(), "rewind receipt must surface in action queue: {queue}");
+    let receipt_id = typed[0].id.clone();
+
+    // Snapshot retention pruning test
+    c(&engine, "snapshot.take", json!({"phase": "manual"}));
+    c(&engine, "snapshot.take", json!({"phase": "manual"}));
+    let before_prune = c(&engine, "snapshot.list", json!({}));
+    let snap_count = before_prune.as_array().map(|a| a.len()).unwrap_or(0);
+    assert!(snap_count >= 3);
+    let prune_res = c(&engine, "snapshot.prune", json!({"keep": 2}));
+    assert_eq!(prune_res["remaining"], 2);
+    let after_prune = c(&engine, "snapshot.list", json!({}));
+    assert_eq!(after_prune.as_array().map(|a| a.len()).unwrap_or(0), 2);
+
+    // Resolve rewind receipt by dismissal
+    let dismissed = c(&engine, "rewind.resolve", json!({"id": receipt_id, "action": "dismiss"}));
+    assert_eq!(dismissed["status"], "dismissed");
+    let listed_after = c(&engine, "rewind.list", json!({}));
+    assert_eq!(listed_after["count"], 0);
+
     let _ = std::fs::remove_dir_all(&dir);
 }

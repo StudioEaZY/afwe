@@ -115,6 +115,7 @@ fn render_dashboard(engine: &mut Engine) -> Result<()> {
                 afwe_core::queue::QueueItemKind::ToleratedDriftExpired => ("\x1B[33m", "EXPIRED DRIFT"),
                 afwe_core::queue::QueueItemKind::StaleNodeLease => ("\x1B[35m", "STALE LEASE"),
                 afwe_core::queue::QueueItemKind::Unattributed => ("\x1B[31m", "UNATTRIBUTED"),
+                afwe_core::queue::QueueItemKind::ExternalRewind => ("\x1B[35m", "REWIND"),
             };
             let title_trunc: String = item.title.chars().take(22).collect();
             let actions = item.actions.iter().map(|a| a.label.as_str()).collect::<Vec<_>>().join(", ");

@@ -1,0 +1,17 @@
+id: queue-rewind-integration
+title: Advisory Action Queue integration for rewind receipts
+statement: 'Expose rewind receipts in the 6-state Action Queue as non-blocking advisory items with actions: restore forward, commit as revert, or dismiss.'
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0084
+history:
+- turn: t0084
+  ts: 2026-11-02T15:37:57Z
+  statement: 'Expose rewind receipts in the 6-state Action Queue as non-blocking advisory items with actions: restore forward, commit as revert, or dismiss.'
+created: 2026-11-02T15:37:57Z
+updated: 2026-11-02T16:03:32Z
+task: task-t0084

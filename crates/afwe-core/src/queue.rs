@@ -28,6 +28,7 @@ pub enum QueueItemKind {
     ToleratedDriftExpired,
     StaleNodeLease,
     Unattributed,
+    ExternalRewind,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -70,6 +71,7 @@ pub struct ActionQueueSummary {
     pub expired_drift_count: usize,
     pub stale_leases_count: usize,
     pub unattributed_count: usize,
+    pub rewind_receipts_count: usize,
     pub total_actionable: usize,
 }
 
@@ -372,6 +374,35 @@ pub fn get_action_queue(engine: &Engine, delegation: Option<&PrompterDelegation>
         });
     }
 
+    // 5. Recorded Rewind Receipts
+    if let Ok(receipts) = crate::rewind::receipts(engine) {
+        for r in receipts {
+            let badge = if r.exact { QueueBadge::Amber } else { QueueBadge::Blue };
+            items.push(QueueItem {
+                id: format!("rewind-{}", r.id),
+                kind: QueueItemKind::ExternalRewind,
+                badge,
+                title: format!("Rewind Receipt `{}` ({})", r.id, r.verdict),
+                detail: format!("{}: {} path(s) changed, {} turn(s) undone", r.note, r.paths.len(), r.turns_undone.len()),
+                blast_radius: BlastRadius::Low,
+                requires_human: false,
+                pin_conflict: false,
+                actions: vec![
+                    QueueAction {
+                        label: "Materialize Revert Commit".into(),
+                        op: format!("rewind.resolve:{}", r.id),
+                        requires_human: false,
+                    },
+                    QueueAction {
+                        label: "Dismiss".into(),
+                        op: format!("rewind.dismiss:{}", r.id),
+                        requires_human: false,
+                    },
+                ],
+            });
+        }
+    }
+
     // Compute summary counts
     let mut staged_count = 0;
     let mut paused_count = 0;
@@ -381,6 +412,7 @@ pub fn get_action_queue(engine: &Engine, delegation: Option<&PrompterDelegation>
     let mut expired_drift_count = 0;
     let mut stale_leases_count = 0;
     let mut unattributed_count = 0;
+    let mut rewind_receipts_count = 0;
 
     for item in &items {
         match item.kind {
@@ -392,10 +424,11 @@ pub fn get_action_queue(engine: &Engine, delegation: Option<&PrompterDelegation>
             QueueItemKind::ToleratedDriftExpired => expired_drift_count += 1,
             QueueItemKind::StaleNodeLease => stale_leases_count += 1,
             QueueItemKind::Unattributed => unattributed_count += 1,
+            QueueItemKind::ExternalRewind => rewind_receipts_count += 1,
         }
     }
 
-    let total_actionable = staged_count + paused_count + ghost_redo_count + expired_drift_count + unattributed_count;
+    let total_actionable = staged_count + paused_count + ghost_redo_count + expired_drift_count + unattributed_count + rewind_receipts_count;
 
     Ok(ActionQueue {
         summary: ActionQueueSummary {
@@ -407,6 +440,7 @@ pub fn get_action_queue(engine: &Engine, delegation: Option<&PrompterDelegation>
             expired_drift_count,
             stale_leases_count,
             unattributed_count,
+            rewind_receipts_count,
             total_actionable,
         },
         items,

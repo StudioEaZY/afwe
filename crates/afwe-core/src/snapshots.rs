@@ -537,6 +537,53 @@ pub fn show(engine: &Engine, id: &str) -> Result<Option<Value>> {
         .map(|snap| json!(snap)))
 }
 
+/// Prune snapshots according to retention limit `keep_k`, deleting older refs and running git prune.
+pub fn prune(engine: &Engine, keep_k: usize) -> Result<Value> {
+    let root = engine.store.project_root.as_path();
+    let manifest = engine.store.manifest()?;
+    let Some(project) = manifest.project.id.filter(|id| !id.is_empty()) else {
+        return Ok(json!({ "pruned": 0, "remaining": 0 }));
+    };
+    let all = list(engine)?;
+    if all.len() <= keep_k {
+        return Ok(json!({
+            "pruned": 0,
+            "remaining": all.len(),
+            "retained": all.iter().map(|s| s.id.clone()).collect::<Vec<_>>()
+        }));
+    }
+
+    let to_prune = &all[keep_k..];
+    let mut pruned_ids = Vec::new();
+    for snap in to_prune {
+        let refname = format!("{REF_PREFIX}{project}/{}", snap.id);
+        let _ = git_ok(root, &["update-ref", "-d", &refname]);
+        let _ = engine.store.remove(&format!("state/snapshots/{}.json", snap.id));
+        let _ = engine.store.remove(&format!("state/snapshots/{}.hashes.json", snap.id));
+        pruned_ids.push(snap.id.clone());
+    }
+
+    // Git object reclaim and ref packing
+    let _ = git(root, &["pack-refs", "--all", "--prune"]);
+    let _ = git(root, &["prune", "--expire=now"]);
+
+    let _ = ledger::append(
+        engine,
+        "snapshots_pruned",
+        json!({
+            "pruned_count": pruned_ids.len(),
+            "pruned_ids": pruned_ids,
+            "keep_k": keep_k,
+        }),
+    );
+
+    Ok(json!({
+        "pruned": pruned_ids.len(),
+        "pruned_ids": pruned_ids,
+        "remaining": keep_k,
+    }))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

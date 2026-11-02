@@ -283,6 +283,77 @@ pub fn list(engine: &Engine) -> Result<Value> {
     }))
 }
 
+/// Resolve/materialize a rewind receipt:
+/// - "materialize": Commit a forward revert with trailer `AFWE-Rewind-Of: <turns>`
+/// - "dismiss": Remove/acknowledge the receipt from the active list
+pub fn resolve(engine: &Engine, receipt_id: &str, action: &str, origin: &str) -> Result<Value> {
+    let mut current_state = state(engine);
+    let receipt = current_state
+        .receipts
+        .iter()
+        .find(|r| r.id == receipt_id)
+        .cloned()
+        .ok_or_else(|| anyhow::anyhow!("rewind receipt `{receipt_id}` not found"))?;
+
+    match action {
+        "dismiss" | "acknowledge" => {
+            current_state.receipts.retain(|r| r.id != receipt_id);
+            let _ = engine.store.write_json(STATE_PATH, &current_state);
+            let _ = ledger::append(
+                engine,
+                "rewind_dismissed",
+                json!({ "receipt_id": receipt_id, "action": "dismissed" }),
+            );
+            Ok(json!({
+                "id": receipt_id,
+                "status": "dismissed",
+                "receipt": receipt,
+            }))
+        }
+        "materialize" => {
+            let root = engine.store.project_root.as_path();
+            let vcs = crate::vcs::open("git");
+            let head = vcs.head(root).ok_or_else(|| anyhow::anyhow!("no HEAD found in git repository"))?;
+
+            let undone_str = if receipt.turns_undone.is_empty() {
+                receipt.from_turn.clone().unwrap_or_else(|| "unknown".into())
+            } else {
+                receipt.turns_undone.join(", ")
+            };
+
+            let paths: Vec<String> = receipt.paths.iter().map(|p| p.path.clone()).collect();
+            let summary = format!("Revert changes from {undone_str} (worktree rewind)");
+            let msg = format!(
+                "{summary}\n\nAFWE-Rewind-Of: {undone_str}\nAFWE-Rewind-Receipt: {receipt_id}\nAFWE-Strength: deterministic\nAFWE-Confidence: 1.00"
+            );
+
+            let commit_sha = vcs.commit_isolated(root, &paths, &msg, Some(&head))?;
+
+            current_state.receipts.retain(|r| r.id != receipt_id);
+            let _ = engine.store.write_json(STATE_PATH, &current_state);
+
+            let res = json!({
+                "id": receipt_id,
+                "status": "materialized",
+                "commit": commit_sha,
+                "turns_undone": receipt.turns_undone,
+                "reverted_paths": paths,
+            });
+
+            let _ = ledger::append(engine, "rewind_materialized", res.clone());
+            engine.log(
+                origin,
+                "rewind_materialize",
+                format!("Materialized forward revert for {undone_str} ({receipt_id})"),
+                Some(res.clone()),
+            )?;
+
+            Ok(res)
+        }
+        other => Err(anyhow::anyhow!("unsupported rewind action `{other}` (expected 'materialize' or 'dismiss')")),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

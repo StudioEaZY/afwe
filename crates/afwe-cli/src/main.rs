@@ -356,6 +356,11 @@ enum SnapshotCmd {
         #[arg(long)]
         turn: Option<String>,
     },
+    /// Prune older snapshots beyond retention limit
+    Prune {
+        #[arg(long, default_value_t = 10)]
+        keep: usize,
+    },
 }
 
 #[derive(Subcommand)]
@@ -364,6 +369,14 @@ enum RewindCmd {
     List,
     /// Classify the current tree against the expected tree now
     Check,
+    /// Resolve an advisory rewind receipt (materialize or dismiss)
+    Resolve {
+        id: String,
+        #[arg(long, default_value = "materialize")]
+        action: String,
+    },
+    /// Dismiss an advisory rewind receipt
+    Dismiss { id: String },
 }
 
 #[derive(Subcommand)]
@@ -2047,6 +2060,9 @@ fn run(cli: Cli) -> Result<i32> {
                 SnapshotCmd::Take { phase, turn } => {
                     api::call(&engine, "snapshot.take", json!({"phase": phase, "turn": turn}), &origin)?
                 }
+                SnapshotCmd::Prune { keep } => {
+                    api::call(&engine, "snapshot.prune", json!({"keep": keep}), &origin)?
+                }
             };
             println!("{}", serde_json::to_string_pretty(&v)?);
             Ok(0)
@@ -2056,6 +2072,12 @@ fn run(cli: Cli) -> Result<i32> {
             let v = match cmd {
                 RewindCmd::List => api::call(&engine, "rewind.list", json!({}), &origin)?,
                 RewindCmd::Check => api::call(&engine, "rewind.classify", json!({}), &origin)?,
+                RewindCmd::Resolve { id, action } => {
+                    api::call(&engine, "rewind.resolve", json!({"id": id, "action": action}), &origin)?
+                }
+                RewindCmd::Dismiss { id } => {
+                    api::call(&engine, "rewind.dismiss", json!({"id": id}), &origin)?
+                }
             };
             println!("{}", serde_json::to_string_pretty(&v)?);
             Ok(0)

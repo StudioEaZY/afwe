@@ -1,0 +1,17 @@
+id: snapshot-retention-pruning
+title: Snapshot retention and pruning
+statement: Implement snapshot retention policy K and pruning command (update-ref -d and git prune --expire=now) to reclaim git objects while packing refs.
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0084
+history:
+- turn: t0084
+  ts: 2026-11-02T15:37:57Z
+  statement: Implement snapshot retention policy K and pruning command (update-ref -d and git prune --expire=now) to reclaim git objects while packing refs.
+created: 2026-11-02T15:37:57Z
+updated: 2026-11-02T16:03:32Z
+task: task-t0084
