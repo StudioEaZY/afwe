@@ -1,0 +1,33 @@
+{
+  "intents": [
+    {
+      "id": "promote-manual-commits",
+      "action": "create",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Promote manually committed turns",
+      "statement": "A ready turn whose trailer resolves to a reachable commit becomes committed with its commit_sha and committed_at filled, and a turn_committed_manual ledger event is appended. The turn record is a projection; the ledger is the record."
+    },
+    {
+      "id": "promotion-is-idempotent",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Promotion runs once and never guesses",
+      "statement": "Only ready turns with no recorded commit are candidates. A turn with no matching trailer stays untouched, and a second run promotes nothing. Promotion happens before reconcile so a freshly promoted turn is evaluated as committed."
+    },
+    {
+      "id": "report-promotions-in-briefing",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Tell the agent what was promoted",
+      "statement": "turn.begin reports the promoted turns in its briefing so the agent sees that prior manual commits have been adopted into the ledger."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

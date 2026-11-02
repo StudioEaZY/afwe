@@ -15,7 +15,7 @@ use crate::model::*;
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -182,6 +182,124 @@ fn baseline_mismatch(engine: &Engine, turn: &Turn) -> Option<String> {
     } else {
         None
     }
+}
+
+/// A `ready` turn adopted into the ledger because a manual git commit carries its trailer.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Promotion {
+    pub turn_id: String,
+    pub commit_sha: String,
+}
+
+/// Turn identity -> newest commit that carries it, across every local ref.
+fn commit_index(root: &Path) -> Option<BTreeMap<String, String>> {
+    let out = std::process::Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["log", "--all", "--format=%H%x1f%B%x1e"])
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let text = String::from_utf8_lossy(&out.stdout);
+    let mut index: BTreeMap<String, String> = BTreeMap::new();
+    for record in text.split('\x1e') {
+        let mut fields = record.splitn(2, '\x1f');
+        let sha = fields.next().unwrap_or("").trim();
+        let body = fields.next().unwrap_or("");
+        if sha.is_empty() {
+            continue;
+        }
+        for line in body.lines() {
+            let line = line.trim();
+            if let Some(rest) = line.strip_prefix("AFWE-Turn:") {
+                let value = rest.trim();
+                index.entry(value.to_string()).or_insert_with(|| sha.to_string());
+                if let Some(alias) = value.split_whitespace().next() {
+                    index.entry(alias.to_string()).or_insert_with(|| sha.to_string());
+                }
+            } else if let Some(rest) = line.strip_prefix("AFWE-Turn-Hash:") {
+                index.entry(rest.trim().to_string()).or_insert_with(|| sha.to_string());
+            }
+        }
+    }
+    Some(index)
+}
+
+/// Engineer mode ends `turn commit` at `ready` and the human commits with git. Adopt those turns
+/// once a commit carrying their trailer exists, so rewind detection can see them. Idempotent: a
+/// turn with a recorded commit, or with no matching trailer, is left alone.
+pub fn promote_manual_commits(engine: &Engine) -> Result<Vec<Promotion>> {
+    let root = engine.store.project_root.as_path();
+    if !root.join(".git").exists() {
+        return Ok(vec![]);
+    }
+
+    let candidates: Vec<Turn> = engine
+        .store
+        .turns()?
+        .into_iter()
+        .filter(|t| t.status == "ready")
+        .filter(|t| t.commit_sha.as_deref().map(str::is_empty).unwrap_or(true))
+        .collect();
+    if candidates.is_empty() {
+        return Ok(vec![]);
+    }
+
+    let Some(index) = commit_index(root) else {
+        return Ok(vec![]);
+    };
+
+    let mut promoted = Vec::new();
+    let mut seen = BTreeSet::new();
+    for mut turn in candidates {
+        // save_turn currently writes a record under both its turn_hash and its alias, so turns()
+        // returns the same turn twice. Promotion must run once per turn.
+        if !seen.insert(turn.id.clone()) {
+            continue;
+        }
+        let sha = index
+            .get(&turn.id)
+            .or_else(|| turn.alias.as_deref().and_then(|alias| index.get(alias)))
+            .or_else(|| {
+                if turn.turn_hash.is_empty() {
+                    None
+                } else {
+                    index.get(&turn.turn_hash)
+                }
+            })
+            .cloned();
+        let Some(sha) = sha else {
+            continue;
+        };
+
+        let label = turn.alias.clone().unwrap_or_else(|| turn.id.clone());
+        turn.status = "committed".into();
+        turn.commit_sha = Some(sha.clone());
+        turn.committed_at = Some(crate::util::now());
+        engine.store.save_turn(&turn)?;
+
+        let _ = crate::ledger::append(
+            engine,
+            "turn_committed_manual",
+            json!({
+                "turn": label,
+                "turn_hash": &turn.turn_hash,
+                "commit_sha": &sha,
+            }),
+        );
+        engine.log(
+            "afwe:reconcile",
+            "turn_committed_manual",
+            format!("{label} was committed with git; adopted into the ledger at {sha}"),
+            Some(json!({"turn": label, "commit_sha": sha})),
+        )?;
+
+        promoted.push(Promotion { turn_id: label, commit_sha: sha });
+    }
+
+    Ok(promoted)
 }
 
 pub fn reconcile(engine: &Engine) -> Result<Vec<RollbackEvent>> {
@@ -455,6 +573,74 @@ mod tests {
         assert_eq!(res["pruned_checks"], 1);
         assert_eq!(engine.store.checks().unwrap().len(), 0);
 
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    fn git_in(dir: &std::path::Path, args: &[&str]) {
+        let status = std::process::Command::new("git")
+            .arg("-C")
+            .arg(dir)
+            .args(args)
+            .status()
+            .unwrap();
+        assert!(status.success(), "git {args:?} failed");
+    }
+
+    fn ready_repo(name: &str, message: &str) -> (std::path::PathBuf, Engine) {
+        let dir = std::env::temp_dir().join(format!("afwe-{name}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        git_in(&dir, &["init", "-q"]);
+        std::fs::write(dir.join("a.txt"), "x").unwrap();
+        git_in(&dir, &["add", "a.txt"]);
+        git_in(
+            &dir,
+            &["-c", "user.name=t", "-c", "user.email=t@example.com", "commit", "-q", "-m", message],
+        );
+        let store = init(
+            &dir,
+            InitOptions { name: Some(name.into()), description: None, root: None, force: true },
+        )
+        .unwrap();
+        (dir, Engine { store })
+    }
+
+    #[test]
+    fn promotes_a_ready_turn_when_git_carries_its_trailer() {
+        let (dir, engine) = ready_repo("promote", "manual commit\n\nAFWE-Turn: t0102");
+        let mut turn = turn_with(None, "turn-p", &[]);
+        turn.id = "t0102".into();
+        turn.alias = Some("t0102".into());
+        turn.status = "ready".into();
+        engine.store.save_turn(&turn).unwrap();
+
+        let promoted = promote_manual_commits(&engine).unwrap();
+        assert_eq!(promoted.len(), 1, "{promoted:?}");
+        assert_eq!(promoted[0].turn_id, "t0102");
+
+        let stored = engine.store.turn("t0102").unwrap().unwrap();
+        assert_eq!(stored.status, "committed");
+        assert!(stored.commit_sha.is_some());
+        assert!(stored.committed_at.is_some());
+
+        assert!(
+            promote_manual_commits(&engine).unwrap().is_empty(),
+            "a second pass must promote nothing"
+        );
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn ready_turn_without_a_trailer_stays_ready() {
+        let (dir, engine) = ready_repo("nopromote", "manual commit with no trailer");
+        let mut turn = turn_with(None, "turn-q", &[]);
+        turn.id = "t0103".into();
+        turn.alias = Some("t0103".into());
+        turn.status = "ready".into();
+        engine.store.save_turn(&turn).unwrap();
+
+        assert!(promote_manual_commits(&engine).unwrap().is_empty());
+        assert_eq!(engine.store.turn("t0103").unwrap().unwrap().status, "ready");
         let _ = std::fs::remove_dir_all(&dir);
     }
 }
