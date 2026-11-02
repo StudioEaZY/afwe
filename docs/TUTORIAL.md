@@ -353,4 +353,30 @@ When code deviates structurally from declared architectural blueprints without a
    - Governed by `policy.drift_tolerate_days` (default 7 days, up to 14 days in `afwe.yaml`).
    - When the toleration period expires, the Action Queue re-surfaces the drift as an **Amber** warning (`ToleratedDriftExpired`) for re-evaluation.
 
+---
+
+## 12. The Engine Ledger, Repair & Transport
+
+The engine keeps an append-only ledger at `refs/afwe/ledger/<project_id>`. It is the record; the
+`.afwe/` folder is a projection that can be regenerated. Every turn writes a compacted record, the
+expected path → blake3 tree, and its baseline in the same ledger commit, so a `git reset --hard`,
+`git stash -u`, or a harness "revert files" no longer erases engine history.
+
+```bash
+afwe ledger show                 # project id, ref, tip, schema, event/turn counts
+afwe ledger bootstrap            # one-time import of an existing .afwe/turns projection
+afwe repair                      # regenerate .afwe/turns from the ledger
+afwe ledger push origin          # only refs/afwe/ledger/<id> travels
+afwe ledger fetch origin         # fast-forward, ahead/behind, or record a fork
+```
+
+- **Bootstrap** imports the tracked projection as `provenance: imported`. It refuses when a ledger
+  already exists, so it can never overwrite one silently.
+- **Repair** rewrites `.afwe/turns` byte for byte from the ledger. Duplicate legacy
+  `turn-<hash>.yaml` files and stale turn files are moved to `.afwe/backups/`, never deleted.
+- **Push / fetch** use an explicit ledger refspec. A fast-forward is adopted; a divergence writes a
+  `forked` event carrying both tips and never merges or rewrites either chain.
+- **Schema** is `ledger_version: 1`. A binary that sees a newer version refuses to read or write
+  rather than partially interpreting the ledger.
+
 

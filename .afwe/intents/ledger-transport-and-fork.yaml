@@ -1,0 +1,18 @@
+id: ledger-transport-and-fork
+title: Move the ledger between clones
+statement: afwe ledger push and fetch use an explicit ledger refspec. A fetch fast-forwards when possible, and a divergence writes a forked event carrying both tips without merging or rewriting either chain. Bootstrap imports the tracked projection once as provenance=imported.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0080
+- t0081
+history:
+- turn: t0080
+  ts: 2026-11-02T11:12:04Z
+  statement: afwe ledger push and fetch use an explicit ledger refspec. A fetch fast-forwards when possible, and a divergence writes a forked event carrying both tips without merging or rewriting either chain. Bootstrap imports the tracked projection once as provenance=imported.
+created: 2026-11-02T11:12:04Z
+updated: 2026-11-02T11:19:47Z
+task: task-t0080

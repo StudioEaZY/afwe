@@ -1,4 +1,9 @@
 id: t0020
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-16T12:37:38Z
 origin: human
 prompt: 'Studio UI overhaul: Scene Outliner, Component Inspector, 4D Timeline Scrubber, and DOTS styling'
@@ -30,7 +35,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: 100% deterministic engine without LLM calls
-status: ready
+status: committed
 touched:
   nodes:
   - studio
@@ -1895,4 +1900,17 @@ gate:
   - 'PARTIAL_LOSS: studio no longer realised by apps/studio/web-dist/assets/index-31t2pd1n.css, apps/studio/web-dist/assets/index-Bsvk8ymg.css, apps/studio/web-dist/assets/index-C0TxAtxn.js, apps/studio/web-dist/assets/index-DOCU9siz.js'
 footer_shown: false
 summary: 'Studio UI overhaul: Scene Outliner, Component Inspector, 4D Timeline Scrubber, and DOTS styling'
+committed_at: 2026-11-02T11:01:31Z
+commit_sha: e6d9ba92ea324a4db62a6d93838acbea11f95606
 turn_token: bafb3ac5f63f7be3
+post_hashes:
+  .afwe/intents/studio-dots-ui-overhaul.yaml: 3ad436fbc5a1f13f
+  apps/studio/src/App.tsx: 31faa8a8f226bcc6
+  apps/studio/src/components/ComponentInspector.tsx: add41142557f3f4d
+  apps/studio/src/components/ContextPanel.tsx: c7a5badbf7fa94c4
+  apps/studio/src/components/GraphView.tsx: 81e761771ba28881
+  apps/studio/src/components/SceneOutliner.tsx: 652ccba03a631771
+  apps/studio/src/components/TreePanel.tsx: 67750d3deee43e7f
+  apps/studio/src/store.ts: ae9e0c6a3333690b
+  apps/studio/src/styles.css: 54a4b341f9852c89
+  apps/studio/web-dist/index.html: 36323b9b6268346a

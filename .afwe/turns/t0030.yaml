@@ -1,4 +1,9 @@
 id: t0030
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-27T05:02:55Z
 origin: human
 prompt: Fix Studio search, hover lineage, passive wheel listener, callout positioning, and remove demo item
@@ -20,7 +25,7 @@ assumptions:
 - id: a1
   text: afwe-core does not import afwe-cli
   status: confirmed
-status: ready
+status: committed
 touched:
   nodes:
   - studio
@@ -1036,7 +1041,21 @@ gate:
   - 'PARTIAL_LOSS: studio no longer realised by apps/studio/web-dist/assets/index-BwbVyRkJ.css'
 footer_shown: false
 summary: Fix search suggestions, passive wheel listeners, hover lineage, callout CSS, and remove demo item from Sidebar
+committed_at: 2026-11-02T11:02:28Z
+commit_sha: a64ef56b645b5f9c9deb2159f469b31cd584126f
 turn_token: 7a4fe68156d71d74
+post_hashes:
+  .afwe/intents-t0030.json: 9a642a54f2b57e7e
+  .afwe/intents/fix-studio-search-and-hover.yaml: 0916bb70956e3e59
+  apps/studio/src/components/ConstellationMap.tsx: 34a8bdbec113a1b5
+  apps/studio/src/components/OverviewPage.tsx: 09fbe4175ba70217
+  apps/studio/src/components/RadialMap.tsx: 788be6e2084152d4
+  apps/studio/src/components/Sidebar.tsx: d7e7c678221370d7
+  apps/studio/src/components/TimelineDualScrubber.tsx: a0a7dca2a0ea1f49
+  apps/studio/src/components/TopBar.tsx: edf41318132b7554
+  apps/studio/src/components/TopologyMap.tsx: 5e6b28adc7e80bb5
+  apps/studio/src/styles.css: 54a4b341f9852c89
+  apps/studio/web-dist/index.html: 36323b9b6268346a
 session_id: sess-cbf30d
 held_out_guides:
 - guide-t0022-a1

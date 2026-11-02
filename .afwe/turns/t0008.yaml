@@ -1,4 +1,9 @@
 id: t0008
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-08T11:51:07Z
 origin: human
 prompt: Document Supported Languages and Extensibility in SPEC.md and sync AFWE-Client
@@ -18,7 +23,7 @@ intents:
   targets:
   - docs/SPEC.md
   title: Document Supported Languages and Extensibility in SPEC.md
-status: ready
+status: committed
 touched:
   files:
   - .afwe/docs/SPEC.md
@@ -225,3 +230,10 @@ gate:
   decision: ready
 footer_shown: false
 summary: Document Tier 1 and Tier 2 supported languages and Tree-Sitter extensibility in SPEC.md
+committed_at: 2026-11-02T11:00:51Z
+commit_sha: bd4f17daecc03886222d3d68e1d9f601e8ee5638
+post_hashes:
+  .afwe/docs/SPEC.md: 3dd0cd82455fa1d8
+  .afwe/intents/language-support-docs.json: 48583082f5eb00c4
+  .afwe/intents/supported-languages-and-extensibility-docs.yaml: 939825ab71f553ea
+  docs/SPEC.md: 8298fa177076a7d5

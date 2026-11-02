@@ -1,4 +1,9 @@
 id: t0016
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-15T10:22:45Z
 origin: human
 prompt: 'Phase 4: Multi-Agent autonomous missions, Git worktrees, and shared node leases'
@@ -36,7 +41,7 @@ overrides:
   reason: 100% deterministic code without LLM model calls in core engine
 - pin: pin-5babbe
   reason: 100% deterministic engine without LLM calls
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -319,4 +324,16 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): 100% deterministic code without LLM model calls in core engine'
 footer_shown: false
 summary: 'Phase 4: Multi-Agent autonomous missions, Git worktrees, and shared node leases'
+committed_at: 2026-11-02T11:01:15Z
+commit_sha: 6b345a80d235093bb84e3af33c0376979b43b3c7
 turn_token: 71dc80e0b62cfabc
+post_hashes:
+  .afwe/intents-t0016.json: cce6aef09b145b24
+  .afwe/intents/missions-and-leases.yaml: 1fb3d8d238bb45fc
+  crates/afwe-cli/src/main.rs: c1b41404270517ee
+  crates/afwe-cli/src/render.rs: 02dbaf795cd23a34
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/lease.rs: 61f22fb2f858d049
+  crates/afwe-core/src/lib.rs: 8fed772b7caf5e13
+  crates/afwe-core/src/mission.rs: b53f1adc181cc98c
+  crates/afwe-core/src/vcs/git.rs: 50a6141766fefd58

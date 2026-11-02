@@ -1,0 +1,48 @@
+{
+  "intents": [
+    {
+      "id": "cumulative-ledger-tree",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Carry the ledger tree forward",
+      "statement": "Every ledger commit carries the previous tree forward and adds one event, so turn records, baselines and the expected tree are readable from the tip instead of only the latest event."
+    },
+    {
+      "id": "record-turn-and-expected",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Record turns and the expected tree",
+      "statement": "Turn begin records the turn, its baseline and E := C; turn ready and turn commit record the updated turn and merge the touched post-hashes into state/expected.json in the same ledger commit."
+    },
+    {
+      "id": "compact-turn-records",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Compact one turn record per turn",
+      "statement": "The projection writes one file per turn. The ledger stores full touched and implements maps every twentieth event and a since/add/remove delta otherwise, and expands the delta when reading."
+    },
+    {
+      "id": "repair-from-ledger",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Repair the projection from the ledger",
+      "statement": "afwe repair regenerates .afwe/turns from the ledger, reproduces the YAML byte for byte, and moves only proven duplicate files to .afwe/backups. It refuses when the ledger has no turn records, so an incomplete ledger never wipes the projection."
+    },
+    {
+      "id": "ledger-transport-and-fork",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Move the ledger between clones",
+      "statement": "afwe ledger push and fetch use an explicit ledger refspec. A fetch fast-forwards when possible, and a divergence writes a forked event carrying both tips without merging or rewriting either chain. Bootstrap imports the tracked projection once as provenance=imported."
+    },
+    {
+      "id": "document-ledger",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Document the ledger, repair and transport",
+      "statement": "The README, tutorial, spec, skill and ubiquitous language describe the ledger ref, schema version, expected tree, compaction, repair, bootstrap, push/fetch and the fork rule."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

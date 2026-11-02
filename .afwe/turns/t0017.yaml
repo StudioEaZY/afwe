@@ -1,4 +1,9 @@
 id: t0017
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-15T10:43:37Z
 origin: human
 prompt: 'Phase 4 hardening: Node lease enforcement in turn assume and architectural merge gate in mission merge'
@@ -36,7 +41,7 @@ overrides:
   reason: 100% deterministic code without LLM model calls in core engine
 - pin: pin-5babbe
   reason: 100% deterministic engine without LLM calls
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -289,4 +294,13 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): 100% deterministic code without LLM model calls in core engine'
 footer_shown: false
 summary: 'Phase 4 hardening: Node lease enforcement in turn assume and architectural merge gate in mission merge'
+committed_at: 2026-11-02T11:01:19Z
+commit_sha: 67deb20aca8e87958fa22fc6d2c5e98a6dc72b71
 turn_token: c64f38718184e1d3
+post_hashes:
+  .afwe/intents-t0017.json: 4fc68ef93c904bb4
+  .afwe/intents/lease-enforcement-and-merge-gate.yaml: f55acbff446ed572
+  crates/afwe-cli/src/main.rs: c1b41404270517ee
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/mission.rs: b53f1adc181cc98c
+  crates/afwe-core/src/turn.rs: ff806378a6a715f4

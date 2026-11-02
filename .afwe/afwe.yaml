@@ -9,6 +9,7 @@ analyzer:
   - .afwe/**
   - node_modules/**
   - target/**
+  - .build*/**
   - dist/**
   - build/**
   - .git/**

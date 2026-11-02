@@ -1,4 +1,9 @@
 id: t0033
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-27T08:56:22Z
 origin: human
 prompt: Upgrade demo datasets, autoscaling radial depth, multi-core architecture support, and overhaul topology map card visuals and line routing
@@ -54,7 +59,7 @@ intents:
 overrides:
 - pin: pin-5babbe
   reason: All timeline serialization and conflict entrypoint checks are 100% deterministic with zero LLM SDKs
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -1308,7 +1313,164 @@ gate:
   - 'PIN_WARN pin-studio-bookmarks-wired: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector'
 footer_shown: false
 summary: Overhaul Topology view card visuals & distributed edge routing, autoscale Radial depth, normalize timeline turn id & live drawer, and clean demo datasets
+committed_at: 2026-11-02T11:02:45Z
+commit_sha: d734f09fa14a255e702cd42d6dd566e0c099b2ea
 turn_token: 57537f8f034b18c1
+post_hashes:
+  .afwe/intents/dynamic-radial-depth-autoscaling.yaml: c63b32bed5d8d2ef
+  .afwe/intents/timeline-api-id-inclusion.yaml: d774b4885ce1494c
+  .afwe/intents/timeline-real-data-wiring-and-id-normalization.yaml: 7b066cce005da5bc
+  .afwe/intents/topology-visual-and-routing-overhaul.yaml: a6e02375f81b812e
+  .afwe/intents/upgrade-demo-datasets.yaml: c58291099cac0fb4
+  apps/studio/src/components/OverviewPage.tsx: 09fbe4175ba70217
+  apps/studio/src/components/TimelinePage.tsx: aab191bcc6bd92ff
+  apps/studio/src/components/TopologyMap.tsx: 5e6b28adc7e80bb5
+  apps/studio/web-dist/index.html: 36323b9b6268346a
+  crates/afwe-core/src/conflict.rs: f6b622590cf8602b
+  crates/afwe-core/src/drift.rs: 2b2c0e3b28cbafa9
+  crates/afwe-core/src/timeline.rs: 8fc25ec8932ee93e
+  examples/demo-project/src/backend/api/auth/index.ts: aaee4da7b1b2a147
+  examples/demo-project/src/backend/api/handlers/index.ts: 8a01b98bf4b74129
+  examples/demo-project/src/backend/api/handlers/order_ctrl/index.ts: 5ca9d735e75f81df
+  examples/demo-project/src/backend/api/handlers/user_ctrl/index.ts: 4ab7b9b8c5f56613
+  examples/demo-project/src/backend/api/index.ts: 79b63ba376efe9b7
+  examples/demo-project/src/backend/api/routes/index.ts: f7068a8dd4b898ea
+  examples/demo-project/src/backend/api/routes/v2_billing/index.ts: 2450b50f33bcb987
+  examples/demo-project/src/backend/api/routes/v2_orders/index.ts: ca0a4d79913ec77c
+  examples/demo-project/src/backend/api/routes/v2_users/index.ts: a959f5a626d804b6
+  examples/demo-project/src/backend/auth/index.ts: 1e9c83db9f9b53a2
+  examples/demo-project/src/backend/auth/legacy_sso/index.ts: 7fa073f653fecafc
+  examples/demo-project/src/backend/auth/models/index.ts: aa6446b48ee7c8b9
+  examples/demo-project/src/backend/auth/tokens/index.ts: c8d07b76a2df97ca
+  examples/demo-project/src/backend/billing/index.ts: 0e509e577a22032a
+  examples/demo-project/src/backend/billing/jobs/index.ts: d1a53f0ed2439a3e
+  examples/demo-project/src/backend/billing/models/index.ts: df83f68d2883c8f4
+  examples/demo-project/src/backend/billing/webhooks/index.ts: 5bed6455f9e0376e
+  examples/demo-project/src/backend/cache/index.ts: 797b657ce75b82c9
+  examples/demo-project/src/backend/cache/mem/index.ts: 86a6627516273a17
+  examples/demo-project/src/backend/cache/redis/index.ts: f2889ebcb131f33e
+  examples/demo-project/src/backend/events/adapters/index.ts: 6153a3e1d6775fdb
+  examples/demo-project/src/backend/events/adapters/kafka_sink/index.ts: 96f08342d8add9ef
+  examples/demo-project/src/backend/events/handlers/index.ts: e31513621e8762b0
+  examples/demo-project/src/backend/events/handlers/invoice_paid/index.ts: 4a7ea8c2651ecd30
+  examples/demo-project/src/backend/events/handlers/order_placed/index.ts: 3070d82150c2a120
+  examples/demo-project/src/backend/events/handlers/user_signup/index.ts: 5457204e39941297
+  examples/demo-project/src/backend/events/index.ts: b1258d6956f90c9f
+  examples/demo-project/src/backend/events/models/envelope/index.ts: 212fb1015c6d89c5
+  examples/demo-project/src/backend/events/models/index.ts: 8903cd28b76fdf7c
+  examples/demo-project/src/backend/events/models/payloads/index.ts: 9277ae258766ba93
+  examples/demo-project/src/backend/events/models/serializers/index.ts: ecea564c25995df9
+  examples/demo-project/src/backend/events/models/versioning/index.ts: 7f273566ae020db5
+  examples/demo-project/src/backend/events/schema/index.ts: 425751819cbe27f3
+  examples/demo-project/src/backend/events/schema/registry/index.ts: d80971fd16a4b70c
+  examples/demo-project/src/backend/events/schema/validators/index.ts: 1fe26ddef0801ecf
+  examples/demo-project/src/backend/index.ts: 2f8c61fa44017918
+  examples/demo-project/src/core/events/contracts/index.ts: 7641e205776a6038
+  examples/demo-project/src/core/events/dispatcher/index.ts: 213fb5ce22188b5f
+  examples/demo-project/src/core/events/index.ts: 2deb6ea1da9e0517
+  examples/demo-project/src/core/index.ts: 372c18fd36cdf572
+  examples/demo-project/src/core/models/aggregates/index.ts: 3e0e4026fd812d3d
+  examples/demo-project/src/core/models/entities/index.ts: f458b0d0974070b2
+  examples/demo-project/src/core/models/index.ts: b8b36759cfe1f8ca
+  examples/demo-project/src/core/models/value_objects/index.ts: 85baed21af54b9e5
+  examples/demo-project/src/core/rules/index.ts: 14d30bf50e9b40c7
+  examples/demo-project/src/core/rules/permissions/index.ts: 19daf83a6c93c4c0
+  examples/demo-project/src/core/rules/pricing/index.ts: 8df02934d4deb87a
+  examples/demo-project/src/core/rules/quotas/index.ts: b28d3ca1d1bd60dc
+  examples/demo-project/src/core/utils/dates/index.ts: f5ca9151f7e2ec77
+  examples/demo-project/src/core/utils/index.ts: 964e99bb8ff31ad5
+  examples/demo-project/src/core/utils/money/index.ts: f31bf16986bb1376
+  examples/demo-project/src/data/index.ts: f7af73615e50708e
+  examples/demo-project/src/data/legacy_etl/index.ts: 7ac450d79c9454e5
+  examples/demo-project/src/data/migrations/history/index.ts: d2f7a54d52fdb934
+  examples/demo-project/src/data/migrations/index.ts: c3ada6bffab88804
+  examples/demo-project/src/data/migrations/runner/index.ts: 3ae4d94107ff4234
+  examples/demo-project/src/data/models/index.ts: abc3912450047d88
+  examples/demo-project/src/data/models/queries/index.ts: c68e73947a16343f
+  examples/demo-project/src/data/models/repositories/index.ts: 14bcdfcb391ac5c4
+  examples/demo-project/src/data/schema/index.ts: 0e2169c417c157fe
+  examples/demo-project/src/data/schema/indexes/index.ts: b25d4bf74917732f
+  examples/demo-project/src/data/schema/tables/accounts/index.ts: 1f86d1df332d6321
+  examples/demo-project/src/data/schema/tables/index.ts: fca34fd7afc0b671
+  examples/demo-project/src/data/schema/tables/ledger/index.ts: e1b5e9a1c32a23d5
+  examples/demo-project/src/data/schema/views/index.ts: 3a6e308acd158bef
+  examples/demo-project/src/infrastructure/deploy/containers/index.ts: 0a5b9dfb2d6fa5d6
+  examples/demo-project/src/infrastructure/deploy/index.ts: c5420a27bbf821c5
+  examples/demo-project/src/infrastructure/deploy/terraform/index.ts: e5df5bf7b8388510
+  examples/demo-project/src/infrastructure/index.ts: dbff2b1b5421b4fe
+  examples/demo-project/src/infrastructure/queues/broker/index.ts: 843e171d0a1bc624
+  examples/demo-project/src/infrastructure/queues/dlq/index.ts: a0fba49d7db105f5
+  examples/demo-project/src/infrastructure/queues/index.ts: 9a3d2d85e2b55960
+  examples/demo-project/src/infrastructure/telemetry/index.ts: 29403d6cd63bfd4c
+  examples/demo-project/src/infrastructure/telemetry/metrics/index.ts: decc6520f05a9196
+  examples/demo-project/src/infrastructure/telemetry/traces/index.ts: 72426d132d99f6f2
+  examples/demo-project/src/mobile/adapters/biometrics/index.ts: e939a025f30df935
+  examples/demo-project/src/mobile/adapters/index.ts: cecf95a915c8a543
+  examples/demo-project/src/mobile/adapters/storage/index.ts: c717aa65905ec7e4
+  examples/demo-project/src/mobile/hooks/gestures/index.ts: 1ac73e4650d8da34
+  examples/demo-project/src/mobile/hooks/index.ts: 50bca6095d4d5ecf
+  examples/demo-project/src/mobile/hooks/sync/index.ts: 8fced4727a3e52a7
+  examples/demo-project/src/mobile/index.ts: 95271a9996a7980d
+  examples/demo-project/src/mobile/views/index.ts: 123e06fb12070b68
+  examples/demo-project/src/mobile/views/navigation/index.ts: 072765f60cc3e5a0
+  examples/demo-project/src/mobile/views/screens/index.ts: f22b70995de9ac60
+  examples/demo-project/src/mobile/views/widgets/index.ts: 298d068398d8f469
+  examples/demo-project/src/services/analytics/export/index.ts: 984b42433eb2d744
+  examples/demo-project/src/services/analytics/funnels/index.ts: 82c126f4a715c512
+  examples/demo-project/src/services/analytics/index.ts: 4283892934c563cc
+  examples/demo-project/src/services/billing/dunning/index.ts: bca7c453d8d9299f
+  examples/demo-project/src/services/billing/index.ts: e30366b4b72e10a6
+  examples/demo-project/src/services/billing/invoices/index.ts: 06771c31cd298f35
+  examples/demo-project/src/services/billing/subscriptions/index.ts: ecbaf0373b72014f
+  examples/demo-project/src/services/index.ts: 56ccbf8d0a2b0e33
+  examples/demo-project/src/services/jobs/auth/index.ts: 5abbd698976e7a99
+  examples/demo-project/src/services/jobs/auth/key_sync/index.ts: c81295c64db3ebc8
+  examples/demo-project/src/services/jobs/auth/session_pruner/index.ts: 4b5a1c53da8562a5
+  examples/demo-project/src/services/jobs/auth/token_rotator/index.ts: 961f8deb5bfc3c03
+  examples/demo-project/src/services/jobs/index.ts: 654e8c71a39cf8fd
+  examples/demo-project/src/services/jobs/scheduler/cron_runner/index.ts: 0136ac8dc23bf914
+  examples/demo-project/src/services/jobs/scheduler/index.ts: 5f6afdf922ce07c4
+  examples/demo-project/src/services/jobs/scheduler/lease_lock/index.ts: f80a9e1780a18d40
+  examples/demo-project/src/services/jobs/workers/index.ts: bc17ac97ba52a2a3
+  examples/demo-project/src/services/notifications/digests/index.ts: de866df06144f460
+  examples/demo-project/src/services/notifications/email/index.ts: 1fe86c727633d58a
+  examples/demo-project/src/services/notifications/index.ts: 21df0be0a4226505
+  examples/demo-project/src/services/notifications/push/index.ts: e8dbdd833d46c0b5
+  examples/demo-project/src/shared/config/env/index.ts: 9dfe63b5c0c36f71
+  examples/demo-project/src/shared/config/flags/index.ts: d0e88b8387d0549b
+  examples/demo-project/src/shared/config/index.ts: e38efb330bca2f8a
+  examples/demo-project/src/shared/index.ts: c66faeff4978ce50
+  examples/demo-project/src/shared/logging/index.ts: 8166e7f298e9550c
+  examples/demo-project/src/shared/logging/redaction/index.ts: c61aeea30c4c40fe
+  examples/demo-project/src/shared/logging/structured/index.ts: 46645a4dea9009e2
+  examples/demo-project/src/shared/types/api/index.ts: e9e6f80b2760e555
+  examples/demo-project/src/shared/types/domain/index.ts: 9a07019431a84313
+  examples/demo-project/src/shared/types/index.ts: e7c5cd852199ae5b
+  examples/demo-project/src/shared/utils/crypto/index.ts: b35319230048d5ed
+  examples/demo-project/src/shared/utils/index.ts: b46ce5f276998abc
+  examples/demo-project/src/shared/utils/retry/index.ts: b92c1e5df160bcf0
+  examples/demo-project/src/shared/utils/strings/index.ts: bd4f58fc6f4c1afd
+  examples/demo-project/src/web/api/client/index.ts: 0b889f5dcf8d7cc5
+  examples/demo-project/src/web/api/index.ts: 2447909279b1963d
+  examples/demo-project/src/web/api/interceptors/index.ts: 47668aa442f8a8d4
+  examples/demo-project/src/web/hooks/cart/index.ts: 185205878455a644
+  examples/demo-project/src/web/hooks/index.ts: 526d1506fcb92b27
+  examples/demo-project/src/web/hooks/query/index.ts: 9b7c6c3b4771c81a
+  examples/demo-project/src/web/hooks/session/index.ts: aef50d6b6026a5ef
+  examples/demo-project/src/web/index.ts: f1d93be6b41ad3f3
+  examples/demo-project/src/web/legacy_ui/forms/index.ts: 0513786bfdae275b
+  examples/demo-project/src/web/legacy_ui/index.ts: 745bd788e72e2329
+  examples/demo-project/src/web/views/catalog/index.ts: a987a6ea8492192a
+  examples/demo-project/src/web/views/checkout/cart_summary/index.ts: 79b745c82263d461
+  examples/demo-project/src/web/views/checkout/index.ts: a91a66367237e54f
+  examples/demo-project/src/web/views/checkout/payment_form/index.ts: 82fb050d5e25015a
+  examples/demo-project/src/web/views/dashboard/index.ts: e6a7d6a585d2d46e
+  examples/demo-project/src/web/views/dashboard/metrics_grid/index.ts: 3bc2c477033393cd
+  examples/demo-project/src/web/views/index.ts: d3868ce95ce63c0f
+  examples/multi-intent-funnel/src/Slide1.tsx: a5da1378bc87bd9e
+  examples/multi-intent-funnel/src/Slide6.tsx: d4e7cba2df11e4e2
+  examples/multi-intent-funnel/src/index.tsx: a614cdfd92c093f7
+  scripts/populate_demo_project.js: b77a13f9fe6685c7
 session_id: sess-cbf30d
 held_out_guides:
 - guide-t0022-a1

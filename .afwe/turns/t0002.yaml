@@ -1,4 +1,9 @@
 id: t0002
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-08T09:46:16Z
 origin: human
 prompt: Add Architectural Directions and Futures Engine (planned nodes and forward constraints)
@@ -46,7 +51,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Changes in afwe-core are 100% deterministic with zero model calls
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -289,3 +294,15 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes in afwe-core are 100% deterministic with zero model calls'
 footer_shown: false
 summary: 'feat: support architectural directions and planned constraints in futures engine'
+committed_at: 2026-11-02T11:00:14Z
+commit_sha: a6efb210e756ef2d77049aaf2a8ec4ed163297c2
+post_hashes:
+  .afwe/intents/architectural-directions.yaml: b9a0557fc88a2aa1
+  crates/afwe-cli/src/main.rs: c1b41404270517ee
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/context.rs: cddd0188f6635bb7
+  crates/afwe-core/src/drift.rs: 2b2c0e3b28cbafa9
+  crates/afwe-core/src/model.rs: d0a9e62105403fe0
+  crates/afwe-core/src/ops.rs: a02f2232b8cf3344
+  crates/afwe-core/src/turn.rs: ff806378a6a715f4
+  crates/afwe-core/src/verify.rs: 2ac751aa31c4bc85

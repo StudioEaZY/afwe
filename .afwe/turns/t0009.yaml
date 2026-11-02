@@ -1,4 +1,9 @@
 id: t0009
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-09T06:05:14Z
 origin: human
 prompt: Fix CI workflow with fallback build and update CI template in onboard
@@ -19,7 +24,7 @@ intents:
 overrides:
 - pin: pin-5babbe
   reason: Changes are 100% deterministic CI workflow and template fix
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -232,3 +237,9 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic CI workflow and template fix'
 footer_shown: false
 summary: Fix CI workflow with auto-fallback build/install and update onboard CI template
+committed_at: 2026-11-02T11:00:54Z
+commit_sha: 99e9f284f570548d81097a49a5ba2c415c80047f
+post_hashes:
+  .afwe/intents/fix-ci-workflow-and-onboard-template.yaml: 352b9956a4740568
+  .afwe/intents/fix-ci-workflow.json: cc1445dc1f2e4811
+  crates/afwe-core/src/onboard.rs: 382f18c22d511c45

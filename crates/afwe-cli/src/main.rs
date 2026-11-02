@@ -330,6 +330,31 @@ enum Cmd {
     },
     /// Raw engine call: `afwe call <op> '<json params>'` (see `afwe call ops`)
     Call { op: String, params: Option<String> },
+    /// Append-only engine ledger: show, bootstrap, repair, push and fetch
+    #[command(subcommand)]
+    Ledger(LedgerCmd),
+    /// Regenerate the engine-owned `.afwe/turns` projection from the ledger
+    Repair,
+}
+
+#[derive(Subcommand)]
+enum LedgerCmd {
+    /// Show the ledger ref, tip, schema version and counts
+    Show,
+    /// Import the existing tracked turn projection as a genesis ledger
+    Bootstrap,
+    /// Regenerate `.afwe/turns` from the ledger
+    Repair,
+    /// Push only the ledger ref to a git remote
+    Push {
+        #[arg(default_value = "origin")]
+        remote: String,
+    },
+    /// Fetch the ledger ref from a git remote (fast-forward or record a fork)
+    Fetch {
+        #[arg(default_value = "origin")]
+        remote: String,
+    },
 }
 
 #[derive(Subcommand)]
@@ -1945,6 +1970,44 @@ fn run(cli: Cli) -> Result<i32> {
             };
             let v = api::call(&engine, &op, params, &origin)?;
             println!("{}", serde_json::to_string_pretty(&v)?);
+            Ok(0)
+        }
+        Cmd::Repair => {
+            let engine = engine_for(&cli.dir)?;
+            let v = api::call(&engine, "ledger.repair", json!({}), &origin)?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&v)?);
+            } else {
+                println!(
+                    "✔ AFWE repaired {} turn projection(s) from the ledger ({} expected path(s)); {} stale file(s) moved to {}",
+                    v["turns"],
+                    v["expected_paths"],
+                    v["moved_to_backup"],
+                    v["backup"].as_str().unwrap_or("-")
+                );
+            }
+            Ok(0)
+        }
+        Cmd::Ledger(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            let v = match cmd {
+                LedgerCmd::Show => api::call(&engine, "ledger.show", json!({}), &origin)?,
+                LedgerCmd::Bootstrap => api::call(&engine, "ledger.bootstrap", json!({}), &origin)?,
+                LedgerCmd::Repair => api::call(&engine, "ledger.repair", json!({}), &origin)?,
+                LedgerCmd::Push { remote } => {
+                    api::call(&engine, "ledger.push", json!({"remote": remote}), &origin)?
+                }
+                LedgerCmd::Fetch { remote } => {
+                    api::call(&engine, "ledger.fetch", json!({"remote": remote}), &origin)?
+                }
+            };
+            if json {
+                println!("{}", serde_json::to_string_pretty(&v)?);
+            } else if v["available"] == false {
+                println!("ledger: not available — {}", v["reason"].as_str().unwrap_or("unknown"));
+            } else {
+                println!("{}", serde_json::to_string_pretty(&v)?);
+            }
             Ok(0)
         }
     }

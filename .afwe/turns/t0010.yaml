@@ -1,4 +1,9 @@
 id: t0010
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-09T06:10:10Z
 origin: human
 prompt: Fix bash empty statement syntax error in afwe-gate workflow
@@ -22,7 +27,7 @@ intents:
 overrides:
 - pin: pin-5babbe
   reason: Changes are 100% deterministic CI workflow and template fix
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -235,3 +240,9 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic CI workflow and template fix'
 footer_shown: false
 summary: Fix bash empty statement syntax error in afwe-gate workflow
+committed_at: 2026-11-02T11:00:57Z
+commit_sha: ea67195cefef2eae410b774e18af6c90395f3fc1
+post_hashes:
+  .afwe/intents/fix-bash-ci.json: d0880f2c8a9a89c7
+  .afwe/intents/fix-bash-syntax-in-ci-workflow.yaml: d7a4ef0e1dc64254
+  crates/afwe-core/src/onboard.rs: 382f18c22d511c45

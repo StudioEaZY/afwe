@@ -1,0 +1,18 @@
+id: record-turn-and-expected
+title: Record turns and the expected tree
+statement: Turn begin records the turn, its baseline and E := C; turn ready and turn commit record the updated turn and merge the touched post-hashes into state/expected.json in the same ledger commit.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0080
+- t0081
+history:
+- turn: t0080
+  ts: 2026-11-02T11:12:04Z
+  statement: Turn begin records the turn, its baseline and E := C; turn ready and turn commit record the updated turn and merge the touched post-hashes into state/expected.json in the same ledger commit.
+created: 2026-11-02T11:12:04Z
+updated: 2026-11-02T11:19:47Z
+task: task-t0080

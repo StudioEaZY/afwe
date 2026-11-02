@@ -1,4 +1,9 @@
 id: t0003
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-08T10:17:43Z
 origin: human
 prompt: Add planned features (exclusions engine and 4D timeline snapshot) and document futures architecture
@@ -43,7 +48,7 @@ assumptions:
     files:
     - README.md
   status: proposed
-status: ready
+status: committed
 touched:
   files:
   - .afwe/blueprint/blueprint.yaml
@@ -267,3 +272,15 @@ gate:
   decision: ready
 footer_shown: false
 summary: 'docs: document futures engine and register exclusions-engine and timeline-snapshot as planned architecture'
+committed_at: 2026-11-02T11:00:19Z
+commit_sha: 1a8af031c6a89e32608887530d48497bb6ad13be
+post_hashes:
+  .afwe/blueprint/blueprint.yaml: 70460b436a186e19
+  .afwe/blueprint/constraints.yaml: be6e5e3d9a2e541a
+  .afwe/intents/futures-documentation-and-roadmap.yaml: 52a1daf5799e7792
+  .afwe/memory/decisions/4d-timeline-snapshot-plan.md: af94927973f788dd
+  .afwe/memory/decisions/architectural-directions-and-futures-engine.md: e3e9885095f208df
+  .afwe/memory/decisions/exclusions-engine-scoping-plan.md: 8ceb3d12c921a180
+  README.md: c040da563af57e83
+  docs/SPEC.md: 8298fa177076a7d5
+  docs/V2-DECISIONS.md: 8f2097f17dc599fa

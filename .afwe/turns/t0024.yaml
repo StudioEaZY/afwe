@@ -1,4 +1,9 @@
 id: t0024
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-26T00:17:15Z
 origin: human
 prompt: Implement Studio UI overhaul with adaptive Radial and Topology views
@@ -40,7 +45,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Enrich graph snapshot in api.rs with deterministic store data
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -1258,7 +1263,42 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Enrich graph snapshot in api.rs with deterministic store data'
 footer_shown: false
 summary: Studio UI overhaul with adaptive Radial and Topology views and 5-page layout
+committed_at: 2026-11-02T11:01:51Z
+commit_sha: 742b2aaa2d0e186a4b8b18d6d2d559aa727c0b1a
 turn_token: aa2328f486dcad5a
+post_hashes:
+  .afwe/intents-t0024.json: ce72dddb28c1c75b
+  .afwe/intents/studio-dots-ui-overhaul.yaml: 3ad436fbc5a1f13f
+  apps/studio/src/App.tsx: 31faa8a8f226bcc6
+  apps/studio/src/api.ts: fbee952145a5796c
+  apps/studio/src/components/ChecksPage.tsx: 9ba508d5b7903e80
+  apps/studio/src/components/DecisionsPage.tsx: ee56937f2115ee98
+  apps/studio/src/components/NodeInspector.tsx: 98a32f26fca425d0
+  apps/studio/src/components/OverviewPage.tsx: 09fbe4175ba70217
+  apps/studio/src/components/RadialMap.tsx: 788be6e2084152d4
+  apps/studio/src/components/SettingsPage.tsx: 04358cae369e21f5
+  apps/studio/src/components/Sidebar.tsx: d7e7c678221370d7
+  apps/studio/src/components/TimelinePage.tsx: aab191bcc6bd92ff
+  apps/studio/src/components/TopBar.tsx: edf41318132b7554
+  apps/studio/src/components/TopologyMap.tsx: 5e6b28adc7e80bb5
+  apps/studio/src/lib/hierarchy.ts: b4e2e4ae92dd35ab
+  apps/studio/src/lib/prefs.ts: ee06cce1e0dd8d20
+  apps/studio/src/store.ts: ae9e0c6a3333690b
+  apps/studio/src/styles.css: 54a4b341f9852c89
+  apps/studio/web-dist/index.html: 36323b9b6268346a
+  apps/website/dist/docs/concepts/core-concepts/index.html: cbd017b44aa9d11f
+  apps/website/dist/docs/getting-started/quick-start/index.html: 42de43d01724bb97
+  apps/website/dist/docs/reference/cli/index.html: d3a21a6a2bc1ff8b
+  apps/website/dist/docs/reference/mcp/index.html: 0b481a087b085109
+  apps/website/dist/docs/validators/index.html: 8777e9e08727ac88
+  apps/website/dist/index.html: 1c8fc21b12cfe244
+  apps/website/src/components/IsometricLayers.astro: 9a1de67c8cbc4b26
+  apps/website/src/components/TurnReceipt.astro: d82463e4b3523301
+  apps/website/src/layouts/DocsLayout.astro: bb28ad5073392bd0
+  apps/website/src/pages/docs/concepts/core-concepts.astro: 12d9546e22d8c49e
+  apps/website/src/pages/index.astro: 9d90515c1bd52cb3
+  apps/website/src/styles/global.css: c131aba55dd25d63
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
 session_id: sess-cbf30d
 checkgen:
 - t0024-a1

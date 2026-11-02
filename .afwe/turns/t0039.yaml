@@ -1,4 +1,9 @@
 id: t0039
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-27T21:35:48Z
 origin: human
 prompt: 'refactor: deduplicate briefing filters, verification evaluators, and prune dead task obligations'
@@ -25,7 +30,7 @@ intents:
   targets:
   - afwe-core
   statement: Prune dead contract::mark_step and clean up api.rs log.add hook
-status: ready
+status: committed
 touched:
   nodes:
   - studio
@@ -1068,7 +1073,14 @@ gate:
   - 'PIN_WARN pin-studio-bookmarks-wired: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector'
 footer_shown: false
 summary: 'refactor(core): deduplicate briefing scope filters, unify active guardrails with claims evaluator, and prune dead task tracking'
+committed_at: 2026-11-02T11:03:21Z
+commit_sha: 838a18758e3a613d22cd8fcf9ee39e97b7a88d00
 turn_token: dd6e8f83f7d09516
+post_hashes:
+  .afwe/intents/deduplicate-verification-evaluator.yaml: 75a56384b914dadf
+  .afwe/intents/prune-dead-contract-tasks.yaml: 41e1708114a9e304
+  .afwe/intents/unify-briefing-context.yaml: 6f36956be0440330
+  apps/studio/src/lib/hierarchy.ts: b4e2e4ae92dd35ab
 session_id: sess-cbf30d
 held_out_guides:
 - guide-t0022-a1

@@ -1,4 +1,9 @@
 id: t0019
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-16T12:16:55Z
 origin: human
 prompt: Implement Hybrid Asset Registry and DOTS Hierarchical Scene Graph with 4D Snapshot Engine
@@ -55,7 +60,7 @@ overrides:
   reason: 100% deterministic engine without LLM calls
 - pin: pin-5babbe
   reason: 100% deterministic engine without LLM calls
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -363,4 +368,17 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): 100% deterministic engine without LLM calls'
 footer_shown: false
 summary: Hybrid Asset Registry and DOTS Hierarchical Scene Graph with 4D Snapshot Engine
+committed_at: 2026-11-02T11:01:26Z
+commit_sha: 18e1269cf62b9e5ea05adec2e8b4b479d00607c5
 turn_token: 62e834c1d070714b
+post_hashes:
+  .afwe/intents-t0019.json: 6c06e6ce73801896
+  .afwe/intents/dots-scene-graph.yaml: 586a876b42398510
+  .afwe/intents/global-asset-registry.yaml: a086718f145efe93
+  .afwe/intents/scene-registry-api-dispatch.yaml: f37bfdc8236e6eb8
+  .afwe/intents/timeline-4d-engine.yaml: a482bce1af19730a
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/lib.rs: 8fed772b7caf5e13
+  crates/afwe-core/src/registry.rs: eb1d5b55c44ad0f4
+  crates/afwe-core/src/scene.rs: 0ed6e9e14a564aee
+  crates/afwe-core/src/timeline_4d.rs: fcbb290c7bdaebef

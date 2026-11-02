@@ -1,4 +1,9 @@
 id: t0023
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-25T23:12:58Z
 origin: human
 prompt: Build AFWE ReBorn website and afwe docs CLI server
@@ -37,7 +42,7 @@ assumptions:
     - afwe-cli
   status: confirmed
   computed_score: 0.85
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -347,7 +352,38 @@ gate:
   decision: ready
 footer_shown: true
 summary: 'feat: AFWE ReBorn website and afwe docs CLI server'
+committed_at: 2026-11-02T11:01:45Z
+commit_sha: 32d54b4ad01c3f9f4c0647df788588df3cd157dc
 turn_token: 5f9b1e1d28c837c4
+post_hashes:
+  .afwe/intents-t0023.json: acc1ec793713cabd
+  .afwe/intents/cli-docs-server.yaml: a62d78f0c733bfd3
+  .afwe/intents/reborn-website.yaml: 4b6cfd5562878996
+  apps/website/astro.config.mjs: baf442407cd5b37e
+  apps/website/dist/docs/concepts/core-concepts/index.html: cbd017b44aa9d11f
+  apps/website/dist/docs/getting-started/quick-start/index.html: 42de43d01724bb97
+  apps/website/dist/docs/reference/cli/index.html: d3a21a6a2bc1ff8b
+  apps/website/dist/docs/reference/mcp/index.html: 0b481a087b085109
+  apps/website/dist/docs/validators/index.html: 8777e9e08727ac88
+  apps/website/dist/index.html: 1c8fc21b12cfe244
+  apps/website/package.json: 3f6451dddea1e602
+  apps/website/pnpm-lock.yaml: a67c2615715f46d6
+  apps/website/src/components/ConstraintGeometry.astro: e7a2e73223391e0a
+  apps/website/src/components/IsometricLayers.astro: 9a1de67c8cbc4b26
+  apps/website/src/components/SearchModal.astro: f3cf3057cac5431b
+  apps/website/src/components/TurnReceipt.astro: d82463e4b3523301
+  apps/website/src/layouts/DocsLayout.astro: bb28ad5073392bd0
+  apps/website/src/pages/docs/concepts/core-concepts.astro: 12d9546e22d8c49e
+  apps/website/src/pages/docs/getting-started/quick-start.astro: 6a625636985168c9
+  apps/website/src/pages/docs/reference/cli.astro: 9a2dcfd21c3fdede
+  apps/website/src/pages/docs/reference/mcp.astro: c6db6e6bd8d46435
+  apps/website/src/pages/docs/validators/index.astro: b54502ac7b2f9e90
+  apps/website/src/pages/index.astro: 9d90515c1bd52cb3
+  apps/website/src/styles/global.css: c131aba55dd25d63
+  apps/website/tailwind.config.mjs: fd34a45defa0cdb0
+  apps/website/tsconfig.json: 148f7c4a84b7bbae
+  crates/afwe-cli/src/docs.rs: 67cdbe194dfc5363
+  crates/afwe-cli/src/main.rs: c1b41404270517ee
 session_id: sess-cbf30d
 checkgen:
 - t0023-a1

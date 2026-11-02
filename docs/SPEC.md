@@ -604,6 +604,29 @@ AFWE detects, organizes, routes, and safely executes mechanical corrective actio
   - `tolerate`: Acknowledges the divergence without altering the blueprint, appending an entry to `.afwe/state/drift_ledger.json`.
 - **Drift Ledger (`state/drift_ledger.json`)**: Persistent storage of tolerated drifts governed by `policy.drift_tolerate_days` (default 7 days, up to 14 days in `afwe.yaml`). Expired entries automatically elevate to Amber warnings in the Action Queue (`ToleratedDriftExpired`).
 
+## 17. Engine Ledger, Expected Tree & Transport
+
+- **Ref**: `refs/afwe/ledger/<project_id>`, an append-only git commit chain written with plumbing and
+  a compare-and-swap `update-ref` (three retries on collision). `project_id` is a stable lowercase
+  hex id in `afwe.yaml`, never the display name.
+- **Tree (`ledger_version: 1`)**: `meta.json`, `turns/<alias>.json`, `events/<seq>-<kind>.json`,
+  `state/expected.json` and `baselines/<alias>.json`. Every commit carries the previous tree forward.
+- **Expected tree (`E`)**: the path → blake3 map the ledger expects on disk, stored in
+  `state/expected.json`. `E` advances at turn begin (`E := C`), turn end or commit (merged touched
+  paths), and `afwe repair`; no other event moves it.
+- **Compaction**: a turn record stores the full `touched` and `implements` maps every 20th event and
+  a delta (`since` + added/removed) otherwise. A no-change turn adds under 2 KB to the chain.
+- **Projection**: `.afwe/turns` is one file per turn. `afwe repair` regenerates it from the ledger,
+  moves duplicate or stale files to `.afwe/backups/`, and never deletes them.
+- **Bootstrap**: a repository with no ledger imports its tracked projection once, marked
+  `provenance: imported`; a later real ledger supersedes it.
+- **Transport**: `afwe ledger push [remote]` and `afwe ledger fetch [remote]` move only the ledger ref.
+  A fetch that finds a tip neither ancestor nor descendant writes a `forked` event, keeps both tips
+  visible, and never merges, rewrites, or silently picks a chain.
+- **Failure behaviour**: unreadable/corrupt ledger → refuse writes and report; newer
+  `ledger_version` → read-only refusal; CAS collision → re-read, retry three times, then report.
+
+
 
 
 

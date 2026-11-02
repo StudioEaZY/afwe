@@ -1,4 +1,9 @@
 id: t0005
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-08T10:52:16Z
 origin: human
 prompt: Add AFWE Skill Generator, Clean Delegation in AGENTS.md, and Sync Health Check
@@ -48,7 +53,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Changes are 100% deterministic with zero model calls in core
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -281,3 +286,13 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic with zero model calls in core'
 footer_shown: false
 summary: 'feat: decouple agent contract to .afwe/skills/afwe/SKILL.md, clean AGENTS.md, and add sync health check'
+committed_at: 2026-11-02T11:00:30Z
+commit_sha: e78620501f2e0edb659ed1ce3e2e0b4d09c80c44
+post_hashes:
+  .afwe/intents/skill-architecture-and-clean-agents-md.yaml: 9a9bf10801cb716a
+  .afwe/skills/afwe/SKILL.md: c1a17d37f17eca7d
+  AGENTS.md: b511169c47992dc4
+  crates/afwe-core/src/contract.rs: a4cc4fb2c1de652c
+  crates/afwe-core/src/init.rs: 12e53f04f0ec6f12
+  crates/afwe-core/src/onboard.rs: 382f18c22d511c45
+  crates/afwe-core/src/sync.rs: 6f672b944a59df4e

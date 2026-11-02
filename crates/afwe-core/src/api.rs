@@ -434,7 +434,21 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             turn::resume(engine, &turn_id, &answer, &origin(&p, default_origin))
         }
         "rollback.reconcile" => j(crate::rollback::reconcile(engine)?),
-        "ledger.show" => j(crate::ledger::events(engine)?),
+        "ledger.show" => crate::ledger::show(engine),
+        "ledger.turns" => j(crate::ledger::turns(engine)?),
+        "ledger.expected" => j(crate::ledger::expected(engine)?),
+        "ledger.repair" => crate::ledger::repair(engine),
+        "ledger.backfill" => j(crate::ledger::backfill(engine)?),
+        "ledger.refresh" => j(crate::ledger::refresh(engine)?),
+        "ledger.bootstrap" => crate::ledger::bootstrap(engine),
+        "ledger.push" => {
+            let remote = req(&p, "remote")?;
+            crate::ledger::push(engine, &remote)
+        }
+        "ledger.fetch" => {
+            let remote = req(&p, "remote")?;
+            crate::ledger::fetch(engine, &remote)
+        }
         "turn.get" => j(turn::get(engine, &req(&p, "turn")?)?),
         "turn.list" => j(turn::list(engine)?),
         "gate" => {
@@ -1233,6 +1247,11 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_drift_ledger", op: "drift.ledger", description: "List all active and expired tolerated drift entries from the Drift Ledger.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_turn_undo", op: "turn.undo", description: "Undo a committed turn explicitly, reverting its git commit and pruning generated checks.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_rollback_reconcile", op: "rollback.reconcile", description: "Reconcile AFWE ledger with external undos (git reset/revert or Ctrl+Z) by detecting missing git trailers or pre-commit hash matches.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_ledger", op: "ledger.show", description: "Read the append-only engine ledger: project id, ref, tip, schema version, event/turn counts and the expected tree size.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_ledger_repair", op: "ledger.repair", description: "Regenerate the `.afwe/turns` projection from the ledger. Duplicate or stale turn files are moved to `.afwe/backups/`, never deleted.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_ledger_bootstrap", op: "ledger.bootstrap", description: "Create a genesis ledger from the existing tracked turn projection, marked provenance=imported. Refuses when a ledger already exists.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_ledger_push", op: "ledger.push", description: "Push only `refs/afwe/ledger/<project_id>` to a git remote (never snapshots or branches).", schema: obj(json!({"remote": {"type": "string"}}), &["remote"]) },
+        ToolSpec { name: "afwe_ledger_fetch", op: "ledger.fetch", description: "Fetch `refs/afwe/ledger/<project_id>` from a git remote. Fast-forwards when possible; a divergence is recorded as `forked` and both tips are kept.", schema: obj(json!({"remote": {"type": "string"}}), &["remote"]) },
         ToolSpec { name: "afwe_turn_get", op: "turn.get", description: "Read one turn: prompt, intents, assumptions, checks, strength, confidence and gate reasons.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_list", op: "turn.list", description: "List all turns (ledger).", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_intent_list", op: "intent.list", description: "Living intents: merged statements derived from the raw prompts, with history and the turns they came from.", schema: obj(json!({}), &[]) },

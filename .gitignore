@@ -1,4 +1,5 @@
 /target
+/.build*/
 **/node_modules
 apps/studio/src-tauri/target
 apps/studio/src-tauri/gen

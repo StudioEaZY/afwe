@@ -1,4 +1,9 @@
 id: t0014
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-15T07:50:44Z
 origin: human
 prompt: 'Phase 0 and Phase 1: Positioning, truth in documentation, authority tiers, hash verification'
@@ -50,7 +55,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Preserving 100% determinism with zero model calls; adding authority checks and hash tokens only
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -302,3 +307,18 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Preserving 100% determinism with zero model calls; adding authority checks and hash tokens only'
 footer_shown: false
 summary: 'Phase 0 and 1: Honest documentation positioning, authority tiers, and turn anti-tamper token'
+committed_at: 2026-11-02T11:01:07Z
+commit_sha: 420340e3e131a5dba59db115ce0bb43f56c586a7
+post_hashes:
+  .afwe/intents-t0014.json: 3eae2fdb145fe4fe
+  .afwe/intents/authority-tiers.yaml: 3bb7149af92a18f2
+  .afwe/intents/positioning-docs.yaml: 2f705374ca0a8250
+  README.md: c040da563af57e83
+  crates/afwe-cli/src/mcp.rs: 171d4b4d84ea6f0e
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/authority.rs: d25fc03d67bed7c9
+  crates/afwe-core/src/escalation.rs: 377b75defe7277b0
+  crates/afwe-core/src/lib.rs: 8fed772b7caf5e13
+  crates/afwe-core/src/model.rs: d0a9e62105403fe0
+  crates/afwe-core/src/turn.rs: ff806378a6a715f4
+  docs/WALKTHROUGH.md: 9c5014bd9436bae6

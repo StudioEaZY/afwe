@@ -1,4 +1,9 @@
 id: t0028
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-26T21:53:28Z
 origin: human
 prompt: Implement soft radial and topology overhaul, interactive dual timeline scrubber with CodeMirror 6 diff viewer, and editorial light/dark theme
@@ -36,7 +41,7 @@ removes:
 overrides:
 - pin: pin-5babbe
   reason: deterministic diff synthesis for turns without model calls
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -430,7 +435,27 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): deterministic diff synthesis for turns without model calls'
 footer_shown: false
 summary: Implement soft radial and topology overhaul, interactive dual timeline scrubber with CodeMirror 6 diff viewer, and editorial light/dark theme
+committed_at: 2026-11-02T11:02:10Z
+commit_sha: 2aa7f4f09507b04bb4f333633483e70df660bbd8
 turn_token: 991dcf255125a5e4
+post_hashes:
+  .afwe/intents-t0028.json: ad7cdc63fe955103
+  .afwe/intents/studio-soft-radial-turns-overhaul.yaml: 721a13c4c16f13b5
+  apps/studio/package-lock.json: 8740ea94c44b54fc
+  apps/studio/package.json: 8b4860dc3752928e
+  apps/studio/src/components/CodeDiffViewer.tsx: b044b9c1f2221cd5
+  apps/studio/src/components/OverviewPage.tsx: 09fbe4175ba70217
+  apps/studio/src/components/RadialMap.tsx: 788be6e2084152d4
+  apps/studio/src/components/Sidebar.tsx: d7e7c678221370d7
+  apps/studio/src/components/TimelineDualScrubber.tsx: a0a7dca2a0ea1f49
+  apps/studio/src/components/TimelinePage.tsx: aab191bcc6bd92ff
+  apps/studio/src/components/TopBar.tsx: edf41318132b7554
+  apps/studio/src/components/TopologyMap.tsx: 5e6b28adc7e80bb5
+  apps/studio/src/lib/prefs.ts: ee06cce1e0dd8d20
+  apps/studio/src/store.ts: ae9e0c6a3333690b
+  apps/studio/src/styles.css: 54a4b341f9852c89
+  apps/studio/web-dist/index.html: 36323b9b6268346a
+  crates/afwe-core/src/timeline.rs: 8fc25ec8932ee93e
 session_id: sess-cbf30d
 checkgen:
 - t0028-a1

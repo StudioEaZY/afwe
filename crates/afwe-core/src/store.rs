@@ -555,8 +555,7 @@ pub fn workflow_from_intent(i: &Intent) -> Workflow {
     }
 }
 
-fn load_dir<T: serde::de::DeserializeOwned>(store: &Store, dir: &str) -> Result<Vec<T>> {
-    let mut out = vec![];
+fn load_dir<T: serde::de::DeserializeOwned>(store: &Store, dir: &str) -> Result<Vec<T>> {    let mut out = vec![];
     for path in list_files(&store.p(dir), "yaml") {
         let rel = rel_to(&store.afwe_dir, &path);
         match store.read_yaml::<T>(&rel) {
@@ -568,6 +567,21 @@ fn load_dir<T: serde::de::DeserializeOwned>(store: &Store, dir: &str) -> Result<
         }
     }
     Ok(out)
+}
+
+/// Which duplicate projection wins when an older release wrote both `turns/<alias>.yaml` and
+/// `turns/turn-<hash>.yaml`. A promoted or committed record always outranks a stale `ready` copy.
+fn turn_rank(t: &Turn) -> (u8, u8, &str) {
+    let status = match t.status.as_str() {
+        "committed" => 6,
+        "undone_externally" => 5,
+        "reverted" => 4,
+        "ready" => 3,
+        "open" => 2,
+        "folded" => 1,
+        _ => 0,
+    };
+    (status, u8::from(t.commit_sha.is_some()), t.last_activity.as_str())
 }
 
 impl Store {
@@ -623,13 +637,44 @@ impl Store {
     }
 
     // ── turns (append-only ledger) ──
+    /// All turns, one per turn identity. Older releases wrote each record under both its
+    /// `turn_hash` and its alias; the projection is now one file per turn, so callers must never
+    /// see the same turn twice.
     pub fn turns(&self) -> Result<Vec<Turn>> {
         let mut out: Vec<Turn> = load_dir(self, "turns")?;
+        out.sort_by(|a, b| {
+            a.id.cmp(&b.id)
+                .then_with(|| a.last_activity.cmp(&b.last_activity))
+                .then_with(|| a.ts.cmp(&b.ts))
+        });
+        let mut unique: std::collections::BTreeMap<String, Turn> = std::collections::BTreeMap::new();
+        for turn in out {
+            let key = if turn.turn_hash.is_empty() {
+                turn.id.clone()
+            } else {
+                turn.turn_hash.clone()
+            };
+            let replace = match unique.get(&key) {
+                Some(existing) => turn_rank(&turn) >= turn_rank(existing),
+                None => true,
+            };
+            if replace {
+                unique.insert(key, turn);
+            }
+        }
+        let mut out: Vec<Turn> = unique.into_values().collect();
         out.sort_by(|a, b| a.id.cmp(&b.id));
         Ok(out)
     }
     pub fn turn(&self, identifier: &str) -> Result<Option<Turn>> {
         if let Some(t) = self.read_yaml::<Turn>(&format!("turns/{identifier}.yaml"))? {
+            // A legacy duplicate may still exist under `turn-<hash>.yaml`; the alias file is the
+            // canonical projection, so prefer it when it names the same turn.
+            if let Some(alias) = t.alias.as_deref().filter(|alias| *alias != identifier) {
+                if let Some(canonical) = self.read_yaml::<Turn>(&format!("turns/{alias}.yaml"))? {
+                    return Ok(Some(canonical));
+                }
+            }
             return Ok(Some(t));
         }
         let all = self.turns().unwrap_or_default();
@@ -640,21 +685,21 @@ impl Store {
                 || t.alias.as_deref() == Some(identifier)
         }))
     }
+    /// Write one record per turn. The alias (or id, when there is no alias) is the canonical file
+    /// name. Legacy duplicate files are left untouched here; `afwe repair` moves them to a backup
+    /// after proving they describe the same turn.
     pub fn save_turn(&self, t: &Turn) -> Result<()> {
-        let key = if !t.turn_hash.is_empty() {
-            &t.turn_hash
-        } else {
-            &t.id
-        };
+        let key = t
+            .alias
+            .as_deref()
+            .filter(|alias| !alias.is_empty())
+            .map(str::to_string)
+            .or_else(|| (!t.id.is_empty()).then(|| t.id.clone()))
+            .unwrap_or_else(|| t.turn_hash.clone());
+        if key.is_empty() {
+            return Err(anyhow!("cannot save a turn with no id, alias or turn_hash"));
+        }
         self.write_yaml_atomic(&format!("turns/{key}.yaml"), t)?;
-        if let Some(alias) = &t.alias {
-            if alias != key {
-                let _ = self.write_yaml_atomic(&format!("turns/{alias}.yaml"), t);
-            }
-        }
-        if !t.id.is_empty() && t.id != *key && t.alias.as_deref() != Some(&t.id) {
-            let _ = self.write_yaml_atomic(&format!("turns/{}.yaml", t.id), t);
-        }
         Ok(())
     }
     pub fn next_turn_id(&self) -> Result<String> {

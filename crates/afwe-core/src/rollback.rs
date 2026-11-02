@@ -278,16 +278,24 @@ pub fn promote_manual_commits(engine: &Engine) -> Result<Vec<Promotion>> {
         turn.status = "committed".into();
         turn.commit_sha = Some(sha.clone());
         turn.committed_at = Some(crate::util::now());
+        // Engineer-mode records predate post_hashes. Populate them from the touched files so the
+        // ledger's expected tree and the advisory baseline check stop being dark.
+        if turn.post_hashes.is_empty() {
+            for file in &turn.touched.files {
+                if let Ok(bytes) = std::fs::read(engine.store.project_root.join(file)) {
+                    turn.post_hashes
+                        .insert(file.clone(), crate::util::hash_bytes(&bytes));
+                }
+            }
+        }
         engine.store.save_turn(&turn)?;
 
-        let _ = crate::ledger::append(
+        let _ = crate::ledger::record_turn(
             engine,
+            &turn,
             "turn_committed_manual",
-            json!({
-                "turn": label,
-                "turn_hash": &turn.turn_hash,
-                "commit_sha": &sha,
-            }),
+            Some(&turn.post_hashes),
+            false,
         );
         engine.log(
             "afwe:reconcile",
@@ -344,6 +352,13 @@ pub fn reconcile(engine: &Engine) -> Result<Vec<RollbackEvent>> {
             let mut updated = turn.clone();
             updated.status = "undone_externally".into();
             engine.store.save_turn(&updated)?;
+            let _ = crate::ledger::record_turn(
+                engine,
+                &updated,
+                "rewind_confirmed",
+                Some(&updated.post_hashes),
+                false,
+            );
 
             engine.log(
                 "afwe:reconcile",
@@ -431,6 +446,7 @@ pub fn undo_turn(engine: &Engine, turn_id: &str, origin: &str) -> Result<Value> 
     }
 
     engine.store.save_turn(&turn)?;
+    let _ = crate::ledger::record_turn(engine, &turn, "turn_undone", Some(&turn.post_hashes), false);
     engine.log(
         origin,
         "turn_undo",

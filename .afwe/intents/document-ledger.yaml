@@ -1,0 +1,18 @@
+id: document-ledger
+title: Document the ledger, repair and transport
+statement: The README, tutorial, spec, skill and ubiquitous language describe the ledger ref, schema version, expected tree, compaction, repair, bootstrap, push/fetch and the fork rule.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0080
+- t0081
+history:
+- turn: t0080
+  ts: 2026-11-02T11:12:04Z
+  statement: The README, tutorial, spec, skill and ubiquitous language describe the ledger ref, schema version, expected tree, compaction, repair, bootstrap, push/fetch and the fork rule.
+created: 2026-11-02T11:12:04Z
+updated: 2026-11-02T11:19:47Z
+task: task-t0080

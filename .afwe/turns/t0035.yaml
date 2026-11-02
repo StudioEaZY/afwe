@@ -1,4 +1,9 @@
 id: t0035
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-27T18:38:26Z
 origin: human
 prompt: Consolidate duplicate check and briefing logic, prune dead task code, and unblock intent workflows
@@ -71,7 +76,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Changes in afwe-core are 100% deterministic consolidation and cleanup with zero model calls in core
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -1181,7 +1186,19 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes in afwe-core are 100% deterministic consolidation and cleanup with zero model calls in core'
 footer_shown: false
 summary: Consolidate duplicate check and briefing logic, prune dead task code, and unblock intent workflows
+committed_at: 2026-11-02T11:02:57Z
+commit_sha: 76caad0ff83ed927e21a08752ac8c3aae3fc0a25
 turn_token: c97ef47ccda0985d
+post_hashes:
+  .afwe/intents/deduplicate-verification-evaluator.yaml: 75a56384b914dadf
+  .afwe/intents/prune-dead-contract-tasks.yaml: 41e1708114a9e304
+  .afwe/intents/restore-board-cli-inspection.yaml: 722d8822fcbbde96
+  .afwe/intents/unify-briefing-context.yaml: 6f36956be0440330
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/context.rs: cddd0188f6635bb7
+  crates/afwe-core/src/contract.rs: a4cc4fb2c1de652c
+  crates/afwe-core/src/turn.rs: ff806378a6a715f4
+  crates/afwe-core/src/verify.rs: 2ac751aa31c4bc85
 session_id: sess-cbf30d
 checkgen:
 - t0035-a1

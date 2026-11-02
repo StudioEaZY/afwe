@@ -1,4 +1,9 @@
 id: t0021
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-25T11:27:13Z
 origin: human
 prompt: 'Implement AFWE ReBorn: Phase 0-4 (Ready-mode checkgen, comment-aware claims, evidence-based calibration & graduation, TurnJudgment, preview-first materialize, authority env-var downgrade, explore mode, and deferred roadmap)'
@@ -104,7 +109,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Preserves 100% determinism with zero model calls in core; pure AST & tree-sitter mechanisms
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -524,7 +529,41 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Preserves 100% determinism with zero model calls in core; pure AST & tree-sitter mechanisms'
 footer_shown: false
 summary: 'ReBorn Phases 0-4: deterministic checkgen in Ready mode, tree-sitter comment blanking & AST claims, evidence-based confidence rubric & hold-out probing guides, sequential leaf-to-root TurnJudgment, preview-first BLAKE3 materialize tripwires, and explore mode'
+committed_at: 2026-11-02T11:01:36Z
+commit_sha: 9b6d8fbdcde137629b88bd57f9b5799d2aca73d0
 turn_token: 5a5a6f7793815234
+post_hashes:
+  .afwe/blueprint/blueprint.yaml: 70460b436a186e19
+  .afwe/blueprint/constraints.yaml: be6e5e3d9a2e541a
+  .afwe/docs/SPEC.md: 3dd0cd82455fa1d8
+  .afwe/docs/TUTORIAL.md: bbb42b4d89961fd0
+  .afwe/intents/reborn-cli.yaml: c05dd36128c7ed6a
+  .afwe/intents/reborn-core.yaml: d28be5c948ddd763
+  .afwe/skills/afwe/SKILL.md: c1a17d37f17eca7d
+  README.md: c040da563af57e83
+  crates/afwe-cli/src/main.rs: c1b41404270517ee
+  crates/afwe-cli/src/render.rs: 02dbaf795cd23a34
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/authority.rs: d25fc03d67bed7c9
+  crates/afwe-core/src/calibration.rs: 79903d378c400982
+  crates/afwe-core/src/claims.rs: 40016637a08c69b4
+  crates/afwe-core/src/contract.rs: a4cc4fb2c1de652c
+  crates/afwe-core/src/engine.rs: 30d458bda1c4e67e
+  crates/afwe-core/src/intent.rs: c2f2637ff4330295
+  crates/afwe-core/src/judgment.rs: 5ea767b6a7adfddd
+  crates/afwe-core/src/lease.rs: 61f22fb2f858d049
+  crates/afwe-core/src/lib.rs: 8fed772b7caf5e13
+  crates/afwe-core/src/materialize.rs: eb826bbe1feef650
+  crates/afwe-core/src/model.rs: d0a9e62105403fe0
+  crates/afwe-core/src/onboard.rs: 382f18c22d511c45
+  crates/afwe-core/src/rollback.rs: 3b58cb438cc71d1d
+  crates/afwe-core/src/store.rs: e9b0d360b44b96b7
+  crates/afwe-core/src/timeline.rs: 8fc25ec8932ee93e
+  crates/afwe-core/src/turn.rs: ff806378a6a715f4
+  crates/afwe-core/src/verify.rs: 2ac751aa31c4bc85
+  docs/INTEGRATION.md: eb95f904650c2a1f
+  docs/SPEC.md: 8298fa177076a7d5
+  docs/TUTORIAL.md: 48b5a866c842e35b
 checkgen:
 - t0021-a1
 - t0021-a2

@@ -1,4 +1,9 @@
 id: t0012
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-09T06:38:23Z
 origin: human
 prompt: Upgrade actions/checkout to v5 for Node.js 24 runtime support
@@ -20,7 +25,7 @@ intents:
 overrides:
 - pin: pin-5babbe
   reason: Changes are 100% deterministic CI workflow and template upgrade
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -233,3 +238,9 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic CI workflow and template upgrade'
 footer_shown: false
 summary: Upgrade actions/checkout from v4 to v5 for Node.js 24 runtime support
+committed_at: 2026-11-02T11:01:03Z
+commit_sha: e6bf7544da16dfb89ef1db69226d19973da7e330
+post_hashes:
+  .afwe/intents/upgrade-actions-checkout-to-v5.yaml: b421c9061877bbeb
+  .afwe/intents/upgrade-checkout.json: 4369d31d93686033
+  crates/afwe-core/src/onboard.rs: 382f18c22d511c45

@@ -1,4 +1,9 @@
 id: t0006
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-08T11:02:08Z
 origin: human
 prompt: Fix documentation paths to .afwe/docs and optimize AGENTS.md and SKILL.md for post-turn documentation
@@ -45,7 +50,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Changes are 100% deterministic documentation and contract scaffolding
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -278,3 +283,14 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic documentation and contract scaffolding'
 footer_shown: false
 summary: 'fix(docs): scaffold .afwe/docs/, update doc paths in AGENTS.md, and enforce post-turn doc sync in SKILL.md'
+committed_at: 2026-11-02T11:00:39Z
+commit_sha: 203df2999cb1c275517ec23378b0dc29c17ec8aa
+post_hashes:
+  .afwe/docs/SPEC.md: 3dd0cd82455fa1d8
+  .afwe/docs/TUTORIAL.md: bbb42b4d89961fd0
+  .afwe/docs/WALKTHROUGH.md: 9c5014bd9436bae6
+  .afwe/intents/docs-path-fix-and-sync-rule.yaml: 3cc99ed4b42b58b4
+  .afwe/skills/afwe/SKILL.md: c1a17d37f17eca7d
+  AGENTS.md: b511169c47992dc4
+  crates/afwe-core/src/contract.rs: a4cc4fb2c1de652c
+  crates/afwe-core/src/init.rs: 12e53f04f0ec6f12

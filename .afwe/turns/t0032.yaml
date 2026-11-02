@@ -1,4 +1,9 @@
 id: t0032
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-27T07:27:32Z
 origin: human
 prompt: 'Deep-dive upgrade: Capability & reachability ratchet in afwe-core, V1 structural drag-and-drop & Agent View restoration, Copy-to-Harness remediation prompts, and pre-planning turn protocol enforcement'
@@ -86,7 +91,7 @@ overrides:
   reason: afwe-core modifications are 100% deterministic AST & import-graph checks; zero model calls or external AI SDKs inside afwe-core
 - pin: pin-5babbe
   reason: afwe-core modifications are 100% deterministic AST & import-graph checks; zero model calls or external AI SDKs inside afwe-core
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -1221,7 +1226,33 @@ gate:
   - 'PIN_WARN pin-studio-bookmarks-wired: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector'
 footer_shown: false
 summary: Upgrade AFWE engine with in-degree reachability & intra-file capability drop ratchets, turn redo command, decomposed studio blueprint, V1 structural drag-and-drop & Agent View in Studio, and actionable HarnessFixPrompt remediation
+committed_at: 2026-11-02T11:02:39Z
+commit_sha: 1882be2f2e64e0e34680add170ded3dc43cbbf19
 turn_token: ddde119692cf4a9b
+post_hashes:
+  .afwe/blueprint/blueprint.yaml: 70460b436a186e19
+  .afwe/intents/actionable-harness-fix-remediation.yaml: c01437e57981547c
+  .afwe/intents/clean-retire-orphaned-v1-components.yaml: 641a95ae6fb6f4fa
+  .afwe/intents/decompose-studio-blueprint-node.yaml: 947101c5e7030c5d
+  .afwe/intents/reachability-and-intrafile-capability-ratchet.yaml: e86dc36c0634f731
+  .afwe/intents/restore-v1-structural-editing-and-agent-view.yaml: 66e488f4c24aad00
+  .afwe/intents/turn-redo-update-and-preplan-protocol.yaml: ad61deb3dac2fc9e
+  .afwe/skills/afwe/SKILL.md: c1a17d37f17eca7d
+  AGENTS.md: b511169c47992dc4
+  apps/studio/src/components/BlueprintModals.tsx: cca774fe9ef2b9b7
+  apps/studio/src/components/BlueprintPage.tsx: d4e836a1a1d4de26
+  apps/studio/src/components/ChecksPage.tsx: 9ba508d5b7903e80
+  apps/studio/src/components/DecisionsPage.tsx: ee56937f2115ee98
+  apps/studio/src/components/HarnessFixPrompt.tsx: cb8825ccd140b6e4
+  apps/studio/src/components/NodeInspector.tsx: 98a32f26fca425d0
+  apps/studio/src/components/TopologyMap.tsx: 5e6b28adc7e80bb5
+  apps/studio/web-dist/index.html: 36323b9b6268346a
+  crates/afwe-cli/src/main.rs: c1b41404270517ee
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/conflict.rs: f6b622590cf8602b
+  crates/afwe-core/src/drift.rs: 2b2c0e3b28cbafa9
+  crates/afwe-core/src/model.rs: d0a9e62105403fe0
+  crates/afwe-core/src/turn.rs: ff806378a6a715f4
 session_id: sess-cbf30d
 checkgen:
 - t0032-a1

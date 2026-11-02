@@ -1,4 +1,9 @@
 id: t0018
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-15T10:51:27Z
 origin: human
 prompt: 'Phase 5: External undo detection, automated pruning, and rollback reconciliation'
@@ -36,7 +41,7 @@ overrides:
   reason: 100% deterministic code without LLM model calls in core engine
 - pin: pin-5babbe
   reason: 100% deterministic engine without LLM calls
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -294,4 +299,15 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): 100% deterministic code without LLM model calls in core engine'
 footer_shown: false
 summary: 'Phase 5: External undo detection, automated pruning, and rollback reconciliation'
+committed_at: 2026-11-02T11:01:22Z
+commit_sha: 92af03f913240c46057ea6256eec2cf3831026dc
 turn_token: a655c95b4150dc3b
+post_hashes:
+  .afwe/intents-t0018.json: d5098c7602460ef6
+  .afwe/intents/external-undo-and-rollback.yaml: f23eb4ae6132f147
+  crates/afwe-cli/src/main.rs: c1b41404270517ee
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/lib.rs: 8fed772b7caf5e13
+  crates/afwe-core/src/model.rs: d0a9e62105403fe0
+  crates/afwe-core/src/rollback.rs: 3b58cb438cc71d1d
+  crates/afwe-core/src/turn.rs: ff806378a6a715f4

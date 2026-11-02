@@ -1,4 +1,9 @@
 id: t0001
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-08T09:16:47Z
 origin: human
 prompt: add multi-intent-funnel stress test fixture project
@@ -32,7 +37,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Support Windows cmd.exe execution in run_command while keeping engine 100% deterministic
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -267,3 +272,13 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Support Windows cmd.exe execution in run_command while keeping engine 100% deterministic'
 footer_shown: false
 summary: Scaffold multi-intent-funnel fixture with slides 1, 5, 6 and verified claim constraints
+committed_at: 2026-11-02T11:00:11Z
+commit_sha: f65ea393a38b72a00e53d3db11fd2f140a464ae4
+post_hashes:
+  .afwe/intents/multi-intent-funnel.yaml: 16ca98c5ba821e34
+  crates/afwe-core/src/intent.rs: c2f2637ff4330295
+  examples/multi-intent-funnel/package.json: cba2408fcf161622
+  examples/multi-intent-funnel/src/Slide1.tsx: a5da1378bc87bd9e
+  examples/multi-intent-funnel/src/Slide5.tsx: b3161d1e7048d8dc
+  examples/multi-intent-funnel/src/Slide6.tsx: d4e7cba2df11e4e2
+  examples/multi-intent-funnel/src/index.tsx: a614cdfd92c093f7

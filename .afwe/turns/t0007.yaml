@@ -1,4 +1,9 @@
 id: t0007
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-08T11:30:49Z
 origin: human
 prompt: Enforce dual-context AFWE-Core vs AFWE-Client contracts and protect AGENTS.md in init
@@ -33,7 +38,7 @@ intents:
 overrides:
 - pin: pin-5babbe
   reason: Changes are 100% deterministic architectural contracts and AGENTS.md safeguards
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -255,3 +260,14 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic architectural contracts and AGENTS.md safeguards'
 footer_shown: false
 summary: Enforce dual-context separation for AFWE-Core vs AFWE-Client and safeguard AGENTS.md in init
+committed_at: 2026-11-02T11:00:45Z
+commit_sha: 0e128d67b73eb78374db450853bcb58df43cd2dd
+post_hashes:
+  .afwe/intents/afwe-core-vs-client-separation-and-agents-protection.yaml: 067a86617a78931a
+  .afwe/intents/core-client-separation.json: 713746197ea7ddf8
+  .afwe/memory/decisions/dual-context-separation-between-afwe-core-and-afwe-client.md: aa2aa5711a2fadeb
+  .afwe/skills/afwe/SKILL.md: c1a17d37f17eca7d
+  AGENTS.md: b511169c47992dc4
+  crates/afwe-cli/src/main.rs: c1b41404270517ee
+  crates/afwe-core/src/contract.rs: a4cc4fb2c1de652c
+  crates/afwe-core/src/onboard.rs: 382f18c22d511c45

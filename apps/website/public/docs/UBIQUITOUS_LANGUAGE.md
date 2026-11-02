@@ -45,10 +45,10 @@ flowchart TD
 | [**Blueprint Diff View**](#blueprint-diff-view) | Blueprint & Cartography | A dedicated architectural visualizer in Studio Timeline (`TimelinePage.tsx`) that renders the structural delta between two turns or branches. It color-codes added nodes/relations (green), modified boundaries (amber), and removed entities (red), complementing textual source code diffs with structural architecture diffs. | Code Diff Viewer |
 | [**Blueprint Node**](#blueprint-node) | Blueprint & Cartography | An architectural entity within the Blueprint tree representing a product, subsystem, module, or component. Each node has an ID, human-readable name, purpose statement, implementation mapping (file globs and symbols), status (`active`, `planned`, `deprecated`, `uncharted`), and architectural boundaries. | File / Directory |
 | [**Blueprint View**](#blueprint-view) | Blueprint & Cartography | The primary structural graph visualizer in AFWE Studio (powered by `GraphView.tsx` and ReactFlow) rendering the Blueprint tree in balanced, tiered vertical strata. It features perimeter port distribution to eliminate edge overlap, switchable edge routing geometry (bezier, smoothstep, orthogonal), spacebar hand pan navigation, and progressive leaf disclosure. | Blueprint (Concept), Topology View |
-| [**CI Runner Profile & Cached Acquisition**](#ci-runner-profile-cached-acquisition) | Architecture Philosophy & Tenets | # CI Runner Profile & Cached Acquisition | — |
 | [**Capability Bridge**](#capability-bridge) | Ratchets & Integrity Verification | # Capability Bridge | — |
 | [**Capability Ratchet**](#capability-ratchet) | Ratchets & Integrity Verification | A monotonic architectural safety mechanism enforced during `afwe turn commit`. It guarantees that codebase capabilities, public API exports, caller references, decisions, and documentation references can only advance or remain stable—never unintentionally degrade. Intentionally breaking a capability requires an explicit declaration in `turn assume`. | Unit Testing |
 | [**Check**](#check) | Ratchets & Integrity Verification | An executable verification item registered in `.afwe/checks/*.yaml` evaluated during `afwe verify` and `afwe turn commit`. Checks possess trust ratings, explicit authorship (human, generator, agent), and deterministic pass/fail semantics. | Claim |
+| [**CI Runner Profile & Cached Acquisition**](#ci-runner-profile-cached-acquisition) | Architecture Philosophy & Tenets | # CI Runner Profile & Cached Acquisition | — |
 | [**Claim**](#claim) | Claims & Tripwires | A pre-generation assertion declared during Phase 1 (`afwe turn assume`) before code is written. Claims include: | Intent |
 | [**Comment-Aware Claims**](#comment-aware-claims) | Claims & Tripwires | # Comment-Aware Claims | — |
 | [**Component Inspector**](#component-inspector) | Architecture Philosophy & Tenets | The contextual metadata panel in AFWE Studio (`ComponentInspector.tsx` and `NodeInspector.tsx`) activated upon selecting any node or relation. It renders live purpose statements, implementation file/symbol mappings, caller counts, attached active guardrails, ADR decisions, bookmarks, and structural edit controls (`move`, `relate`, `constrain`). | Micro-Context |
@@ -58,14 +58,15 @@ flowchart TD
 | [**Context Codename Separation**](#context-codename-separation) | Architecture Philosophy & Tenets | The strict architectural separation governing AFWE development between two distinct contexts: | Client/Server Networking |
 | [**DEAD_ON_ARRIVAL**](#dead_on_arrival) | Ratchets & Integrity Verification | A blocking commit gate error triggered when a newly introduced exported function or capability is born with 0 callers and no tests exercising it, without an explicit intent declaration. | DROPPED_CAPABILITY |
 | [**DOCS_DRIFT**](#docs_drift) | Ratchets & Integrity Verification | A commit gate error triggered when markdown documentation files (`README.md`, `docs/*.md`, `.afwe/docs/*.md`) contain broken links to code files, outdated symbol paths, or deleted source files. | Drift |
-| [**DOTS Hierarchical Scene Graph**](#dots-hierarchical-scene-graph) | Architecture Philosophy & Tenets | # DOTS Hierarchical Scene Graph | — |
-| [**DROPPED_CAPABILITY**](#dropped_capability) | Ratchets & Integrity Verification | A blocking commit gate error triggered when an intra-file public export or capability is deleted or privatized without an explicit removal or replacement declared in `turn assume` (`removes: [...]` or `action: remove / replace`). | SEVERED_CAPABILITY |
 | [**Dormant Check**](#dormant-check) | Architecture Philosophy & Tenets | A check whose originating turn was undone outside AFWE. It stays on disk and is excluded from the | Retired check, Superseded check |
+| [**DOTS Hierarchical Scene Graph**](#dots-hierarchical-scene-graph) | Architecture Philosophy & Tenets | # DOTS Hierarchical Scene Graph | — |
 | [**Drift**](#drift) | Blueprint & Cartography | Any disagreement between the physical codebase (analyzed files, AST imports, symbol definitions) and the Blueprint tree. Detected via `afwe drift` or during `afwe sync`. Disagreements are triaged by confidence: | Constraint Violation |
 | [**Drift Ledger**](#drift-ledger) | Architecture Philosophy & Tenets | # Drift Ledger | — |
 | [**Drift Verdict**](#drift-verdict) | Architecture Philosophy & Tenets | # Drift Verdict | — |
+| [**DROPPED_CAPABILITY**](#dropped_capability) | Ratchets & Integrity Verification | A blocking commit gate error triggered when an intra-file public export or capability is deleted or privatized without an explicit removal or replacement declared in `turn assume` (`removes: [...]` or `action: remove / replace`). | SEVERED_CAPABILITY |
 | [**Dual Timeline Scrubber**](#dual-timeline-scrubber) | Architecture Philosophy & Tenets | An interactive dual-point range slider in AFWE Studio (`TimelineDualScrubber.tsx`) allowing developers to bind two separate moments in codebase history (Turn A vs Turn B). It dynamically updates the active map or diff viewer to compare structural graph transformations, capability gains, or collateral losses between those moments. | 4D Timeline Dial |
 | [**Edge Routing Geometry**](#edge-routing-geometry) | Architecture Philosophy & Tenets | The configurable mathematical curvature options applied to relationship lines across Studio maps: | Constraint Violation Routing |
+| [**Engine Ledger**](#engine-ledger) | Architecture Philosophy & Tenets | The authoritative, append-only record of engine state stored as a commit chain at | Change log, Drift Ledger, Git history |
 | [**Epoch ID**](#epoch-id) | Turn Protocol & Lifecycle | # Epoch ID | — |
 | [**Expected Tree**](#expected-tree) | Architecture Philosophy & Tenets | The path to content-hash map the ledger expects the working tree to have. `E` advances only at four | Turn baseline, Snapshot |
 | [**Explore Mode**](#explore-mode) | Confidence Bands & Calibration | A temporary mode activated via `afwe unlock --reason "..."` that downgrades blocking active checks and capability ratchets into non-blocking warnings during active exploratory refactoring or rapid prototyping. The harness must re-arm the gate before release via `afwe lock`, which triggers full architecture verification. | Bypassing the Gate |
@@ -74,9 +75,11 @@ flowchart TD
 | [**Harness-Agnostic Architecture**](#harness-agnostic-architecture) | Architecture Philosophy & Tenets | # Harness-Agnostic Architecture | — |
 | [**Human Floor**](#human-floor) | Memory, Pins & Living Intents | Non-delegable invariants and policy thresholds that cannot be auto-approved or bypassed by any delegated agent prompter, regardless of active delegation budgets. | — |
 | [**Intent**](#intent) | Memory, Pins & Living Intents | A living, persistent statement of architectural purpose and desired behavior stored in `.afwe/intents/*.yaml`. Derived and merged from verbatim user prompts over time, intents capture what the codebase is intended to do, its historical evolution, and its implementation mappings. | Turn, Workflow |
+| [**Ledger Fork**](#ledger-fork) | Architecture Philosophy & Tenets | The recorded condition where a fetched ledger tip is neither an ancestor nor a descendant of the | Git fork, Branch divergence |
 | [**Materializer**](#materializer) | Claims & Tripwires | The engine component invoked via `afwe materialize` (or MCP `afwe_materialize`) that renders AFWE tripwires into native workspace files (`.git/hooks/pre-commit`, `.github/workflows/afwe-gate.yml`, native test suites, `AGENTS.md` markers, and `.afwe/checks/manifest.blake3`). It offers preview-first application (`--dry-run` by default) and rollback capabilities. | afwe init |
 | [**Micro-Context**](#micro-context) | Blueprint & Cartography | The targeted, highly scoped architectural context retrieved via `afwe context <files>` (or MCP tool `afwe_context`). Before an agent touches a file, micro-context delivers only the nodes, purpose statements, decisions, exceptions, constraints, ubiquitous terminology, and active guardrails that directly apply to those specific files. | Whole-Repository Prompting |
 | [**Mission**](#mission) | Multi-Agent Concurrency & Worktrees | A goal-oriented coordination structure stored in `.afwe/missions/*.yaml` that orchestrates multiple autonomous agents across isolated Git worktrees. Missions break complex epics into discrete turn obligations, managing concurrency leases, shared node boundaries, and merge gates. | Turn |
+| [**Narrow Self-Heal**](#narrow-self-heal) | Architecture Philosophy & Tenets | # Narrow Self-Heal | — |
 | [**Native Dot Notation**](#native-dot-notation) | Architecture Philosophy & Tenets | The canonical hierarchical address syntax (e.g., `afwe.Core.Analyze` or `project.Billing.Checkout`) used natively across AFWE Studio maps, CLI arguments, and engine queries. It mirrors namespace notation in modern languages, replacing fragile filesystem slash paths (`afwe/core/analyze`) with stable architectural node identities. | File System Paths |
 | [**ORPHANED_DECISION**](#orphaned_decision) | Ratchets & Integrity Verification | A commit gate error triggered when an architectural decision record in `.afwe/memory/decisions/` is anchored to files or symbols that have been deleted or moved without updating or superseding the decision. | ORPHANED_PIN |
 | [**ORPHANED_PIN**](#orphaned_pin) | Ratchets & Integrity Verification | A commit gate error triggered when a human-locked pin in `.afwe/pins/` targets architectural nodes, files, or symbols that no longer exist in the working tree. Pins require explicit human override or retirement. | ORPHANED_DECISION |
@@ -96,8 +99,8 @@ flowchart TD
 | [**Ready Mode Checkgen**](#ready-mode-checkgen) | Architecture Philosophy & Tenets | # Ready Mode Checkgen | — |
 | [**Rewind Receipt**](#rewind-receipt) | Architecture Philosophy & Tenets | The append-only record AFWE writes when it detects that the working tree moved back to a state it has | Revert commit, Rollback |
 | [**Rust for Project Intent**](#rust-for-project-intent) | Architecture Philosophy & Tenets | The foundational design philosophy of AFWE: applying the unforgiving, deterministic mental model of the Rust compiler to overall project architecture and intent. Under this paradigm, you can break things on purpose by declaring them explicitly in `turn assume` (`removes: [...]`), but the gate ensures you can never break things by accident. | Programming Language Choice |
-| [**SEVERED_CAPABILITY**](#severed_capability) | Ratchets & Integrity Verification | A blocking commit gate error triggered when cross-module caller severance drops inbound references to an exported function or struct from >0 to 0, turning previously consumed functionality into dead code without declared intent. | DEAD_ON_ARRIVAL |
 | [**Scene Outliner**](#scene-outliner) | Architecture Philosophy & Tenets | The collapsible tree panel in AFWE Studio (`SceneOutliner.tsx`) displaying all entities, systems, and nodes registered in the DOTS Hierarchical Scene Graph. It provides immediate structural search, visibility toggling, multi-selection, and sync with the active spatial visualizer. | File Explorer |
+| [**SEVERED_CAPABILITY**](#severed_capability) | Ratchets & Integrity Verification | A blocking commit gate error triggered when cross-module caller severance drops inbound references to an exported function or struct from >0 to 0, turning previously consumed functionality into dead code without declared intent. | DEAD_ON_ARRIVAL |
 | [**Skipping Resistance**](#skipping-resistance) | Claims & Tripwires | Tripwire mechanisms ensuring that agents and developers cannot bypass architectural governance by circumventing AFWE CLI calls. | — |
 | [**Spacebar Hand Pan**](#spacebar-hand-pan) | Architecture Philosophy & Tenets | A unified navigation paradigm across all AFWE Studio canvas visualizers (Blueprint, Topology, Radial, Constellation). Holding the `Spacebar` key or selecting the floating Hand Pan tool sets child element `pointer-events: none`, temporarily disabling node dragging, selection, and click interception so the user can fluidly pan the canvas without accidentally moving nodes or resetting zoom. | Node Dragging |
 | [**Spatial Drag Clamping**](#spatial-drag-clamping) | Architecture Philosophy & Tenets | A bounding box and physics constraint mechanism in Studio Constellation and Topology maps that clamps manual node dragging within bounded spatial regions. It prevents developers from accidentally flinging nodes into infinite virtual coordinates or breaking parent cluster gravity. | Auto-Layout |
@@ -136,7 +139,7 @@ A continuous temporal scrubber control (`TimelineScrubber4D.tsx`) that treats ti
 #### Bearer Token <a id="bearer-token"></a>
 
 - **ID**: `term-bearer-token`
-- **Tags**: `terminology`, `security`, `authentication`, `protocol`
+- **Tags**: `[terminology, security, authentication, protocol]`
 
 **Meaning:**
 # Bearer Token
@@ -213,25 +216,6 @@ The strict architectural separation governing AFWE development between two disti
 
 ---
 
-#### DOTS Hierarchical Scene Graph <a id="dots-hierarchical-scene-graph"></a>
-
-- **ID**: `term-dots-scene-graph`
-- **Tags**: `terminology`, `studio`, `architecture`, `rendering`
-
-**Meaning:**
-# DOTS Hierarchical Scene Graph
-
-### Definition
-A high-performance, Data-Oriented Technology Stack (DOTS) inspired hierarchical graph model that organizes and computes transformation matrices, node hierarchies, and spatial bounds for visual rendering in AFWE Studio.
-
-### Why it Matters
-As repositories grow to thousands of blueprint nodes, capabilities, and dependencies, traditional object-oriented DOM or tree representations experience severe frame drops and memory overhead. The DOTS scene graph stores entity attributes in flat, contiguous memory arrays, allowing 60 FPS spatial rendering, instant level-of-detail culling, and rapid topological queries.
-
-### Example in Practice
-When Studio renders a repository with 500 modules and 2,000 edge connections in Blueprint View, the DOTS Hierarchical Scene Graph evaluates transform hierarchies in parallel passes, batching canvas draw calls without traversing individual nested object trees.
-
----
-
 #### Dormant Check <a id="dormant-check"></a>
 
 - **ID**: `term-dormant-check`
@@ -246,6 +230,25 @@ restored forward. Dormancy is a reversible annotation, not a deletion.
 **Not to be confused with:**
 - **Retired check**: a deliberate human retirement, not a reaction to a rewind.
 - **Superseded check**: one replaced by a newer check for the same target.
+
+---
+
+#### DOTS Hierarchical Scene Graph <a id="dots-hierarchical-scene-graph"></a>
+
+- **ID**: `term-dots-scene-graph`
+- **Tags**: `[terminology, studio, architecture, rendering]`
+
+**Meaning:**
+# DOTS Hierarchical Scene Graph
+
+### Definition
+A high-performance, Data-Oriented Technology Stack (DOTS) inspired hierarchical graph model that organizes and computes transformation matrices, node hierarchies, and spatial bounds for visual rendering in AFWE Studio.
+
+### Why it Matters
+As repositories grow to thousands of blueprint nodes, capabilities, and dependencies, traditional object-oriented DOM or tree representations experience severe frame drops and memory overhead. The DOTS scene graph stores entity attributes in flat, contiguous memory arrays, allowing 60 FPS spatial rendering, instant level-of-detail culling, and rapid topological queries.
+
+### Example in Practice
+When Studio renders a repository with 500 modules and 2,000 edge connections in Blueprint View, the DOTS Hierarchical Scene Graph evaluates transform hierarchies in parallel passes, batching canvas draw calls without traversing individual nested object trees.
 
 ---
 
@@ -314,6 +317,29 @@ The configurable mathematical curvature options applied to relationship lines ac
 
 ---
 
+#### Engine Ledger <a id="engine-ledger"></a>
+
+- **ID**: `term-engine-ledger`
+- **Tags**: `ledger`, `rewind`, `transport`
+- **Applies to**: `afwe-core`
+
+**Meaning:**
+The authoritative, append-only record of engine state stored as a commit chain at
+`refs/afwe/ledger/<project_id>`. Every commit carries the previous tree forward and adds one event.
+The `.afwe/` folder is a projection: `afwe repair` regenerates the engine-owned parts of it from the
+ledger instead of treating disk as the record.
+
+The P1 tree is `meta.json`, `turns/<alias>.json`, `events/<seq>-<kind>.json`,
+`state/expected.json` and `baselines/<alias>.json`. `meta.json` carries `ledger_version: 1`; a reader
+that sees a newer version refuses and asks the user to upgrade rather than partially interpreting it.
+
+**Not to be confused with:**
+- **Change log**: (`.afwe/log/changes.jsonl`): a human-readable audit trail, not the record of state.
+- **Drift Ledger**: (`.afwe/state/drift_ledger.json`): tolerated architectural drift, unrelated.
+- **Git history**: the ledger is stored in git, but it is a separate ref and never becomes a branch.
+
+---
+
 #### Expected Tree <a id="expected-tree"></a>
 
 - **ID**: `term-expected-tree`
@@ -376,6 +402,39 @@ The architectural invariant that AFWE core, verification, and tripwires operate 
 
 ---
 
+#### Ledger Fork <a id="ledger-fork"></a>
+
+- **ID**: `term-ledger-fork`
+- **Tags**: `ledger`, `transport`, `fork`
+- **Applies to**: `afwe-core`
+
+**Meaning:**
+The recorded condition where a fetched ledger tip is neither an ancestor nor a descendant of the
+local tip. Authority is per repository, so AFWE writes a `forked` event carrying both tips, keeps the
+incoming ref visible, and never merges, rewrites, or silently chooses one chain.
+
+**Not to be confused with:**
+- **Git fork**: a copy of a repository, which says nothing about ledger authority.
+- **Branch divergence**: branches are not ledger refs and never enter this decision.
+
+---
+
+#### Narrow Self-Heal <a id="narrow-self-heal"></a>
+
+- **ID**: `term-self-heal`
+
+**Meaning:**
+# Narrow Self-Heal
+
+A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes mechanical corrective actions without authoring new source code.
+
+## Section 0 Scope Boundary
+- **Restores of Dropped Files**: Restoring an unchanged file from recorded baseline bytes is allowlisted because no foreign bytes are introduced (derivability check passes).
+- **Sub-Turn Audit Trail**: Executed as a recorded child turn `<parent_turn>.1` with CAS validation and an explicit undo recipe.
+- **Out of Scope**: Severed capabilities (missing wiring), semantic merges of modified files, and autonomous source generation are strictly forbidden inside `afwe-core`.
+
+---
+
 #### Native Dot Notation <a id="native-dot-notation"></a>
 
 - **ID**: `term-native-dot-notation`
@@ -429,7 +488,7 @@ A lightweight, zero-GUI background daemon (`afwe presence run`) started at user 
 #### Private Git Plumbing Tree <a id="private-git-plumbing-tree"></a>
 
 - **ID**: `term-git-plumbing-tree`
-- **Tags**: `terminology`, `git`, `isolation`, `storage`, `safety`
+- **Tags**: `[terminology, git, isolation, storage, safety]`
 
 **Meaning:**
 # Private Git Plumbing Tree
@@ -466,7 +525,7 @@ A time-bounded, permission-bounded grant from a human prompter to an orchestrato
 #### Quarantine Grace System <a id="quarantine-grace-system"></a>
 
 - **ID**: `term-quarantine-grace-system`
-- **Tags**: `terminology`, `safety`, `rollback`, `recovery`
+- **Tags**: `[terminology, safety, rollback, recovery]`
 
 **Meaning:**
 # Quarantine Grace System
@@ -500,7 +559,7 @@ A polar concentric cartographic visualization in AFWE Studio (`RadialMap.tsx`) o
 #### Ready Mode Checkgen <a id="ready-mode-checkgen"></a>
 
 - **ID**: `term-ready-mode-checkgen`
-- **Tags**: `terminology`, `checks`, `compilation`, `automation`
+- **Tags**: `[terminology, checks, compilation, automation]`
 
 **Meaning:**
 # Ready Mode Checkgen
@@ -637,6 +696,161 @@ The segmented icon control bar on the AFWE Studio Overview page allowing instant
 
 ---
 
+### Memory, Pins & Living Intents
+
+#### Action Queue <a id="action-queue"></a>
+
+- **ID**: `term-action-queue`
+- **Tags**: `queue`, `governance`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+The deterministic, read-only 6-state governance view over turns, leases, and repository state, providing both humans and delegated orchestrators an actionable view of pending items without polling.
+
+1. **STAGED**: Proposals parked awaiting confirmation or human-floor review.
+2. **GHOST REDO**: Turns left in REDO state when work ceased without clean reset.
+3. **READY**: Evaluated turns where checks passed, sitting in the Ready drawer for git commit.
+4. **ADVISORY DRIFT**: Non-blocking architectural violations and documentation drift.
+5. **STALE NODE LEASES**: Concurrency node leases whose leaseholder heartbeats have lapsed.
+6. **UNATTRIBUTED**: Working-tree modifications or commits lacking AFWE turn attribution.
+
+- **Studio Web / Tauri**: Real-time visual cards with state filters and batch action bars.
+- **Terminal Surface**: Live ANSI dashboard via `afwe watch`.
+- **MCP Tooling**: Headless programmatic inspection and resolution via `afwe_queue_get`, `afwe_queue_act`, and `afwe_batch_act`.
+
+---
+
+#### Asset Arena <a id="asset-arena"></a>
+
+- **ID**: `term-asset-arena`
+- **Tags**: `[terminology, performance, memory, engine]`
+
+**Meaning:**
+# Asset Arena
+
+### Definition
+A contiguous memory pool and monotonic bump allocator used by the AFWE-Core engine and Studio to store, reuse, and bulk-deallocate graph assets, glyphs, and parsed syntax representations.
+
+### Why it Matters
+Frequent allocations and deallocations during rapid AST parsing and graph visualizer frames cause memory fragmentation and garbage collection pauses. The Asset Arena enables zero-fragmentation allocations during a Turn or rendering frame, deallocating the entire arena in a single step upon completion.
+
+### Example in Practice
+During an AST claim pass across 150 source files, tokens and syntax node records are allocated out of a dedicated Turn Asset Arena. Once claims are verified and cached, the entire arena resets instantly without invoking thousands of individual free operations.
+
+---
+
+#### Human Floor <a id="human-floor"></a>
+
+- **ID**: `term-human-floor`
+- **Tags**: `authority`, `governance`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+Non-delegable invariants and policy thresholds that cannot be auto-approved or bypassed by any delegated agent prompter, regardless of active delegation budgets.
+
+- Changes touching policy pins or root architecture governance.
+- Large blast radius operations crossing multiple major subsystem boundaries.
+- Remediations outside the narrow self-heal allowlist.
+- Authority mode changes or lease delegation grants.
+
+When a turn triggers a human floor, it is parked as `STAGED` with `requires_human: true`. The orchestrator agent skips the turn and continues its loop without stalling.
+
+---
+
+#### Intent <a id="intent"></a>
+
+- **ID**: `term-intent`
+- **Tags**: `intents`, `architecture`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+A living, persistent statement of architectural purpose and desired behavior stored in `.afwe/intents/*.yaml`. Derived and merged from verbatim user prompts over time, intents capture what the codebase is intended to do, its historical evolution, and its implementation mappings.
+
+**Not to be confused with:**
+- **Turn**: A Turn is a single transaction that fulfills or updates one or more intents.
+- **Workflow**: In AFWE ReBorn, legacy workflow graphs have graduated into unified living intents.
+
+---
+
+#### Pin <a id="pin"></a>
+
+- **ID**: `term-pin`
+- **Tags**: `pins`, `governance`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+A human-locked architectural decision or intentional bug stored in `.afwe/pins/*.yaml`. Pins represent immutable boundaries that automated agents and refactorings are strictly forbidden from breaking or deleting without an explicit override `{pin, reason}`. Pins are capped under a codebase-scaled budget to prevent architectural ossification.
+
+**Not to be confused with:**
+- **Guardrail**: Guardrails are automated passive contexts or active checks; Pins are human-locked authoritative invariants that cannot be altered without human override.
+- **Decision (Memory)**: An ADR in memory documents reasoning; a Pin actively blocks the gate from passing if violated.
+
+---
+
+#### String Interner <a id="string-interner"></a>
+
+- **ID**: `term-string-interner`
+- **Tags**: `[terminology, performance, memory, engine]`
+
+**Meaning:**
+# String Interner
+
+### Definition
+A core data structure that stores only a single copy of each unique string slice, mapping strings to compact 32-bit integer identifiers (`Symbol` or `StringId`).
+
+### Why it Matters
+Identifier names, file paths, and AST symbol names are repeated thousands of times across blueprints, claim trees, and telemetry traces. String interning reduces memory footprints by upwards of 80% and converts expensive string equality checks into instant $O(1)$ integer comparisons.
+
+### Example in Practice
+When AFWE checks node contention across 20 concurrent turns, matching node identifiers like `"crates/afwe-core/src/api.rs"` executes as a single integer comparison between two interned symbols, rather than comparing byte sequences.
+
+---
+
+### Confidence Bands & Calibration
+
+#### Ambiguity Question <a id="ambiguity-question"></a>
+
+- **ID**: `term-ambiguity-question`
+- **Tags**: `confidence-bands`, `human-in-the-loop`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+A high-blast-radius architectural dilemma generated when system confidence falls below 85% (`afwe question list`). Instead of making an unverified guess, AFWE pauses and queues the question for human architect confirmation, persisting the resolution into memory or pins.
+
+**Not to be confused with:**
+- **Probing Guide**: Probing guides (85%–90%) advise agents without blocking; Ambiguity Questions (<85%) halt high-risk forks for human judgment.
+
+---
+
+#### Explore Mode <a id="explore-mode"></a>
+
+- **ID**: `term-explore-mode`
+- **Tags**: `explore-mode`, `prototyping`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+A temporary mode activated via `afwe unlock --reason "..."` that downgrades blocking active checks and capability ratchets into non-blocking warnings during active exploratory refactoring or rapid prototyping. The harness must re-arm the gate before release via `afwe lock`, which triggers full architecture verification.
+
+**Not to be confused with:**
+- **Bypassing the Gate**: Explore Mode does not disable detection; it downgrades errors to warnings temporarily while recording the explicit reason in the log.
+
+---
+
+#### Probing Guide <a id="probing-guide"></a>
+
+- **ID**: `term-probing-guide`
+- **Tags**: `confidence-bands`, `advisory`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+An advisory architectural hint emitted in Phase 0 briefings with 85%–90% confidence (`[GUIDE - ADVISORY]`). Probing guides steer the agent toward emerging architectural patterns without hard-blocking execution. When repeatedly adhered to, probing guides graduate into active deterministic checks via `afwe guide graduate`.
+
+**Not to be confused with:**
+- **Active Check**: Active checks block the commit gate; Probing Guides are non-blocking advisory steering.
+- **Ambiguity Question**: Questions have <85% confidence and require human decision; Probing Guides have 85%–90% confidence and steer agents automatically.
+
+---
+
 ### Blueprint & Cartography
 
 #### Blueprint <a id="blueprint"></a>
@@ -742,296 +956,12 @@ A spatial visualizer in AFWE Studio rendering the codebase as a topological map 
 
 ---
 
-### Claims & Tripwires
-
-#### Claim <a id="claim"></a>
-
-- **ID**: `term-claim`
-- **Tags**: `claims`, `pre-generation`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-A pre-generation assertion declared during Phase 1 (`afwe turn assume`) before code is written. Claims include:
-- `forbid_import`: prevents illegal cross-node imports.
-- `forbid_symbol`: disallows blacklisted symbols or deprecated constructs.
-- `export_exists`: guarantees expected public functions or types remain exposed.
-- `symbol_signature`: verifies parameter and return types match contract specifications.
-- `pattern`: applies regex checks with automatic comment blanking.
-- `command`: executes a shell test command.
-- File Claims: locks specific files to avoid concurrent edit collisions.
-
-**Not to be confused with:**
-- **Intent**: Intent states what behavior is desired; a Claim states concrete structural boundaries that code must satisfy.
-
----
-
-#### Comment-Aware Claims <a id="comment-aware-claims"></a>
-
-- **ID**: `term-comment-aware-claims`
-- **Tags**: `terminology`, `claims`, `ast`, `verification`
-
-**Meaning:**
-# Comment-Aware Claims
-
-### Definition
-A parsing strategy that blanks out, ignores, or differentiates code comments and docstrings when evaluating AST function boundaries, symbol claims, and diff contentions.
-
-### Why it Matters
-Naive regex or raw string search can falsely match commented-out code, references in documentation, or license headers as active symbols. Comment-aware claim extraction ensures that agents only claim and lock genuine semantic AST nodes, preventing false contention and allowing concurrent documentation updates without lock collisions.
-
-### Example in Practice
-If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifies an architectural docstring referencing `execute_turn()` in another file, Comment-Aware Claims recognizes the mention as inert prose rather than a declaration lock violation.
-
----
-
-#### Materializer <a id="materializer"></a>
-
-- **ID**: `term-materializer`
-- **Tags**: `materializer`, `tripwire`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-The engine component invoked via `afwe materialize` (or MCP `afwe_materialize`) that renders AFWE tripwires into native workspace files (`.git/hooks/pre-commit`, `.github/workflows/afwe-gate.yml`, native test suites, `AGENTS.md` markers, and `.afwe/checks/manifest.blake3`). It offers preview-first application (`--dry-run` by default) and rollback capabilities.
-
-**Not to be confused with:**
-- **afwe init**: `init` scaffolds `.afwe/`; `materialize` projects active tripwire enforcement into external files outside `.afwe/`.
-
----
-
-#### Skipping Resistance <a id="skipping-resistance"></a>
-
-- **ID**: `term-skipping-resistance`
-- **Tags**: `tripwire`, `governance`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-Tripwire mechanisms ensuring that agents and developers cannot bypass architectural governance by circumventing AFWE CLI calls.
-
-- **CI Gate Trailer Check**: `afwe gate --ci` validates that git commits have valid `AFWE-Turn-Hash` and `AFWE-Turn` trailers matching recorded commit trees.
-- **Unattributed Work Scanner**: Scans working tree changes and flags unmapped modifications as `UNATTRIBUTED` in the Action Queue.
-- **Retroactive Attribution**: `afwe attribute <commit>` allows manual developer commits to be safely and legitimately incorporated into the AFWE audit trail.
-
----
-
-#### Tripwire <a id="tripwire"></a>
-
-- **ID**: `term-tripwire`
-- **Tags**: `tripwire`, `materializer`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-A deterministic, preview-first defensive layer materialized directly into developer and CI harnesses (git hooks, GitHub Actions CI gates, native unit test harnesses, AGENTS.md blocks, and BLAKE3 manifests). Tripwires intercept architectural regressions outside of AFWE commands.
-
-**Not to be confused with:**
-- **Passive Guardrail**: Passive guardrails advise the agent during context loading; Tripwires hard-block git commits, pushes, and CI builds if invariants fail.
-
----
-
-### Confidence Bands & Calibration
-
-#### Ambiguity Question <a id="ambiguity-question"></a>
-
-- **ID**: `term-ambiguity-question`
-- **Tags**: `confidence-bands`, `human-in-the-loop`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-A high-blast-radius architectural dilemma generated when system confidence falls below 85% (`afwe question list`). Instead of making an unverified guess, AFWE pauses and queues the question for human architect confirmation, persisting the resolution into memory or pins.
-
-**Not to be confused with:**
-- **Probing Guide**: Probing guides (85%–90%) advise agents without blocking; Ambiguity Questions (<85%) halt high-risk forks for human judgment.
-
----
-
-#### Explore Mode <a id="explore-mode"></a>
-
-- **ID**: `term-explore-mode`
-- **Tags**: `explore-mode`, `prototyping`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-A temporary mode activated via `afwe unlock --reason "..."` that downgrades blocking active checks and capability ratchets into non-blocking warnings during active exploratory refactoring or rapid prototyping. The harness must re-arm the gate before release via `afwe lock`, which triggers full architecture verification.
-
-**Not to be confused with:**
-- **Bypassing the Gate**: Explore Mode does not disable detection; it downgrades errors to warnings temporarily while recording the explicit reason in the log.
-
----
-
-#### Probing Guide <a id="probing-guide"></a>
-
-- **ID**: `term-probing-guide`
-- **Tags**: `confidence-bands`, `advisory`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-An advisory architectural hint emitted in Phase 0 briefings with 85%–90% confidence (`[GUIDE - ADVISORY]`). Probing guides steer the agent toward emerging architectural patterns without hard-blocking execution. When repeatedly adhered to, probing guides graduate into active deterministic checks via `afwe guide graduate`.
-
-**Not to be confused with:**
-- **Active Check**: Active checks block the commit gate; Probing Guides are non-blocking advisory steering.
-- **Ambiguity Question**: Questions have <85% confidence and require human decision; Probing Guides have 85%–90% confidence and steer agents automatically.
-
----
-
-### Memory, Pins & Living Intents
-
-#### Action Queue <a id="action-queue"></a>
-
-- **ID**: `term-action-queue`
-- **Tags**: `queue`, `governance`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-The deterministic, read-only 6-state governance view over turns, leases, and repository state, providing both humans and delegated orchestrators an actionable view of pending items without polling.
-
-1. **STAGED**: Proposals parked awaiting confirmation or human-floor review.
-2. **GHOST REDO**: Turns left in REDO state when work ceased without clean reset.
-3. **READY**: Evaluated turns where checks passed, sitting in the Ready drawer for git commit.
-4. **ADVISORY DRIFT**: Non-blocking architectural violations and documentation drift.
-5. **STALE NODE LEASES**: Concurrency node leases whose leaseholder heartbeats have lapsed.
-6. **UNATTRIBUTED**: Working-tree modifications or commits lacking AFWE turn attribution.
-
-- **Studio Web / Tauri**: Real-time visual cards with state filters and batch action bars.
-- **Terminal Surface**: Live ANSI dashboard via `afwe watch`.
-- **MCP Tooling**: Headless programmatic inspection and resolution via `afwe_queue_get`, `afwe_queue_act`, and `afwe_batch_act`.
-
----
-
-#### Asset Arena <a id="asset-arena"></a>
-
-- **ID**: `term-asset-arena`
-- **Tags**: `terminology`, `performance`, `memory`, `engine`
-
-**Meaning:**
-# Asset Arena
-
-### Definition
-A contiguous memory pool and monotonic bump allocator used by the AFWE-Core engine and Studio to store, reuse, and bulk-deallocate graph assets, glyphs, and parsed syntax representations.
-
-### Why it Matters
-Frequent allocations and deallocations during rapid AST parsing and graph visualizer frames cause memory fragmentation and garbage collection pauses. The Asset Arena enables zero-fragmentation allocations during a Turn or rendering frame, deallocating the entire arena in a single step upon completion.
-
-### Example in Practice
-During an AST claim pass across 150 source files, tokens and syntax node records are allocated out of a dedicated Turn Asset Arena. Once claims are verified and cached, the entire arena resets instantly without invoking thousands of individual free operations.
-
----
-
-#### Human Floor <a id="human-floor"></a>
-
-- **ID**: `term-human-floor`
-- **Tags**: `authority`, `governance`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-Non-delegable invariants and policy thresholds that cannot be auto-approved or bypassed by any delegated agent prompter, regardless of active delegation budgets.
-
-- Changes touching policy pins or root architecture governance.
-- Large blast radius operations crossing multiple major subsystem boundaries.
-- Remediations outside the narrow self-heal allowlist.
-- Authority mode changes or lease delegation grants.
-
-When a turn triggers a human floor, it is parked as `STAGED` with `requires_human: true`. The orchestrator agent skips the turn and continues its loop without stalling.
-
----
-
-#### Intent <a id="intent"></a>
-
-- **ID**: `term-intent`
-- **Tags**: `intents`, `architecture`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-A living, persistent statement of architectural purpose and desired behavior stored in `.afwe/intents/*.yaml`. Derived and merged from verbatim user prompts over time, intents capture what the codebase is intended to do, its historical evolution, and its implementation mappings.
-
-**Not to be confused with:**
-- **Turn**: A Turn is a single transaction that fulfills or updates one or more intents.
-- **Workflow**: In AFWE ReBorn, legacy workflow graphs have graduated into unified living intents.
-
----
-
-#### Pin <a id="pin"></a>
-
-- **ID**: `term-pin`
-- **Tags**: `pins`, `governance`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-A human-locked architectural decision or intentional bug stored in `.afwe/pins/*.yaml`. Pins represent immutable boundaries that automated agents and refactorings are strictly forbidden from breaking or deleting without an explicit override `{pin, reason}`. Pins are capped under a codebase-scaled budget to prevent architectural ossification.
-
-**Not to be confused with:**
-- **Guardrail**: Guardrails are automated passive contexts or active checks; Pins are human-locked authoritative invariants that cannot be altered without human override.
-- **Decision (Memory)**: An ADR in memory documents reasoning; a Pin actively blocks the gate from passing if violated.
-
----
-
-#### String Interner <a id="string-interner"></a>
-
-- **ID**: `term-string-interner`
-- **Tags**: `terminology`, `performance`, `memory`, `engine`
-
-**Meaning:**
-# String Interner
-
-### Definition
-A core data structure that stores only a single copy of each unique string slice, mapping strings to compact 32-bit integer identifiers (`Symbol` or `StringId`).
-
-### Why it Matters
-Identifier names, file paths, and AST symbol names are repeated thousands of times across blueprints, claim trees, and telemetry traces. String interning reduces memory footprints by upwards of 80% and converts expensive string equality checks into instant $O(1)$ integer comparisons.
-
-### Example in Practice
-When AFWE checks node contention across 20 concurrent turns, matching node identifiers like `"crates/afwe-core/src/api.rs"` executes as a single integer comparison between two interned symbols, rather than comparing byte sequences.
-
----
-
-### Multi-Agent Concurrency & Worktrees
-
-#### Concurrency Lease <a id="concurrency-lease"></a>
-
-- **ID**: `term-lease`
-- **Tags**: `multi-agent`, `concurrency`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-A mutual exclusion mechanism (`afwe lease acquire <node>`) that grants temporary exclusive write permissions on specific Blueprint nodes and their mapped files to an agent or worktree, preventing concurrent agents from generating conflicting changes.
-
-**Not to be confused with:**
-- **File Claim**: A File Claim operates at the individual file path level during a turn; a Concurrency Lease operates at the architectural node level across multiple worktrees and missions.
-
----
-
-#### Contention <a id="contention"></a>
-
-- **ID**: `term-contention`
-- **Tags**: `multi-agent`, `concurrency`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-A concurrency conflict state returned when an agent attempts to begin a turn or acquire claims/leases on files or blueprint nodes already held by another active agent session. When contention occurs, the agent must defer, release overlapping claims, or coordinate via mission boundaries rather than overwriting concurrently.
-
-**Not to be confused with:**
-- **Merge Conflict**: Git merge conflict occurs after text has diverged; Contention is preemptively prevented before code generation starts.
-
----
-
-#### Mission <a id="mission"></a>
-
-- **ID**: `term-mission`
-- **Tags**: `multi-agent`, `coordination`
-- **Applies to**: `afwe-core`, `afwe-cli`
-
-**Meaning:**
-A goal-oriented coordination structure stored in `.afwe/missions/*.yaml` that orchestrates multiple autonomous agents across isolated Git worktrees. Missions break complex epics into discrete turn obligations, managing concurrency leases, shared node boundaries, and merge gates.
-
-**Not to be confused with:**
-- **Turn**: A Turn is executed by a single agent for a single prompt; a Mission coordinates multiple agents and turns toward a composite outcome.
-
----
-
 ### Ratchets & Integrity Verification
 
 #### Capability Bridge <a id="capability-bridge"></a>
 
 - **ID**: `term-capability-bridge`
-- **Tags**: `terminology`, `architecture`, `capabilities`, `interoperability`
+- **Tags**: `[terminology, architecture, capabilities, interoperability]`
 
 **Meaning:**
 # Capability Bridge
@@ -1173,12 +1103,141 @@ A blocking commit gate error triggered when cross-module caller severance drops 
 
 ---
 
+### Claims & Tripwires
+
+#### Claim <a id="claim"></a>
+
+- **ID**: `term-claim`
+- **Tags**: `claims`, `pre-generation`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+A pre-generation assertion declared during Phase 1 (`afwe turn assume`) before code is written. Claims include:
+- `forbid_import`: prevents illegal cross-node imports.
+- `forbid_symbol`: disallows blacklisted symbols or deprecated constructs.
+- `export_exists`: guarantees expected public functions or types remain exposed.
+- `symbol_signature`: verifies parameter and return types match contract specifications.
+- `pattern`: applies regex checks with automatic comment blanking.
+- `command`: executes a shell test command.
+- File Claims: locks specific files to avoid concurrent edit collisions.
+
+**Not to be confused with:**
+- **Intent**: Intent states what behavior is desired; a Claim states concrete structural boundaries that code must satisfy.
+
+---
+
+#### Comment-Aware Claims <a id="comment-aware-claims"></a>
+
+- **ID**: `term-comment-aware-claims`
+- **Tags**: `[terminology, claims, ast, verification]`
+
+**Meaning:**
+# Comment-Aware Claims
+
+### Definition
+A parsing strategy that blanks out, ignores, or differentiates code comments and docstrings when evaluating AST function boundaries, symbol claims, and diff contentions.
+
+### Why it Matters
+Naive regex or raw string search can falsely match commented-out code, references in documentation, or license headers as active symbols. Comment-aware claim extraction ensures that agents only claim and lock genuine semantic AST nodes, preventing false contention and allowing concurrent documentation updates without lock collisions.
+
+### Example in Practice
+If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifies an architectural docstring referencing `execute_turn()` in another file, Comment-Aware Claims recognizes the mention as inert prose rather than a declaration lock violation.
+
+---
+
+#### Materializer <a id="materializer"></a>
+
+- **ID**: `term-materializer`
+- **Tags**: `materializer`, `tripwire`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+The engine component invoked via `afwe materialize` (or MCP `afwe_materialize`) that renders AFWE tripwires into native workspace files (`.git/hooks/pre-commit`, `.github/workflows/afwe-gate.yml`, native test suites, `AGENTS.md` markers, and `.afwe/checks/manifest.blake3`). It offers preview-first application (`--dry-run` by default) and rollback capabilities.
+
+**Not to be confused with:**
+- **afwe init**: `init` scaffolds `.afwe/`; `materialize` projects active tripwire enforcement into external files outside `.afwe/`.
+
+---
+
+#### Skipping Resistance <a id="skipping-resistance"></a>
+
+- **ID**: `term-skipping-resistance`
+- **Tags**: `tripwire`, `governance`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+Tripwire mechanisms ensuring that agents and developers cannot bypass architectural governance by circumventing AFWE CLI calls.
+
+- **CI Gate Trailer Check**: `afwe gate --ci` validates that git commits have valid `AFWE-Turn-Hash` and `AFWE-Turn` trailers matching recorded commit trees.
+- **Unattributed Work Scanner**: Scans working tree changes and flags unmapped modifications as `UNATTRIBUTED` in the Action Queue.
+- **Retroactive Attribution**: `afwe attribute <commit>` allows manual developer commits to be safely and legitimately incorporated into the AFWE audit trail.
+
+---
+
+#### Tripwire <a id="tripwire"></a>
+
+- **ID**: `term-tripwire`
+- **Tags**: `tripwire`, `materializer`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+A deterministic, preview-first defensive layer materialized directly into developer and CI harnesses (git hooks, GitHub Actions CI gates, native unit test harnesses, AGENTS.md blocks, and BLAKE3 manifests). Tripwires intercept architectural regressions outside of AFWE commands.
+
+**Not to be confused with:**
+- **Passive Guardrail**: Passive guardrails advise the agent during context loading; Tripwires hard-block git commits, pushes, and CI builds if invariants fail.
+
+---
+
+### Multi-Agent Concurrency & Worktrees
+
+#### Concurrency Lease <a id="concurrency-lease"></a>
+
+- **ID**: `term-lease`
+- **Tags**: `multi-agent`, `concurrency`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+A mutual exclusion mechanism (`afwe lease acquire <node>`) that grants temporary exclusive write permissions on specific Blueprint nodes and their mapped files to an agent or worktree, preventing concurrent agents from generating conflicting changes.
+
+**Not to be confused with:**
+- **File Claim**: A File Claim operates at the individual file path level during a turn; a Concurrency Lease operates at the architectural node level across multiple worktrees and missions.
+
+---
+
+#### Contention <a id="contention"></a>
+
+- **ID**: `term-contention`
+- **Tags**: `multi-agent`, `concurrency`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+A concurrency conflict state returned when an agent attempts to begin a turn or acquire claims/leases on files or blueprint nodes already held by another active agent session. When contention occurs, the agent must defer, release overlapping claims, or coordinate via mission boundaries rather than overwriting concurrently.
+
+**Not to be confused with:**
+- **Merge Conflict**: Git merge conflict occurs after text has diverged; Contention is preemptively prevented before code generation starts.
+
+---
+
+#### Mission <a id="mission"></a>
+
+- **ID**: `term-mission`
+- **Tags**: `multi-agent`, `coordination`
+- **Applies to**: `afwe-core`, `afwe-cli`
+
+**Meaning:**
+A goal-oriented coordination structure stored in `.afwe/missions/*.yaml` that orchestrates multiple autonomous agents across isolated Git worktrees. Missions break complex epics into discrete turn obligations, managing concurrency leases, shared node boundaries, and merge gates.
+
+**Not to be confused with:**
+- **Turn**: A Turn is executed by a single agent for a single prompt; a Mission coordinates multiple agents and turns toward a composite outcome.
+
+---
+
 ### Turn Protocol & Lifecycle
 
 #### Epoch ID <a id="epoch-id"></a>
 
 - **ID**: `term-epoch-id`
-- **Tags**: `terminology`, `lifecycle`, `orchestration`, `concurrency`
+- **Tags**: `[terminology, lifecycle, orchestration, concurrency]`
 
 **Meaning:**
 # Epoch ID
@@ -1283,7 +1342,7 @@ A turn cancellation command (`afwe turn abandon <turn>`) that discards an open u
 #### Turn Hash <a id="turn-hash"></a>
 
 - **ID**: `term-turn-hash`
-- **Tags**: `terminology`, `identity`, `integrity`, `protocol`
+- **Tags**: `[terminology, identity, integrity, protocol]`
 
 **Meaning:**
 # Turn Hash

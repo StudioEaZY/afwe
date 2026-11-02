@@ -1,4 +1,9 @@
 id: t0026
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-26T11:35:31Z
 origin: human
 prompt: Fix Attachment serialization crashes across Overview, Timeline, Checks, and Decisions pages in Studio
@@ -39,7 +44,7 @@ assumptions:
     - afwe-cli
   status: confirmed
   computed_score: 0.85
-status: ready
+status: committed
 touched:
   nodes:
   - studio
@@ -1191,7 +1196,24 @@ gate:
   - 'PARTIAL_LOSS: studio no longer realised by apps/studio/web-dist/assets/index-B74v8yq5.js'
 footer_shown: false
 summary: Fix Attachment serialization and API envelope unwrapping across Studio pages
+committed_at: 2026-11-02T11:02:01Z
+commit_sha: da87c8dbe10a263c6da728542b378f4e9784ddf9
 turn_token: 10275f337728278f
+post_hashes:
+  .afwe/intents-t0026.json: e28a25ee809956cc
+  .afwe/intents/studio-dots-ui-overhaul.yaml: 3ad436fbc5a1f13f
+  apps/studio/src/components/ChecksPage.tsx: 9ba508d5b7903e80
+  apps/studio/src/components/DecisionsPage.tsx: ee56937f2115ee98
+  apps/studio/src/components/NodeInspector.tsx: 98a32f26fca425d0
+  apps/studio/src/components/SettingsPage.tsx: 04358cae369e21f5
+  apps/studio/src/components/Sidebar.tsx: d7e7c678221370d7
+  apps/studio/src/components/TimelinePage.tsx: aab191bcc6bd92ff
+  apps/studio/src/lib/hierarchy.ts: b4e2e4ae92dd35ab
+  apps/studio/web-dist/index.html: 36323b9b6268346a
+  apps/website/src/components/AfweWordmark.astro: ab9b5626c9852656
+  apps/website/src/layouts/MarketingLayout.astro: 0e40522a7ab587d6
+  apps/website/src/styles/global.css: c131aba55dd25d63
+  apps/website/tailwind.config.mjs: fd34a45defa0cdb0
 session_id: sess-cbf30d
 checkgen:
 - t0026-a1

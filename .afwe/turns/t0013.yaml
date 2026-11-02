@@ -1,4 +1,9 @@
 id: t0013
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-09T10:09:21Z
 origin: human
 prompt: Rewrite TUTORIAL section 1 core philosophy
@@ -30,12 +35,7 @@ touched:
   files:
   - .afwe/docs/TUTORIAL.md
   - .afwe/intents/tutorial-philosophy.yaml
-  - docs/TUTORIAL.md
 implements:
-  afwe-2:
-  - packages/afwe/README.md
-  - packages/afwe/bin/afwe.js
-  - packages/afwe/package.json
   afwe-cli:
   - crates/afwe-cli/Cargo.toml
   - crates/afwe-cli/build.rs

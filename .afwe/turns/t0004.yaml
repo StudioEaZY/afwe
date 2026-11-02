@@ -1,4 +1,9 @@
 id: t0004
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-08T10:24:51Z
 origin: human
 prompt: Add practical developer tutorials, walkthroughs, and harness guide
@@ -39,7 +44,7 @@ assumptions:
     files:
     - docs/WALKTHROUGH.md
   status: proposed
-status: ready
+status: committed
 touched:
   files:
   - .afwe/intents/developer-tutorials-and-guides.yaml
@@ -259,3 +264,11 @@ gate:
   decision: ready
 footer_shown: false
 summary: 'docs: create TUTORIAL.md, WALKTHROUGH.md, and update README.md and AGENTS.md'
+committed_at: 2026-11-02T11:00:25Z
+commit_sha: 35163c4977ab3b164bc144a01c0b6f8d0e64facd
+post_hashes:
+  .afwe/intents/developer-tutorials-and-guides.yaml: a11ffce50f999e32
+  AGENTS.md: b511169c47992dc4
+  README.md: c040da563af57e83
+  docs/TUTORIAL.md: 48b5a866c842e35b
+  docs/WALKTHROUGH.md: 9c5014bd9436bae6

@@ -1,4 +1,9 @@
 id: t0022
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-25T21:05:05Z
 origin: human
 prompt: Retire v1 workflows and contract/board obligation tracking with clean one-time graduation to living intents
@@ -44,7 +49,7 @@ overrides:
   reason: Consolidation preserves 100% determinism with zero model calls in core
 - pin: pin-5babbe
   reason: Consolidation preserves 100% determinism with zero model calls in core
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -338,7 +343,20 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Consolidation preserves 100% determinism with zero model calls in core'
 footer_shown: false
 summary: Consolidate and retire legacy v1 workflows and contract/board obligation tracking with clean one-time graduation to living intents
+committed_at: 2026-11-02T11:01:41Z
+commit_sha: dfeb86dc50126e21bcb2c9fa0c6bfecece0c5caa
 turn_token: 40c10b56ed166754
+post_hashes:
+  .afwe/intents/retire-v1-workflows.yaml: 2b606ea469384491
+  README.md: c040da563af57e83
+  crates/afwe-cli/src/mcp.rs: 171d4b4d84ea6f0e
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/engine.rs: 30d458bda1c4e67e
+  crates/afwe-core/src/init.rs: 12e53f04f0ec6f12
+  crates/afwe-core/src/store.rs: e9b0d360b44b96b7
+  crates/afwe-core/src/turn.rs: ff806378a6a715f4
+  crates/afwe-core/tests/end_to_end.rs: ef4a69d30bf81f98
+  docs/INTEGRATION.md: eb95f904650c2a1f
 session_id: sess-cbf30d
 checkgen:
 - t0022-a1

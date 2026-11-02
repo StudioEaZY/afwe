@@ -1,4 +1,9 @@
 id: t0031
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-27T06:45:44Z
 origin: human
 prompt: Revamp Timeline & Turns, add Google Maps zoom, drag-and-drop, clean canvas callouts, and pinned bookmarks
@@ -23,7 +28,7 @@ assumptions:
 - id: a2
   text: Studio UI wires StudioPrefs bookmarks to Sidebar navigation and NodeInspector
   status: confirmed
-status: ready
+status: committed
 touched:
   nodes:
   - studio
@@ -1049,7 +1054,25 @@ gate:
   - 'PIN_WARN pin-studio-bookmarks-wired: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector'
 footer_shown: false
 summary: 'Complete Studio overhaul: semantic zoom, drag-and-drop, clean canvas, pinned bookmarks, and Timeline & Turns redesign'
+committed_at: 2026-11-02T11:02:33Z
+commit_sha: 9d29fea8fc37b6562a6fc57e1bf4ca0c7e54cdae
 turn_token: fa3e54479aaa1e09
+post_hashes:
+  .afwe/intents-t0031.json: 5e67c785237abf26
+  .afwe/intents/overhaul-timeline-studio-zoom-and-bookmarks.yaml: 5bb109a767916938
+  .afwe/pins/pin-studio-bookmarks-wired.yaml: 61df35a588ab7cfc
+  apps/studio/src/components/CodeDiffViewer.tsx: b044b9c1f2221cd5
+  apps/studio/src/components/ConstellationMap.tsx: 34a8bdbec113a1b5
+  apps/studio/src/components/NodeInspector.tsx: 98a32f26fca425d0
+  apps/studio/src/components/OverviewPage.tsx: 09fbe4175ba70217
+  apps/studio/src/components/RadialMap.tsx: 788be6e2084152d4
+  apps/studio/src/components/Sidebar.tsx: d7e7c678221370d7
+  apps/studio/src/components/TimelineDualScrubber.tsx: a0a7dca2a0ea1f49
+  apps/studio/src/components/TimelinePage.tsx: aab191bcc6bd92ff
+  apps/studio/src/components/TopBar.tsx: edf41318132b7554
+  apps/studio/src/components/TopologyMap.tsx: 5e6b28adc7e80bb5
+  apps/studio/src/styles.css: 54a4b341f9852c89
+  apps/studio/web-dist/index.html: 36323b9b6268346a
 session_id: sess-cbf30d
 held_out_guides:
 - guide-t0022-a1

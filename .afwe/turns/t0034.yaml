@@ -1,4 +1,9 @@
 id: t0034
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-27T10:21:59Z
 origin: human
 prompt: Google Maps semantic zoom engine, spacebar pan hand tool, adaptive legends, timeline 3-view diff with constellation default, radial softness, and at least 3 instances of all AFWE features in demo data
@@ -53,7 +58,7 @@ intents:
   - demo-project
   - scripts
   rationale: Guarantee at least 3 instances of all AFWE features in demo-project and multi-intent-funnel
-status: ready
+status: committed
 touched:
   nodes:
   - demo-project
@@ -1133,7 +1138,26 @@ gate:
   - 'PIN_WARN pin-studio-bookmarks-wired: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector'
 footer_shown: false
 summary: Semantic zoom engine with focal mouse invariance, spacebar hand pan tool, adaptive legends, timeline 3-view diff with constellation default, radial softness, and at least 3 instances of all AFWE features in demo data
+committed_at: 2026-11-02T11:02:51Z
+commit_sha: ca69371589be95ab8fca21fb727c7f78f721e7b7
 turn_token: 0e35bdac0a4af991
+post_hashes:
+  .afwe/intents/adaptive-legend-swatches.yaml: 8aadab52fc7bb563
+  .afwe/intents/radial-softness-restoration.yaml: 1885ccf65ff929fd
+  .afwe/intents/semantic-zoom-engine.yaml: 57061ac7d06f14c9
+  .afwe/intents/spacebar-hand-pan-tool.yaml: bfa95fcd95221596
+  .afwe/intents/timeline-3view-diff-constellation-default.yaml: eb796368d8839792
+  .afwe/intents/upgrade-demo-full-feature-coverage.yaml: e36ef93de47ecb2b
+  apps/studio/src/components/ConstellationMap.tsx: 34a8bdbec113a1b5
+  apps/studio/src/components/OverviewPage.tsx: 09fbe4175ba70217
+  apps/studio/src/components/RadialMap.tsx: 788be6e2084152d4
+  apps/studio/src/components/TimelinePage.tsx: aab191bcc6bd92ff
+  apps/studio/src/components/TopologyMap.tsx: 5e6b28adc7e80bb5
+  apps/studio/src/lib/semanticZoomEngine.ts: bb3f46f8b5d9d57e
+  apps/studio/web-dist/index.html: 36323b9b6268346a
+  examples/demo-project/src/core/models/entities/index.ts: f458b0d0974070b2
+  examples/demo-project/src/data/models/index.ts: abc3912450047d88
+  examples/demo-project/src/infrastructure/deploy/containers/index.ts: 0a5b9dfb2d6fa5d6
 session_id: sess-cbf30d
 held_out_guides:
 - guide-t0022-a1

@@ -262,7 +262,17 @@ afwe turn assume t0001 --file assumptions.json
 afwe turn commit t0001 --summary "Added Stripe webhook verification"
 ```
 
-### 5. Launch the Studio
+### 5. Ledger, Repair & Transport
+```bash
+# Engine history is an append-only ledger ref, not just the working tree
+afwe ledger show
+afwe ledger bootstrap     # one-time import of an existing .afwe/turns projection
+afwe repair               # regenerate .afwe/turns from the ledger
+afwe ledger push origin   # only refs/afwe/ledger/<project_id> travels
+afwe ledger fetch origin  # fast-forward, ahead/behind, or record a fork
+```
+
+### 6. Launch the Studio
 ```bash
 afwe studio
 ```

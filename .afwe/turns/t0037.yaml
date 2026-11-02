@@ -1,4 +1,9 @@
 id: t0037
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-27T20:20:02Z
 origin: human
 prompt: Update demos, documentation, and technical blog on decision-to-code ratchets and Rust for project intent
@@ -55,7 +60,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Documentation, demo, and blog updates only; afwe-core remains 100% deterministic with zero model calls
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -1180,7 +1185,22 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Documentation, demo, and blog updates only; afwe-core remains 100% deterministic with zero model calls'
 footer_shown: false
 summary: Update demos, documentation, and technical blog on decision-to-code ratchets and Rust for project intent
+committed_at: 2026-11-02T11:03:09Z
+commit_sha: a3c4c0c3dbad3e3ca75388cff5724a04bce557ad
 turn_token: aabb2876e274be50
+post_hashes:
+  .afwe/docs/SPEC.md: 3dd0cd82455fa1d8
+  .afwe/docs/TUTORIAL.md: bbb42b4d89961fd0
+  .afwe/intents/document-rust-for-project-intent.yaml: a06c3378a95102a7
+  .afwe/intents/update-demos.yaml: 6bc524699615a1df
+  .afwe/skills/afwe/SKILL.md: c1a17d37f17eca7d
+  apps/website/src/pages/blog/[slug].astro: d0f1e7fc7bb94ed6
+  apps/website/src/pages/blog/index.astro: 63eff53d849068b8
+  crates/afwe-core/src/contract.rs: a4cc4fb2c1de652c
+  docs/SPEC.md: 8298fa177076a7d5
+  docs/TUTORIAL.md: 48b5a866c842e35b
+  scripts/demo.ps1: cd4c23d658e2b83a
+  scripts/demo.sh: f3aa0524b30696a2
 session_id: sess-cbf30d
 checkgen:
 - t0037-a1

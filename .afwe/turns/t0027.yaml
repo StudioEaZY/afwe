@@ -1,4 +1,9 @@
 id: t0027
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-26T16:03:14Z
 origin: human
 prompt: 'Studio v2.5: Two-Tier Undo & Quarantine Grace System, In-Place Timeline & Turns overhaul matching screenshot, Dual Color Engine for Radial and Topology, Deep-Linked Checks, and Wonky Topology'
@@ -27,7 +32,7 @@ assumptions:
     - afwe-cli
   status: confirmed
   computed_score: 0.85
-status: ready
+status: committed
 touched:
   nodes:
   - studio
@@ -1243,7 +1248,45 @@ gate:
   - 'PARTIAL_LOSS: studio no longer realised by apps/studio/web-dist/assets/index-DKpvGVxM.js'
 footer_shown: false
 summary: 'Studio v2.5: Two-Tier Quarantine Grace System (10s countdown before cascading actions like agent dispatches/source file mutations vs instant apply for local governance), unified Turns Workstation matching screenshot with wave + heatmap scrubber & side-by-side Before/After topology diff, separated color engines for Radial and Topology with Settings, deep-linked Checks, Blueprint page, and wonky organic Topology hulls'
+committed_at: 2026-11-02T11:02:06Z
+commit_sha: c69dfdc03f146263dddd30d1c6249c58187fa6e9
 turn_token: 19995db57f0e556b
+post_hashes:
+  .afwe/intents-t0027.json: a42e6901e040e4d6
+  .afwe/intents/studio-dots-ui-overhaul.yaml: 3ad436fbc5a1f13f
+  apps/studio/src/App.tsx: 31faa8a8f226bcc6
+  apps/studio/src/components/BlueprintPage.tsx: d4e836a1a1d4de26
+  apps/studio/src/components/ChecksPage.tsx: 9ba508d5b7903e80
+  apps/studio/src/components/GovernanceActionModal.tsx: a94b36546b708651
+  apps/studio/src/components/RadialMap.tsx: 788be6e2084152d4
+  apps/studio/src/components/SettingsPage.tsx: 04358cae369e21f5
+  apps/studio/src/components/Sidebar.tsx: d7e7c678221370d7
+  apps/studio/src/components/TimelinePage.tsx: aab191bcc6bd92ff
+  apps/studio/src/components/TopBar.tsx: edf41318132b7554
+  apps/studio/src/components/TopologyMap.tsx: 5e6b28adc7e80bb5
+  apps/studio/src/lib/hierarchy.ts: b4e2e4ae92dd35ab
+  apps/studio/src/lib/palettes.ts: 922b2b96cf3cc50b
+  apps/studio/src/lib/prefs.ts: ee06cce1e0dd8d20
+  apps/studio/src/store.ts: ae9e0c6a3333690b
+  apps/studio/web-dist/index.html: 36323b9b6268346a
+  apps/website/dist/blog/blake3-tripwire-protocol/index.html: e744cab48202c569
+  apps/website/dist/blog/constraints-as-geometry/index.html: 2c37ab72a3d15f4b
+  apps/website/dist/blog/index.html: 919ba07163f89283
+  apps/website/dist/blog/the-sponsored-seat-pool/index.html: fdfd11074b7288f4
+  apps/website/dist/blog/why-afwe-rejects-feature-gatekeeping/index.html: fdfd11074b7288f4
+  apps/website/dist/blog/why-graphrag-isnt-enough/index.html: 33175bb4282e1806
+  apps/website/dist/docs/concepts/core-concepts/index.html: cbd017b44aa9d11f
+  apps/website/dist/docs/getting-started/quick-start/index.html: 42de43d01724bb97
+  apps/website/dist/docs/index.html: 2d12c1fe95ba3c1c
+  apps/website/dist/docs/reference/cli/index.html: d3a21a6a2bc1ff8b
+  apps/website/dist/docs/reference/mcp/index.html: 0b481a087b085109
+  apps/website/dist/docs/validators/index.html: 8777e9e08727ac88
+  apps/website/dist/index.html: 1c8fc21b12cfe244
+  apps/website/dist/pricing/index.html: a945d267d305556b
+  apps/website/dist/roadmap/index.html: 629ff454b65ec394
+  apps/website/src/pages/blog/[slug].astro: d0f1e7fc7bb94ed6
+  apps/website/src/pages/blog/index.astro: 63eff53d849068b8
+  apps/website/src/pages/pricing.astro: e9aab88d8a26a037
 session_id: sess-cbf30d
 checkgen:
 - t0027-a1

@@ -303,6 +303,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         return Err(anyhow!("turn.begin needs the prompt text (it is stored verbatim)"));
     }
     let promotions = crate::rollback::promote_manual_commits(engine).unwrap_or_default();
+    let backfilled = crate::ledger::backfill(engine).unwrap_or(0);
     let rollback_events = crate::rollback::reconcile(engine).unwrap_or_default();
     let snap = engine.snapshot(true)?;
     let table = &snap.table;
@@ -570,17 +571,8 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     });
 
     // Durable record of the turn. Best effort: a repo without git, or a ledger failure, must never
-    // stop a turn from opening.
-    if let Err(err) = crate::ledger::append(
-        engine,
-        "turn_recorded",
-        json!({
-            "turn": turn.alias.clone().unwrap_or_else(|| turn.id.clone()),
-            "turn_hash": &turn.turn_hash,
-            "prompt_hash": &turn.prompt_hash,
-            "base_head": &base_head,
-        }),
-    ) {
+    // stop a turn from opening. At begin the expected tree becomes the current tree (`E := C`).
+    if let Err(err) = crate::ledger::record_turn(engine, &turn, "turn_recorded", Some(&baseline.files), true) {
         let _ = engine.log(
             "afwe:ledger",
             "ledger_append_failed",
@@ -599,6 +591,7 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         "session_id": session_id,
         "reconciled_rollbacks": rollback_events,
         "reconciled_promotions": promotions,
+        "ledger_backfilled": backfilled,
         "task": task_id,
         "scope": {"nodes": nodes, "files": brief_files},
         "unresolved_targets": unresolved,
@@ -1534,7 +1527,30 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
 
     if outcome.decision == Decision::Ready {
         turn.status = "ready".into();
+        // Engineer mode ends here and the human commits with git. Record the hashes now so the
+        // ledger has an expected tree and promotion has something to verify against.
+        let mut post_hashes = BTreeMap::new();
+        for file in &turn.touched.files {
+            if let Ok(bytes) = std::fs::read(root.join(file)) {
+                post_hashes.insert(file.clone(), crate::util::hash_bytes(&bytes));
+            }
+        }
+        turn.post_hashes = post_hashes;
         engine.store.save_turn(&turn)?;
+        if let Err(err) = crate::ledger::record_turn(
+            engine,
+            &turn,
+            "turn_ready",
+            Some(&turn.post_hashes),
+            false,
+        ) {
+            let _ = engine.log(
+                "afwe:ledger",
+                "ledger_append_failed",
+                format!("turn_ready was not written to the ledger: {err}"),
+                None,
+            );
+        }
         engine.log(&req.origin, "turn_ready", format!("{id} ready: {summary} ({:.0}%)", confidence * 100.0), Some(json!({"turn": id, "reasons": reasons, "checkgen": made_checks})))?;
         return Ok(json!({
             "status": turn.status,
@@ -1628,9 +1644,27 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
                 turn.status = "ready".into();
                 turn.gate.reasons.push(format!("GIT_COMMIT_FAILED: {e:#}"));
                 engine.store.save_turn(&turn)?;
+                let _ = crate::ledger::record_turn(
+                    engine,
+                    &turn,
+                    "turn_ready",
+                    Some(&turn.post_hashes),
+                    false,
+                );
                 return Ok(json!({"status": "ready", "turn": alias, "error": format!("{e:#}"), "next": "fix git (see error), then commit again"}));
             }
         }
+    }
+
+    if let Err(err) =
+        crate::ledger::record_turn(engine, &turn, "turn_committed", Some(&turn.post_hashes), false)
+    {
+        let _ = engine.log(
+            "afwe:ledger",
+            "ledger_append_failed",
+            format!("turn_committed was not written to the ledger: {err}"),
+            None,
+        );
     }
 
     let mut board = engine.store.board()?;
@@ -1866,6 +1900,7 @@ pub fn revert(engine: &Engine, id: &str, origin: &str) -> Result<Value> {
     engine.store.save_board(&board)?;
     t.status = "reverted".into();
     engine.store.save_turn(&t)?;
+    let _ = crate::ledger::record_turn(engine, &t, "turn_reverted", Some(&t.post_hashes), false);
     engine.log(origin, "turn_revert", format!("{id} reverted: {} restored, {} removed, {} need a manual revert", restored.len(), deleted.len(), manual.len()), Some(json!({"turn": id})))?;
     Ok(json!({"status": "reverted", "turn": id, "restored": restored, "removed": deleted, "manual": manual}))
 }
@@ -1931,6 +1966,7 @@ pub fn redo(engine: &Engine, id: &str, token: Option<&str>, origin: &str) -> Res
     t.status = "open".into();
     t.gate = GateRecord::default();
     engine.store.save_turn(&t)?;
+    let _ = crate::ledger::record_turn(engine, &t, "turn_redo", Some(&t.post_hashes), false);
     engine.log(origin, "turn_redo", format!("{id} reset for redo: {} restored, {} deleted", restored.len(), deleted.len()), Some(json!({"turn": id})))?;
     Ok(json!({
         "status": "open",
@@ -1950,6 +1986,7 @@ pub fn abandon(engine: &Engine, id: &str, token: Option<&str>, origin: &str) -> 
     t.status = "abandoned".into();
     t.gate = GateRecord { decision: "abandoned".into(), reasons: vec!["turn explicitly abandoned".into()] };
     engine.store.save_turn(&t)?;
+    let _ = crate::ledger::record_turn(engine, &t, "turn_abandoned", Some(&t.post_hashes), false);
     engine.log(origin, "turn_abandon", format!("{} abandoned", t.id), Some(json!({"turn": t.id, "hash": t.turn_hash})))?;
     Ok(json!({
         "status": "abandoned",

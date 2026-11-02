@@ -1,4 +1,9 @@
 id: t0036
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-27T19:25:02Z
 origin: human
 prompt: Implement decision-to-code link ratchets and inbound reference capability tracking
@@ -57,7 +62,7 @@ assumptions:
 overrides:
 - pin: pin-5babbe
   reason: Changes in afwe-core are 100% deterministic capability ratchets with zero model calls in core
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -1192,7 +1197,17 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes in afwe-core are 100% deterministic capability ratchets with zero model calls in core'
 footer_shown: false
 summary: Implement decision-to-code link ratchets and inbound reference capability tracking
+committed_at: 2026-11-02T11:03:03Z
+commit_sha: 908865d004ac530f94165331e44f489f3aee3e79
 turn_token: 4b765de22b2066fe
+post_hashes:
+  .afwe/intents/decision-to-code-link-ratchet.yaml: 14865b7bd5adaee9
+  .afwe/intents/inbound-reference-capability-ratchet.yaml: 9092b6380f606e0a
+  crates/afwe-core/src/baseline.rs: 564c1444882f32f5
+  crates/afwe-core/src/conflict.rs: f6b622590cf8602b
+  crates/afwe-core/src/drift.rs: 2b2c0e3b28cbafa9
+  crates/afwe-core/src/model.rs: d0a9e62105403fe0
+  crates/afwe-core/src/turn.rs: ff806378a6a715f4
 session_id: sess-cbf30d
 checkgen:
 - t0036-a1

@@ -1,4 +1,9 @@
 id: t0015
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-15T10:07:47Z
 origin: human
 prompt: 'Phase 2 and 3: Invariant header with shield, Studio SSE live listener, uncharted neutral rating, ratchet baseline, and legacy onboarding'
@@ -58,7 +63,7 @@ overrides:
   reason: 100% deterministic code without LLM model calls in core engine
 - pin: pin-5babbe
   reason: 100% deterministic engine without LLM calls
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -328,3 +333,21 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): 100% deterministic code without LLM model calls in core engine'
 footer_shown: false
 summary: 'Phase 2 and 3: Shield header, Studio SSE listener, uncharted neutral rating, and ratchet baseline'
+committed_at: 2026-11-02T11:01:11Z
+commit_sha: 4380ca1041aec0de6015dcc3e907f559c3b2e26c
+post_hashes:
+  .afwe/intents-t0015.json: 1414b119f6314fa8
+  .afwe/intents/header-and-events.yaml: 4aea6e517d9f36db
+  .afwe/intents/legacy-uncharted-ratchet.yaml: 9509f2d5894637de
+  crates/afwe-cli/src/main.rs: c1b41404270517ee
+  crates/afwe-cli/src/render.rs: 02dbaf795cd23a34
+  crates/afwe-cli/src/studio.rs: 9640e521526fefd6
+  crates/afwe-core/src/api.rs: a12f88a2c85d8efd
+  crates/afwe-core/src/authority.rs: d25fc03d67bed7c9
+  crates/afwe-core/src/baseline.rs: 564c1444882f32f5
+  crates/afwe-core/src/drift.rs: 2b2c0e3b28cbafa9
+  crates/afwe-core/src/header.rs: 5b5d8fad6f54b113
+  crates/afwe-core/src/init.rs: 12e53f04f0ec6f12
+  crates/afwe-core/src/lib.rs: 8fed772b7caf5e13
+  crates/afwe-core/src/onboard.rs: 382f18c22d511c45
+  crates/afwe-core/src/verify.rs: 2ac751aa31c4bc85

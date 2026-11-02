@@ -1,4 +1,9 @@
 id: t0011
+turn_hash: ''
+epoch_id: ''
+token_hash: ''
+base_head: ''
+last_activity: ''
 ts: 2026-10-09T06:16:37Z
 origin: human
 prompt: Reconcile sync check in CI and onboard template
@@ -19,7 +24,7 @@ intents:
 overrides:
 - pin: pin-5babbe
   reason: Changes are 100% deterministic CI workflow and template fix
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -232,3 +237,9 @@ gate:
   - 'OVERRIDDEN pin pin-5babbe (afwe-core stays 100% deterministic with no model calls inside): Changes are 100% deterministic CI workflow and template fix'
 footer_shown: false
 summary: Run afwe sync in CI to materialize derived index on fresh checkouts
+committed_at: 2026-11-02T11:01:00Z
+commit_sha: cf2c19511416a5bd9f59a29fbf2297ed4f76b025
+post_hashes:
+  .afwe/intents/ci-sync-reconcile-and-template.yaml: 3da6ee8a9d9880a1
+  .afwe/intents/ci-sync-reconcile.json: cf21711e077c5fce
+  crates/afwe-core/src/onboard.rs: 382f18c22d511c45

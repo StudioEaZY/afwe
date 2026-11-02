@@ -1,0 +1,18 @@
+id: compact-turn-records
+title: Compact one turn record per turn
+statement: The projection writes one file per turn. The ledger stores full touched and implements maps every twentieth event and a since/add/remove delta otherwise, and expands the delta when reading.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0080
+- t0081
+history:
+- turn: t0080
+  ts: 2026-11-02T11:12:04Z
+  statement: The projection writes one file per turn. The ledger stores full touched and implements maps every twentieth event and a since/add/remove delta otherwise, and expands the delta when reading.
+created: 2026-11-02T11:12:04Z
+updated: 2026-11-02T11:19:47Z
+task: task-t0080
