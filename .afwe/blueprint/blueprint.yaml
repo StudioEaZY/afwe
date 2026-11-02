@@ -181,6 +181,18 @@ nodes:
         purpose: 'Deferred because basic deterministic hold-out probing in Phase 1 must collect real data before tuning adaptive hold-out frequencies. Trigger to start: after collecting >=50 multi-session probing turns across dogfooded repositories.'
         status: planned
         origin: human
+      - id: backup-retention
+        name: backup-retention
+        kind: module
+        purpose: 'Automated backup retention (policy.backup_keep, policy.backup_older_than), afwe backup prune, and sanitized export for non-git backup destinations.'
+        status: planned
+        origin: human
+      - id: portability-arm64-musl
+        name: portability-arm64-musl
+        kind: module
+        purpose: 'Native compilation targets, cross-building and prebuilt binary packaging for Windows ARM64 and Linux musl/Alpine.'
+        status: planned
+        origin: human
   - id: examples
     name: Examples
     kind: subsystem
