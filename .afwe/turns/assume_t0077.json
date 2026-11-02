@@ -1,0 +1,51 @@
+{
+  "intents": [
+    {
+      "id": "fix-confused-parser",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Stop corrupting the not-to-be-confused terms",
+      "statement": "parse_term_sections strips the leading '- **' before slicing rest[2..idx], so every confused-with term loses its first two characters. Slice from the start of rest instead, in all three bullet shapes."
+    },
+    {
+      "id": "collapse-anchor-dashes",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Make anchors stable when a title has several delimiters",
+      "statement": "A single replace(\"--\", \"-\") pass leaves '&' surrounded by spaces as a double dash, so the 'CI Runner Profile & Cached Acquisition' anchor does not match its table link. Extract one anchor function that collapses dash runs without changing existing underscore anchors."
+    },
+    {
+      "id": "regenerate-dictionary",
+      "action": "refine",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Regenerate the compiled dictionary",
+      "statement": "After the parser and anchor fixes, run memory sync-terms, prove it is idempotent across two runs, and confirm the three new terms appear with intact text."
+    },
+    {
+      "id": "unbreak-cli-build",
+      "action": "refine",
+      "targets": [
+        "afwe-cli"
+      ],
+      "title": "Make the CLI build again",
+      "statement": "watcher.rs calls chrono::Utc::now() but afwe-cli does not depend on chrono, so the binary cannot be rebuilt at HEAD and the checked-in afwe.exe predates the last two turns. Use afwe_core::util::now() instead of adding a dependency."
+    },
+    {
+      "id": "migrate-legacy-terms",
+      "action": "update",
+      "targets": [
+        "Afwe Core"
+      ],
+      "title": "Migrate legacy term frontmatter",
+      "statement": "Four terminology files still use the old term/kind: concept/status: canonical frontmatter, so load_terms ignores them and regeneration silently drops Action Queue, Human Floor, Prompter Delegation and Skipping Resistance. Rewrite their frontmatter to the current schema and add a Meaning section."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

@@ -1,0 +1,17 @@
+id: unbreak-cli-build
+title: Make the CLI build again
+statement: watcher.rs calls chrono::Utc::now() but afwe-cli does not depend on chrono, so the binary cannot be rebuilt at HEAD and the checked-in afwe.exe predates the last two turns. Use afwe_core::util::now() instead of adding a dependency.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-cli
+from_turns:
+- t0077
+history:
+- turn: t0077
+  ts: 2026-11-02T01:45:41Z
+  statement: watcher.rs calls chrono::Utc::now() but afwe-cli does not depend on chrono, so the binary cannot be rebuilt at HEAD and the checked-in afwe.exe predates the last two turns. Use afwe_core::util::now() instead of adding a dependency.
+created: 2026-11-02T01:45:41Z
+updated: 2026-11-02T01:46:58Z
+task: task-t0077

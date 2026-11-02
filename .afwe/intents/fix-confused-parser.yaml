@@ -1,0 +1,17 @@
+id: fix-confused-parser
+title: Stop corrupting the not-to-be-confused terms
+statement: parse_term_sections strips the leading '- **' before slicing rest[2..idx], so every confused-with term loses its first two characters. Slice from the start of rest instead, in all three bullet shapes.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0077
+history:
+- turn: t0077
+  ts: 2026-11-02T01:42:14Z
+  statement: parse_term_sections strips the leading '- **' before slicing rest[2..idx], so every confused-with term loses its first two characters. Slice from the start of rest instead, in all three bullet shapes.
+created: 2026-11-02T01:42:14Z
+updated: 2026-11-02T01:46:58Z
+task: task-t0077

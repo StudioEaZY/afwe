@@ -60,7 +60,7 @@ impl PresenceWatcher {
                 let _ = std::fs::create_dir_all(project_root.join(".afwe").join("state"));
                 let json_data = serde_json::json!({
                     "pid": c.id(),
-                    "started_at": chrono::Utc::now().to_rfc3339()
+                    "started_at": afwe_core::util::now()
                 });
                 let _ = std::fs::write(&watcher_state, json_data.to_string());
             }

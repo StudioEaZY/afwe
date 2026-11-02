@@ -1,0 +1,17 @@
+id: migrate-legacy-terms
+title: Migrate legacy term frontmatter
+statement: 'Four terminology files still use the old term/kind: concept/status: canonical frontmatter, so load_terms ignores them and regeneration silently drops Action Queue, Human Floor, Prompter Delegation and Skipping Resistance. Rewrite their frontmatter to the current schema and add a Meaning section.'
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0077
+history:
+- turn: t0077
+  ts: 2026-11-02T01:46:58Z
+  statement: 'Four terminology files still use the old term/kind: concept/status: canonical frontmatter, so load_terms ignores them and regeneration silently drops Action Queue, Human Floor, Prompter Delegation and Skipping Resistance. Rewrite their frontmatter to the current schema and add a Meaning section.'
+created: 2026-11-02T01:46:58Z
+updated: 2026-11-02T01:46:58Z
+task: task-t0077

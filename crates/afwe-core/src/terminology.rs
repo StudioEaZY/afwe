@@ -99,15 +99,15 @@ fn parse_term_sections(body: &str) -> (String, Vec<(String, String)>) {
             if trimmed.starts_with("- **") || trimmed.starts_with("* **") {
                 let rest = trimmed.trim_start_matches(['-', '*', ' ']);
                 if let Some(idx) = rest.find("**:") {
-                    let target_term = rest[2..idx].trim().to_string();
+                    let target_term = rest[..idx].trim().to_string();
                     let desc = rest[idx + 3..].trim().to_string();
                     confused.push((target_term, desc));
                 } else if let Some(idx) = rest.find("** -") {
-                    let target_term = rest[2..idx].trim().to_string();
+                    let target_term = rest[..idx].trim().to_string();
                     let desc = rest[idx + 4..].trim().to_string();
                     confused.push((target_term, desc));
                 } else if let Some(idx) = rest.find("**") {
-                    let target_term = rest[2..idx].trim().to_string();
+                    let target_term = rest[..idx].trim().to_string();
                     let desc = rest[idx + 2..].trim_start_matches([':', '-', ' ']).to_string();
                     confused.push((target_term, desc));
                 }
@@ -120,6 +120,16 @@ fn parse_term_sections(body: &str) -> (String, Vec<(String, String)>) {
     }
 
     (meaning.trim().to_string(), confused)
+}
+
+/// One anchor rule for table links, section ids and HTML cards. A run of delimiters collapses to a
+/// single dash, but underscores are kept so anchors like `#dead_on_arrival` stay stable.
+fn anchor_for(title: &str) -> String {
+    let mut out = title.to_lowercase().replace([' ', '(', ')', '/', ':', '&'], "-");
+    while out.contains("--") {
+        out = out.replace("--", "-");
+    }
+    out.trim_matches('-').to_string()
 }
 
 /// Load and parse all terminology entries from store
@@ -183,7 +193,7 @@ pub fn generate_markdown(terms: &[TermItem]) -> String {
     md.push_str("| :--- | :--- | :--- | :--- |\n");
 
     for t in terms {
-        let anchor = t.title.to_lowercase().replace([' ', '(', ')', '/', ':', '&'], "-").replace("--", "-").trim_matches('-').to_string();
+        let anchor = anchor_for(&t.title);
         let short_meaning = t.meaning.lines().next().unwrap_or("").trim();
         let confused_summary = if t.not_to_be_confused_with.is_empty() {
             "—".into()
@@ -204,7 +214,7 @@ pub fn generate_markdown(terms: &[TermItem]) -> String {
     for (cat, cat_terms) in grouped {
         md.push_str(&format!("### {}\n\n", cat));
         for t in cat_terms {
-            let anchor = t.title.to_lowercase().replace([' ', '(', ')', '/', ':', '&'], "-").replace("--", "-").trim_matches('-').to_string();
+            let anchor = anchor_for(&t.title);
             md.push_str(&format!("#### {} <a id=\"{}\"></a>\n\n", t.title, anchor));
             md.push_str(&format!("- **ID**: `{}`\n", t.id));
             if !t.tags.is_empty() {
@@ -513,7 +523,7 @@ pub fn generate_html(terms: &[TermItem]) -> String {
 
     html.push_str("    <div class=\"grid\" id=\"terms-grid\">\n");
     for t in terms {
-        let anchor = t.title.to_lowercase().replace([' ', '(', ')', '/', ':', '&'], "-").replace("--", "-").trim_matches('-').to_string();
+        let anchor = anchor_for(&t.title);
         html.push_str(&format!("      <article class=\"card\" id=\"{}\" data-category=\"{}\" data-title=\"{}\" data-tags=\"{}\">\n", anchor, t.category, t.title.to_lowercase(), t.tags.join(" ")));
         html.push_str("        <div class=\"card-header\">\n");
         html.push_str(&format!("          <h2 class=\"card-title\">{}</h2>\n", t.title));
@@ -689,6 +699,25 @@ mod tests {
         let loaded = load_terms(&store).unwrap();
         assert!(loaded.is_empty());
         let _ = std::fs::remove_dir_all(&temp_dir);
+    }
+
+    #[test]
+    fn confused_terms_keep_their_first_characters() {
+        let body = "# Dormant Check\n\n## Meaning\nA check.\n\n## Not to be confused with\n- **Retired check**: a deliberate retirement.\n- **Superseded check** - replaced by a newer check.\n";
+        let (meaning, confused) = parse_term_sections(body);
+        assert_eq!(meaning.trim(), "A check.");
+        assert_eq!(confused.len(), 2, "{confused:?}");
+        assert_eq!(confused[0].0, "Retired check");
+        assert_eq!(confused[0].1, "a deliberate retirement.");
+        assert_eq!(confused[1].0, "Superseded check");
+        assert_eq!(confused[1].1, "replaced by a newer check.");
+    }
+
+    #[test]
+    fn anchors_collapse_delimiter_runs_without_touching_underscores() {
+        assert_eq!(anchor_for("CI Runner Profile & Cached Acquisition"), "ci-runner-profile-cached-acquisition");
+        assert_eq!(anchor_for("DEAD_ON_ARRIVAL"), "dead_on_arrival");
+        assert_eq!(anchor_for("4D Timeline Dial"), "4d-timeline-dial");
     }
 }
 

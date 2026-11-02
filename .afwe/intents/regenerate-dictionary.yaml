@@ -1,0 +1,17 @@
+id: regenerate-dictionary
+title: Regenerate the compiled dictionary
+statement: After the parser and anchor fixes, run memory sync-terms, prove it is idempotent across two runs, and confirm the three new terms appear with intact text.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0077
+history:
+- turn: t0077
+  ts: 2026-11-02T01:42:14Z
+  statement: After the parser and anchor fixes, run memory sync-terms, prove it is idempotent across two runs, and confirm the three new terms appear with intact text.
+created: 2026-11-02T01:42:14Z
+updated: 2026-11-02T01:46:58Z
+task: task-t0077

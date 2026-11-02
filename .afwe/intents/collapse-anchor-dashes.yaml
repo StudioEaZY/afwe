@@ -1,0 +1,17 @@
+id: collapse-anchor-dashes
+title: Make anchors stable when a title has several delimiters
+statement: A single replace("--", "-") pass leaves '&' surrounded by spaces as a double dash, so the 'CI Runner Profile & Cached Acquisition' anchor does not match its table link. Extract one anchor function that collapses dash runs without changing existing underscore anchors.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0077
+history:
+- turn: t0077
+  ts: 2026-11-02T01:42:14Z
+  statement: A single replace("--", "-") pass leaves '&' surrounded by spaces as a double dash, so the 'CI Runner Profile & Cached Acquisition' anchor does not match its table link. Extract one anchor function that collapses dash runs without changing existing underscore anchors.
+created: 2026-11-02T01:42:14Z
+updated: 2026-11-02T01:46:58Z
+task: task-t0077
