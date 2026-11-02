@@ -86,7 +86,7 @@ overrides:
   reason: no model calls were added; snapshots are deterministic git plumbing and the private index build
 - pin: pin-harness-agnostic
   reason: no harness or vendor names were added; snapshots run only at AFWE entry points
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-cli
@@ -6286,6 +6286,8 @@ gate:
   - 'PIN_WARN pin-studio-bookmarks-wired: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector'
 footer_shown: true
 summary: 'P2 snapshots: parentless refs, private per-worktree index, exclusions for engine state/nested/LFS/oversized content, turn begin/end capture and snapshot CLI/API'
+committed_at: 2026-11-02T14:53:18Z
+commit_sha: 5e6e202cec454bd0a66a78c7274bec6f66dfc8bb
 turn_token: afwe_tok_3e27bf64afafce482fcc840d77e735ac
 post_hashes:
   .afwe/docs/UBIQUITOUS_LANGUAGE.html: fb7a3c26d8349951

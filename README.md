@@ -277,9 +277,12 @@ afwe ledger fetch origin  # fast-forward, ahead/behind, or record a fork
 afwe snapshot take        # parentless commit under refs/afwe/snapshots/<project_id>/
 afwe snapshot list
 afwe snapshot show <id>
+afwe rewind list          # recorded REWOUND / COMPOUND / UNATTRIBUTED receipts
+afwe rewind check         # classify the current tree now
 ```
 Snapshots are local evidence: they exclude engine-owned state, nested repositories, LFS paths,
-symlinks and oversized files, and are taken automatically at turn begin and end.
+symlinks and oversized files, and are taken automatically at turn begin and end. A rewind receipt is
+advisory; it never restores a file or blocks a commit.
 
 ### 7. Launch the Studio
 ```bash

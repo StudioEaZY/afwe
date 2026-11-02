@@ -1,0 +1,17 @@
+id: receipts-in-briefing
+title: Carry receipts in the next briefing
+statement: turn.begin returns rewind_receipts and a rewind_notice, and the receipt never blocks the turn, never restores a file and never refuses a commit.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0083
+history:
+- turn: t0083
+  ts: 2026-11-02T14:57:16Z
+  statement: turn.begin returns rewind_receipts and a rewind_notice, and the receipt never blocks the turn, never restores a file and never refuses a commit.
+created: 2026-11-02T14:57:16Z
+updated: 2026-11-02T14:57:16Z
+task: task-t0083

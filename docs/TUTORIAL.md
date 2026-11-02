@@ -401,5 +401,27 @@ afwe snapshot show snap-c16f0ee6404d
   never blocks the turn.
 - Snapshot refs are **local only**. `afwe ledger push` moves the ledger, never snapshots.
 
+---
+
+## 14. Rewind Classification & Receipts
+
+At `turn begin`, AFWE compares the current tree `C` with the ledger's expected tree `E` and uses the
+local snapshot history to explain any difference:
+
+- **REWOUND**: every changed path matches one earlier snapshot, and the tree matches it exactly.
+- **COMPOUND**: some paths match older content while others are new.
+- **UNATTRIBUTED**: changed content matches no recorded snapshot.
+
+```bash
+afwe rewind list     # recorded receipts
+afwe rewind check    # classify the current tree now
+```
+
+A receipt names the matched snapshot, the changed paths and the turns that may have been undone. It
+is **advisory**: nothing is restored, no turn is refused, and `turn commit` continues normally. The
+next `turn.begin` briefing carries `rewind_receipts` plus a one-line `rewind_notice`. Identical
+differences are receipted once.
+
+
 
 

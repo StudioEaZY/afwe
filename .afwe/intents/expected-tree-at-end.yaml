@@ -1,0 +1,17 @@
+id: expected-tree-at-end
+title: Advance E to the full tree at turn end
+statement: turn ready and turn commit record the full current map as the expected tree, because sync can change .afwe sources after the touched set was computed. This prevents a false rewind on the next begin.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0083
+history:
+- turn: t0083
+  ts: 2026-11-02T14:57:16Z
+  statement: turn ready and turn commit record the full current map as the expected tree, because sync can change .afwe sources after the touched set was computed. This prevents a false rewind on the next begin.
+created: 2026-11-02T14:57:16Z
+updated: 2026-11-02T14:57:16Z
+task: task-t0083

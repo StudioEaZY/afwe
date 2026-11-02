@@ -12,7 +12,7 @@ use crate::ledger;
 use anyhow::{anyhow, Context, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -283,6 +283,7 @@ fn build_index(
     lfs: &[String],
     nested: &[String],
     excluded: &mut Vec<String>,
+    hashes: &mut BTreeMap<String, String>,
 ) -> Result<usize> {
     let listing = git_ok_env(root, &["ls-files", "-co", "--exclude-standard", "-z"], envs)?;
     let mut paths: Vec<String> = Vec::new();
@@ -317,6 +318,9 @@ fn build_index(
         if meta.len() > max_bytes {
             excluded.push(format!("oversized:{path}"));
             continue;
+        }
+        if let Ok(bytes) = std::fs::read(&abs) {
+            hashes.insert(path.to_string(), crate::util::hash_bytes(&bytes));
         }
         paths.push(path.to_string());
     }
@@ -373,7 +377,8 @@ fn create_with_limit(
     let nested = nested_repos(root);
     let lfs = lfs_patterns(root);
     let mut excluded: Vec<String> = nested.iter().map(|repo| format!("nested:{repo}")).collect();
-    build_index(root, &envs, max_bytes, &lfs, &nested, &mut excluded)?;
+    let mut hashes: BTreeMap<String, String> = BTreeMap::new();
+    build_index(root, &envs, max_bytes, &lfs, &nested, &mut excluded, &mut hashes)?;
 
     let tree = git_ok_env(root, &["write-tree"], &envs)?.trim().to_string();
     if tree.is_empty() {
@@ -428,8 +433,21 @@ fn create_with_limit(
     let _ = engine
         .store
         .write_json(&format!("state/snapshots/{}.json", meta.id), &meta);
+    let _ = engine
+        .store
+        .write_json(&format!("state/snapshots/{}.hashes.json", meta.id), &hashes);
     let _ = ledger::append(engine, "snapshot_taken", json!(meta));
     Ok(meta)
+}
+
+/// Path -> blake3 map for a snapshot. Snapshots recorded before hashes were stored return empty.
+pub fn hashes(engine: &Engine, meta: &SnapshotMeta) -> BTreeMap<String, String> {
+    engine
+        .store
+        .read_json::<BTreeMap<String, String>>(&format!("state/snapshots/{}.hashes.json", meta.id))
+        .ok()
+        .flatten()
+        .unwrap_or_default()
 }
 
 fn excluded_dedup(items: &mut Vec<String>) {

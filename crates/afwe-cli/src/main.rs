@@ -336,6 +336,9 @@ enum Cmd {
     /// Local parentless working-tree snapshots
     #[command(subcommand)]
     Snapshot(SnapshotCmd),
+    /// Rewind receipts: list recorded classifications or classify the current tree now
+    #[command(subcommand)]
+    Rewind(RewindCmd),
     /// Regenerate the engine-owned `.afwe/turns` projection from the ledger
     Repair,
 }
@@ -353,6 +356,14 @@ enum SnapshotCmd {
         #[arg(long)]
         turn: Option<String>,
     },
+}
+
+#[derive(Subcommand)]
+enum RewindCmd {
+    /// List recorded rewind receipts
+    List,
+    /// Classify the current tree against the expected tree now
+    Check,
 }
 
 #[derive(Subcommand)]
@@ -2036,6 +2047,15 @@ fn run(cli: Cli) -> Result<i32> {
                 SnapshotCmd::Take { phase, turn } => {
                     api::call(&engine, "snapshot.take", json!({"phase": phase, "turn": turn}), &origin)?
                 }
+            };
+            println!("{}", serde_json::to_string_pretty(&v)?);
+            Ok(0)
+        }
+        Cmd::Rewind(cmd) => {
+            let engine = engine_for(&cli.dir)?;
+            let v = match cmd {
+                RewindCmd::List => api::call(&engine, "rewind.list", json!({}), &origin)?,
+                RewindCmd::Check => api::call(&engine, "rewind.classify", json!({}), &origin)?,
             };
             println!("{}", serde_json::to_string_pretty(&v)?);
             Ok(0)

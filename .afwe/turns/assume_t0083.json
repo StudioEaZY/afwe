@@ -1,0 +1,55 @@
+{
+  "intents": [
+    {
+      "id": "snapshot-path-history",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Persist per-path hashes with each snapshot",
+      "statement": "Every snapshot stores a path to blake3 map beside its ref, so classification can look up historical content without re-reading git blobs; older snapshots without hashes are simply unavailable evidence."
+    },
+    {
+      "id": "classify-rewind-verdicts",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Classify REWOUND, COMPOUND and UNATTRIBUTED",
+      "statement": "At turn begin, diff the expected tree E against the current tree C and match changed paths against snapshot history. All changed paths on one snapshot is REWOUND; mixed matches are COMPOUND; no match is UNATTRIBUTED. Multiple historical matches are marked ambiguous and the most recent wins."
+    },
+    {
+      "id": "rewind-receipts",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Write one aggregated receipt",
+      "statement": "A difference produces one receipt with verdict, matched snapshot, changed paths and turns possibly undone. Identical differences are receipted once, stored in state/rewind.json, capped at 20, and appended to the ledger as rewind_confirmed or rewind_possible."
+    },
+    {
+      "id": "receipts-in-briefing",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Carry receipts in the next briefing",
+      "statement": "turn.begin returns rewind_receipts and a rewind_notice, and the receipt never blocks the turn, never restores a file and never refuses a commit."
+    },
+    {
+      "id": "expected-tree-at-end",
+      "action": "refine",
+      "targets": ["Afwe Core"],
+      "title": "Advance E to the full tree at turn end",
+      "statement": "turn ready and turn commit record the full current map as the expected tree, because sync can change .afwe sources after the touched set was computed. This prevents a false rewind on the next begin."
+    },
+    {
+      "id": "rewind-surface",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Rewind list and check",
+      "statement": "afwe rewind list and afwe rewind check expose receipts and on-demand classification through the API and MCP."
+    },
+    {
+      "id": "document-rewind-classification",
+      "action": "create",
+      "targets": ["Afwe Core"],
+      "title": "Document classification and receipts",
+      "statement": "TUTORIAL, SPEC, README, skill and the Rewind Receipt term describe the verdicts, dedupe, advisory behaviour and the E := C fix."
+    }
+  ],
+  "assumptions": [],
+  "removes": []
+}

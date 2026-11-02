@@ -647,6 +647,25 @@ AFWE detects, organizes, routes, and safely executes mechanical corrective actio
 - **Surface**: `afwe snapshot take|list|show`, `snapshot.*` API ops and the `afwe_snapshot_*` MCP
   tools.
 
+## 19. Rewind Classification & Receipts
+
+- **At turn begin**: compute `C` for the ledger's `E` paths by hashing the files on disk (blake3),
+  diff `E` against `C`, and explain the changed paths from local snapshot hashes.
+- **Verdicts**: `REWOUND` when every changed path matches one snapshot and the tree matches it
+  exactly; `COMPOUND` when some paths match older content and others are new; `UNATTRIBUTED` when no
+  changed path matches a recorded snapshot. Multiple historical matches mark the path ambiguous and
+  the receipt picks the most recent.
+- **Turns undone**: derived from the matched snapshot's turn and phase in ledger order. A `begin`
+  snapshot means that turn and later; an `end` snapshot means later turns only.
+- **Receipt**: one aggregated record per difference (id, verdict, exact, from turn, matched snapshot,
+  paths, candidate turns, note, state hash). It is stored in `state/rewind.json`, capped at 20, and
+  appended to the ledger as `rewind_confirmed` (exact) or `rewind_possible`.
+- **Dedupe**: the same changed-path/content hash is receipted once.
+- **Never block, never restore**: classification does not change files, gate a turn, or refuse a
+  commit. The next `turn.begin` briefing carries `rewind_receipts` and `rewind_notice`.
+- **Surface**: `afwe rewind list|check`, `rewind.*` API ops and `afwe_rewind_*` MCP tools.
+
+
 
 
 

@@ -1,0 +1,17 @@
+id: rewind-surface
+title: Rewind list and check
+statement: afwe rewind list and afwe rewind check expose receipts and on-demand classification through the API and MCP.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0083
+history:
+- turn: t0083
+  ts: 2026-11-02T14:57:16Z
+  statement: afwe rewind list and afwe rewind check expose receipts and on-demand classification through the API and MCP.
+created: 2026-11-02T14:57:16Z
+updated: 2026-11-02T14:57:16Z
+task: task-t0083

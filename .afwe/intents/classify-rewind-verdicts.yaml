@@ -1,0 +1,17 @@
+id: classify-rewind-verdicts
+title: Classify REWOUND, COMPOUND and UNATTRIBUTED
+statement: At turn begin, diff the expected tree E against the current tree C and match changed paths against snapshot history. All changed paths on one snapshot is REWOUND; mixed matches are COMPOUND; no match is UNATTRIBUTED. Multiple historical matches are marked ambiguous and the most recent wins.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0083
+history:
+- turn: t0083
+  ts: 2026-11-02T14:57:16Z
+  statement: At turn begin, diff the expected tree E against the current tree C and match changed paths against snapshot history. All changed paths on one snapshot is REWOUND; mixed matches are COMPOUND; no match is UNATTRIBUTED. Multiple historical matches are marked ambiguous and the most recent wins.
+created: 2026-11-02T14:57:16Z
+updated: 2026-11-02T14:57:16Z
+task: task-t0083

@@ -306,6 +306,10 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
     let promotions = crate::rollback::promote_manual_commits(engine).unwrap_or_default();
     let backfilled = crate::ledger::backfill(engine).unwrap_or(0);
     let rollback_events = crate::rollback::reconcile(engine).unwrap_or_default();
+    // Classify any difference from the expected tree before this turn takes its begin snapshot.
+    // A receipt is advisory: it never blocks the turn and never restores a file.
+    let rewind_receipt = crate::rewind::classify(engine).ok().flatten();
+    let rewind_notice = rewind_receipt.as_ref().map(crate::rewind::format_notice);
     let snap = engine.snapshot(true)?;
     let table = &snap.table;
     let prefix = code_prefix(&snap.manifest);
@@ -608,6 +612,8 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         "reconciled_promotions": promotions,
         "ledger_backfilled": backfilled,
         "snapshot": begin_snapshot,
+        "rewind_receipts": rewind_receipt.iter().cloned().collect::<Vec<_>>(),
+        "rewind_notice": rewind_notice,
         "task": task_id,
         "scope": {"nodes": nodes, "files": brief_files},
         "unresolved_targets": unresolved,
@@ -1566,12 +1572,16 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
                 None
             }
         };
+        let end_map = engine
+            .snapshot(true)
+            .map(|snap| tree_hashes(engine, &snap))
+            .unwrap_or_else(|_| turn.post_hashes.clone());
         if let Err(err) = crate::ledger::record_turn(
             engine,
             &turn,
             "turn_ready",
-            Some(&turn.post_hashes),
-            false,
+            Some(&end_map),
+            true,
         ) {
             let _ = engine.log(
                 "afwe:ledger",
@@ -1700,8 +1710,12 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         }
     };
 
+    let end_map = engine
+        .snapshot(true)
+        .map(|snap| tree_hashes(engine, &snap))
+        .unwrap_or_else(|_| turn.post_hashes.clone());
     if let Err(err) =
-        crate::ledger::record_turn(engine, &turn, "turn_committed", Some(&turn.post_hashes), false)
+        crate::ledger::record_turn(engine, &turn, "turn_committed", Some(&end_map), true)
     {
         let _ = engine.log(
             "afwe:ledger",

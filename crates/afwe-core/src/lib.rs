@@ -51,6 +51,7 @@ pub mod outbox;
 pub mod project_registry;
 pub mod queue;
 pub mod registry;
+pub mod rewind;
 pub mod rollback;
 pub mod scene;
 pub mod snapshots;

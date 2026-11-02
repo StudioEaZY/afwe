@@ -1,0 +1,17 @@
+id: snapshot-path-history
+title: Persist per-path hashes with each snapshot
+statement: Every snapshot stores a path to blake3 map beside its ref, so classification can look up historical content without re-reading git blobs; older snapshots without hashes are simply unavailable evidence.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0083
+history:
+- turn: t0083
+  ts: 2026-11-02T14:57:16Z
+  statement: Every snapshot stores a path to blake3 map beside its ref, so classification can look up historical content without re-reading git blobs; older snapshots without hashes are simply unavailable evidence.
+created: 2026-11-02T14:57:16Z
+updated: 2026-11-02T14:57:16Z
+task: task-t0083

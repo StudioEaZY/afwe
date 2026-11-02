@@ -748,6 +748,32 @@ pub fn show(engine: &Engine) -> Result<Value> {
 
 // ───────────────────────────── repair ─────────────────────────────
 
+/// Advance `E := C` in the ledger after a repair. The current tree is recomputed with a fresh
+/// analysis so a stale cache cannot leave an expected tree that differs from disk.
+pub fn repair_expected(engine: &Engine) -> Result<usize> {
+    let snap = engine.snapshot(true)?;
+    let current = crate::turn::tree_hashes(engine, &snap);
+    let last_turn = turns(engine)?.last().map(alias_of);
+    let state = ExpectedState {
+        version: LEDGER_VERSION,
+        updated_at: crate::util::now(),
+        turn: last_turn,
+        paths: current.clone(),
+        provenance: Some("repair".into()),
+    };
+    let entry = vec![(
+        "state/expected.json".to_string(),
+        serde_json::to_string_pretty(&state)?,
+    )];
+    append_with(
+        engine,
+        "repair",
+        json!({"expected_paths": current.len(), "reason": "repair"}),
+        move |_, _| Ok(entry.clone()),
+    )?;
+    Ok(current.len())
+}
+
 /// Regenerate the ENGINE_OWNED projection (`.afwe/turns/`) from the ledger. Unknown or duplicate
 /// turn files are moved to `.afwe/backups/`, never deleted.
 pub fn repair(engine: &Engine) -> Result<Value> {
@@ -823,15 +849,16 @@ pub fn repair(engine: &Engine) -> Result<Value> {
         }
     }
 
-    let expected = read_expected_at(root, &tip_sha)?.unwrap_or_default();
+    let expected_paths = repair_expected(engine)?;
+    let repaired_tip = tip(root, &refname).unwrap_or(tip_sha);
     let summary = json!({
-        "tip": tip_sha,
+        "tip": repaired_tip,
         "project_id": project,
         "turns": turns.len(),
         "moved_to_backup": moved,
         "unmatched_left_in_place": unmatched,
         "backup": backup_dir.to_string_lossy(),
-        "expected_paths": expected.paths.len(),
+        "expected_paths": expected_paths,
     });
     engine.store.write_json(
         "state/ledger.json",

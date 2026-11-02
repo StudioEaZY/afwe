@@ -1,0 +1,17 @@
+id: document-rewind-classification
+title: Document classification and receipts
+statement: TUTORIAL, SPEC, README, skill and the Rewind Receipt term describe the verdicts, dedupe, advisory behaviour and the E := C fix.
+status: active
+origin: llm:deepseek-flash
+attaches:
+  nodes:
+  - afwe-core
+from_turns:
+- t0083
+history:
+- turn: t0083
+  ts: 2026-11-02T14:57:16Z
+  statement: TUTORIAL, SPEC, README, skill and the Rewind Receipt term describe the verdicts, dedupe, advisory behaviour and the E := C fix.
+created: 2026-11-02T14:57:16Z
+updated: 2026-11-02T14:57:16Z
+task: task-t0083
