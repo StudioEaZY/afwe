@@ -10,6 +10,7 @@ dependencies = [
  "anyhow",
  "clap",
  "include_dir",
+ "libc",
  "open",
  "serde",
  "serde_json",

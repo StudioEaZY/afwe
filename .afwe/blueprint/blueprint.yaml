@@ -190,7 +190,7 @@ nodes:
       - id: portability-arm64-musl
         name: portability-arm64-musl
         kind: module
-        purpose: 'Native compilation targets, cross-building and prebuilt binary packaging for Windows ARM64 and Linux musl/Alpine.'
+        purpose: 'Native compilation targets, cross-building and prebuilt binary packaging for Windows ARM64, macOS Intel/x86_64, and Linux musl/Alpine.'
         status: planned
         origin: human
   - id: examples

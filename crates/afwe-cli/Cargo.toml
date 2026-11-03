@@ -19,4 +19,7 @@ tiny_http.workspace = true
 open.workspace = true
 include_dir = "0.7"
 
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
 [build-dependencies]
