@@ -62,6 +62,7 @@ pub mod timeline;
 pub mod timeline_4d;
 pub mod turn;
 pub mod unattributed;
+pub mod upgrade;
 pub mod util;
 pub mod vcs;
 pub mod verify;

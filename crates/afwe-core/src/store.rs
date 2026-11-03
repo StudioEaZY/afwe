@@ -106,8 +106,24 @@ impl Store {
         ensure_parent(&path)?;
         let tmp = path.with_extension(format!("tmp.{}", crate::util::short_id("tmp")));
         let s = serde_yaml::to_string(v)?;
-        fs::write(&tmp, s)?;
-        fs::rename(&tmp, &path).with_context(|| format!("rename {} to {}", tmp.display(), path.display()))?;
+        fs::write(&tmp, &s)?;
+        if let Err(e) = fs::rename(&tmp, &path) {
+            #[cfg(windows)]
+            {
+                if path.exists() {
+                    let _ = fs::remove_file(&path);
+                    if fs::rename(&tmp, &path).is_ok() {
+                        return Ok(());
+                    }
+                }
+            }
+            // Fallback: direct write if rename fails
+            let _ = fs::write(&path, &s);
+            let _ = fs::remove_file(&tmp);
+            if !path.exists() {
+                return Err(e).with_context(|| format!("atomic write to {}", path.display()));
+            }
+        }
         Ok(())
     }
     pub fn read_json<T: serde::de::DeserializeOwned>(&self, rel: &str) -> Result<Option<T>> {

@@ -281,6 +281,10 @@ enum Cmd {
     Lock,
     /// Upgrade the .afwe/ folder to the current format (legacy workflows/ become intents/)
     Migrate,
+    /// Non-destructively upgrade an existing AFWE project (tripwires, hooks, agent contracts, docs)
+    Upgrade,
+    /// Non-destructively upgrade an existing AFWE project (alias for upgrade)
+    Update,
     /// Prompter Authority governance (human_only or prompter_delegated)
     #[command(subcommand)]
     Authority(AuthorityCmd),
@@ -1487,6 +1491,27 @@ fn run(cli: Cli) -> Result<i32> {
                     out(json, &v, |v| serde_json::to_string_pretty(v).unwrap_or_default());
                     0
                 }
+                TurnCmd::Active { assert } => {
+                    let v = api::call(&engine, "turn.active", json!({}), &origin)?;
+                    let active = v.get("active").and_then(|b| b.as_bool()).unwrap_or(false);
+                    if active {
+                        let turn_alias = v.get("turn").and_then(|t| t.get("alias")).and_then(|a| a.as_str()).unwrap_or("unknown");
+                        let turn_hash = v.get("turn").and_then(|t| t.get("turn_hash")).and_then(|a| a.as_str()).unwrap_or("");
+                        out(json, &v, |_| format!("✓ Active turn open: {turn_alias} ({turn_hash})"));
+                        0
+                    } else {
+                        if json {
+                            out(true, &v, |_| String::new());
+                        }
+                        if assert {
+                            eprintln!("ERROR: AFWE Turn Protocol Violation. No active turn is open. Run 'afwe turn begin \"<prompt>\"' before modifying project files.");
+                            std::process::exit(1);
+                        } else if !json {
+                            println!("No active turn is currently open.");
+                        }
+                        0
+                    }
+                }
                 TurnCmd::List => {
                     let v = api::call(&engine, "turn.list", json!({}), &origin)?;
                     out(json, &v, render::turn_list);
@@ -1824,6 +1849,20 @@ fn run(cli: Cli) -> Result<i32> {
             let engine = engine_for(&cli.dir)?;
             let v = api::call(&engine, "migrate", json!({}), &origin)?;
             out(json, &v, |v| format!("format {} · {} workflow(s) moved to intents/", s_of(v, "format"), v["workflows_moved"]));
+            Ok(0)
+        }
+        Cmd::Upgrade | Cmd::Update => {
+            let engine = engine_for(&cli.dir)?;
+            let v = api::call(&engine, "upgrade", json!({}), &origin)?;
+            if json {
+                out(true, &v, |_| String::new());
+            } else {
+                let msg = v.get("message").and_then(|m| m.as_str()).unwrap_or("Project upgraded.");
+                let updated = v.get("updated_files").and_then(|u| u.as_array()).map(|a| a.len()).unwrap_or(0);
+                println!("✓ {msg}");
+                println!("  Refreshed {updated} system file(s) and tripwires.");
+                println!("  Your custom blueprints, memories, pins, and turns remain 100% untouched.");
+            }
             Ok(0)
         }
         Cmd::Authority(cmd) => {
@@ -2272,6 +2311,12 @@ enum TurnCmd {
     Undo { turn: String },
     /// One turn in full (JSON)
     Show { turn: String },
+    /// Check if an AFWE turn is currently active. With --assert, exits with code 1 if no turn is open
+    Active {
+        /// Exit with code 1 and error message if no turn is open (PreToolUse write tripwire)
+        #[arg(long)]
+        assert: bool,
+    },
     /// All turns
     List,
 }

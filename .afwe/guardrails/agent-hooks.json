@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "harness": "generic",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|write_to_file|replace_file_content|write_file|edit_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afwe turn active --assert"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|write_to_file|replace_file_content|write_file|edit_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afwe verify --no-commands"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-format: afwe/2
+format: afwe/3
 project:
   name: afwe
   id: p22b7ff24a2064917
@@ -36,7 +36,7 @@ provenance:
 vcs:
   provider: git
   auto_commit: false
-  test_command: .\target\debug\deps\end_to_end-cd83c87f2b1bd985.exe
+  test_command: cargo test --test end_to_end
 ci:
   runs_on: ubuntu-latest
   fixed_job_name: afwe-gate

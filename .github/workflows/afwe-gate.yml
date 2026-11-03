@@ -16,7 +16,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cargo/bin/afwe
-          key: ${{ runner.os }}-afwe-${{ hashFiles('.afwe/manifest.yaml') }}
+          key: ${{ runner.os }}-afwe-${{ hashFiles('.afwe/afwe.yaml') }}
       - name: Install or Acquire AFWE Binary
         if: steps.cache-afwe.outputs.cache-hit != 'true'
         env:

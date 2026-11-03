@@ -433,6 +433,15 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             let answer = req(&p, "answer").or_else(|_| req(&p, "reply"))?;
             turn::resume(engine, &turn_id, &answer, &origin(&p, default_origin))
         }
+        "turn.active" => {
+            let turns = engine.store.turns().unwrap_or_default();
+            let open_turn = turns.into_iter().find(|t| t.status == "open" || t.status == "assumed" || t.status == "paused");
+            let is_active = open_turn.is_some();
+            Ok(json!({
+                "active": is_active,
+                "turn": open_turn,
+            }))
+        }
         "rollback.reconcile" => j(crate::rollback::reconcile(engine)?),
         "ledger.show" => crate::ledger::show(engine),
         "ledger.turns" => j(crate::ledger::turns(engine)?),
@@ -807,6 +816,7 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
             engine.log(&origin(&p, default_origin), "migrate", format!("Migrated to {} ({moved} workflow(s) moved to intents/)", crate::model::FORMAT_VERSION), None)?;
             Ok(json!({"format": crate::model::FORMAT_VERSION, "workflows_moved": moved}))
         }
+        "upgrade" => j(crate::upgrade::upgrade(engine)?),
 
         // ───────── v3: missions & leases ─────────
         "mission.create" => j(crate::mission::create_mission(engine, s(&p, "id"), &req(&p, "title")?, &req(&p, "prompt")?, &origin(&p, default_origin))?),
@@ -990,11 +1000,11 @@ pub const OPS: &[&str] = &[
     "lens.list", "lens.get", "lens.save", "lens.remove",
     "contract.list", "contract.get", "contract.render", "task.start", "task.done", "task.step", "board.get", "board.dismiss",
     "proposals.list", "proposal.resolve", "log.get", "log.add", "bootstrap", "ops",
-    "turn.begin", "turn.assume", "turn.commit", "turn.confirm", "turn.revert", "turn.redo", "turn.abandon", "turn.undo", "rollback.reconcile", "turn.get", "turn.list", "gate",
+    "turn.begin", "turn.assume", "turn.commit", "turn.confirm", "turn.revert", "turn.redo", "turn.abandon", "turn.undo", "turn.active", "rollback.reconcile", "turn.get", "turn.list", "gate",
     "intent.list", "intent.get", "pin.list", "pin.get", "pin.propose", "pin.accept", "pin.retire", "pin.budget",
     "check.list", "check.add", "check.remove", "escalation.list", "escalation.approve", "escalation.reject",
     "timeline.list", "timeline.get", "timeline.diff", "timeline.search", "timeline.losses", "timeline.restore",
-    "onboard.detect", "onboard.apply", "migrate", "header", "baseline.capture", "baseline.get",
+    "onboard.detect", "onboard.apply", "migrate", "upgrade", "header", "baseline.capture", "baseline.get",
     "mission.create", "mission.get", "mission.list", "mission.spawn", "mission.merge", "mission.pause", "mission.resume",
     "lease.acquire", "lease.release", "lease.list",
     "scene.get", "scene.query", "timeline.snapshot", "timeline.frames",
@@ -1266,6 +1276,7 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_turn_revert", op: "turn.revert", description: "Undo a turn as far as that is safe (files clean at turn.begin go back to HEAD; the rest becomes a Board item).", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_redo", op: "turn.redo", description: "Reset uncommitted changes made during a turn back to its baseline, keeping the turn open for clean rework.", schema: obj(json!({"turn": {"type": "string"}, "token": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_abandon", op: "turn.abandon", description: "Abandon an open turn, cleanly releasing all held file claims and lock reservations without committing.", schema: obj(json!({"turn": {"type": "string"}, "token": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_active", op: "turn.active", description: "Check if an AFWE turn is currently active before tool execution.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_turn_pause", op: "turn.pause", description: "MID-TURN PAUSE: Suspend execution awaiting human decision or delegated approval with 0 tokens. Emits desktop toast / Presence notification.", schema: obj(json!({"turn": {"type": "string"}, "question": {"type": "string"}, "options": strs, "timeout_seconds": {"type": "integer"}}), &["turn", "question"]) },
         ToolSpec { name: "afwe_turn_resume", op: "turn.resume", description: "RESUME a paused turn with human answer or steering instruction.", schema: obj(json!({"turn": {"type": "string"}, "answer": {"type": "string"}}), &["turn", "answer"]) },
         ToolSpec { name: "afwe_drift_verdict", op: "drift.verdict", description: "Apply a verdict on an architectural drift finding: adopt (in favor), adopt+tune (provisional), tolerate (7-14d), restore (revert to baseline), or steer (spawn new remediation turn).", schema: obj(json!({"id": {"type": "string"}, "action": {"type": "string"}, "tune": {"type": "boolean"}, "instruction": {"type": "string"}, "note": {"type": "string"}}), &["id", "action"]) },
@@ -1305,6 +1316,7 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_timeline_restore", op: "timeline.restore", description: "Restore a vanished feature: 3-way merge of its last good version. apply=true opens a restore turn that is gated at commit.", schema: obj(json!({"feature": {"type": "string"}, "apply": {"type": "boolean"}}), &["feature"]) },
         ToolSpec { name: "afwe_onboard_detect", op: "onboard.detect", description: "Detect stacks, git state, configuration and the suggested test command, without changing anything.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_onboard_apply", op: "onboard.apply", description: "Configure the project with a profile (normie | engineer): policy presets, git init, CI gate, AGENTS.md block.", schema: obj(json!({"profile": {"type": "string"}, "init_git": {"type": "boolean"}, "ci": {"type": "boolean"}, "agents_md": {"type": "boolean"}, "test_command": {"type": "string"}}), &["profile"]) },
+        ToolSpec { name: "afwe_upgrade", op: "upgrade", description: "Non-destructively upgrade an existing AFWE project (tripwires, hooks, agent contracts, docs) preserving all blueprints, memories, and pins.", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_header", op: "header", description: "Single source-of-truth status header line starting with ⛨ AFWE.", schema: obj(json!({"turn": {"type": "string"}}), &[]) },
         ToolSpec { name: "afwe_authority_status", op: "authority.status", description: "Get the current Prompter Authority status (human_only or prompter_delegated).", schema: obj(json!({}), &[]) },
         ToolSpec { name: "afwe_authority_delegate", op: "authority.delegate", description: "Human-only promotion to prompter_delegated mode for an agentic loop.", schema: obj(json!({"holder": {"type": "string"}, "ttl_seconds": {"type": "integer"}, "door": {"type": "string"}, "auto_approvals_max": {"type": "integer"}, "self_heals_max": {"type": "integer"}, "auto_merge": {"type": "boolean"}}), &["holder"]) },

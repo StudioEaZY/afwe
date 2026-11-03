@@ -1,4 +1,11 @@
 <!-- afwe:begin -->
+> [!CAUTION]
+> **MANDATORY AFWE TURN CONTRACT — HARD STOP BEFORE ANY FILE MODIFICATIONS**
+> You MUST call `afwe turn begin "<prompt>"` (or MCP `afwe_turn_begin`) before modifying ANY project files or calling write/edit tools.
+> Read-only operations (`view_file`, grep, searches, answering questions, `/plan` exploration) do NOT require an open turn.
+> Attempting to edit or write code without an active turn is an architectural violation and will be rejected by deterministic pre-tool tripwires (`afwe turn active --assert`).
+
+
 # AFWE-Core — Architecture Contract for Developing AFWE
 
 This repository is **AFWE-Core** (the engine, CLI, crates, MCP tools, and Studio).

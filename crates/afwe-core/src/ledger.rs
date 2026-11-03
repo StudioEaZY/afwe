@@ -856,6 +856,9 @@ pub fn repair(engine: &Engine) -> Result<Value> {
                 if let Some(parent) = dest.parent() {
                     std::fs::create_dir_all(parent)?;
                 }
+                if dest.exists() {
+                    let _ = std::fs::remove_file(&dest);
+                }
                 std::fs::rename(&path, &dest)?;
                 moved += 1;
             }

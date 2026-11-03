@@ -151,26 +151,42 @@ fn write_gitignore_if_missing(root: &Path) -> Result<bool> {
 /// Replace the AFWE block between its markers, or append it. Re-running onboarding never duplicates it
 /// or blows away user configurations. If in AFWE-Core repo itself, protect existing custom instructions.
 fn write_agents_block(path: &Path, block: &str) -> Result<()> {
+    let body = if block.contains(AGENTS_BEGIN) { block.to_string() } else { format!("{AGENTS_BEGIN}\n{block}\n{AGENTS_END}") };
     if let Ok(existing) = std::fs::read_to_string(path) {
-        // Guard: If we are in AFWE-Core root AGENTS.md, preserve the existing specialized AFWE-Core contract.
+        // Guard: If we are in AFWE-Core root AGENTS.md, ensure Caution header is present without wiping core contract
         if existing.contains("# AFWE-Core") {
+            if !existing.contains("MANDATORY AFWE TURN CONTRACT") {
+                let caution = "> [!CAUTION]\n> **MANDATORY AFWE TURN CONTRACT — HARD STOP BEFORE ANY FILE MODIFICATIONS**\n> You MUST call `afwe turn begin \"<prompt>\"` (or MCP `afwe_turn_begin`) before modifying ANY project files or calling write/edit tools.\n> Read-only operations (`view_file`, grep, searches, answering questions, `/plan` exploration) do NOT require an open turn.\n> Attempting to edit or write code without an active turn is an architectural violation and will be rejected by deterministic pre-tool tripwires (`afwe turn active --assert`).\n\n";
+                let updated = if existing.starts_with(AGENTS_BEGIN) {
+                    existing.replacen(AGENTS_BEGIN, &format!("{AGENTS_BEGIN}\n{caution}"), 1)
+                } else {
+                    format!("{caution}{existing}")
+                };
+                std::fs::write(path, updated)?;
+            }
             return Ok(());
         }
-        let body = if block.contains(AGENTS_BEGIN) { block.to_string() } else { format!("{AGENTS_BEGIN}\n{block}\n{AGENTS_END}") };
         let next = match (existing.find(AGENTS_BEGIN), existing.find(AGENTS_END)) {
-            (Some(a), Some(b)) if b > a => format!("{}{}{}", &existing[..a], body, &existing[b + AGENTS_END.len()..]),
-            _ => {
-                let trimmed = existing.trim_end();
+            (Some(a), Some(b)) if b > a => {
+                let rest = format!("{}{}", &existing[..a], &existing[b + AGENTS_END.len()..]);
+                let trimmed = rest.trim();
                 if trimmed.is_empty() {
                     format!("{body}\n")
                 } else {
-                    format!("{}\n\n{}\n", trimmed, body)
+                    format!("{body}\n\n{trimmed}\n")
+                }
+            }
+            _ => {
+                let trimmed = existing.trim_start();
+                if trimmed.is_empty() {
+                    format!("{body}\n")
+                } else {
+                    format!("{body}\n\n{trimmed}\n")
                 }
             }
         };
         std::fs::write(path, next)?;
     } else {
-        let body = if block.contains(AGENTS_BEGIN) { block.to_string() } else { format!("{AGENTS_BEGIN}\n{block}\n{AGENTS_END}") };
         std::fs::write(path, format!("{body}\n"))?;
     }
     Ok(())

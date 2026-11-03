@@ -61,7 +61,10 @@ pub struct InitOptions {
 pub fn init(project_root: &Path, opts: InitOptions) -> Result<Store> {
     let store = Store::new(project_root);
     if store.exists() && !opts.force {
-        return Err(anyhow!(".afwe/ already exists at {} (use --force to reset the manifest)", store.afwe_dir.display()));
+        return Err(anyhow!(
+            ".afwe/ already exists at {}. To refresh tripwires, agent hooks, and docs without altering custom blueprints or memories, run `afwe upgrade`. Use `afwe init --force` only if you explicitly want to reset the manifest.",
+            store.afwe_dir.display()
+        ));
     }
     let name = opts.name.unwrap_or_else(|| project_root.canonicalize().ok().and_then(|p| p.file_name().map(|s| s.to_string_lossy().to_string())).unwrap_or("project".into()));
     let manifest = Manifest { format: FORMAT_VERSION.into(), project: ProjectMeta { name: name.clone(), id: None, description: opts.description, root: opts.root.unwrap_or(".".into()) }, analyzer: AnalyzerConfig::default(), policy: Policy::default(), provenance: ProvenanceConfig::default(), vcs: VcsConfig::default(), ci: CiConfig::default(), profile: None };

@@ -136,6 +136,11 @@ When interacting with this codebase:
 pub fn render_agents_block(project: &str, _contracts: &[Contract]) -> String {
     let mut s = String::new();
     s.push_str("<!-- afwe:begin -->\n");
+    s.push_str("> [!CAUTION]\n");
+    s.push_str("> **MANDATORY AFWE TURN CONTRACT — HARD STOP BEFORE ANY FILE MODIFICATIONS**\n");
+    s.push_str("> You MUST call `afwe turn begin \"<prompt>\"` (or MCP `afwe_turn_begin`) before modifying ANY project files or calling write/edit tools.\n");
+    s.push_str("> Read-only operations (`view_file`, grep, searches, answering questions, `/plan` exploration) do NOT require an open turn.\n");
+    s.push_str("> Attempting to edit or write code without an active turn is an architectural violation and will be rejected by deterministic pre-tool tripwires (`afwe turn active --assert`).\n\n");
     s.push_str(&format!("# AFWE — architecture contract for `{project}`\n\n"));
     s.push_str("This project is architecturally governed by AFWE (`.afwe/`).\n");
     s.push_str("Always activate the `afwe` skill (`.afwe/skills/afwe/SKILL.md`) or use the connected AFWE MCP tools (`afwe_turn_begin`, `afwe_turn_assume`, `afwe_turn_commit`).\n\n");

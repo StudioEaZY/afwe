@@ -100,7 +100,7 @@ overrides:
   reason: no model calls were added; hashing and mapping are deterministic
 - pin: pin-harness-agnostic
   reason: no harness or vendor names were added
-status: ready
+status: committed
 touched:
   nodes:
   - afwe-core
@@ -1659,6 +1659,8 @@ gate:
   - 'OVERRIDDEN pin pin-harness-agnostic (AFWE core, verification, and tripwires must remain 100% harness-agnostic without vendor-specific agent lock-in or harness-dependent execution paths): no harness or vendor names were added'
 footer_shown: true
 summary: 'Make the fresh client fully functional: implicit single-root mapping, one raw hashing world, index synchronization, local-only logs, afwe/3 docs and a correct ReBorn CI template'
+committed_at: 2026-11-03T08:10:29Z
+commit_sha: fc94613a21bd45d1e16d275aa6463984a12a8bff
 turn_token: afwe_tok_c8522382c489e1f2e90f422818773cfa
 post_hashes:
   .afwe/.gitignore: 780669273be6defc

@@ -1,0 +1,33 @@
+id: t0088
+turn_hash: turn-8ef4536b0998
+alias: t0088
+epoch_id: epoch-4280cb
+token_hash: 8c028ac8a8525a1f667777a0288ebdb04b2dbcb2d0b7a5fbdafde6ca64df620f
+base_head: 0a7345b99b9792422b7ee89814ebe7473ee4a0ef
+last_activity: 2026-11-03T08:11:31Z
+ts: 2026-11-03T08:11:31Z
+origin: human
+prompt: Implement turn active assertion and non-destructive project upgrade
+prompt_hash: 4cb87d5d7be2eb89
+task: task-t0088
+scope: {}
+status: open
+touched: {}
+strength: unverified
+confidence: 0.0
+gate:
+  decision: ''
+footer_shown: false
+turn_token: afwe_tok_f0aecff87c1b757937560e59a27a4c01
+session_id: sess-cbf30d
+held_out_guides:
+- guide-t0022-a1
+- guide-t0025-a1
+- guide-t0026-a1
+- guide-t0028-a1
+- guide-t0032-a1
+- guide-t0035-a2
+- guide-t0036-a1
+- guide-t0036-a2
+- guide-t0041-a1
+- guide-t0046-a1
