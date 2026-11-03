@@ -38,7 +38,7 @@ jobs:
             cargo build --release -p afwe-cli
             cp target/release/afwe ~/.cargo/bin/afwe 2>/dev/null || cp target/release/afwe.exe ~/.cargo/bin/afwe.exe 2>/dev/null
           else
-            cargo install --git https://github.com/StudioEaZY/afwe.git --branch ReBorn afwe-cli
+            cargo install --git https://github.com/StudioEaZY/afwe.git --branch main afwe-cli
           fi
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
       - name: Verify tripwire manifest and base-branch guard integrity

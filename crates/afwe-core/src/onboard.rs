@@ -52,7 +52,7 @@ jobs:
             cargo build --release -p afwe-cli
             cp target/release/afwe ~/.cargo/bin/afwe 2>/dev/null || cp target/release/afwe.exe ~/.cargo/bin/afwe.exe 2>/dev/null
           else
-            cargo install --git https://github.com/StudioEaZY/afwe.git --branch ReBorn afwe-cli
+            cargo install --git https://github.com/StudioEaZY/afwe.git --branch main afwe-cli
           fi
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
       - name: Verify tripwire manifest and base-branch guard integrity
@@ -292,11 +292,11 @@ mod tests {
     }
 
     #[test]
-    fn ci_template_caches_the_real_manifest_and_installs_from_reborn() {
+    fn ci_template_caches_the_real_manifest_and_installs_from_main() {
         let template = render_ci_template("ubuntu-latest");
         assert!(template.contains("hashFiles('.afwe/afwe.yaml')"), "{template}");
         assert!(!template.contains("manifest.yaml"), "stale manifest path");
-        assert!(template.contains("--branch ReBorn"), "{template}");
+        assert!(template.contains("--branch main"), "{template}");
         assert!(template.contains("afwe-gate"));
     }
 }

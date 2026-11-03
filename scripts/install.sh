@@ -39,7 +39,7 @@ main() {
 
   if [ "$TARGET" = "unsupported" ]; then
     echo "Error: Unsupported OS/Architecture: $(uname -s) $(uname -m)"
-    echo "You can build from source using: cargo install --git https://github.com/StudioEaZY/afwe --branch ReBorn crates/afwe-cli"
+    echo "You can build from source using: cargo install --git https://github.com/StudioEaZY/afwe --branch main crates/afwe-cli"
     exit 1
   fi
 
