@@ -270,8 +270,6 @@ enum Cmd {
         /// Multi-agent tool hooks (Claude Code, Cursor, Windsurf, Aider, etc.)
         #[arg(long, alias = "claude-hooks")]
         agent_hooks: bool,
-        #[arg(long, hide = true)]
-        claude_hooks: bool,
         #[arg(long)]
         agents_md: bool,
     },
@@ -1800,7 +1798,7 @@ fn run(cli: Cli) -> Result<i32> {
             }
             Ok(0)
         }
-        Cmd::Materialize { apply, remove, check, base, native_tests, git_hooks, ci, agent_hooks, claude_hooks, agents_md } => {
+        Cmd::Materialize { apply, remove, check, base, native_tests, git_hooks, ci, agent_hooks, agents_md } => {
             let engine = engine_for(&cli.dir)?;
             let v = api::call(
                 &engine,
@@ -1813,8 +1811,8 @@ fn run(cli: Cli) -> Result<i32> {
                     "native_tests": native_tests,
                     "git_hooks": git_hooks,
                     "ci": ci,
-                    "agent_hooks": agent_hooks || claude_hooks,
-                    "claude_hooks": agent_hooks || claude_hooks,
+                    "agent_hooks": agent_hooks,
+                    "claude_hooks": agent_hooks,
                     "agents_md": agents_md,
                 }),
                 &origin,

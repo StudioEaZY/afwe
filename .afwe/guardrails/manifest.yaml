@@ -1,9 +1,9 @@
 version: 1
-generated_at: 2026-11-03T08:12:53Z
+generated_at: 2026-11-03T10:07:25Z
 entries:
   .afwe/guardrails/agent-hooks.json: b2e3fcb9dd74ae52
   .afwe/guardrails/agents-block.md: 390f7fa1bfa295ed
   .afwe/guardrails/claude-hooks.json: 590e1e4ab9594240
   .afwe/guardrails/generated_checks_test.sh: 790d65f08e65712e
   .afwe/guardrails/pre-commit: da03e0569d29aae2
-  .github/workflows/afwe-gate.yml: c62a5afddc8dfcea
+  .github/workflows/afwe-gate.yml: 97a9d29e4e588db4

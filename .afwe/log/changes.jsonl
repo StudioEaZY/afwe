@@ -575,3 +575,5 @@
 {"ts":"2026-11-03T08:15:09Z","origin":"human","kind":"gate","summary":"gate passed: 0 failure(s)"}
 {"ts":"2026-11-03T08:18:10Z","origin":"human","kind":"gate","summary":"gate passed: 0 failure(s)"}
 {"ts":"2026-11-03T09:17:51Z","origin":"human","kind":"gate","summary":"gate passed: 0 failure(s)"}
+{"ts":"2026-11-03T10:07:25Z","origin":"human:materialize","kind":"materialize_apply","summary":"Materialized 6 tripwire file(s)","details":{"files":[".afwe/guardrails/agent-hooks.json",".afwe/guardrails/agents-block.md",".afwe/guardrails/claude-hooks.json",".afwe/guardrails/generated_checks_test.sh",".afwe/guardrails/pre-commit",".github/workflows/afwe-gate.yml"]}}
+{"ts":"2026-11-03T10:08:01Z","origin":"human","kind":"gate","summary":"gate passed: 0 failure(s)"}
