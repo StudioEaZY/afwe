@@ -148,18 +148,10 @@ pub(crate) fn to_code_rel(prefix: &str, project_rel: &str) -> Option<String> {
 /// make a CRLF file look changed forever against its own snapshot.
 pub(crate) fn tree_hashes(engine: &Engine, snap: &Snapshot) -> BTreeMap<String, String> {
     let prefix = code_prefix(&snap.manifest);
-    let code_root = engine.store.code_root(&snap.manifest);
     let mut out = BTreeMap::new();
     for f in &snap.code.files {
         let key = format!("{prefix}{}", f.path);
-        match std::fs::read(code_root.join(&f.path)) {
-            Ok(bytes) => {
-                out.insert(key, hash_bytes(&bytes));
-            }
-            Err(_) => {
-                out.insert(key, f.hash.clone());
-            }
-        }
+        out.insert(key, f.hash.clone());
     }
     for path in crate::store::walk_all(&engine.store.afwe_dir) {
         let rel = crate::store::rel_to(&engine.store.project_root, &path);
