@@ -33,6 +33,9 @@ pub struct SyncOptions {
 pub fn sync(engine: &Engine, opts: &SyncOptions) -> Result<(SyncReport, Snapshot)> {
     let started = std::time::Instant::now();
     let manifest = engine.store.manifest()?;
+    if !opts.dry_run {
+        let _ = crate::terminology::sync_ubiquitous_language(&engine.store);
+    }
     let code = engine.analyzer(&manifest).analyze()?;
     drift::set_previous_index(engine.store.index()?);
     let snap = engine.snapshot_with_code(code.clone())?;
@@ -104,7 +107,6 @@ pub fn sync(engine: &Engine, opts: &SyncOptions) -> Result<(SyncReport, Snapshot
         languages: snap.code.languages.clone(),
         duration_ms: started.elapsed().as_millis(),
     };
-    let _ = crate::terminology::sync_ubiquitous_language(&engine.store);
     Ok((report, snap))
 }
 

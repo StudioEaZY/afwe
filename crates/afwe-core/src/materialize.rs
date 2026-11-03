@@ -95,8 +95,10 @@ pub fn run(engine: &Engine, opts: MaterializeOptions) -> Result<Value> {
 set -e
 if command -v afwe >/dev/null 2>&1; then
   afwe gate --ci
-elif [ -f "./.build3/debug/afwe.exe" ]; then
-  ./.build3/debug/afwe.exe gate --ci
+elif [ -f "./target/debug/afwe.exe" ]; then
+  ./target/debug/afwe.exe gate --ci
+elif [ -f "./target/release/afwe.exe" ]; then
+  ./target/release/afwe.exe gate --ci
 elif [ -f "./target/debug/afwe" ]; then
   ./target/debug/afwe gate --ci
 elif [ -f "./target/release/afwe" ]; then

@@ -1,0 +1,17 @@
+id: tauri-windows-icon-bundle
+title: Generate Windows icon.ico bundle and update tauri.conf.json
+statement: Fix CI workflows, Tauri Windows icons, git tmp index concurrency, and AFWE gate base ref
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe-2
+from_turns:
+- t0089
+history:
+- turn: t0089
+  ts: 2026-11-03T12:51:53Z
+  statement: Fix CI workflows, Tauri Windows icons, git tmp index concurrency, and AFWE gate base ref
+created: 2026-11-03T12:51:53Z
+updated: 2026-11-03T13:06:07Z
+task: task-t0089

@@ -10,12 +10,19 @@ jobs:
   check-and-test:
     name: Check & Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    env:
+      AFWE_NO_AUTOSTART: '1'
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v5
+
+      - name: Configure Git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -27,7 +34,7 @@ jobs:
         run: cargo check --workspace
 
       - name: Cargo test (workspace)
-        run: cargo test --workspace
+        run: cargo test --workspace -- --test-threads=2
 
       - name: Verify CLI build
         run: cargo build --release -p afwe-cli

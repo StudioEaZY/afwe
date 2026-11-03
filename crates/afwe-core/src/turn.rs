@@ -2279,7 +2279,7 @@ pub fn gate_now_with_base(engine: &Engine, origin: &str, base: Option<&str>) -> 
     }
 
     // Verify commit trailers and committed turn records in PR range if base ref is provided
-    if let Some(base_ref) = base.filter(|b| !b.trim().is_empty()) {
+    if let Some(base_ref) = base.map(str::trim).filter(|b| !b.is_empty() && !b.chars().all(|c| c == '0')) {
         let stored_hashes: Vec<String> = engine.store.turns().unwrap_or_default().into_iter().map(|t| t.id).collect();
         let rev_range = format!("{base_ref}..HEAD");
         if let Ok(attr_report) = crate::unattributed::verify_commit_range_attribution(&engine.store.project_root, &rev_range, &stored_hashes) {

@@ -1,0 +1,17 @@
+id: git-tmp-index-concurrency
+title: Use atomic sequence and thread id in git.rs temp index
+statement: Fix CI workflows, Tauri Windows icons, git tmp index concurrency, and AFWE gate base ref
+status: active
+origin: human
+attaches:
+  nodes:
+  - afwe
+from_turns:
+- t0089
+history:
+- turn: t0089
+  ts: 2026-11-03T12:51:53Z
+  statement: Fix CI workflows, Tauri Windows icons, git tmp index concurrency, and AFWE gate base ref
+created: 2026-11-03T12:51:53Z
+updated: 2026-11-03T13:06:07Z
+task: task-t0089

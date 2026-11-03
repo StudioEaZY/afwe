@@ -7,6 +7,8 @@ on: [push, pull_request]
 jobs:
   afwe-gate:
     runs-on: ubuntu-latest
+    env:
+      AFWE_NO_AUTOSTART: '1'
     steps:
       - uses: actions/checkout@v5
         with:
@@ -16,7 +18,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cargo/bin/afwe
-          key: ${{ runner.os }}-afwe-${{ hashFiles('.afwe/afwe.yaml') }}
+          key: ${{ runner.os }}-afwe-${{ hashFiles('.afwe/afwe.yaml') }}-${{ hashFiles('Cargo.lock') }}
       - name: Install or Acquire AFWE Binary
         if: steps.cache-afwe.outputs.cache-hit != 'true'
         env:
@@ -41,11 +43,20 @@ jobs:
             cargo install --git https://github.com/StudioEaZY/afwe.git --branch main afwe-cli
           fi
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Determine base ref
+        id: base-ref
+        run: |
+          RAW_BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ "$RAW_BASE" = "0000000000000000000000000000000000000000" ] || [ -z "$RAW_BASE" ]; then
+            echo "base_arg=" >> $GITHUB_OUTPUT
+          else
+            echo "base_arg=--base $RAW_BASE" >> $GITHUB_OUTPUT
+          fi
       - name: Verify tripwire manifest and base-branch guard integrity
-        run: afwe materialize --check --base "${{ github.event.pull_request.base.sha || github.event.before }}"
+        run: afwe materialize --check ${{ steps.base-ref.outputs.base_arg }}
       - name: The architecture matches the code
         run: |
           afwe sync
           afwe sync --check
       - name: Verify commit trailers and committed turn records
-        run: afwe gate --ci --base "${{ github.event.pull_request.base.sha || github.event.before }}"
+        run: afwe gate --ci ${{ steps.base-ref.outputs.base_arg }}

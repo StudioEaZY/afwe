@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+
     :root {
       --bg: #090d16;
       --card-bg: #111827;
@@ -18,6 +19,7 @@
       --accent-muted: rgba(16, 185, 129, 0.15);
       --amber: #f59e0b;
       --cyan: #06b6d4;
+      --rose: #f43f5e;
       --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -161,6 +163,9 @@
       font-size: 1.25rem;
       font-weight: 700;
       color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
     .card-category {
       font-family: var(--font-mono);
@@ -231,7 +236,7 @@
       .grid { grid-template-columns: 1fr; }
       h1 { font-size: 1.75rem; }
     }
-  </style>
+      </style>
 </head>
 <body>
   <div class="container">
@@ -244,17 +249,17 @@
     <div class="controls">
       <div class="search-box">
         <input type="text" id="search" class="search-input" placeholder="Search terms, definitions, invariants, or confused-with concepts... (e.g. Turn, Ratchet, CAS)" autofocus />
-        <div class="term-count"><span id="visible-count">82</span> / 82 terms</div>
+        <div class="term-count"><span id="visible-count">81</span> / 81 terms</div>
       </div>
       <div class="categories">
         <button class="cat-btn active" data-cat="all">All Categories</button>
-        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (37)</button>
-        <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (6)</button>
-        <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
+        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (36)</button>
         <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (7)</button>
-        <button class="cat-btn" data-cat="Ratchets & Integrity Verification">Ratchets & Integrity Verification (10)</button>
         <button class="cat-btn" data-cat="Claims & Tripwires">Claims & Tripwires (5)</button>
+        <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
+        <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (6)</button>
         <button class="cat-btn" data-cat="Multi-Agent Concurrency & Worktrees">Multi-Agent Concurrency & Worktrees (3)</button>
+        <button class="cat-btn" data-cat="Ratchets & Integrity Verification">Ratchets & Integrity Verification (10)</button>
         <button class="cat-btn" data-cat="Turn Protocol & Lifecycle">Turn Protocol & Lifecycle (11)</button>
       </div>
     </div>
@@ -272,7 +277,7 @@
         </div>
         <div class="card-footer">
           <span><code>term-4d-timeline-dial</code></span>
-          <button class="copy-btn" onclick="copyAnchor('4d-timeline-dial')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('4d-timeline-dial')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="action-queue" data-category="Memory, Pins & Living Intents" data-title="action queue" data-tags="queue governance">
@@ -294,7 +299,7 @@
 - **MCP Tooling**: Headless programmatic inspection and resolution via `afwe_queue_get`, `afwe_queue_act`, and `afwe_batch_act`.</p>
         <div class="card-footer">
           <span><code>term-action-queue</code></span>
-          <button class="copy-btn" onclick="copyAnchor('action-queue')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('action-queue')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="ambiguity-question" data-category="Confidence Bands & Calibration" data-title="ambiguity question" data-tags="confidence-bands human-in-the-loop">
@@ -305,14 +310,14 @@
         <p class="card-meaning">A high-blast-radius architectural dilemma generated when system confidence falls below 85% (`afwe question list`). Instead of making an unverified guess, AFWE pauses and queues the question for human architect confirmation, persisting the resolution into memory or pins.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
-          <div class="confused-item"><strong>Probing Guide</strong>: Probing guides (85%–90%) advise agents without blocking; Ambiguity Questions (&lt;85%) halt high-risk forks for human judgment.</div>
+          <div class="confused-item"><strong>Probing Guide</strong>: Probing guides (85%–90%) advise agents without blocking; Ambiguity Questions (<85%) halt high-risk forks for human judgment.</div>
         </div>
         <div class="card-footer">
           <span><code>term-ambiguity-question</code></span>
-          <button class="copy-btn" onclick="copyAnchor('ambiguity-question')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('ambiguity-question')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
-      <article class="card" id="asset-arena" data-category="Memory, Pins & Living Intents" data-title="asset arena" data-tags="[terminology, performance, memory, engine]">
+      <article class="card" id="asset-arena" data-category="Memory, Pins & Living Intents" data-title="asset arena" data-tags="terminology performance memory engine">
         <div class="card-header">
           <h2 class="card-title">Asset Arena</h2>
           <span class="card-category">Memory, Pins & Living Intents</span>
@@ -329,10 +334,10 @@ Frequent allocations and deallocations during rapid AST parsing and graph visual
 During an AST claim pass across 150 source files, tokens and syntax node records are allocated out of a dedicated Turn Asset Arena. Once claims are verified and cached, the entire arena resets instantly without invoking thousands of individual free operations.</p>
         <div class="card-footer">
           <span><code>term-asset-arena</code></span>
-          <button class="copy-btn" onclick="copyAnchor('asset-arena')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('asset-arena')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
-      <article class="card" id="bearer-token" data-category="Architecture Philosophy & Tenets" data-title="bearer token" data-tags="[terminology, security, authentication, protocol]">
+      <article class="card" id="bearer-token" data-category="Architecture Philosophy & Tenets" data-title="bearer token" data-tags="terminology security authentication protocol">
         <div class="card-header">
           <h2 class="card-title">Bearer Token</h2>
           <span class="card-category">Architecture Philosophy & Tenets</span>
@@ -349,7 +354,7 @@ The Bearer Token ensures that only the authorized agent or process that initiate
 When an agent starts a Turn via `afwe turn begin "Refactor auth"`, AFWE issues a bearer token embedded in the briefing pack JSON response. Subsequent calls to `afwe turn assume` and `afwe turn commit` validate this token before granting state modifications.</p>
         <div class="card-footer">
           <span><code>term-bearer-token</code></span>
-          <button class="copy-btn" onclick="copyAnchor('bearer-token')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('bearer-token')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="blueprint" data-category="Blueprint & Cartography" data-title="blueprint" data-tags="blueprint architecture-tree">
@@ -364,7 +369,7 @@ When an agent starts a Turn via `afwe turn begin "Refactor auth"`, AFWE issues a
         </div>
         <div class="card-footer">
           <span><code>term-blueprint</code></span>
-          <button class="copy-btn" onclick="copyAnchor('blueprint')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('blueprint')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="blueprint-diff-view" data-category="Blueprint & Cartography" data-title="blueprint diff view" data-tags="studio-view blueprint diff">
@@ -379,7 +384,7 @@ When an agent starts a Turn via `afwe turn begin "Refactor auth"`, AFWE issues a
         </div>
         <div class="card-footer">
           <span><code>term-blueprint-diff-view</code></span>
-          <button class="copy-btn" onclick="copyAnchor('blueprint-diff-view')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('blueprint-diff-view')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="blueprint-node" data-category="Blueprint & Cartography" data-title="blueprint node" data-tags="blueprint topology">
@@ -394,7 +399,7 @@ When an agent starts a Turn via `afwe turn begin "Refactor auth"`, AFWE issues a
         </div>
         <div class="card-footer">
           <span><code>term-blueprint-node</code></span>
-          <button class="copy-btn" onclick="copyAnchor('blueprint-node')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('blueprint-node')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="blueprint-view" data-category="Blueprint & Cartography" data-title="blueprint view" data-tags="studio-view visualization blueprint">
@@ -410,57 +415,7 @@ When an agent starts a Turn via `afwe turn begin "Refactor auth"`, AFWE issues a
         </div>
         <div class="card-footer">
           <span><code>term-blueprint-view</code></span>
-          <button class="copy-btn" onclick="copyAnchor('blueprint-view')" title="Copy permalink">🔗 permalink</button>
-        </div>
-      </article>
-      <article class="card" id="capability-bridge" data-category="Ratchets & Integrity Verification" data-title="capability bridge" data-tags="[terminology, architecture, capabilities, interoperability]">
-        <div class="card-header">
-          <h2 class="card-title">Capability Bridge</h2>
-          <span class="card-category">Ratchets & Integrity Verification</span>
-        </div>
-        <p class="card-meaning"># Capability Bridge
-
-### Definition
-An explicit adapter layer or interface mapping between decoupled subsystems, crates, or runtime boundaries (such as between the Rust AFWE-Core engine and the TypeScript Studio UI, or between MCP and the CLI).
-
-### Why it Matters
-Capability Bridges enforce capability contracts across language and transport boundaries. They prevent implicit API drift, validate serializable JSON-RPC schemas, and ensure that capabilities verified in the engine remain strictly aligned with user-facing tools and external clients.
-
-### Example in Practice
-The MCP server in `crates/afwe-cli/src/mcp.rs` serves as a Capability Bridge between the engine's core turn API (`crates/afwe-core/src/api.rs`) and external AI agent runners, exposing structured tools while preserving validation logic.</p>
-        <div class="card-footer">
-          <span><code>term-capability-bridge</code></span>
-          <button class="copy-btn" onclick="copyAnchor('capability-bridge')" title="Copy permalink">🔗 permalink</button>
-        </div>
-      </article>
-      <article class="card" id="capability-ratchet" data-category="Ratchets & Integrity Verification" data-title="capability ratchet" data-tags="ratchet verification gate">
-        <div class="card-header">
-          <h2 class="card-title">Capability Ratchet</h2>
-          <span class="card-category">Ratchets & Integrity Verification</span>
-        </div>
-        <p class="card-meaning">A monotonic architectural safety mechanism enforced during `afwe turn commit`. It guarantees that codebase capabilities, public API exports, caller references, decisions, and documentation references can only advance or remain stable—never unintentionally degrade. Intentionally breaking a capability requires an explicit declaration in `turn assume`.</p>
-        <div class="confused-box">
-          <div class="confused-title">Not to be confused with:</div>
-          <div class="confused-item"><strong>Unit Testing</strong>: Unit tests check functional runtime correctness; Capability Ratchets check static architectural reachability, export continuity, and reference graphs.</div>
-        </div>
-        <div class="card-footer">
-          <span><code>term-capability-ratchet</code></span>
-          <button class="copy-btn" onclick="copyAnchor('capability-ratchet')" title="Copy permalink">🔗 permalink</button>
-        </div>
-      </article>
-      <article class="card" id="check" data-category="Ratchets & Integrity Verification" data-title="check" data-tags="checks gate">
-        <div class="card-header">
-          <h2 class="card-title">Check</h2>
-          <span class="card-category">Ratchets & Integrity Verification</span>
-        </div>
-        <p class="card-meaning">An executable verification item registered in `.afwe/checks/*.yaml` evaluated during `afwe verify` and `afwe turn commit`. Checks possess trust ratings, explicit authorship (human, generator, agent), and deterministic pass/fail semantics.</p>
-        <div class="confused-box">
-          <div class="confused-title">Not to be confused with:</div>
-          <div class="confused-item"><strong>Claim</strong>: A Claim is an assertion declared during `turn assume`; once registered or graduated, it becomes an enforced Check in the registry.</div>
-        </div>
-        <div class="card-footer">
-          <span><code>term-check</code></span>
-          <button class="copy-btn" onclick="copyAnchor('check')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('blueprint-view')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="ci-runner-profile-cached-acquisition" data-category="Architecture Philosophy & Tenets" data-title="ci runner profile & cached acquisition" data-tags="">
@@ -479,7 +434,57 @@ The production CI configuration schema and binary acquisition strategy that guar
 4. **Full History & Turn Records**: Enforces `fetch-depth: 0` and verifies that commit trailers have corresponding turn records committed in `.afwe/turns/`.</p>
         <div class="card-footer">
           <span><code>term-ci-runner-profile</code></span>
-          <button class="copy-btn" onclick="copyAnchor('ci-runner-profile-cached-acquisition')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('ci-runner-profile-cached-acquisition')" title="Copy link to clipboard">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="capability-bridge" data-category="Ratchets & Integrity Verification" data-title="capability bridge" data-tags="terminology architecture capabilities interoperability">
+        <div class="card-header">
+          <h2 class="card-title">Capability Bridge</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning"># Capability Bridge
+
+### Definition
+An explicit adapter layer or interface mapping between decoupled subsystems, crates, or runtime boundaries (such as between the Rust AFWE-Core engine and the TypeScript Studio UI, or between MCP and the CLI).
+
+### Why it Matters
+Capability Bridges enforce capability contracts across language and transport boundaries. They prevent implicit API drift, validate serializable JSON-RPC schemas, and ensure that capabilities verified in the engine remain strictly aligned with user-facing tools and external clients.
+
+### Example in Practice
+The MCP server in `crates/afwe-cli/src/mcp.rs` serves as a Capability Bridge between the engine's core turn API (`crates/afwe-core/src/api.rs`) and external AI agent runners, exposing structured tools while preserving validation logic.</p>
+        <div class="card-footer">
+          <span><code>term-capability-bridge</code></span>
+          <button class="copy-btn" onclick="copyAnchor('capability-bridge')" title="Copy link to clipboard">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="capability-ratchet" data-category="Ratchets & Integrity Verification" data-title="capability ratchet" data-tags="ratchet verification gate">
+        <div class="card-header">
+          <h2 class="card-title">Capability Ratchet</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A monotonic architectural safety mechanism enforced during `afwe turn commit`. It guarantees that codebase capabilities, public API exports, caller references, decisions, and documentation references can only advance or remain stable—never unintentionally degrade. Intentionally breaking a capability requires an explicit declaration in `turn assume`.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Unit Testing</strong>: Unit tests check functional runtime correctness; Capability Ratchets check static architectural reachability, export continuity, and reference graphs.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-capability-ratchet</code></span>
+          <button class="copy-btn" onclick="copyAnchor('capability-ratchet')" title="Copy link to clipboard">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="check" data-category="Ratchets & Integrity Verification" data-title="check" data-tags="checks gate">
+        <div class="card-header">
+          <h2 class="card-title">Check</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">An executable verification item registered in `.afwe/checks/*.yaml` evaluated during `afwe verify` and `afwe turn commit`. Checks possess trust ratings, explicit authorship (human, generator, agent), and deterministic pass/fail semantics.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>Claim</strong>: A Claim is an assertion declared during `turn assume`; once registered or graduated, it becomes an enforced Check in the registry.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-check</code></span>
+          <button class="copy-btn" onclick="copyAnchor('check')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="claim" data-category="Claims & Tripwires" data-title="claim" data-tags="claims pre-generation">
@@ -501,10 +506,10 @@ The production CI configuration schema and binary acquisition strategy that guar
         </div>
         <div class="card-footer">
           <span><code>term-claim</code></span>
-          <button class="copy-btn" onclick="copyAnchor('claim')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('claim')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
-      <article class="card" id="comment-aware-claims" data-category="Claims & Tripwires" data-title="comment-aware claims" data-tags="[terminology, claims, ast, verification]">
+      <article class="card" id="comment-aware-claims" data-category="Claims & Tripwires" data-title="comment-aware claims" data-tags="terminology claims ast verification">
         <div class="card-header">
           <h2 class="card-title">Comment-Aware Claims</h2>
           <span class="card-category">Claims & Tripwires</span>
@@ -521,7 +526,7 @@ Naive regex or raw string search can falsely match commented-out code, reference
 If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifies an architectural docstring referencing `execute_turn()` in another file, Comment-Aware Claims recognizes the mention as inert prose rather than a declaration lock violation.</p>
         <div class="card-footer">
           <span><code>term-comment-aware-claims</code></span>
-          <button class="copy-btn" onclick="copyAnchor('comment-aware-claims')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('comment-aware-claims')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="component-inspector" data-category="Architecture Philosophy & Tenets" data-title="component inspector" data-tags="studio-panel inspector">
@@ -536,7 +541,7 @@ If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifi
         </div>
         <div class="card-footer">
           <span><code>term-component-inspector</code></span>
-          <button class="copy-btn" onclick="copyAnchor('component-inspector')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('component-inspector')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="concurrency-lease" data-category="Multi-Agent Concurrency & Worktrees" data-title="concurrency lease" data-tags="multi-agent concurrency">
@@ -544,14 +549,14 @@ If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifi
           <h2 class="card-title">Concurrency Lease</h2>
           <span class="card-category">Multi-Agent Concurrency & Worktrees</span>
         </div>
-        <p class="card-meaning">A mutual exclusion mechanism (`afwe lease acquire &lt;node&gt;`) that grants temporary exclusive write permissions on specific Blueprint nodes and their mapped files to an agent or worktree, preventing concurrent agents from generating conflicting changes.</p>
+        <p class="card-meaning">A mutual exclusion mechanism (`afwe lease acquire <node>`) that grants temporary exclusive write permissions on specific Blueprint nodes and their mapped files to an agent or worktree, preventing concurrent agents from generating conflicting changes.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>File Claim</strong>: A File Claim operates at the individual file path level during a turn; a Concurrency Lease operates at the architectural node level across multiple worktrees and missions.</div>
         </div>
         <div class="card-footer">
           <span><code>term-lease</code></span>
-          <button class="copy-btn" onclick="copyAnchor('concurrency-lease')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('concurrency-lease')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="constellation-view" data-category="Architecture Philosophy & Tenets" data-title="constellation view" data-tags="studio-view visualization constellation">
@@ -566,7 +571,7 @@ If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifi
         </div>
         <div class="card-footer">
           <span><code>term-constellation-view</code></span>
-          <button class="copy-btn" onclick="copyAnchor('constellation-view')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('constellation-view')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="contention" data-category="Multi-Agent Concurrency & Worktrees" data-title="contention" data-tags="multi-agent concurrency">
@@ -581,7 +586,7 @@ If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifi
         </div>
         <div class="card-footer">
           <span><code>term-contention</code></span>
-          <button class="copy-btn" onclick="copyAnchor('contention')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('contention')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="context-codename-separation" data-category="Architecture Philosophy & Tenets" data-title="context codename separation" data-tags="architecture-philosophy repository-rules">
@@ -598,7 +603,7 @@ If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifi
         </div>
         <div class="card-footer">
           <span><code>term-context-separation</code></span>
-          <button class="copy-btn" onclick="copyAnchor('context-codename-separation')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('context-codename-separation')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="dead_on_arrival" data-category="Ratchets & Integrity Verification" data-title="dead_on_arrival" data-tags="ratchet gate-error">
@@ -613,7 +618,7 @@ If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifi
         </div>
         <div class="card-footer">
           <span><code>term-dead-on-arrival</code></span>
-          <button class="copy-btn" onclick="copyAnchor('dead_on_arrival')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('dead_on_arrival')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="docs_drift" data-category="Ratchets & Integrity Verification" data-title="docs_drift" data-tags="ratchet documentation gate-error">
@@ -628,7 +633,42 @@ If Agent A holds a claim on function `pub fn execute_turn()`, and Agent B modifi
         </div>
         <div class="card-footer">
           <span><code>term-docs-drift</code></span>
-          <button class="copy-btn" onclick="copyAnchor('docs_drift')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('docs_drift')" title="Copy link to clipboard">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="dots-hierarchical-scene-graph" data-category="Architecture Philosophy & Tenets" data-title="dots hierarchical scene graph" data-tags="terminology studio architecture rendering">
+        <div class="card-header">
+          <h2 class="card-title">DOTS Hierarchical Scene Graph</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># DOTS Hierarchical Scene Graph
+
+### Definition
+A high-performance, Data-Oriented Technology Stack (DOTS) inspired hierarchical graph model that organizes and computes transformation matrices, node hierarchies, and spatial bounds for visual rendering in AFWE Studio.
+
+### Why it Matters
+As repositories grow to thousands of blueprint nodes, capabilities, and dependencies, traditional object-oriented DOM or tree representations experience severe frame drops and memory overhead. The DOTS scene graph stores entity attributes in flat, contiguous memory arrays, allowing 60 FPS spatial rendering, instant level-of-detail culling, and rapid topological queries.
+
+### Example in Practice
+When Studio renders a repository with 500 modules and 2,000 edge connections in Blueprint View, the DOTS Hierarchical Scene Graph evaluates transform hierarchies in parallel passes, batching canvas draw calls without traversing individual nested object trees.</p>
+        <div class="card-footer">
+          <span><code>term-dots-scene-graph</code></span>
+          <button class="copy-btn" onclick="copyAnchor('dots-hierarchical-scene-graph')" title="Copy link to clipboard">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="dropped_capability" data-category="Ratchets & Integrity Verification" data-title="dropped_capability" data-tags="ratchet gate-error">
+        <div class="card-header">
+          <h2 class="card-title">DROPPED_CAPABILITY</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A blocking commit gate error triggered when an intra-file public export or capability is deleted or privatized without an explicit removal or replacement declared in `turn assume` (`removes: [...]` or `action: remove / replace`).</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>SEVERED_CAPABILITY</strong>: DROPPED_CAPABILITY occurs when the public export itself disappears; SEVERED_CAPABILITY occurs when external callers are disconnected.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-dropped-capability</code></span>
+          <button class="copy-btn" onclick="copyAnchor('dropped_capability')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="dormant-check" data-category="Architecture Philosophy & Tenets" data-title="dormant check" data-tags="checks rewind">
@@ -646,27 +686,7 @@ restored forward. Dormancy is a reversible annotation, not a deletion.</p>
         </div>
         <div class="card-footer">
           <span><code>term-dormant-check</code></span>
-          <button class="copy-btn" onclick="copyAnchor('dormant-check')" title="Copy permalink">🔗 permalink</button>
-        </div>
-      </article>
-      <article class="card" id="dots-hierarchical-scene-graph" data-category="Architecture Philosophy & Tenets" data-title="dots hierarchical scene graph" data-tags="[terminology, studio, architecture, rendering]">
-        <div class="card-header">
-          <h2 class="card-title">DOTS Hierarchical Scene Graph</h2>
-          <span class="card-category">Architecture Philosophy & Tenets</span>
-        </div>
-        <p class="card-meaning"># DOTS Hierarchical Scene Graph
-
-### Definition
-A high-performance, Data-Oriented Technology Stack (DOTS) inspired hierarchical graph model that organizes and computes transformation matrices, node hierarchies, and spatial bounds for visual rendering in AFWE Studio.
-
-### Why it Matters
-As repositories grow to thousands of blueprint nodes, capabilities, and dependencies, traditional object-oriented DOM or tree representations experience severe frame drops and memory overhead. The DOTS scene graph stores entity attributes in flat, contiguous memory arrays, allowing 60 FPS spatial rendering, instant level-of-detail culling, and rapid topological queries.
-
-### Example in Practice
-When Studio renders a repository with 500 modules and 2,000 edge connections in Blueprint View, the DOTS Hierarchical Scene Graph evaluates transform hierarchies in parallel passes, batching canvas draw calls without traversing individual nested object trees.</p>
-        <div class="card-footer">
-          <span><code>term-dots-scene-graph</code></span>
-          <button class="copy-btn" onclick="copyAnchor('dots-hierarchical-scene-graph')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('dormant-check')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="drift" data-category="Blueprint & Cartography" data-title="drift" data-tags="drift reconciliation">
@@ -675,16 +695,16 @@ When Studio renders a repository with 500 modules and 2,000 edge connections in 
           <span class="card-category">Blueprint & Cartography</span>
         </div>
         <p class="card-meaning">Any disagreement between the physical codebase (analyzed files, AST imports, symbol definitions) and the Blueprint tree. Detected via `afwe drift` or during `afwe sync`. Disagreements are triaged by confidence:
-- Confidence &gt;= 90%: auto-reconciled.
+- Confidence >= 90%: auto-reconciled.
 - Confidence 50%–90%: presented as soft changes.
-- Confidence &lt; 50% or structural changes: staged as proposals awaiting human confirmation.</p>
+- Confidence < 50% or structural changes: staged as proposals awaiting human confirmation.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>Constraint Violation</strong>: A constraint violation is an active rule failure (e.g., forbidden import); Drift is an unmapped or shifted structural divergence between code and blueprint.</div>
         </div>
         <div class="card-footer">
           <span><code>term-drift</code></span>
-          <button class="copy-btn" onclick="copyAnchor('drift')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('drift')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="drift-ledger" data-category="Architecture Philosophy & Tenets" data-title="drift ledger" data-tags="">
@@ -703,7 +723,7 @@ The **Drift Ledger** is a versioned state repository located at `.afwe/state/dri
 - **Batch Processing**: Supports bulk operations (`batch.tolerate_drift`, `batch.adopt_drift`) for high-velocity refactorings.</p>
         <div class="card-footer">
           <span><code>term-drift-ledger</code></span>
-          <button class="copy-btn" onclick="copyAnchor('drift-ledger')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('drift-ledger')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="drift-verdict" data-category="Architecture Philosophy & Tenets" data-title="drift verdict" data-tags="">
@@ -722,22 +742,7 @@ A **Drift Verdict** is an explicit tri-state governance action required whenever
 3. **Tolerate**: Acknowledges the divergence without mutating the blueprint or failing gates, recording the drift into the Drift Ledger for a configurable grace window (default 7 days, up to 14 days) before surfacing as Amber for review.</p>
         <div class="card-footer">
           <span><code>term-drift-verdict</code></span>
-          <button class="copy-btn" onclick="copyAnchor('drift-verdict')" title="Copy permalink">🔗 permalink</button>
-        </div>
-      </article>
-      <article class="card" id="dropped_capability" data-category="Ratchets & Integrity Verification" data-title="dropped_capability" data-tags="ratchet gate-error">
-        <div class="card-header">
-          <h2 class="card-title">DROPPED_CAPABILITY</h2>
-          <span class="card-category">Ratchets & Integrity Verification</span>
-        </div>
-        <p class="card-meaning">A blocking commit gate error triggered when an intra-file public export or capability is deleted or privatized without an explicit removal or replacement declared in `turn assume` (`removes: [...]` or `action: remove / replace`).</p>
-        <div class="confused-box">
-          <div class="confused-title">Not to be confused with:</div>
-          <div class="confused-item"><strong>SEVERED_CAPABILITY</strong>: DROPPED_CAPABILITY occurs when the public export itself disappears; SEVERED_CAPABILITY occurs when external callers are disconnected.</div>
-        </div>
-        <div class="card-footer">
-          <span><code>term-dropped-capability</code></span>
-          <button class="copy-btn" onclick="copyAnchor('dropped_capability')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('drift-verdict')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="dual-timeline-scrubber" data-category="Architecture Philosophy & Tenets" data-title="dual timeline scrubber" data-tags="studio-control timeline scrubbing">
@@ -752,7 +757,7 @@ A **Drift Verdict** is an explicit tri-state governance action required whenever
         </div>
         <div class="card-footer">
           <span><code>term-dual-timeline-scrubber</code></span>
-          <button class="copy-btn" onclick="copyAnchor('dual-timeline-scrubber')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('dual-timeline-scrubber')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="edge-routing-geometry" data-category="Architecture Philosophy & Tenets" data-title="edge routing geometry" data-tags="studio-layout edge-routing">
@@ -770,7 +775,7 @@ A **Drift Verdict** is an explicit tri-state governance action required whenever
         </div>
         <div class="card-footer">
           <span><code>term-edge-routing</code></span>
-          <button class="copy-btn" onclick="copyAnchor('edge-routing-geometry')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('edge-routing-geometry')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="engine-ledger" data-category="Architecture Philosophy & Tenets" data-title="engine ledger" data-tags="ledger rewind transport">
@@ -779,12 +784,12 @@ A **Drift Verdict** is an explicit tri-state governance action required whenever
           <span class="card-category">Architecture Philosophy & Tenets</span>
         </div>
         <p class="card-meaning">The authoritative, append-only record of engine state stored as a commit chain at
-`refs/afwe/ledger/&lt;project_id&gt;`. Every commit carries the previous tree forward and adds one event.
+`refs/afwe/ledger/<project_id>`. Every commit carries the previous tree forward and adds one event.
 The `.afwe/` folder is a projection: `afwe repair` regenerates the engine-owned parts of it from the
 ledger instead of treating disk as the record.
 
-The P1 tree is `meta.json`, `turns/&lt;alias&gt;.json`, `events/&lt;seq&gt;-&lt;kind&gt;.json`,
-`state/expected.json` and `baselines/&lt;alias&gt;.json`. `meta.json` carries `ledger_version: 1`; a reader
+The P1 tree is `meta.json`, `turns/<alias>.json`, `events/<seq>-<kind>.json`,
+`state/expected.json` and `baselines/<alias>.json`. `meta.json` carries `ledger_version: 1`; a reader
 that sees a newer version refuses and asks the user to upgrade rather than partially interpreting it.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
@@ -794,10 +799,10 @@ that sees a newer version refuses and asks the user to upgrade rather than parti
         </div>
         <div class="card-footer">
           <span><code>term-engine-ledger</code></span>
-          <button class="copy-btn" onclick="copyAnchor('engine-ledger')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('engine-ledger')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
-      <article class="card" id="epoch-id" data-category="Turn Protocol & Lifecycle" data-title="epoch id" data-tags="[terminology, lifecycle, orchestration, concurrency]">
+      <article class="card" id="epoch-id" data-category="Turn Protocol & Lifecycle" data-title="epoch id" data-tags="terminology lifecycle orchestration concurrency">
         <div class="card-header">
           <h2 class="card-title">Epoch ID</h2>
           <span class="card-category">Turn Protocol & Lifecycle</span>
@@ -814,7 +819,7 @@ When multiple agents or automated pipelines run in parallel across decoupled bra
 An autonomous testing campaign might spin up four subagents across an Epoch tagged `epoch-20261031-1900`. If one subagent discovers an invariant breach, the orchestrator uses the Epoch ID to cancel or quarantine all active sub-turns associated with that mission cluster.</p>
         <div class="card-footer">
           <span><code>term-epoch-id</code></span>
-          <button class="copy-btn" onclick="copyAnchor('epoch-id')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('epoch-id')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="expected-tree" data-category="Architecture Philosophy & Tenets" data-title="expected tree" data-tags="rewind ledger">
@@ -833,7 +838,7 @@ re-reported.</p>
         </div>
         <div class="card-footer">
           <span><code>term-expected-tree</code></span>
-          <button class="copy-btn" onclick="copyAnchor('expected-tree')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('expected-tree')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="explore-mode" data-category="Confidence Bands & Calibration" data-title="explore mode" data-tags="explore-mode prototyping">
@@ -848,7 +853,7 @@ re-reported.</p>
         </div>
         <div class="card-footer">
           <span><code>term-explore-mode</code></span>
-          <button class="copy-btn" onclick="copyAnchor('explore-mode')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('explore-mode')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="git-channel" data-category="Architecture Philosophy & Tenets" data-title="git channel" data-tags="">
@@ -858,10 +863,10 @@ re-reported.</p>
         </div>
         <p class="card-meaning"># Git Channel
 
-A zero-relay remote communication protocol connecting inbound-restricted sandboxes, cloud agents, and containers to the human prompter. The engine writes structured queue facts to `refs/afwe/outbox/&lt;project&gt;` via lightweight git blobs (without growing commit history), while the presence watcher reads outbox updates via `git ls-remote` and transmits human steering replies through `refs/afwe/inbox/&lt;project&gt;`.</p>
+A zero-relay remote communication protocol connecting inbound-restricted sandboxes, cloud agents, and containers to the human prompter. The engine writes structured queue facts to `refs/afwe/outbox/<project>` via lightweight git blobs (without growing commit history), while the presence watcher reads outbox updates via `git ls-remote` and transmits human steering replies through `refs/afwe/inbox/<project>`.</p>
         <div class="card-footer">
           <span><code>term-git-channel</code></span>
-          <button class="copy-btn" onclick="copyAnchor('git-channel')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('git-channel')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="guardrail" data-category="Architecture Philosophy & Tenets" data-title="guardrail" data-tags="guardrails verification">
@@ -870,7 +875,7 @@ A zero-relay remote communication protocol connecting inbound-restricted sandbox
           <span class="card-category">Architecture Philosophy & Tenets</span>
         </div>
         <p class="card-meaning">An architectural constraint divided into two complementary forms:
-1. **Passive Guardrail**: Targeted contextual instructions injected into the agent's micro-context (`afwe context &lt;files&gt;`) before editing begins.
+1. **Passive Guardrail**: Targeted contextual instructions injected into the agent's micro-context (`afwe context <files>`) before editing begins.
 2. **Active Guardrail**: Concrete test, AST inspection, or claim enforced by `afwe verify` and the commit gate.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
@@ -879,7 +884,7 @@ A zero-relay remote communication protocol connecting inbound-restricted sandbox
         </div>
         <div class="card-footer">
           <span><code>term-guardrail</code></span>
-          <button class="copy-btn" onclick="copyAnchor('guardrail')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('guardrail')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="harness-agnostic-architecture" data-category="Architecture Philosophy & Tenets" data-title="harness-agnostic architecture" data-tags="">
@@ -897,7 +902,7 @@ The architectural invariant that AFWE core, verification, and tripwires operate 
 3. **Open Standards**: Interoperates via standard JSON-RPC, standard CLI interfaces, and Git porcelain/plumbing.</p>
         <div class="card-footer">
           <span><code>term-harness-agnostic</code></span>
-          <button class="copy-btn" onclick="copyAnchor('harness-agnostic-architecture')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('harness-agnostic-architecture')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="human-floor" data-category="Memory, Pins & Living Intents" data-title="human floor" data-tags="authority governance">
@@ -915,7 +920,7 @@ The architectural invariant that AFWE core, verification, and tripwires operate 
 When a turn triggers a human floor, it is parked as `STAGED` with `requires_human: true`. The orchestrator agent skips the turn and continues its loop without stalling.</p>
         <div class="card-footer">
           <span><code>term-human-floor</code></span>
-          <button class="copy-btn" onclick="copyAnchor('human-floor')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('human-floor')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="intent" data-category="Memory, Pins & Living Intents" data-title="intent" data-tags="intents architecture">
@@ -931,7 +936,7 @@ When a turn triggers a human floor, it is parked as `STAGED` with `requires_huma
         </div>
         <div class="card-footer">
           <span><code>term-intent</code></span>
-          <button class="copy-btn" onclick="copyAnchor('intent')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('intent')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="ledger-fork" data-category="Architecture Philosophy & Tenets" data-title="ledger fork" data-tags="ledger transport fork">
@@ -949,7 +954,7 @@ incoming ref visible, and never merges, rewrites, or silently chooses one chain.
         </div>
         <div class="card-footer">
           <span><code>term-ledger-fork</code></span>
-          <button class="copy-btn" onclick="copyAnchor('ledger-fork')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('ledger-fork')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="materializer" data-category="Claims & Tripwires" data-title="materializer" data-tags="materializer tripwire">
@@ -964,7 +969,7 @@ incoming ref visible, and never merges, rewrites, or silently chooses one chain.
         </div>
         <div class="card-footer">
           <span><code>term-materializer</code></span>
-          <button class="copy-btn" onclick="copyAnchor('materializer')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('materializer')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="micro-context" data-category="Blueprint & Cartography" data-title="micro-context" data-tags="context passive-guardrails">
@@ -972,14 +977,14 @@ incoming ref visible, and never merges, rewrites, or silently chooses one chain.
           <h2 class="card-title">Micro-Context</h2>
           <span class="card-category">Blueprint & Cartography</span>
         </div>
-        <p class="card-meaning">The targeted, highly scoped architectural context retrieved via `afwe context &lt;files&gt;` (or MCP tool `afwe_context`). Before an agent touches a file, micro-context delivers only the nodes, purpose statements, decisions, exceptions, constraints, ubiquitous terminology, and active guardrails that directly apply to those specific files.</p>
+        <p class="card-meaning">The targeted, highly scoped architectural context retrieved via `afwe context <files>` (or MCP tool `afwe_context`). Before an agent touches a file, micro-context delivers only the nodes, purpose statements, decisions, exceptions, constraints, ubiquitous terminology, and active guardrails that directly apply to those specific files.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>Whole-Repository Prompting</strong>: Micro-context specifically avoids dumping the entire codebase or full architecture into the LLM context, keeping token usage low and focus razor-sharp.</div>
         </div>
         <div class="card-footer">
           <span><code>term-micro-context</code></span>
-          <button class="copy-btn" onclick="copyAnchor('micro-context')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('micro-context')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="mission" data-category="Multi-Agent Concurrency & Worktrees" data-title="mission" data-tags="multi-agent coordination">
@@ -994,25 +999,7 @@ incoming ref visible, and never merges, rewrites, or silently chooses one chain.
         </div>
         <div class="card-footer">
           <span><code>term-mission</code></span>
-          <button class="copy-btn" onclick="copyAnchor('mission')" title="Copy permalink">🔗 permalink</button>
-        </div>
-      </article>
-      <article class="card" id="narrow-self-heal" data-category="Architecture Philosophy & Tenets" data-title="narrow self-heal" data-tags="">
-        <div class="card-header">
-          <h2 class="card-title">Narrow Self-Heal</h2>
-          <span class="card-category">Architecture Philosophy & Tenets</span>
-        </div>
-        <p class="card-meaning"># Narrow Self-Heal
-
-A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes mechanical corrective actions without authoring new source code.
-
-## Section 0 Scope Boundary
-- **Restores of Dropped Files**: Restoring an unchanged file from recorded baseline bytes is allowlisted because no foreign bytes are introduced (derivability check passes).
-- **Sub-Turn Audit Trail**: Executed as a recorded child turn `&lt;parent_turn&gt;.1` with CAS validation and an explicit undo recipe.
-- **Out of Scope**: Severed capabilities (missing wiring), semantic merges of modified files, and autonomous source generation are strictly forbidden inside `afwe-core`.</p>
-        <div class="card-footer">
-          <span><code>term-self-heal</code></span>
-          <button class="copy-btn" onclick="copyAnchor('narrow-self-heal')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('mission')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="native-dot-notation" data-category="Architecture Philosophy & Tenets" data-title="native dot notation" data-tags="syntax node-addressing">
@@ -1027,7 +1014,7 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
         </div>
         <div class="card-footer">
           <span><code>term-native-dot-notation</code></span>
-          <button class="copy-btn" onclick="copyAnchor('native-dot-notation')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('native-dot-notation')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="orphaned_decision" data-category="Ratchets & Integrity Verification" data-title="orphaned_decision" data-tags="ratchet memory gate-error">
@@ -1042,7 +1029,7 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
         </div>
         <div class="card-footer">
           <span><code>term-orphaned-decision</code></span>
-          <button class="copy-btn" onclick="copyAnchor('orphaned_decision')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('orphaned_decision')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="orphaned_pin" data-category="Ratchets & Integrity Verification" data-title="orphaned_pin" data-tags="ratchet pins gate-error">
@@ -1057,7 +1044,7 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
         </div>
         <div class="card-footer">
           <span><code>term-orphaned-pin</code></span>
-          <button class="copy-btn" onclick="copyAnchor('orphaned_pin')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('orphaned_pin')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="perimeter-port-distribution" data-category="Architecture Philosophy & Tenets" data-title="perimeter port distribution" data-tags="studio-layout edge-routing">
@@ -1072,7 +1059,7 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
         </div>
         <div class="card-footer">
           <span><code>term-perimeter-port-distribution</code></span>
-          <button class="copy-btn" onclick="copyAnchor('perimeter-port-distribution')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('perimeter-port-distribution')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="phase-0-briefing-pins" data-category="Turn Protocol & Lifecycle" data-title="phase 0 (briefing & pins)" data-tags="turn-protocol briefing">
@@ -1080,14 +1067,14 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
           <h2 class="card-title">Phase 0 (Briefing & Pins)</h2>
           <span class="card-category">Turn Protocol & Lifecycle</span>
         </div>
-        <p class="card-meaning">The initial pre-planning phase of a turn initiated via `afwe turn begin "&lt;prompt&gt;" --target &lt;files&gt; [--claim &lt;files&gt;]`. It stores the prompt verbatim, generates a deterministic briefing pack including active pins, guardrails, memory, active intents, and probing guides, issues a bearer security token, and acquires upfront file claims to prevent multi-agent contention.</p>
+        <p class="card-meaning">The initial pre-planning phase of a turn initiated via `afwe turn begin "<prompt>" --target <files> [--claim <files>]`. It stores the prompt verbatim, generates a deterministic briefing pack including active pins, guardrails, memory, active intents, and probing guides, issues a bearer security token, and acquires upfront file claims to prevent multi-agent contention.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>Phase 1 (turn assume)</strong>: Phase 0 is read-only research and briefing before planning; Phase 1 is intent and claim declaration after planning is complete.</div>
         </div>
         <div class="card-footer">
           <span><code>term-phase-0-briefing</code></span>
-          <button class="copy-btn" onclick="copyAnchor('phase-0-briefing-pins')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('phase-0-briefing-pins')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="phase-1-pre-code-declaration" data-category="Turn Protocol & Lifecycle" data-title="phase 1 (pre-code declaration)" data-tags="turn-protocol intent-declaration">
@@ -1095,14 +1082,14 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
           <h2 class="card-title">Phase 1 (Pre-Code Declaration)</h2>
           <span class="card-category">Turn Protocol & Lifecycle</span>
         </div>
-        <p class="card-meaning">The pre-code declaration phase invoked via `afwe turn assume &lt;turn&gt; --file &lt;json&gt; [--token &lt;tok&gt;]`. Before any code is generated or edited, the agent explicitly registers its architectural intents, file claims, and pre-generation AST assertions (`forbid_import`, `forbid_symbol`, `export_exists`, `symbol_signature`, `pattern`, `command`). Intentional removals must be declared in `removes` to satisfy the strict "Rust for project intent" compiler model.</p>
+        <p class="card-meaning">The pre-code declaration phase invoked via `afwe turn assume <turn> --file <json> [--token <tok>]`. Before any code is generated or edited, the agent explicitly registers its architectural intents, file claims, and pre-generation AST assertions (`forbid_import`, `forbid_symbol`, `export_exists`, `symbol_signature`, `pattern`, `command`). Intentional removals must be declared in `removes` to satisfy the strict "Rust for project intent" compiler model.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>Phase 2 (turn commit)</strong>: Assume declares expectations before writing code; commit verifies compliance and writes Git trees after code is complete.</div>
         </div>
         <div class="card-footer">
           <span><code>term-phase-1-assume</code></span>
-          <button class="copy-btn" onclick="copyAnchor('phase-1-pre-code-declaration')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('phase-1-pre-code-declaration')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="phase-2-gated-commit" data-category="Turn Protocol & Lifecycle" data-title="phase 2 (gated commit)" data-tags="turn-protocol verification gate">
@@ -1110,14 +1097,14 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
           <h2 class="card-title">Phase 2 (Gated Commit)</h2>
           <span class="card-category">Turn Protocol & Lifecycle</span>
         </div>
-        <p class="card-meaning">The final gated commit phase invoked via `afwe turn commit &lt;turn&gt; --summary "..." [--token &lt;tok&gt;]`. AFWE isolates working changes via Git plumbing trees with Content-Addressable Storage (CAS) verification and advisory OS commit locks, executing the gate against active pins, claims, and capability ratchets before recording the turn in `.afwe/turns/` and emitting an `AFWE-Turn:` trailer.</p>
+        <p class="card-meaning">The final gated commit phase invoked via `afwe turn commit <turn> --summary "..." [--token <tok>]`. AFWE isolates working changes via Git plumbing trees with Content-Addressable Storage (CAS) verification and advisory OS commit locks, executing the gate against active pins, claims, and capability ratchets before recording the turn in `.afwe/turns/` and emitting an `AFWE-Turn:` trailer.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>git commit -m</strong>: Standard git commit operates without architectural validation; AFWE turn commit acts as a compiler gate enforcing capability preservation and intent adherence.</div>
         </div>
         <div class="card-footer">
           <span><code>term-phase-2-commit</code></span>
-          <button class="copy-btn" onclick="copyAnchor('phase-2-gated-commit')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('phase-2-gated-commit')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="pin" data-category="Memory, Pins & Living Intents" data-title="pin" data-tags="pins governance">
@@ -1133,7 +1120,7 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
         </div>
         <div class="card-footer">
           <span><code>term-pin</code></span>
-          <button class="copy-btn" onclick="copyAnchor('pin')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('pin')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="presence-proof" data-category="Architecture Philosophy & Tenets" data-title="presence proof" data-tags="">
@@ -1146,7 +1133,7 @@ A strictly bounded, recorded sub-turn remediation mechanism where AFWE executes 
 A hardware/OS biometric or credential prompt (Windows Hello, Touch ID, or system password challenge) invoked before executing high-blast-radius human-floor actions or override approvals. Under the settled `floor_only` default, routine turns, ready commits, and steering replies remain frictionless 1-click actions, while attempts by local agents or synthetic clicks to lower authority or override architectural pins require undeniable physical human confirmation.</p>
         <div class="card-footer">
           <span><code>term-presence-proof</code></span>
-          <button class="copy-btn" onclick="copyAnchor('presence-proof')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('presence-proof')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="presence-watcher" data-category="Architecture Philosophy & Tenets" data-title="presence watcher" data-tags="">
@@ -1159,10 +1146,10 @@ A hardware/OS biometric or credential prompt (Windows Hello, Touch ID, or system
 A lightweight, zero-GUI background daemon (`afwe presence run`) started at user login via OS autostart (Windows Scheduled Task, macOS LaunchAgent, Linux systemd user service). It monitors registered repositories listed in the user-level project registry, streams sequenced lifecycle events, applies user notification routing policies (`presence.toml`), and raises OS notifications or spawns compact always-on-top cards without stealing active typing focus.</p>
         <div class="card-footer">
           <span><code>term-presence-watcher</code></span>
-          <button class="copy-btn" onclick="copyAnchor('presence-watcher')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('presence-watcher')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
-      <article class="card" id="private-git-plumbing-tree" data-category="Architecture Philosophy & Tenets" data-title="private git plumbing tree" data-tags="[terminology, git, isolation, storage, safety]">
+      <article class="card" id="private-git-plumbing-tree" data-category="Architecture Philosophy & Tenets" data-title="private git plumbing tree" data-tags="terminology git isolation storage safety">
         <div class="card-header">
           <h2 class="card-title">Private Git Plumbing Tree</h2>
           <span class="card-category">Architecture Philosophy & Tenets</span>
@@ -1176,10 +1163,10 @@ An isolated, content-addressed Git object tree constructed directly using low-le
 Autonomous agent mutations must be verified, diffed, and staged in hermetic isolation before touching the developer's dirty workspace. By writing directly to private plumbing trees, AFWE can calculate exact CAS diffs, run verification checks, and stage proposals with zero interference with uncommitted human changes.
 
 ### Example in Practice
-During `afwe turn commit`, the engine builds a tree object representing the staged turn changes and records it under `.afwe/refs/turns/&lt;turn-id&gt;`, keeping the developer's working directory untouched until an explicit merge or checkout is requested.</p>
+During `afwe turn commit`, the engine builds a tree object representing the staged turn changes and records it under `.afwe/refs/turns/<turn-id>`, keeping the developer's working directory untouched until an explicit merge or checkout is requested.</p>
         <div class="card-footer">
           <span><code>term-git-plumbing-tree</code></span>
-          <button class="copy-btn" onclick="copyAnchor('private-git-plumbing-tree')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('private-git-plumbing-tree')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="probing-guide" data-category="Confidence Bands & Calibration" data-title="probing guide" data-tags="confidence-bands advisory">
@@ -1191,11 +1178,11 @@ During `afwe turn commit`, the engine builds a tree object representing the stag
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>Active Check</strong>: Active checks block the commit gate; Probing Guides are non-blocking advisory steering.</div>
-          <div class="confused-item"><strong>Ambiguity Question</strong>: Questions have &lt;85% confidence and require human decision; Probing Guides have 85%–90% confidence and steer agents automatically.</div>
+          <div class="confused-item"><strong>Ambiguity Question</strong>: Questions have <85% confidence and require human decision; Probing Guides have 85%–90% confidence and steer agents automatically.</div>
         </div>
         <div class="card-footer">
           <span><code>term-probing-guide</code></span>
-          <button class="copy-btn" onclick="copyAnchor('probing-guide')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('probing-guide')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="prompter-delegation" data-category="Architecture Philosophy & Tenets" data-title="prompter delegation" data-tags="authority delegation">
@@ -1213,10 +1200,10 @@ During `afwe turn commit`, the engine builds a tree object representing the stag
 - **Instant Revocation (R7)**: May be revoked at any time from any interface via `afwe authority revoke`.</p>
         <div class="card-footer">
           <span><code>term-prompter-delegation</code></span>
-          <button class="copy-btn" onclick="copyAnchor('prompter-delegation')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('prompter-delegation')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
-      <article class="card" id="quarantine-grace-system" data-category="Architecture Philosophy & Tenets" data-title="quarantine grace system" data-tags="[terminology, safety, rollback, recovery]">
+      <article class="card" id="quarantine-grace-system" data-category="Architecture Philosophy & Tenets" data-title="quarantine grace system" data-tags="terminology safety rollback recovery">
         <div class="card-header">
           <h2 class="card-title">Quarantine Grace System</h2>
           <span class="card-category">Architecture Philosophy & Tenets</span>
@@ -1230,10 +1217,10 @@ A two-tier safety mechanism that holds unverified or speculative agent mutations
 Autonomous agent loops occasionally generate malformed, dead-on-arrival, or hallucinated outputs. The Quarantine Grace System ensures that accidental or destructive changes do not immediately overwrite working tree state or corrupt the project history, offering non-destructive recovery.
 
 ### Example in Practice
-When an agent attempts to abandon or overwrite a modified file during a contentious turn, the engine places the replaced bytes into `.afwe/quarantine/&lt;timestamp&gt;/` rather than discarding them immediately, retaining a safety grace buffer.</p>
+When an agent attempts to abandon or overwrite a modified file during a contentious turn, the engine places the replaced bytes into `.afwe/quarantine/<timestamp>/` rather than discarding them immediately, retaining a safety grace buffer.</p>
         <div class="card-footer">
           <span><code>term-quarantine-grace-system</code></span>
-          <button class="copy-btn" onclick="copyAnchor('quarantine-grace-system')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('quarantine-grace-system')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="radial-view" data-category="Architecture Philosophy & Tenets" data-title="radial view" data-tags="studio-view visualization radial">
@@ -1249,7 +1236,7 @@ When an agent attempts to abandon or overwrite a modified file during a contenti
         </div>
         <div class="card-footer">
           <span><code>term-radial-view</code></span>
-          <button class="copy-btn" onclick="copyAnchor('radial-view')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('radial-view')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="ratchet-baseline" data-category="Ratchets & Integrity Verification" data-title="ratchet baseline" data-tags="ratchet baseline">
@@ -1264,10 +1251,10 @@ When an agent attempts to abandon or overwrite a modified file during a contenti
         </div>
         <div class="card-footer">
           <span><code>term-baseline</code></span>
-          <button class="copy-btn" onclick="copyAnchor('ratchet-baseline')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('ratchet-baseline')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
-      <article class="card" id="ready-mode-checkgen" data-category="Architecture Philosophy & Tenets" data-title="ready mode checkgen" data-tags="[terminology, checks, compilation, automation]">
+      <article class="card" id="ready-mode-checkgen" data-category="Architecture Philosophy & Tenets" data-title="ready mode checkgen" data-tags="terminology checks compilation automation">
         <div class="card-header">
           <h2 class="card-title">Ready Mode Checkgen</h2>
           <span class="card-category">Architecture Philosophy & Tenets</span>
@@ -1284,7 +1271,7 @@ Manual maintenance of CI check scripts frequently lags behind architectural evol
 When a developer adds a new capability `ExportSvg` to the Studio node in `blueprint.dot`, Ready Mode Checkgen immediately emits an automated tripwire check verifying the export function signature and CAS output format.</p>
         <div class="card-footer">
           <span><code>term-ready-mode-checkgen</code></span>
-          <button class="copy-btn" onclick="copyAnchor('ready-mode-checkgen')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('ready-mode-checkgen')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="rewind-receipt" data-category="Architecture Philosophy & Tenets" data-title="rewind receipt" data-tags="rewind ledger">
@@ -1305,7 +1292,7 @@ automatically.</p>
         </div>
         <div class="card-footer">
           <span><code>term-rewind-receipt</code></span>
-          <button class="copy-btn" onclick="copyAnchor('rewind-receipt')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('rewind-receipt')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="rust-for-project-intent" data-category="Architecture Philosophy & Tenets" data-title="rust for project intent" data-tags="architecture-philosophy compiler-mental-model">
@@ -1320,7 +1307,22 @@ automatically.</p>
         </div>
         <div class="card-footer">
           <span><code>term-rust-for-project-intent</code></span>
-          <button class="copy-btn" onclick="copyAnchor('rust-for-project-intent')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('rust-for-project-intent')" title="Copy link to clipboard">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="severed_capability" data-category="Ratchets & Integrity Verification" data-title="severed_capability" data-tags="ratchet gate-error">
+        <div class="card-header">
+          <h2 class="card-title">SEVERED_CAPABILITY</h2>
+          <span class="card-category">Ratchets & Integrity Verification</span>
+        </div>
+        <p class="card-meaning">A blocking commit gate error triggered when cross-module caller severance drops inbound references to an exported function or struct from >0 to 0, turning previously consumed functionality into dead code without declared intent.</p>
+        <div class="confused-box">
+          <div class="confused-title">Not to be confused with:</div>
+          <div class="confused-item"><strong>DEAD_ON_ARRIVAL</strong>: SEVERED_CAPABILITY affects previously used code that lost its callers; DEAD_ON_ARRIVAL affects newly introduced code that was never called.</div>
+        </div>
+        <div class="card-footer">
+          <span><code>term-severed-capability</code></span>
+          <button class="copy-btn" onclick="copyAnchor('severed_capability')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="scene-outliner" data-category="Architecture Philosophy & Tenets" data-title="scene outliner" data-tags="studio-panel dots outliner">
@@ -1335,22 +1337,7 @@ automatically.</p>
         </div>
         <div class="card-footer">
           <span><code>term-scene-outliner</code></span>
-          <button class="copy-btn" onclick="copyAnchor('scene-outliner')" title="Copy permalink">🔗 permalink</button>
-        </div>
-      </article>
-      <article class="card" id="severed_capability" data-category="Ratchets & Integrity Verification" data-title="severed_capability" data-tags="ratchet gate-error">
-        <div class="card-header">
-          <h2 class="card-title">SEVERED_CAPABILITY</h2>
-          <span class="card-category">Ratchets & Integrity Verification</span>
-        </div>
-        <p class="card-meaning">A blocking commit gate error triggered when cross-module caller severance drops inbound references to an exported function or struct from &gt;0 to 0, turning previously consumed functionality into dead code without declared intent.</p>
-        <div class="confused-box">
-          <div class="confused-title">Not to be confused with:</div>
-          <div class="confused-item"><strong>DEAD_ON_ARRIVAL</strong>: SEVERED_CAPABILITY affects previously used code that lost its callers; DEAD_ON_ARRIVAL affects newly introduced code that was never called.</div>
-        </div>
-        <div class="card-footer">
-          <span><code>term-severed-capability</code></span>
-          <button class="copy-btn" onclick="copyAnchor('severed_capability')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('scene-outliner')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="skipping-resistance" data-category="Claims & Tripwires" data-title="skipping resistance" data-tags="tripwire governance">
@@ -1362,10 +1349,10 @@ automatically.</p>
 
 - **CI Gate Trailer Check**: `afwe gate --ci` validates that git commits have valid `AFWE-Turn-Hash` and `AFWE-Turn` trailers matching recorded commit trees.
 - **Unattributed Work Scanner**: Scans working tree changes and flags unmapped modifications as `UNATTRIBUTED` in the Action Queue.
-- **Retroactive Attribution**: `afwe attribute &lt;commit&gt;` allows manual developer commits to be safely and legitimately incorporated into the AFWE audit trail.</p>
+- **Retroactive Attribution**: `afwe attribute <commit>` allows manual developer commits to be safely and legitimately incorporated into the AFWE audit trail.</p>
         <div class="card-footer">
           <span><code>term-skipping-resistance</code></span>
-          <button class="copy-btn" onclick="copyAnchor('skipping-resistance')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('skipping-resistance')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="snapshot-ref" data-category="Architecture Philosophy & Tenets" data-title="snapshot ref" data-tags="snapshot rewind ledger">
@@ -1373,7 +1360,7 @@ automatically.</p>
           <h2 class="card-title">Snapshot Ref</h2>
           <span class="card-category">Architecture Philosophy & Tenets</span>
         </div>
-        <p class="card-meaning">A local, parentless git commit under `refs/afwe/snapshots/&lt;project_id&gt;/&lt;snap_id&gt;` that records the
+        <p class="card-meaning">A local, parentless git commit under `refs/afwe/snapshots/<project_id>/<snap_id>` that records the
 working tree at turn begin and turn end. Parentless means pruning is one `update-ref -d` followed by
 a prune, and lineage lives in the engine ledger rather than in parent pointers. Snapshot refs never
 travel with `afwe ledger push` or a normal `git fetch`/`git push`.</p>
@@ -1385,7 +1372,7 @@ travel with `afwe ledger push` or a normal `git fetch`/`git push`.</p>
         </div>
         <div class="card-footer">
           <span><code>term-snapshot-ref</code></span>
-          <button class="copy-btn" onclick="copyAnchor('snapshot-ref')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('snapshot-ref')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="spacebar-hand-pan" data-category="Architecture Philosophy & Tenets" data-title="spacebar hand pan" data-tags="studio-control navigation viewport">
@@ -1400,7 +1387,7 @@ travel with `afwe ledger push` or a normal `git fetch`/`git push`.</p>
         </div>
         <div class="card-footer">
           <span><code>term-spacebar-hand-pan</code></span>
-          <button class="copy-btn" onclick="copyAnchor('spacebar-hand-pan')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('spacebar-hand-pan')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="spatial-drag-clamping" data-category="Architecture Philosophy & Tenets" data-title="spatial drag clamping" data-tags="studio-physics interaction">
@@ -1415,10 +1402,10 @@ travel with `afwe ledger push` or a normal `git fetch`/`git push`.</p>
         </div>
         <div class="card-footer">
           <span><code>term-spatial-drag-clamping</code></span>
-          <button class="copy-btn" onclick="copyAnchor('spatial-drag-clamping')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('spatial-drag-clamping')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
-      <article class="card" id="string-interner" data-category="Memory, Pins & Living Intents" data-title="string interner" data-tags="[terminology, performance, memory, engine]">
+      <article class="card" id="string-interner" data-category="Memory, Pins & Living Intents" data-title="string interner" data-tags="terminology performance memory engine">
         <div class="card-header">
           <h2 class="card-title">String Interner</h2>
           <span class="card-category">Memory, Pins & Living Intents</span>
@@ -1435,7 +1422,7 @@ Identifier names, file paths, and AST symbol names are repeated thousands of tim
 When AFWE checks node contention across 20 concurrent turns, matching node identifiers like `"crates/afwe-core/src/api.rs"` executes as a single integer comparison between two interned symbols, rather than comparing byte sequences.</p>
         <div class="card-footer">
           <span><code>term-string-interner</code></span>
-          <button class="copy-btn" onclick="copyAnchor('string-interner')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('string-interner')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="sub-turn" data-category="Turn Protocol & Lifecycle" data-title="sub-turn" data-tags="turn-protocol sub-turn remediation">
@@ -1443,7 +1430,7 @@ When AFWE checks node contention across 20 concurrent turns, matching node ident
           <h2 class="card-title">Sub-Turn</h2>
           <span class="card-category">Turn Protocol & Lifecycle</span>
         </div>
-        <p class="card-meaning">A granular, child execution unit operating underneath a parent turn (formatted as `&lt;parent_turn&gt;.&lt;n&gt;`, e.g., `t0046.1`). Sub-turns are used for atomic remediation actions such as Narrow Self-Heal file restorations (`afwe heal restore`), staged sub-steps within an autonomous multi-agent Mission, or isolated micro-commits that maintain cryptographic linkage to the parent turn without re-running full briefing packs.</p>
+        <p class="card-meaning">A granular, child execution unit operating underneath a parent turn (formatted as `<parent_turn>.<n>`, e.g., `t0046.1`). Sub-turns are used for atomic remediation actions such as Narrow Self-Heal file restorations (`afwe heal restore`), staged sub-steps within an autonomous multi-agent Mission, or isolated micro-commits that maintain cryptographic linkage to the parent turn without re-running full briefing packs.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>Turn</strong>: A top-level Turn spans an entire developer prompt; a Sub-Turn is a child transaction executing a mechanical remediation or sub-task of that turn.</div>
@@ -1451,7 +1438,7 @@ When AFWE checks node contention across 20 concurrent turns, matching node ident
         </div>
         <div class="card-footer">
           <span><code>term-sub-turn</code></span>
-          <button class="copy-btn" onclick="copyAnchor('sub-turn')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('sub-turn')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="the-folder-is-the-product" data-category="Architecture Philosophy & Tenets" data-title="the folder is the product" data-tags="architecture-philosophy persistent-model">
@@ -1466,7 +1453,7 @@ When AFWE checks node contention across 20 concurrent turns, matching node ident
         </div>
         <div class="card-footer">
           <span><code>term-the-folder-is-the-product</code></span>
-          <button class="copy-btn" onclick="copyAnchor('the-folder-is-the-product')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('the-folder-is-the-product')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="timeline-view" data-category="Architecture Philosophy & Tenets" data-title="timeline view" data-tags="studio-view timeline ledger">
@@ -1482,7 +1469,7 @@ When AFWE checks node contention across 20 concurrent turns, matching node ident
         </div>
         <div class="card-footer">
           <span><code>term-timeline-view</code></span>
-          <button class="copy-btn" onclick="copyAnchor('timeline-view')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('timeline-view')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="topology-view" data-category="Blueprint & Cartography" data-title="topology view" data-tags="studio-view visualization topology">
@@ -1498,7 +1485,7 @@ When AFWE checks node contention across 20 concurrent turns, matching node ident
         </div>
         <div class="card-footer">
           <span><code>term-topology-view</code></span>
-          <button class="copy-btn" onclick="copyAnchor('topology-view')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('topology-view')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="tripwire" data-category="Claims & Tripwires" data-title="tripwire" data-tags="tripwire materializer">
@@ -1513,7 +1500,7 @@ When AFWE checks node contention across 20 concurrent turns, matching node ident
         </div>
         <div class="card-footer">
           <span><code>term-tripwire</code></span>
-          <button class="copy-btn" onclick="copyAnchor('tripwire')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('tripwire')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="turn" data-category="Turn Protocol & Lifecycle" data-title="turn" data-tags="turn-protocol core-lifecycle">
@@ -1529,7 +1516,7 @@ When AFWE checks node contention across 20 concurrent turns, matching node ident
         </div>
         <div class="card-footer">
           <span><code>term-turn</code></span>
-          <button class="copy-btn" onclick="copyAnchor('turn')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('turn')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="turn-abandon" data-category="Turn Protocol & Lifecycle" data-title="turn abandon" data-tags="turn-protocol recovery">
@@ -1537,17 +1524,17 @@ When AFWE checks node contention across 20 concurrent turns, matching node ident
           <h2 class="card-title">Turn Abandon</h2>
           <span class="card-category">Turn Protocol & Lifecycle</span>
         </div>
-        <p class="card-meaning">A turn cancellation command (`afwe turn abandon &lt;turn&gt;`) that discards an open uncommitted turn, immediately releasing all file claims, locks, and temporary token reservations without altering the Git tree.</p>
+        <p class="card-meaning">A turn cancellation command (`afwe turn abandon <turn>`) that discards an open uncommitted turn, immediately releasing all file claims, locks, and temporary token reservations without altering the Git tree.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>Turn Redo</strong>: Abandon terminates the turn completely; Redo resets the workspace but preserves the open turn session.</div>
         </div>
         <div class="card-footer">
           <span><code>term-turn-abandon</code></span>
-          <button class="copy-btn" onclick="copyAnchor('turn-abandon')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('turn-abandon')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
-      <article class="card" id="turn-hash" data-category="Turn Protocol & Lifecycle" data-title="turn hash" data-tags="[terminology, identity, integrity, protocol]">
+      <article class="card" id="turn-hash" data-category="Turn Protocol & Lifecycle" data-title="turn hash" data-tags="terminology identity integrity protocol">
         <div class="card-header">
           <h2 class="card-title">Turn Hash</h2>
           <span class="card-category">Turn Protocol & Lifecycle</span>
@@ -1564,7 +1551,7 @@ The Turn Hash provides content-addressable identity and tamper evidence for agen
 When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto the briefing pack. At `afwe turn commit`, the final tree digest and diff are blended into the hash, recorded into `.afwe/receipts/t0057.json`, and cited in the Git commit trailer.</p>
         <div class="card-footer">
           <span><code>term-turn-hash</code></span>
-          <button class="copy-btn" onclick="copyAnchor('turn-hash')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('turn-hash')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="turn-pause" data-category="Turn Protocol & Lifecycle" data-title="turn pause" data-tags="">
@@ -1580,10 +1567,10 @@ When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto
 ## Mechanics
 - **Zero-Token Wait**: The engine or MCP runner holds the connection in a reactive loop with exponential backoff rather than polling prompts or invoking LLMs.
 - **Interactive Options**: Provides structured option pills (e.g. choice alternatives), free-form reply steering, or Studio inspection.
-- **Resumption**: Resumed via `afwe turn resume &lt;turn&gt; --reply "..."` or `/api/action?act=resume`, immediately waking the agent and injecting the human's choice or steering directive into the turn context.</p>
+- **Resumption**: Resumed via `afwe turn resume <turn> --reply "..."` or `/api/action?act=resume`, immediately waking the agent and injecting the human's choice or steering directive into the turn context.</p>
         <div class="card-footer">
           <span><code>term-turn-pause</code></span>
-          <button class="copy-btn" onclick="copyAnchor('turn-pause')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('turn-pause')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="turn-receipt" data-category="Turn Protocol & Lifecycle" data-title="turn receipt" data-tags="turn-protocol provenance">
@@ -1598,7 +1585,7 @@ When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto
         </div>
         <div class="card-footer">
           <span><code>term-turn-receipt</code></span>
-          <button class="copy-btn" onclick="copyAnchor('turn-receipt')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('turn-receipt')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="turn-redo" data-category="Turn Protocol & Lifecycle" data-title="turn redo" data-tags="turn-protocol recovery">
@@ -1606,7 +1593,7 @@ When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto
           <h2 class="card-title">Turn Redo</h2>
           <span class="card-category">Turn Protocol & Lifecycle</span>
         </div>
-        <p class="card-meaning">A safety command (`afwe turn redo &lt;turn&gt;`) that cleanly reverts uncommitted workspace edits back to the turn's begin baseline (backed up in `.afwe/backups/&lt;turn_hash&gt;/`), while keeping the turn open and retaining locks for rework.</p>
+        <p class="card-meaning">A safety command (`afwe turn redo <turn>`) that cleanly reverts uncommitted workspace edits back to the turn's begin baseline (backed up in `.afwe/backups/<turn_hash>/`), while keeping the turn open and retaining locks for rework.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>Turn Abandon</strong>: Redo keeps the turn open to try again; Abandon cancels the turn and releases all file claims and locks.</div>
@@ -1614,7 +1601,7 @@ When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto
         </div>
         <div class="card-footer">
           <span><code>term-turn-redo</code></span>
-          <button class="copy-btn" onclick="copyAnchor('turn-redo')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('turn-redo')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="visualizer-switcher-4-lens-overview" data-category="Architecture Philosophy & Tenets" data-title="visualizer switcher (4-lens overview)" data-tags="studio-shell overview lenses">
@@ -1633,7 +1620,7 @@ When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto
         </div>
         <div class="card-footer">
           <span><code>term-visualizer-switcher</code></span>
-          <button class="copy-btn" onclick="copyAnchor('visualizer-switcher-4-lens-overview')" title="Copy permalink">🔗 permalink</button>
+          <button class="copy-btn" onclick="copyAnchor('visualizer-switcher-4-lens-overview')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
     </div>

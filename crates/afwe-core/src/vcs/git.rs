@@ -187,7 +187,9 @@ impl VcsProvider for GitProvider {
             return Ok(None);
         }
 
-        let idx_nonce = blake3::hash(format!("{message}{}", std::process::id()).as_bytes()).to_hex()[..12].to_string();
+        static INDEX_COUNTER: AtomicU64 = AtomicU64::new(0);
+        let seq = INDEX_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let idx_nonce = blake3::hash(format!("{message}-{}-{seq}", std::process::id()).as_bytes()).to_hex()[..16].to_string();
         let tmp_idx = std::env::temp_dir().join(format!("afwe-index-{idx_nonce}"));
         let tmp_idx_str = tmp_idx.to_string_lossy().to_string();
         let idx_env = [("GIT_INDEX_FILE", tmp_idx_str.as_str())];
