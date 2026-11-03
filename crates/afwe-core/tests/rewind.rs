@@ -96,8 +96,13 @@ fn file_revert_is_rewound_and_the_next_commit_succeeds() {
     let rewind_item = items.iter().find(|i| i["kind"] == "external_rewind");
     assert!(rewind_item.is_some(), "rewind receipt must surface in action queue: {queue}");
     let receipt_id = typed[0].id.clone();
+    // Resolve rewind receipt by dismissal
+    let dismissed = c(&engine, "rewind.resolve", json!({"id": receipt_id, "action": "dismiss"}));
+    assert_eq!(dismissed["status"], "dismissed");
+    let listed_after = c(&engine, "rewind.list", json!({}));
+    assert_eq!(listed_after["count"], 0);
 
-    // Snapshot retention pruning test
+    // Snapshot retention pruning test (runs after active receipt dismissal so no snapshot is locked by an open receipt)
     c(&engine, "snapshot.take", json!({"phase": "manual"}));
     c(&engine, "snapshot.take", json!({"phase": "manual"}));
     let before_prune = c(&engine, "snapshot.list", json!({}));
@@ -107,12 +112,6 @@ fn file_revert_is_rewound_and_the_next_commit_succeeds() {
     assert_eq!(prune_res["remaining"], 2);
     let after_prune = c(&engine, "snapshot.list", json!({}));
     assert_eq!(after_prune.as_array().map(|a| a.len()).unwrap_or(0), 2);
-
-    // Resolve rewind receipt by dismissal
-    let dismissed = c(&engine, "rewind.resolve", json!({"id": receipt_id, "action": "dismiss"}));
-    assert_eq!(dismissed["status"], "dismissed");
-    let listed_after = c(&engine, "rewind.list", json!({}));
-    assert_eq!(listed_after["count"], 0);
 
     let _ = std::fs::remove_dir_all(&dir);
 }
