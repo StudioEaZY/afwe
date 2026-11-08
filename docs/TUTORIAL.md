@@ -457,3 +457,31 @@ differences are receipted once.
 When authoring test suites or CI workflows for projects governed by AFWE:
 1. **Overlay Correctness**: All file lifecycle states must be covered in test assertions: new files, deleted files, renamed files, `.gitignore` entries, and CRLF line endings. If overlay analysis is incomplete, the engine falls back to a one-time full workspace analysis and records the fallback.
 2. **Tree Deduplication**: Rewind and classification tests must explicitly cover scenarios with identical trees across consecutive turns/phases, ensuring metadata deduplication preserves distinct turn and phase identities.
+
+---
+
+## 17. Stale-Turn Recovery, Heartbeats & Schema Templates
+
+### Auto-Recovering Stale Locks & Reclaims
+When working in multi-agent or agentic environments, an agent runner may crash, disconnect, or terminate without calling `turn commit` or `turn abandon`. Previously, this left file claims wedged with `CONTENTION` errors.
+
+AFWE recovers stale state deterministically:
+- **Automatic Stale Reclaim**: If an active turn (`open`, `assumed`, `ready`) has had no mutating activity for longer than `policy.stale_turn_minutes` (default: 120 minutes), any subsequent turn claiming conflicting files automatically reclaims the reservation under lock.
+- **Provenance & Logging**: The stale turn transitions to `abandoned` with a structured `reclaim: { by, at, reason }` record, records `turn_stale_reclaimed` in the append-only ledger, and emits a `turn_end.stale` presence event.
+- **Paused Turn Immunity**: Turns paused via `afwe turn pause` (`turn.pause`) are strictly immune from staleness recovery because they are deliberately suspended awaiting human input.
+- **Heartbeats for Long Operations**: For lengthy builds or silent tasks, agents can invoke `afwe turn heartbeat <turn>` (or `afwe_turn_heartbeat`) to touch `last_activity` and reset the staleness TTL counter.
+- **Manual Reclaim**: Users can explicitly reclaim stale turns via `afwe turn reclaim <turn>` or the Action Queue `Reclaim` action card.
+
+### Canonical Schema Templates & Introspection
+To eliminate field-name typos and schema retries:
+```bash
+# Print the exact canonical JSON schema for turn assume
+afwe turn assume --schema
+
+# Print a copy-pasteable minimal skeleton JSON for turn assume
+afwe turn assume --example
+```
+MCP tools and resources also provide schema inspection:
+- `afwe://schema/turn.assume`: Complete JSON schema.
+- `afwe://examples/turn.assume`: Copy-pasteable JSON skeleton.
+- `afwe_turn_begin` and `afwe_turn_assume` REDO payloads automatically return `assume_schema` and `assume_example`.

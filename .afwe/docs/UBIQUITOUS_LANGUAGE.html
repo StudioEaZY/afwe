@@ -249,18 +249,18 @@
     <div class="controls">
       <div class="search-box">
         <input type="text" id="search" class="search-input" placeholder="Search terms, definitions, invariants, or confused-with concepts... (e.g. Turn, Ratchet, CAS)" autofocus />
-        <div class="term-count"><span id="visible-count">81</span> / 81 terms</div>
+        <div class="term-count"><span id="visible-count">84</span> / 84 terms</div>
       </div>
       <div class="categories">
         <button class="cat-btn active" data-cat="all">All Categories</button>
-        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (36)</button>
+        <button class="cat-btn" data-cat="Architecture Philosophy & Tenets">Architecture Philosophy & Tenets (37)</button>
         <button class="cat-btn" data-cat="Blueprint & Cartography">Blueprint & Cartography (7)</button>
         <button class="cat-btn" data-cat="Claims & Tripwires">Claims & Tripwires (5)</button>
         <button class="cat-btn" data-cat="Confidence Bands & Calibration">Confidence Bands & Calibration (3)</button>
         <button class="cat-btn" data-cat="Memory, Pins & Living Intents">Memory, Pins & Living Intents (6)</button>
         <button class="cat-btn" data-cat="Multi-Agent Concurrency & Worktrees">Multi-Agent Concurrency & Worktrees (3)</button>
         <button class="cat-btn" data-cat="Ratchets & Integrity Verification">Ratchets & Integrity Verification (10)</button>
-        <button class="cat-btn" data-cat="Turn Protocol & Lifecycle">Turn Protocol & Lifecycle (11)</button>
+        <button class="cat-btn" data-cat="Turn Protocol & Lifecycle">Turn Protocol & Lifecycle (13)</button>
       </div>
     </div>
 
@@ -288,7 +288,7 @@
         <p class="card-meaning">The deterministic, read-only 6-state governance view over turns, leases, and repository state, providing both humans and delegated orchestrators an actionable view of pending items without polling.
 
 1. **STAGED**: Proposals parked awaiting confirmation or human-floor review.
-2. **GHOST REDO**: Turns left in REDO state when work ceased without clean reset.
+2. **GHOST REDO / STALE TURN**: Turns left open and idle beyond `policy.stale_turn_minutes`, surfaced with immediate `Reclaim`, `Redo`, and `Abandon` actions.
 3. **READY**: Evaluated turns where checks passed, sitting in the Ready drawer for git commit.
 4. **ADVISORY DRIFT**: Non-blocking architectural violations and documentation drift.
 5. **STALE NODE LEASES**: Concurrency node leases whose leaseholder heartbeats have lapsed.
@@ -499,7 +499,7 @@ The MCP server in `crates/afwe-cli/src/mcp.rs` serves as a Capability Bridge bet
 - `symbol_signature`: verifies parameter and return types match contract specifications.
 - `pattern`: applies regex checks with automatic comment blanking.
 - `command`: executes a shell test command.
-- File Claims: locks specific files to avoid concurrent edit collisions.</p>
+- **File Claims**: locks specific files exclusively for the turn. If an active turn holding a claim goes idle beyond `policy.stale_turn_minutes`, subsequent turns claiming the same file automatically reclaim the reservation without blocking work. Claims are kept active by mutating operations or `turn.heartbeat`.</p>
         <div class="confused-box">
           <div class="confused-title">Not to be confused with:</div>
           <div class="confused-item"><strong>Intent</strong>: Intent states what behavior is desired; a Claim states concrete structural boundaries that code must satisfy.</div>
@@ -903,6 +903,23 @@ The architectural invariant that AFWE core, verification, and tripwires operate 
         <div class="card-footer">
           <span><code>term-harness-agnostic</code></span>
           <button class="copy-btn" onclick="copyAnchor('harness-agnostic-architecture')" title="Copy link to clipboard">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="heartbeat" data-category="Architecture Philosophy & Tenets" data-title="heartbeat" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Heartbeat</h2>
+          <span class="card-category">Architecture Philosophy & Tenets</span>
+        </div>
+        <p class="card-meaning"># Heartbeat
+
+## Definition
+A **Heartbeat** is an operation (`turn.heartbeat` / `afwe turn heartbeat <turn>`) that touches `turn.last_activity = now()` on an active turn without altering claims or writing code.
+
+## Usage
+- **Long Silent Operations**: When an agent executes time-consuming commands (e.g. lengthy builds, extensive test suites, or multi-step analysis) without mutating AFWE turn state, it sends a heartbeat to communicate ongoing progress and reset the staleness TTL counter.</p>
+        <div class="card-footer">
+          <span><code>term-heartbeat</code></span>
+          <button class="copy-btn" onclick="copyAnchor('heartbeat')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="human-floor" data-category="Memory, Pins & Living Intents" data-title="human floor" data-tags="authority governance">
@@ -1405,6 +1422,25 @@ travel with `afwe ledger push` or a normal `git fetch`/`git push`.</p>
           <button class="copy-btn" onclick="copyAnchor('spatial-drag-clamping')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
+      <article class="card" id="stale-turn" data-category="Turn Protocol & Lifecycle" data-title="stale turn" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Stale Turn</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning"># Stale Turn
+
+## Definition
+A **Stale Turn** is an AFWE turn in `open`, `assumed`, or `ready` status that has had zero mutating activity (commits, assumes, redos, or heartbeats) for longer than `policy.stale_turn_minutes` (default: 120 minutes). Paused turns are explicitly immune from staleness because they are deliberately suspended awaiting human input.
+
+## Behavior and Governance
+- **Deterministic Assessment**: Staleness is computed purely chronologically from `turn.last_activity` against UTC system time.
+- **Action Queue Surfacing**: Stale turns appear in the Action Queue as a `STALE TURN` card (under GhostRedo) with an immediate `Reclaim` action.
+- **Unblocking New Work**: Stale turns do not permanently wedge files or delegation. When a new turn claims a file held by a stale turn, the engine auto-reclaims the stale holder and proceeds.</p>
+        <div class="card-footer">
+          <span><code>term-stale-turn</code></span>
+          <button class="copy-btn" onclick="copyAnchor('stale-turn')" title="Copy link to clipboard">🔗 permalink</button>
+        </div>
+      </article>
       <article class="card" id="string-interner" data-category="Memory, Pins & Living Intents" data-title="string interner" data-tags="terminology performance memory engine">
         <div class="card-header">
           <h2 class="card-title">String Interner</h2>
@@ -1586,6 +1622,27 @@ When `afwe turn begin` runs, an initial Turn Hash is calculated and stamped onto
         <div class="card-footer">
           <span><code>term-turn-receipt</code></span>
           <button class="copy-btn" onclick="copyAnchor('turn-receipt')" title="Copy link to clipboard">🔗 permalink</button>
+        </div>
+      </article>
+      <article class="card" id="turn-reclaim" data-category="Turn Protocol & Lifecycle" data-title="turn reclaim" data-tags="">
+        <div class="card-header">
+          <h2 class="card-title">Turn Reclaim</h2>
+          <span class="card-category">Turn Protocol & Lifecycle</span>
+        </div>
+        <p class="card-meaning"># Turn Reclaim
+
+## Definition
+**Turn Reclaim** is the atomic operation by which the AFWE engine reclaims file claims and locks from an idle stale turn without requiring LLM generation, harness crash-hooks, or prompt replay.
+
+## Mechanics
+- **Trigger**: Occurs either automatically when a new `turn.begin` or `turn.assume` conflicts with a stale turn holding the claimed file, or manually via `afwe turn reclaim <turn>` / Action Queue `Reclaim` action.
+- **State Transition**: The stale turn's status changes from `open`/`assumed`/`ready` to `abandoned`.
+- **Structured Reclaim Record**: A `reclaim: { by, at, reason }` record is stamped on the turn file.
+- **Ledger & Presence**: Records `turn_stale_reclaimed` in the append-only ledger and emits a `turn_end.stale` presence event.
+- **Working Tree Preservation**: Uncommitted code changes are not automatically reverted or committed; the next agent or human can cleanly continue or inspect dirty files.</p>
+        <div class="card-footer">
+          <span><code>term-turn-reclaim</code></span>
+          <button class="copy-btn" onclick="copyAnchor('turn-reclaim')" title="Copy link to clipboard">🔗 permalink</button>
         </div>
       </article>
       <article class="card" id="turn-redo" data-category="Turn Protocol & Lifecycle" data-title="turn redo" data-tags="turn-protocol recovery">

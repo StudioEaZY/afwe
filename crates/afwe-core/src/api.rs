@@ -435,13 +435,16 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
         }
         "turn.active" => {
             let turns = engine.store.turns().unwrap_or_default();
-            let open_turn = turns.into_iter().find(|t| t.status == "open" || t.status == "assumed" || t.status == "paused");
+            let stale_minutes = engine.store.manifest().map(|m| m.policy.stale_turn_minutes).unwrap_or(120);
+            let open_turn = turns.into_iter().find(|t| (t.status == "open" || t.status == "assumed" || t.status == "paused") && !crate::lease::is_turn_stale(&t, stale_minutes));
             let is_active = open_turn.is_some();
             Ok(json!({
                 "active": is_active,
                 "turn": open_turn,
             }))
         }
+        "turn.heartbeat" => turn::heartbeat(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
+        "turn.reclaim" => turn::reclaim(engine, &req(&p, "turn")?, &origin(&p, default_origin)),
         "rollback.reconcile" => j(crate::rollback::reconcile(engine)?),
         "ledger.show" => crate::ledger::show(engine),
         "ledger.turns" => j(crate::ledger::turns(engine)?),
@@ -608,9 +611,10 @@ fn dispatch(engine: &Engine, op: &str, params: Value, default_origin: &str) -> R
                 return Err(anyhow!("R2/R6 VIOLATION: authority.delegate called by non-human origin `{origin_str}`. Active delegation revoked, restored to human_only."));
             }
 
-            // R4: Idle window only (checks open turns)
+            // R4: Idle window only (checks open turns, ignoring stale turns)
             let turns = engine.store.turns()?;
-            let has_open = turns.iter().any(|t| t.status == "open");
+            let stale_minutes = engine.store.manifest().map(|m| m.policy.stale_turn_minutes).unwrap_or(120);
+            let has_open = turns.iter().any(|t| t.status == "open" && !crate::lease::is_turn_stale(t, stale_minutes));
             if has_open {
                 let project_id = crate::authority_store::compute_project_id(&engine.store.project_root);
                 let mut fallback = crate::authority::AuthorityRecord::human_only(&project_id);
@@ -1270,13 +1274,15 @@ pub fn tool_specs() -> Vec<ToolSpec> {
         ToolSpec { name: "afwe_proposal_resolve", op: "proposal.resolve", description: "accept | revert | review a proposal (review = impact on memory, guardrails, constraints, files).", schema: obj(json!({"id": {"type": "string"}, "action": {"type": "string"}}), &["id", "action"]) },
         ToolSpec { name: "afwe_log", op: "log.add", description: "Append a note to the change log (kind: note|complete|decision).", schema: obj(json!({"message": {"type": "string"}, "kind": {"type": "string"}, "task": {"type": "string"}}), &["message"]) },
         ToolSpec { name: "afwe_turn_begin", op: "turn.begin", description: "START every prompt here. Stores the prompt verbatim as a turn and returns the briefing: scope, active pins (do not change what they protect), intentional markers, intents, memory, constraints, registered checks, unresolved proposals and the footer you must show. Then call afwe_turn_assume.", schema: obj(json!({"prompt": {"type": "string"}, "targets": strs, "refines": strs, "kind": {"type": "string"}, "agent": {"type": "string"}, "parent": {"type": "string"}, "claims": strs}), &["prompt"]) },
-        ToolSpec { name: "afwe_turn_assume", op: "turn.assume", description: "BEFORE writing code: declare intents (action + targets) and assumption claims (regex/import/symbol checks). Returns REDO with error codes when the schema is wrong or a pin would be broken; then revise and call again. Pin overrides need a reason.", schema: obj(json!({"turn": {"type": "string"}, "intents": {"type": "array"}, "assumptions": {"type": "array"}, "removes": strs, "overrides": {"type": "array"}, "token": {"type": "string"}, "claims": strs}), &["turn"]) },
-        ToolSpec { name: "afwe_turn_commit", op: "turn.commit", description: "AFTER writing code: AFWE attributes the changes, runs verify, pins, collateral-loss detection, claims and registered checks, then commits (with an AFWE-Turn trailer), stages a proposal, or returns REDO with the failures. Nothing is committed on REDO. Set footer_shown=true once the proposal notice is in your reply.", schema: obj(json!({"turn": {"type": "string"}, "summary": {"type": "string"}, "footer_shown": {"type": "boolean"}, "removes": strs, "touched": strs, "overrides": {"type": "array"}, "token": {"type": "string"}, "force": {"type": "boolean"}, "parent": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_assume", op: "turn.assume", description: "BEFORE writing code: declare intents (action + targets) and assumption claims (regex/import/symbol checks). Returns REDO with error codes when the schema is wrong or a pin would be broken; then revise and call again. Pin overrides need a reason.", schema: crate::turn::canonical_assume_schema() },
+        ToolSpec { name: "afwe_turn_commit", op: "turn.commit", description: "AFTER writing code: AFWE attributes the changes, runs verify, pins, collateral-loss detection, claims and registered checks, then commits (with an AFWE-Turn trailer), stages a proposal, or returns REDO with the failures. Nothing is committed on REDO. Set footer_shown=true once the proposal notice is in your reply.", schema: crate::turn::canonical_commit_schema() },
         ToolSpec { name: "afwe_turn_confirm", op: "turn.confirm", description: "Human confirmation of a staged proposal: commits it through the gate.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_revert", op: "turn.revert", description: "Undo a turn as far as that is safe (files clean at turn.begin go back to HEAD; the rest becomes a Board item).", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_redo", op: "turn.redo", description: "Reset uncommitted changes made during a turn back to its baseline, keeping the turn open for clean rework.", schema: obj(json!({"turn": {"type": "string"}, "token": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_abandon", op: "turn.abandon", description: "Abandon an open turn, cleanly releasing all held file claims and lock reservations without committing.", schema: obj(json!({"turn": {"type": "string"}, "token": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_active", op: "turn.active", description: "Check if an AFWE turn is currently active before tool execution.", schema: obj(json!({}), &[]) },
+        ToolSpec { name: "afwe_turn_heartbeat", op: "turn.heartbeat", description: "Touch turn last_activity timestamp to prevent stale reclaim during long silent operations.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
+        ToolSpec { name: "afwe_turn_reclaim", op: "turn.reclaim", description: "Reclaim an idle stale turn (idle > policy.stale_turn_minutes) and release its held claims.", schema: obj(json!({"turn": {"type": "string"}}), &["turn"]) },
         ToolSpec { name: "afwe_turn_pause", op: "turn.pause", description: "MID-TURN PAUSE: Suspend execution awaiting human decision or delegated approval with 0 tokens. Emits desktop toast / Presence notification.", schema: obj(json!({"turn": {"type": "string"}, "question": {"type": "string"}, "options": strs, "timeout_seconds": {"type": "integer"}}), &["turn", "question"]) },
         ToolSpec { name: "afwe_turn_resume", op: "turn.resume", description: "RESUME a paused turn with human answer or steering instruction.", schema: obj(json!({"turn": {"type": "string"}, "answer": {"type": "string"}}), &["turn", "answer"]) },
         ToolSpec { name: "afwe_drift_verdict", op: "drift.verdict", description: "Apply a verdict on an architectural drift finding: adopt (in favor), adopt+tune (provisional), tolerate (7-14d), restore (revert to baseline), or steer (spawn new remediation turn).", schema: obj(json!({"id": {"type": "string"}, "action": {"type": "string"}, "tune": {"type": "boolean"}, "instruction": {"type": "string"}, "note": {"type": "string"}}), &["id", "action"]) },

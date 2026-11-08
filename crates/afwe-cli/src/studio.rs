@@ -44,6 +44,15 @@ pub fn serve(start: PathBuf, host: &str, port: u16, open_browser: bool, dist: Op
     let broadcaster: Broadcaster = Arc::new(Mutex::new(Vec::new()));
     let server = Arc::new(server);
 
+    // Mutual supervision: Studio periodically ensures Presence Watcher is alive
+    let sup_root = project_root.clone();
+    std::thread::spawn(move || {
+        loop {
+            std::thread::sleep(std::time::Duration::from_secs(30));
+            let _ = crate::presence::watcher::PresenceWatcher::ensure_watcher_running(&sup_root);
+        }
+    });
+
     // Multi-threaded server loop
     for mut req in server.incoming_requests() {
         let path = req.url().split('?').next().unwrap_or("/").to_string();

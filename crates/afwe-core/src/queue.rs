@@ -156,29 +156,22 @@ pub fn get_action_queue(engine: &Engine, delegation: Option<&PrompterDelegation>
                 ],
             });
         } else if t.status == "open" {
-            // Check for Ghost Redo (> 2 hours idle)
-            let mut is_ghost = false;
-            let ts_str = if !t.last_activity.is_empty() {
-                &t.last_activity
-            } else {
-                &t.ts
-            };
-            if let Ok(dt) = DateTime::parse_from_rfc3339(ts_str) {
-                if now.signed_duration_since(dt).num_hours() >= 2 {
-                    is_ghost = true;
-                }
-            }
-
-            if is_ghost {
+            let stale_minutes = engine.store.manifest().map(|m| m.policy.stale_turn_minutes).unwrap_or(120);
+            if crate::lease::is_turn_stale(t, stale_minutes) {
                 items.push(QueueItem {
                     id: t.id.clone(),
                     kind: QueueItemKind::GhostRedo,
                     badge: QueueBadge::Amber,
-                    title: format!("{}: {}", t.id, t.prompt),
-                    detail: "Turn open and idle for > 2 hours".into(),
+                    title: format!("{}: [STALE TURN] {}", t.id, t.prompt),
+                    detail: format!("Turn open and idle for > {stale_minutes}m"),
                     blast_radius: BlastRadius::Low,
                     requires_human: false,
                     actions: vec![
+                        QueueAction {
+                            label: "Reclaim".into(),
+                            op: "turn.reclaim".into(),
+                            requires_human: false,
+                        },
                         QueueAction {
                             label: "Redo from baseline".into(),
                             op: "turn.redo".into(),

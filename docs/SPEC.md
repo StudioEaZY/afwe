@@ -573,7 +573,7 @@ AFWE treats the prompter not as a physical person at the keyboard, but as a form
 ### 16.2 Six-State Action Queue
 A deterministic, read-only view over turns, leases, and repository state:
 1. `STAGED`: Proposals parked awaiting confirmation or human-floor review.
-2. `GHOST REDO`: Turns left in REDO state when work ceased without clean reset.
+2. `GHOST REDO / STALE TURN`: Turns left open or idle beyond `policy.stale_turn_minutes` (default 120m). Surfaced with an immediate `Reclaim` action (`turn.reclaim`) that cleanly releases held claims and marks the turn abandoned with structured provenance. Paused turns are immune from staleness.
 3. `READY`: Turns whose verification checks passed, sitting in the Ready drawer awaiting git commit.
 4. `ADVISORY DRIFT`: Non-blocking architectural violations and documentation drift.
 5. `STALE NODE LEASES`: Concurrency node leases whose leaseholder heartbeats have lapsed.
@@ -668,19 +668,14 @@ AFWE detects, organizes, routes, and safely executes mechanical corrective actio
   commit. The next `turn.begin` briefing carries `rewind_receipts` and `rewind_notice`.
 - **Surface**: `afwe rewind list|check`, `rewind.*` API ops and `afwe_rewind_*` MCP tools.
 
-## 20. Turn-Start Side Effects
+## 20. Auto-Start, Process Supervision & Stale-Turn Recovery
 
-- **Deterministic auto-start**: after every supported `turn.begin` (CLI `afwe turn begin`, raw
-  `afwe call turn.begin`, MCP `afwe_turn_begin`), the CLI process starts the Studio daemon on
-  127.0.0.1:4242 and the headless presence watcher. No model call or extra prompt is involved.
-- **Project identity**: Studio `/api/health` returns the project root. A daemon is reused only when
-  that root matches this project; a Studio serving another project on 4242 is reported as a conflict.
-- **Observable failure**: spawn or readiness failures are printed to stderr and appended to
-  `.afwe/log` as `studio_autostart_failed` / `watcher_autostart_failed`; the turn still opens.
-- **Kill switch**: `AFWE_NO_AUTOSTART=1` disables both spawns for CI/headless runs.
-- **Boundary**: the core engine API does not spawn processes. Only the CLI (which hosts Studio and
-  the watcher) performs auto-start, so a harness that calls the core API directly must start them
-  itself.
+- **Deterministic auto-start**: standard CLI invocations (e.g. `afwe status`, `afwe turn begin`, `afwe watch`, `afwe call`) and MCP connection initialization automatically ensure the Studio daemon (on 127.0.0.1:4242..4260) and the headless Presence Watcher are running.
+- **Exclusions**: skipped on setup/maintenance commands (`init`, `install-project`, `docs`, `migrate`, `upgrade`, `update`), headless CI runs (`gate --ci`, `CI=1`), read-only tripwire checks (`turn active --assert`, `verify --no-commands`), and schema queries (`turn assume --schema`/`--example`).
+- **Mutual Supervision**: the Studio daemon periodically verifies the Presence Watcher is alive; the Presence Watcher periodically verifies Studio is alive for all registered projects.
+- **Deterministic Stale-Turn Recovery**: when an active turn (`open`, `assumed`, `ready`) remains idle beyond `policy.stale_turn_minutes` (default 120m), conflicting file claims are auto-reclaimed under exclusive lock when new work begins. Paused turns are immune from auto-reclaim. Agents performing long-running silent tasks touch `turn.heartbeat` to reset the staleness TTL.
+- **Kill switch**: `--no-autostart` global CLI flag and `AFWE_NO_AUTOSTART=1` environment variable disable all background spawns for test/CI automation.
+- **Boundary**: the core engine API does not spawn processes. Only the CLI boundary (which hosts Studio and the watcher) performs auto-start. Harnesses linking `afwe-core` as a library directly manage their own process lifecycles.
 
 ## 21. Current format (`afwe/3`)
 

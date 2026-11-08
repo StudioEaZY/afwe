@@ -5,21 +5,64 @@
 //! surface across concurrently executing subagents.
 
 use crate::engine::Engine;
+use crate::model::Turn;
 use crate::store::Store;
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-/// Check if any of the requested paths are claimed by another open turn.
-/// Returns Ok(Some((path, conflicting_turn_id))) if contention exists.
-pub fn check_file_contention(store: &Store, turn_hash: &str, paths: &[String]) -> Result<Option<(String, String)>> {
+/// Helper to determine if an open turn has exceeded its inactivity TTL and can be considered stale.
+/// Paused turns are never auto-reclaimed as they may be awaiting a human decision.
+pub fn is_turn_stale(turn: &Turn, stale_minutes: u64) -> bool {
+    if turn.status == "paused" {
+        return false;
+    }
+    if !matches!(turn.status.as_str(), "open" | "assumed" | "ready") {
+        return false;
+    }
+    let ts_str = if !turn.last_activity.is_empty() {
+        &turn.last_activity
+    } else {
+        &turn.ts
+    };
+    if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(ts_str) {
+        let now = chrono::Utc::now();
+        now.signed_duration_since(dt).num_minutes() >= stale_minutes as i64
+    } else {
+        false
+    }
+}
+
+/// Result of evaluating file contention against existing turns.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum FileContention {
+    /// Active, non-stale open turn holds the claim
+    ActiveContention {
+        path: String,
+        holder_turn_id: String,
+    },
+    /// A stale turn holds the claim and can be safely reclaimed
+    StaleHolder {
+        path: String,
+        holder_turn_hash: String,
+        holder_turn_id: String,
+    },
+}
+
+/// Detailed file contention check taking stale TTL into account.
+pub fn check_file_contention_detailed(
+    store: &Store,
+    turn_hash: &str,
+    paths: &[String],
+    stale_minutes: u64,
+) -> Result<Option<FileContention>> {
     let turns = store.turns()?;
     for t in turns {
         if t.turn_hash == turn_hash || t.id == turn_hash || t.alias.as_deref() == Some(turn_hash) {
             continue;
         }
-        // Only open turns can hold active claims
-        if t.status != "open" {
+        // Open and paused turns hold active claims
+        if t.status != "open" && t.status != "paused" {
             continue;
         }
         for c in &t.claims {
@@ -31,11 +74,32 @@ pub fn check_file_contention(store: &Store, turn_hash: &str, paths: &[String]) -
                         t.turn_hash[..8.min(t.turn_hash.len())].to_string()
                     }
                 });
-                return Ok(Some((c.path.clone(), name)));
+                if is_turn_stale(&t, stale_minutes) {
+                    return Ok(Some(FileContention::StaleHolder {
+                        path: c.path.clone(),
+                        holder_turn_hash: t.turn_hash.clone(),
+                        holder_turn_id: name,
+                    }));
+                } else {
+                    return Ok(Some(FileContention::ActiveContention {
+                        path: c.path.clone(),
+                        holder_turn_id: name,
+                    }));
+                }
             }
         }
     }
     Ok(None)
+}
+
+/// Check if any of the requested paths are claimed by another open turn.
+/// Returns Ok(Some((path, conflicting_turn_id))) if contention exists.
+pub fn check_file_contention(store: &Store, turn_hash: &str, paths: &[String]) -> Result<Option<(String, String)>> {
+    match check_file_contention_detailed(store, turn_hash, paths, 120)? {
+        Some(FileContention::ActiveContention { path, holder_turn_id }) => Ok(Some((path, holder_turn_id))),
+        Some(FileContention::StaleHolder { path, holder_turn_id, .. }) => Ok(Some((path, holder_turn_id))),
+        None => Ok(None),
+    }
 }
 
 /// Check if any of the claimed nodes are also being worked on by another open turn.
@@ -47,7 +111,7 @@ pub fn check_node_overlap(store: &Store, turn_hash: &str, claimed_nodes: &[Strin
         if t.turn_hash == turn_hash || t.id == turn_hash || t.alias.as_deref() == Some(turn_hash) {
             continue;
         }
-        if t.status != "open" {
+        if t.status != "open" && t.status != "paused" {
             continue;
         }
         for c in &t.claims {

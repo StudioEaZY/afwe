@@ -27,6 +27,9 @@ struct Cli {
     /// Machine readable output
     #[arg(long, global = true)]
     json: bool,
+    /// Disable background auto-start of Studio and presence watcher
+    #[arg(long, global = true)]
+    no_autostart: bool,
     #[command(subcommand)]
     cmd: Cmd,
 }
@@ -973,6 +976,44 @@ pub(crate) fn ensure_autostart(engine: &Engine) {
     }
 }
 
+pub(crate) fn should_autostart(cli: &Cli) -> bool {
+    let env_disabled = std::env::var("AFWE_NO_AUTOSTART")
+        .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+        .unwrap_or(false);
+    let ci_disabled = std::env::var("CI")
+        .map(|v| !v.is_empty())
+        .unwrap_or(false);
+    should_autostart_internal(cli, env_disabled, ci_disabled)
+}
+
+pub(crate) fn should_autostart_internal(cli: &Cli, env_disabled: bool, ci_disabled: bool) -> bool {
+    if cli.no_autostart || env_disabled || ci_disabled {
+        return false;
+    }
+    match &cli.cmd {
+        Cmd::Init { .. }
+        | Cmd::InstallProject { .. }
+        | Cmd::Docs { .. }
+        | Cmd::Migrate
+        | Cmd::Upgrade
+        | Cmd::Update
+        | Cmd::Gate { ci: true, .. }
+        | Cmd::Verify { no_commands: true, .. }
+        | Cmd::Studio { .. }
+        | Cmd::Presence(PresenceCmd::Run | PresenceCmd::Install | PresenceCmd::Uninstall) => false,
+        Cmd::Turn(TurnCmd::Active { assert: true }) => false,
+        Cmd::Turn(TurnCmd::Assume { schema: true, .. }) => false,
+        Cmd::Turn(TurnCmd::Assume { example: true, .. }) => false,
+        _ => true,
+    }
+}
+
+pub(crate) fn autostart_if_needed(engine: &Engine, cli: &Cli) {
+    if should_autostart(cli) {
+        ensure_autostart(engine);
+    }
+}
+
 fn out(json: bool, v: &Value, human: impl FnOnce(&Value) -> String) {
     use std::io::Write;
     let text = if json { serde_json::to_string_pretty(v).unwrap() } else { human(v) };
@@ -1003,6 +1044,9 @@ fn read_body(body: Option<String>, body_file: Option<String>) -> Result<String> 
 }
 
 fn run(cli: Cli) -> Result<i32> {
+    if let Ok(engine) = engine_for(&cli.dir) {
+        autostart_if_needed(&engine, &cli);
+    }
     let json = cli.json;
     let origin = cli.origin.clone();
     match cli.cmd {
@@ -1416,13 +1460,24 @@ fn run(cli: Cli) -> Result<i32> {
                         "parent": parent,
                         "claims": strs(&claim),
                     }), &origin)?;
-                    crate::ensure_autostart(&engine);
                     out(json, &v, render::turn_briefing);
                     0
                 }
-                TurnCmd::Assume { turn, file, token, claim } => {
+                TurnCmd::Assume { turn, file, token, claim, schema, example } => {
+                    if schema {
+                        println!("{}", serde_json::to_string_pretty(&afwe_core::turn::canonical_assume_schema())?);
+                        return Ok(0);
+                    }
+                    if example {
+                        println!("{}", serde_json::to_string_pretty(&afwe_core::turn::canonical_assume_example())?);
+                        return Ok(0);
+                    }
+                    let turn_id = match turn {
+                        Some(t) => t,
+                        None => return Err(anyhow!("give the turn identifier, e.g. `afwe turn assume t0001`, or pass --schema / --example")),
+                    };
                     let mut body = read_json_input(file)?;
-                    body["turn"] = json!(turn);
+                    body["turn"] = json!(turn_id);
                     if let Some(tok) = token {
                         body["token"] = json!(tok);
                     }
@@ -1476,6 +1531,16 @@ fn run(cli: Cli) -> Result<i32> {
                         body["token"] = json!(tok);
                     }
                     let v = api::call(&engine, "turn.abandon", body, &origin)?;
+                    out(json, &v, render::turn_result);
+                    0
+                }
+                TurnCmd::Heartbeat { turn } => {
+                    let v = api::call(&engine, "turn.heartbeat", json!({"turn": turn}), &origin)?;
+                    out(json, &v, render::turn_result);
+                    0
+                }
+                TurnCmd::Reclaim { turn } => {
+                    let v = api::call(&engine, "turn.reclaim", json!({"turn": turn}), &origin)?;
                     out(json, &v, render::turn_result);
                     0
                 }
@@ -2072,9 +2137,6 @@ fn run(cli: Cli) -> Result<i32> {
                 None => json!({}),
             };
             let v = api::call(&engine, &op, params, &origin)?;
-            if op == "turn.begin" {
-                ensure_autostart(&engine);
-            }
             println!("{}", serde_json::to_string_pretty(&v)?);
             Ok(0)
         }
@@ -2217,10 +2279,97 @@ mod tests {
             dir: None,
             json: true,
             origin: "human".to_string(),
+            no_autostart: true,
             cmd: Cmd::Status,
         };
         let code = run(cli).unwrap();
         assert_eq!(code, 0);
+    }
+
+    #[test]
+    fn test_should_autostart_decision_table() {
+        let status_cli = Cli {
+            dir: None,
+            json: false,
+            origin: "human".to_string(),
+            no_autostart: false,
+            cmd: Cmd::Status,
+        };
+        assert!(should_autostart_internal(&status_cli, false, false));
+        assert!(!should_autostart_internal(&status_cli, true, false));
+        assert!(!should_autostart_internal(&status_cli, false, true));
+
+        let disabled_cli = Cli {
+            dir: None,
+            json: false,
+            origin: "human".to_string(),
+            no_autostart: true,
+            cmd: Cmd::Status,
+        };
+        assert!(!should_autostart_internal(&disabled_cli, false, false));
+
+        let init_cli = Cli {
+            dir: None,
+            json: false,
+            origin: "human".to_string(),
+            no_autostart: false,
+            cmd: Cmd::Init { name: None, description: None, root: None, force: false, agents_md: false },
+        };
+        assert!(!should_autostart_internal(&init_cli, false, false));
+
+        let gate_ci = Cli {
+            dir: None,
+            json: false,
+            origin: "human".to_string(),
+            no_autostart: false,
+            cmd: Cmd::Gate { ci: true, base: None },
+        };
+        assert!(!should_autostart_internal(&gate_ci, false, false));
+
+        let verify_no_cmds = Cli {
+            dir: None,
+            json: false,
+            origin: "human".to_string(),
+            no_autostart: false,
+            cmd: Cmd::Verify { files: vec![], changed: vec![], no_commands: true, no_drift: false, task: None },
+        };
+        assert!(!should_autostart_internal(&verify_no_cmds, false, false));
+
+        let active_assert = Cli {
+            dir: None,
+            json: false,
+            origin: "human".to_string(),
+            no_autostart: false,
+            cmd: Cmd::Turn(TurnCmd::Active { assert: true }),
+        };
+        assert!(!should_autostart_internal(&active_assert, false, false));
+
+        let assume_schema = Cli {
+            dir: None,
+            json: false,
+            origin: "human".to_string(),
+            no_autostart: false,
+            cmd: Cmd::Turn(TurnCmd::Assume { turn: None, file: None, token: None, claim: vec![], schema: true, example: false }),
+        };
+        assert!(!should_autostart_internal(&assume_schema, false, false));
+
+        let studio = Cli {
+            dir: None,
+            json: false,
+            origin: "human".to_string(),
+            no_autostart: false,
+            cmd: Cmd::Studio { port: 4242, no_open: true, dist: None, host: "127.0.0.1".into() },
+        };
+        assert!(!should_autostart_internal(&studio, false, false));
+
+        let presence_run = Cli {
+            dir: None,
+            json: false,
+            origin: "human".to_string(),
+            no_autostart: false,
+            cmd: Cmd::Presence(PresenceCmd::Run),
+        };
+        assert!(!should_autostart_internal(&presence_run, false, false));
     }
 }
 
@@ -2252,7 +2401,7 @@ enum TurnCmd {
     },
     /// Declare intents and assumption claims (JSON via --file or stdin) before writing code
     Assume {
-        turn: String,
+        turn: Option<String>,
         #[arg(long)]
         file: Option<String>,
         /// Bearer security token issued at turn.begin
@@ -2261,6 +2410,12 @@ enum TurnCmd {
         /// Additional file claims to register
         #[arg(long = "claim", num_args = 1.., value_delimiter = ',')]
         claim: Vec<String>,
+        /// Output canonical JSON Schema for turn assume and exit
+        #[arg(long)]
+        schema: bool,
+        /// Output copy-pasteable example skeleton JSON for turn assume and exit
+        #[arg(long)]
+        example: bool,
     },
     /// Check and commit (or stage, or REDO) what changed since turn begin
     Commit {
@@ -2305,6 +2460,10 @@ enum TurnCmd {
         #[arg(long)]
         token: Option<String>,
     },
+    /// Send heartbeat to touch last_activity on an active turn
+    Heartbeat { turn: String },
+    /// Explicitly reclaim an idle stale turn and release its held claims
+    Reclaim { turn: String },
     /// Undo a committed turn explicitly (reverts git commit and prunes generated checks)
     Undo { turn: String },
     /// One turn in full (JSON)

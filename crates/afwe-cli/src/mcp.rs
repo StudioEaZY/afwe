@@ -98,13 +98,15 @@ fn write(out: &mut std::io::Stdout, v: &Value) {
 fn instructions(engine: Option<&Engine>) -> String {
     let name = engine.and_then(|e| e.store.manifest().ok()).map(|m| m.project.name).unwrap_or("this project".into());
     format!(
-        "AFWE keeps a persistent architectural model of `{name}` in .afwe/. Contract: (1) before editing call afwe_turn_begin and afwe_turn_assume to declare intents & claims and inspect context/pins/guides; (2) reuse existing nodes before creating new ones; (3) after editing call afwe_verify on the changed files and fix errors instead of silencing them; (4) record architectural decisions with afwe_memory_add; (5) call afwe_turn_commit to verify and commit through the deterministic gate. The blueprint is the structural reality of the project – verify your work against it; if code and blueprint disagree, say so rather than silently reinterpreting the architecture."
+        "AFWE maintains an architectural model for `{name}`. Before editing, begin a turn and declare intents/claims with afwe_turn_assume (schema at afwe://schema/turn.assume, skeleton at afwe://examples/turn.assume). After editing, run afwe_verify, then commit via afwe_turn_commit."
     )
 }
 
 fn call_tool(engine: &mut Option<Engine>, start: &PathBuf, origin: &str, name: &str, args: Value) -> Result<Value> {
     if engine.is_none() {
-        *engine = Some(Engine::open(start)?);
+        let eng = Engine::open(start)?;
+        crate::ensure_autostart(&eng);
+        *engine = Some(eng);
     }
     let eng = engine.as_ref().unwrap();
     let spec = api::tool_specs().into_iter().find(|t| t.name == name).ok_or_else(|| anyhow::anyhow!("unknown tool `{name}`"))?;
@@ -123,10 +125,6 @@ fn call_tool(engine: &mut Option<Engine>, start: &PathBuf, origin: &str, name: &
     };
     params["origin"] = json!(forced_origin);
     let mut result = api::call(eng, spec.op, params.clone(), &forced_origin)?;
-
-    if spec.op == "turn.begin" {
-        crate::ensure_autostart(eng);
-    }
 
     // Mid-turn pause reactive wait loop (0 token burn)
     if spec.op == "turn.pause" && result.get("status").and_then(|v| v.as_str()) == Some("paused") {
@@ -199,6 +197,8 @@ fn resources_list(engine: Option<&Engine>) -> Value {
         json!({"uri": "afwe://relations", "name": "Relations (yaml)", "mimeType": "text/yaml"}),
         json!({"uri": "afwe://constraints", "name": "Constraints (yaml)", "mimeType": "text/yaml"}),
         json!({"uri": "afwe://contract", "name": "Contract block for AGENTS.md", "mimeType": "text/markdown"}),
+        json!({"uri": "afwe://schema/turn.assume", "name": "JSON Schema for turn.assume", "mimeType": "application/json"}),
+        json!({"uri": "afwe://examples/turn.assume", "name": "Copy-pasteable JSON skeleton for turn.assume", "mimeType": "application/json"}),
     ];
     if let Some(e) = engine {
         if let Ok(mem) = e.store.memory() {
@@ -218,6 +218,8 @@ fn resource_read(engine: Option<&Engine>, uri: &str) -> Result<String> {
         "afwe://relations" => Ok(e.store.read_text("blueprint/relations.yaml")?.unwrap_or_default()),
         "afwe://constraints" => Ok(e.store.read_text("blueprint/constraints.yaml")?.unwrap_or_default()),
         "afwe://contract" => Ok(api::call(e, "contract.render", json!({}), "llm")?["markdown"].as_str().unwrap_or("").to_string()),
+        "afwe://schema/turn.assume" => Ok(serde_json::to_string_pretty(&afwe_core::turn::canonical_assume_schema())?),
+        "afwe://examples/turn.assume" => Ok(serde_json::to_string_pretty(&afwe_core::turn::canonical_assume_example())?),
         other => {
             if let Some(id) = other.strip_prefix("afwe://memory/") {
                 let m = e.store.memory()?.into_iter().find(|m| m.meta.id == id).ok_or_else(|| anyhow::anyhow!("memory not found"))?;

@@ -73,6 +73,7 @@ flowchart TD
 | [**Git Channel**](#git-channel) | Architecture Philosophy & Tenets | # Git Channel | — |
 | [**Guardrail**](#guardrail) | Architecture Philosophy & Tenets | An architectural constraint divided into two complementary forms: | Pin, Check |
 | [**Harness-Agnostic Architecture**](#harness-agnostic-architecture) | Architecture Philosophy & Tenets | # Harness-Agnostic Architecture | — |
+| [**Heartbeat**](#heartbeat) | Architecture Philosophy & Tenets | # Heartbeat | — |
 | [**Human Floor**](#human-floor) | Memory, Pins & Living Intents | Non-delegable invariants and policy thresholds that cannot be auto-approved or bypassed by any delegated agent prompter, regardless of active delegation budgets. | — |
 | [**Intent**](#intent) | Memory, Pins & Living Intents | A living, persistent statement of architectural purpose and desired behavior stored in `.afwe/intents/*.yaml`. Derived and merged from verbatim user prompts over time, intents capture what the codebase is intended to do, its historical evolution, and its implementation mappings. | Turn, Workflow |
 | [**Ledger Fork**](#ledger-fork) | Architecture Philosophy & Tenets | The recorded condition where a fetched ledger tip is neither an ancestor nor a descendant of the | Git fork, Branch divergence |
@@ -104,6 +105,7 @@ flowchart TD
 | [**Snapshot Ref**](#snapshot-ref) | Architecture Philosophy & Tenets | A local, parentless git commit under `refs/afwe/snapshots/<project_id>/<snap_id>` that records the | Engine ledger, Ratchet baseline, Analysis snapshot |
 | [**Spacebar Hand Pan**](#spacebar-hand-pan) | Architecture Philosophy & Tenets | A unified navigation paradigm across all AFWE Studio canvas visualizers (Blueprint, Topology, Radial, Constellation). Holding the `Spacebar` key or selecting the floating Hand Pan tool sets child element `pointer-events: none`, temporarily disabling node dragging, selection, and click interception so the user can fluidly pan the canvas without accidentally moving nodes or resetting zoom. | Node Dragging |
 | [**Spatial Drag Clamping**](#spatial-drag-clamping) | Architecture Philosophy & Tenets | A bounding box and physics constraint mechanism in Studio Constellation and Topology maps that clamps manual node dragging within bounded spatial regions. It prevents developers from accidentally flinging nodes into infinite virtual coordinates or breaking parent cluster gravity. | Auto-Layout |
+| [**Stale Turn**](#stale-turn) | Turn Protocol & Lifecycle | # Stale Turn | — |
 | [**String Interner**](#string-interner) | Memory, Pins & Living Intents | # String Interner | — |
 | [**Sub-Turn**](#sub-turn) | Turn Protocol & Lifecycle | A granular, child execution unit operating underneath a parent turn (formatted as `<parent_turn>.<n>`, e.g., `t0046.1`). Sub-turns are used for atomic remediation actions such as Narrow Self-Heal file restorations (`afwe heal restore`), staged sub-steps within an autonomous multi-agent Mission, or isolated micro-commits that maintain cryptographic linkage to the parent turn without re-running full briefing packs. | Turn, Git Commit |
 | [**The Folder is the Product**](#the-folder-is-the-product) | Architecture Philosophy & Tenets | The core tenet of AFWE stating that `.afwe/` itself is the persistent, tool-agnostic structural model of the project. The engine that reads and writes it (CLI, MCP, Studio) is completely replaceable; the folder, its yaml files, markdown memory, and git history remain the durable single source of architectural truth. | Ephemeral Cache or Lockfile |
@@ -115,6 +117,7 @@ flowchart TD
 | [**Turn Hash**](#turn-hash) | Turn Protocol & Lifecycle | # Turn Hash | — |
 | [**Turn Pause**](#turn-pause) | Turn Protocol & Lifecycle | # Turn Pause | — |
 | [**Turn Receipt**](#turn-receipt) | Turn Protocol & Lifecycle | The immutable record produced upon turn commit, saved in `.afwe/turns/tNNNN.yaml`. It contains the original prompt verbatim, origin, timing, gate evaluation, intent updates, files modified, checks executed, capability ratchets checked, and Git commit hash. | Intent |
+| [**Turn Reclaim**](#turn-reclaim) | Turn Protocol & Lifecycle | # Turn Reclaim | — |
 | [**Turn Redo**](#turn-redo) | Turn Protocol & Lifecycle | A safety command (`afwe turn redo <turn>`) that cleanly reverts uncommitted workspace edits back to the turn's begin baseline (backed up in `.afwe/backups/<turn_hash>/`), while keeping the turn open and retaining locks for rework. | Turn Abandon, Turn Undo / Revert |
 | [**Visualizer Switcher (4-Lens Overview)**](#visualizer-switcher-4-lens-overview) | Architecture Philosophy & Tenets | The segmented icon control bar on the AFWE Studio Overview page allowing instant hot-switching between the four core spatial perspectives: | Studio Page Navigation |
 
@@ -399,6 +402,21 @@ The architectural invariant that AFWE core, verification, and tripwires operate 
 1. **Zero Vendor Lock-in**: AFWE core contains no proprietary harness SDKs or vendor-specific execution branches.
 2. **Layered Hook Fallback**: Tool hooks (`agent-hooks.json`, `claude-hooks.json`) provide low-latency feedback; native Git pre-commit hooks (`.afwe/guardrails/pre-commit`) and the CI gate (`afwe-gate`) act as deterministic fallbacks for any environment lacking tool hooks.
 3. **Open Standards**: Interoperates via standard JSON-RPC, standard CLI interfaces, and Git porcelain/plumbing.
+
+---
+
+#### Heartbeat <a id="heartbeat"></a>
+
+- **ID**: `term-heartbeat`
+
+**Meaning:**
+# Heartbeat
+
+## Definition
+A **Heartbeat** is an operation (`turn.heartbeat` / `afwe turn heartbeat <turn>`) that touches `turn.last_activity = now()` on an active turn without altering claims or writing code.
+
+## Usage
+- **Long Silent Operations**: When an agent executes time-consuming commands (e.g. lengthy builds, extensive test suites, or multi-step analysis) without mutating AFWE turn state, it sends a heartbeat to communicate ongoing progress and reset the staleness TTL counter.
 
 ---
 
@@ -822,7 +840,7 @@ A pre-generation assertion declared during Phase 1 (`afwe turn assume`) before c
 - `symbol_signature`: verifies parameter and return types match contract specifications.
 - `pattern`: applies regex checks with automatic comment blanking.
 - `command`: executes a shell test command.
-- File Claims: locks specific files to avoid concurrent edit collisions.
+- **File Claims**: locks specific files exclusively for the turn. If an active turn holding a claim goes idle beyond `policy.stale_turn_minutes`, subsequent turns claiming the same file automatically reclaim the reservation without blocking work. Claims are kept active by mutating operations or `turn.heartbeat`.
 
 **Not to be confused with:**
 - **Intent**: Intent states what behavior is desired; a Claim states concrete structural boundaries that code must satisfy.
@@ -948,7 +966,7 @@ An advisory architectural hint emitted in Phase 0 briefings with 85%–90% confi
 The deterministic, read-only 6-state governance view over turns, leases, and repository state, providing both humans and delegated orchestrators an actionable view of pending items without polling.
 
 1. **STAGED**: Proposals parked awaiting confirmation or human-floor review.
-2. **GHOST REDO**: Turns left in REDO state when work ceased without clean reset.
+2. **GHOST REDO / STALE TURN**: Turns left open and idle beyond `policy.stale_turn_minutes`, surfaced with immediate `Reclaim`, `Redo`, and `Abandon` actions.
 3. **READY**: Evaluated turns where checks passed, sitting in the Ready drawer for git commit.
 4. **ADVISORY DRIFT**: Non-blocking architectural violations and documentation drift.
 5. **STALE NODE LEASES**: Concurrency node leases whose leaseholder heartbeats have lapsed.
@@ -1300,6 +1318,23 @@ The final gated commit phase invoked via `afwe turn commit <turn> --summary "...
 
 ---
 
+#### Stale Turn <a id="stale-turn"></a>
+
+- **ID**: `term-stale-turn`
+
+**Meaning:**
+# Stale Turn
+
+## Definition
+A **Stale Turn** is an AFWE turn in `open`, `assumed`, or `ready` status that has had zero mutating activity (commits, assumes, redos, or heartbeats) for longer than `policy.stale_turn_minutes` (default: 120 minutes). Paused turns are explicitly immune from staleness because they are deliberately suspended awaiting human input.
+
+## Behavior and Governance
+- **Deterministic Assessment**: Staleness is computed purely chronologically from `turn.last_activity` against UTC system time.
+- **Action Queue Surfacing**: Stale turns appear in the Action Queue as a `STALE TURN` card (under GhostRedo) with an immediate `Reclaim` action.
+- **Unblocking New Work**: Stale turns do not permanently wedge files or delegation. When a new turn claims a file held by a stale turn, the engine auto-reclaims the stale holder and proceeds.
+
+---
+
 #### Sub-Turn <a id="sub-turn"></a>
 
 - **ID**: `term-sub-turn`
@@ -1391,6 +1426,25 @@ The immutable record produced upon turn commit, saved in `.afwe/turns/tNNNN.yaml
 
 **Not to be confused with:**
 - **Intent**: The turn receipt is an immutable audit receipt of a single execution; intents are living state documents that evolve over time.
+
+---
+
+#### Turn Reclaim <a id="turn-reclaim"></a>
+
+- **ID**: `term-turn-reclaim`
+
+**Meaning:**
+# Turn Reclaim
+
+## Definition
+**Turn Reclaim** is the atomic operation by which the AFWE engine reclaims file claims and locks from an idle stale turn without requiring LLM generation, harness crash-hooks, or prompt replay.
+
+## Mechanics
+- **Trigger**: Occurs either automatically when a new `turn.begin` or `turn.assume` conflicts with a stale turn holding the claimed file, or manually via `afwe turn reclaim <turn>` / Action Queue `Reclaim` action.
+- **State Transition**: The stale turn's status changes from `open`/`assumed`/`ready` to `abandoned`.
+- **Structured Reclaim Record**: A `reclaim: { by, at, reason }` record is stamped on the turn file.
+- **Ledger & Presence**: Records `turn_stale_reclaimed` in the append-only ledger and emits a `turn_end.stale` presence event.
+- **Working Tree Preservation**: Uncommitted code changes are not automatically reverted or committed; the next agent or human can cleanly continue or inspect dirty files.
 
 ---
 

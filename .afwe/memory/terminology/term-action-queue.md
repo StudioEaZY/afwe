@@ -23,7 +23,7 @@ The deterministic, read-only 6-state governance view over turns, leases, and rep
 
 ## Meaning
 1. **STAGED**: Proposals parked awaiting confirmation or human-floor review.
-2. **GHOST REDO**: Turns left in REDO state when work ceased without clean reset.
+2. **GHOST REDO / STALE TURN**: Turns left open and idle beyond `policy.stale_turn_minutes`, surfaced with immediate `Reclaim`, `Redo`, and `Abandon` actions.
 3. **READY**: Evaluated turns where checks passed, sitting in the Ready drawer for git commit.
 4. **ADVISORY DRIFT**: Non-blocking architectural violations and documentation drift.
 5. **STALE NODE LEASES**: Concurrency node leases whose leaseholder heartbeats have lapsed.

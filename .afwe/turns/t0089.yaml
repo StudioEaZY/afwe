@@ -64,7 +64,7 @@ intents:
   targets:
   - afwe
   title: Filter all-zeros base SHA in gate_now_with_base
-status: ready
+status: committed
 touched:
   nodes:
   - demo-project
@@ -6140,6 +6140,8 @@ gate:
   - 'PIN_WARN pin-studio-bookmarks-wired: Studio UI must wire StudioPrefs bookmarks to Sidebar navigation and NodeInspector'
 footer_shown: true
 summary: Fix CI workflows, Tauri Windows icons, git tmp index concurrency, and AFWE gate base ref
+committed_at: 2026-11-08T02:03:06Z
+commit_sha: 4957d9c32165efb0d6add88f9be4cbf0fe3aba0a
 turn_token: afwe_tok_19f95ae135042f51aa46ea4912a37edc
 post_hashes:
   .afwe/docs/UBIQUITOUS_LANGUAGE.html: 9732e76d83bc01b8

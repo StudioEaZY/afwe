@@ -267,39 +267,235 @@ fn ancestors_inclusive(table: &NodeTable, nodes: &[String]) -> BTreeSet<String> 
     out
 }
 
-fn protocol_assume_schema() -> Value {
+pub fn canonical_assume_schema() -> Value {
     json!({
-        "intents": [{
-            "id": "slug",
-            "action": intent::ACTIONS.join("|"),
-            "targets": ["node ids or file paths"],
-            "title": "optional",
-            "statement": "optional: the merged statement of what is wanted"
-        }],
-        "assumptions": [{
-            "id": "a1",
-            "text": "what you assume",
-            "claim": {
-                "type": "forbid_pattern|require_pattern|forbid_import|symbol_exists|require_file",
-                "pattern": "regex (pattern claims)",
-                "files": ["globs the claim applies to"],
-                "to_nodes": ["node ids (forbid_import)"],
-                "symbol": "Name (symbol_exists)"
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "TurnAssumeRequest",
+        "type": "object",
+        "properties": {
+            "turn": {
+                "type": "string",
+                "description": "Turn identifier (e.g. t0001 or turn-hash)"
+            },
+            "token": {
+                "type": "string",
+                "description": "Cryptographic security token issued at turn.begin"
+            },
+            "intents": {
+                "type": "array",
+                "description": "Declared intents with action and target nodes or files",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Lowercase slug identifier (e.g. add-helper)"
+                        },
+                        "action": {
+                            "type": "string",
+                            "enum": intent::ACTIONS,
+                            "description": "Action type: create, update, refactor, remove, test, fix, docs"
+                        },
+                        "targets": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "description": "Target blueprint nodes or file paths"
+                        },
+                        "title": {
+                            "type": "string",
+                            "description": "Optional human-readable title"
+                        },
+                        "statement": {
+                            "type": "string",
+                            "description": "Optional merged statement of what is wanted"
+                        }
+                    },
+                    "required": ["id", "action", "targets"]
+                }
+            },
+            "assumptions": {
+                "type": "array",
+                "description": "Standing assumption claims checkable before or at commit",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Assumption identifier (e.g. a1)"
+                        },
+                        "text": {
+                            "type": "string",
+                            "description": "Human-readable assumption text"
+                        },
+                        "claim": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["forbid_pattern", "require_pattern", "forbid_import", "symbol_exists", "require_file", "forbid_symbol", "export_exists", "symbol_signature"]
+                                },
+                                "pattern": { "type": "string", "description": "Regex pattern for pattern claims" },
+                                "symbol": { "type": "string", "description": "Symbol name for symbol claims" },
+                                "files": { "type": "array", "items": { "type": "string" }, "description": "File globs the claim applies to" },
+                                "to_nodes": { "type": "array", "items": { "type": "string" }, "description": "Forbidden import target blueprint node IDs" },
+                                "include_comments": { "type": "boolean", "description": "Whether comments are included in regex checks" }
+                            },
+                            "required": ["type"]
+                        }
+                    },
+                    "required": ["id", "text"]
+                }
+            },
+            "removes": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Blueprint nodes intentionally removed on this turn"
+            },
+            "overrides": {
+                "type": "array",
+                "description": "Deliberate pin overrides with justifications",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "pin": { "type": "string", "description": "Pin ID being overridden" },
+                        "reason": { "type": "string", "description": "Justification for overriding the pin" }
+                    },
+                    "required": ["pin", "reason"]
+                }
+            },
+            "claims": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Explicit file paths claimed exclusively for this turn"
             }
-        }],
-        "removes": ["node ids removed on purpose"],
-        "overrides": [{"pin": "pin id", "reason": "why this pin is deliberately changed"}]
+        },
+        "required": ["turn"]
     })
 }
 
-fn protocol_commit_schema() -> Value {
+pub fn canonical_assume_example() -> Value {
     json!({
-        "summary": "one line: what changed and why",
-        "footer_shown": "true once the AFWE notice about unresolved proposals is in your reply",
-        "removes": ["node ids removed on purpose"],
-        "touched": ["extra files you changed that AFWE cannot see"],
-        "overrides": [{"pin": "pin id", "reason": "…"}]
+        "intents": [
+            {
+                "id": "helper-impl",
+                "action": "create",
+                "targets": ["src/helper.ts"],
+                "title": "Add helper implementation"
+            }
+        ],
+        "assumptions": [
+            {
+                "id": "a1",
+                "text": "helper module does not expose private keys",
+                "claim": {
+                    "type": "forbid_pattern",
+                    "pattern": "PRIVATE_KEY",
+                    "files": ["src/**"]
+                }
+            }
+        ],
+        "removes": [],
+        "overrides": []
     })
+}
+
+pub fn canonical_commit_schema() -> Value {
+    json!({
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "TurnCommitRequest",
+        "type": "object",
+        "properties": {
+            "turn": { "type": "string", "description": "Turn identifier (e.g. t0001 or turn-hash)" },
+            "summary": { "type": "string", "description": "One line summary: what changed and why" },
+            "footer_shown": { "type": "boolean", "description": "True once the AFWE notice about unresolved proposals is in your reply" },
+            "removes": { "type": "array", "items": { "type": "string" }, "description": "Node IDs removed on purpose" },
+            "touched": { "type": "array", "items": { "type": "string" }, "description": "Extra files changed that AFWE cannot see" },
+            "overrides": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "pin": { "type": "string" },
+                        "reason": { "type": "string" }
+                    },
+                    "required": ["pin", "reason"]
+                }
+            },
+            "token": { "type": "string", "description": "Security token issued at turn.begin" },
+            "force": { "type": "boolean", "description": "Force commit ignoring warnings" },
+            "parent": { "type": "string", "description": "Parent turn identifier" }
+        },
+        "required": ["turn"]
+    })
+}
+
+pub fn canonical_commit_example() -> Value {
+    json!({
+        "turn": "t0001",
+        "summary": "Implement feature X and verify checks",
+        "footer_shown": false,
+        "removes": [],
+        "touched": [],
+        "overrides": []
+    })
+}
+
+/// Under commit lock, reclaims an idle stale turn holding a file claim so the new work can proceed.
+pub fn reclaim_stale_turn_for_file(
+    engine: &Engine,
+    stale_turn_hash: &str,
+    claiming_turn_id: &str,
+    file: &str,
+    stale_minutes: u64,
+) -> Result<Option<String>> {
+    let _lock = engine.store.acquire_commit_lock(30)?;
+    if let Ok(Some(mut old_turn)) = engine.store.turn(stale_turn_hash) {
+        if (old_turn.status == "open" || old_turn.status == "assumed" || old_turn.status == "ready")
+            && crate::lease::is_turn_stale(&old_turn, stale_minutes)
+        {
+            let old_id = old_turn.alias.clone().unwrap_or_else(|| old_turn.id.clone());
+            old_turn.status = "abandoned".into();
+            old_turn.reclaim = Some(crate::model::ReclaimRecord {
+                by: claiming_turn_id.to_string(),
+                at: now(),
+                reason: format!("reclaimed stale claim on `{file}` (idle > {stale_minutes}m)"),
+            });
+            old_turn.claims.clear();
+            engine.store.save_turn(&old_turn)?;
+            let _ = crate::ledger::record_turn(engine, &old_turn, "turn_stale_reclaimed", Some(&old_turn.post_hashes), false);
+            let _ = engine.log(
+                claiming_turn_id,
+                "turn_stale_reclaimed",
+                format!("stale turn {old_id} reclaimed by {claiming_turn_id} on `{file}`"),
+                Some(json!({ "turn": old_id, "file": file, "stale_minutes": stale_minutes })),
+            );
+
+            let feed = crate::events::EventFeed::for_project(&engine.store.project_root);
+            let _ = feed.emit(crate::events::PresenceEvent {
+                seq: 0,
+                timestamp: String::new(),
+                project_id: engine.store.project_root.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_else(|| "project".to_string()),
+                host_id: crate::project_registry::whoami_host(),
+                turn_hash: Some(old_turn.turn_hash.clone()),
+                turn_id: Some(old_id.clone()),
+                kind: "turn_end.stale".to_string(),
+                outcome: Some("reclaimed".to_string()),
+                blast_radius: "low".to_string(),
+                requires_human: false,
+                title: format!("Turn {old_id}: stale turn reclaimed"),
+                detail: format!("Reclaimed by {claiming_turn_id}: idle > {stale_minutes}m"),
+                touched_files: vec![file.to_string()],
+                agent_quote: None,
+                metadata: json!({
+                    "reclaimed_by": claiming_turn_id,
+                    "stale_minutes": stale_minutes,
+                    "file": file,
+                }),
+            });
+            return Ok(Some(old_id));
+        }
+    }
+    Ok(None)
 }
 
 // ───────────────────────────── begin ─────────────────────────────
@@ -486,12 +682,24 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         .collect();
     let session_id = crate::calibration::derive_session_id(engine, req.agent.as_deref(), None);
 
+    let stale_minutes = snap.manifest.policy.stale_turn_minutes;
     let mut initial_claims: Vec<FileClaim> = vec![];
+    let mut reclaimed_turns: Vec<String> = vec![];
     if !req.claims.is_empty() {
-        if let Some((p, other_turn)) = lease::check_file_contention(&engine.store, &turn_hash, &req.claims)? {
-            return Err(anyhow!("CONTENTION: file `{p}` is already claimed by open turn {other_turn}"));
-        }
         for p in &req.claims {
+            match lease::check_file_contention_detailed(&engine.store, &turn_hash, &[p.clone()], stale_minutes)? {
+                Some(lease::FileContention::ActiveContention { path, holder_turn_id }) => {
+                    return Err(anyhow!("CONTENTION: file `{path}` is already claimed by open turn {holder_turn_id}"));
+                }
+                Some(lease::FileContention::StaleHolder { path, holder_turn_hash, .. }) => {
+                    if let Some(rec) = reclaim_stale_turn_for_file(engine, &holder_turn_hash, &id, &path, stale_minutes)? {
+                        if !reclaimed_turns.contains(&rec) {
+                            reclaimed_turns.push(rec);
+                        }
+                    }
+                }
+                None => {}
+            }
             let base_blob = vcs_prov.blob_hash(&root, &base_head, p);
             let node = snap.mapping.primary(p).map(|s| s.to_string());
             initial_claims.push(FileClaim::new(p.clone(), base_blob, node));
@@ -635,11 +843,16 @@ pub fn begin(engine: &Engine, req: BeginRequest) -> Result<Value> {
         "unresolved_proposals": unresolved_proposals,
         "footer": footer,
         "obligations": obligations,
+        "reclaimed": reclaimed_turns,
+        "assume_schema": canonical_assume_schema(),
+        "assume_example": canonical_assume_example(),
         "protocol": {
             "next": "turn.assume (declare intents and claims before writing code), then write the code, then turn.commit",
             "footer_required": !proposals.is_empty(),
-            "assume_schema": protocol_assume_schema(),
-            "commit_schema": protocol_commit_schema(),
+            "assume_schema": canonical_assume_schema(),
+            "assume_example": canonical_assume_example(),
+            "commit_schema": canonical_commit_schema(),
+            "commit_example": canonical_commit_example(),
             "rules": [
                 "Do not change anything a pin protects without an explicit override {pin, reason}.",
                 "Do not remove a feature by accident: declare removals in `removes`.",
@@ -664,11 +877,27 @@ pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
     let table = &snap.table;
     let mut errs: Vec<(String, String)> = vec![];
 
+    let stale_minutes = snap.manifest.policy.stale_turn_minutes;
+    let mut reclaimed_turns: Vec<String> = vec![];
     // ── file claims & contention check ──
     if !req.claims.is_empty() {
-        if let Some((p, other_turn)) = lease::check_file_contention(&engine.store, &turn.turn_hash, &req.claims)? {
-            errs.push(("CONTENTION".into(), format!("file `{p}` is already claimed by open turn {other_turn}")));
-        } else {
+        for p in &req.claims {
+            match lease::check_file_contention_detailed(&engine.store, &turn.turn_hash, &[p.clone()], stale_minutes)? {
+                Some(lease::FileContention::ActiveContention { path, holder_turn_id }) => {
+                    errs.push(("CONTENTION".into(), format!("file `{path}` is already claimed by open turn {holder_turn_id}")));
+                }
+                Some(lease::FileContention::StaleHolder { path, holder_turn_hash, .. }) => {
+                    let claiming_id = turn.alias.clone().unwrap_or_else(|| turn.id.clone());
+                    if let Some(rec) = reclaim_stale_turn_for_file(engine, &holder_turn_hash, &claiming_id, &path, stale_minutes)? {
+                        if !reclaimed_turns.contains(&rec) {
+                            reclaimed_turns.push(rec);
+                        }
+                    }
+                }
+                None => {}
+            }
+        }
+        if errs.is_empty() {
             let root = engine.store.project_root.clone();
             let vcs_prov = vcs::open(&snap.manifest.vcs.provider);
             let base_head = if turn.base_head.is_empty() { "HEAD" } else { &turn.base_head };
@@ -796,11 +1025,13 @@ pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
             "error_code": errs[0].0,
             "errors": errs.iter().map(|(c, m)| json!({"code": c, "message": m})).collect::<Vec<_>>(),
             "required_action": "revise the intents/assumptions and call turn.assume again; nothing was registered",
-            "schema": protocol_assume_schema(),
+            "schema": canonical_assume_schema(),
+            "example": canonical_assume_example(),
         }));
     }
 
     // ── accepted: register ──
+    turn.last_activity = now();
     turn.intents = req.intents.clone();
     turn.assumptions = req
         .assumptions
@@ -841,6 +1072,7 @@ pub fn assume(engine: &Engine, id: &str, req: AssumeRequest) -> Result<Value> {
         "claims": turn.assumptions.iter().filter(|a| a.claim.is_some()).map(|a| a.id.clone()).collect::<Vec<_>>(),
         "notices": notices,
         "needs_confirmation": needs,
+        "reclaimed": reclaimed_turns,
         "next": "write the code, then call turn.commit",
     }))
 }
@@ -856,11 +1088,14 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
     if !matches!(turn.status.as_str(), "open" | "ready" | "staged") {
         return Err(anyhow!("turn {id} is already {}; nothing to commit", turn.status));
     }
+    turn.last_activity = now();
     let all_turns = engine.store.turns().unwrap_or_default();
+    let m = engine.store.manifest()?;
+    let stale_minutes = m.policy.stale_turn_minutes;
 
-    // Check child sub-agents ordering
+    // Check child sub-agents ordering (ignore stale children)
     for t in &all_turns {
-        if t.status == "open" {
+        if t.status == "open" && !crate::lease::is_turn_stale(t, stale_minutes) {
             let is_child = t.parent_hash.as_deref() == Some(&turn.turn_hash)
                 || t.parent_hash.as_deref() == Some(&turn.id)
                 || (turn.alias.is_some() && t.parent_hash.as_deref() == turn.alias.as_deref());
@@ -874,7 +1109,6 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         }
     }
 
-    let m = engine.store.manifest()?;
     let vcs = vcs::open(&m.vcs.provider);
     let root = engine.store.project_root.clone();
     let base_head = if turn.base_head.is_empty() { vcs.head(&root).unwrap_or_else(|| "HEAD".to_string()) } else { turn.base_head.clone() };
@@ -887,22 +1121,29 @@ pub fn commit(engine: &Engine, id: &str, req: CommitRequest) -> Result<Value> {
         None => BTreeSet::new(),
     };
 
-    let peer_open_turns = all_turns.iter().filter(|t| t.status == "open" && t.turn_hash != turn.turn_hash && t.id != turn.id).count();
+    let peer_open_turns = all_turns.iter().filter(|t| t.status == "open" && !crate::lease::is_turn_stale(t, stale_minutes) && t.turn_hash != turn.turn_hash && t.id != turn.id).count();
     let mut claimed_paths: Vec<String> = turn.claims.iter().map(|c| c.path.clone()).collect();
     if !req.touched.is_empty() {
-        if let Some((p, other_turn)) = lease::check_file_contention(&engine.store, &turn.turn_hash, &req.touched)? {
-            return Err(anyhow!("CONTENTION: extra touched file `{p}` is already claimed by open turn {other_turn}"));
-        }
-        for t in &req.touched {
-            if !claimed_paths.contains(t) {
-                claimed_paths.push(t.clone());
+        for p in &req.touched {
+            match lease::check_file_contention_detailed(&engine.store, &turn.turn_hash, &[p.clone()], stale_minutes)? {
+                Some(lease::FileContention::ActiveContention { path, holder_turn_id }) => {
+                    return Err(anyhow!("CONTENTION: extra touched file `{path}` is already claimed by open turn {holder_turn_id}"));
+                }
+                Some(lease::FileContention::StaleHolder { path, holder_turn_hash, .. }) => {
+                    let claiming_id = turn.alias.clone().unwrap_or_else(|| turn.id.clone());
+                    reclaim_stale_turn_for_file(engine, &holder_turn_hash, &claiming_id, &path, stale_minutes)?;
+                }
+                None => {}
+            }
+            if !claimed_paths.contains(p) {
+                claimed_paths.push(p.clone());
             }
         }
     }
 
     let peer_claimed_files: BTreeSet<String> = all_turns
         .iter()
-        .filter(|t| t.status == "open" && t.turn_hash != turn.turn_hash && t.id != turn.id)
+        .filter(|t| t.status == "open" && !crate::lease::is_turn_stale(t, stale_minutes) && t.turn_hash != turn.turn_hash && t.id != turn.id)
         .flat_map(|t| t.claims.iter().map(|c| c.path.clone()))
         .collect();
 
@@ -2029,6 +2270,7 @@ pub fn redo(engine: &Engine, id: &str, token: Option<&str>, origin: &str) -> Res
         }
     }
     t.status = "open".into();
+    t.last_activity = now();
     t.gate = GateRecord::default();
     engine.store.save_turn(&t)?;
     let _ = crate::ledger::record_turn(engine, &t, "turn_redo", Some(&t.post_hashes), false);
@@ -2058,6 +2300,84 @@ pub fn abandon(engine: &Engine, id: &str, token: Option<&str>, origin: &str) -> 
         "turn": t.id,
         "turn_hash": t.turn_hash,
         "message": format!("Turn {} ({}) abandoned. Claims released.", t.id, &t.turn_hash[..8.min(t.turn_hash.len())]),
+    }))
+}
+
+pub fn heartbeat(engine: &Engine, id: &str, origin: &str) -> Result<Value> {
+    let mut t = load(engine, id)?;
+    if !matches!(t.status.as_str(), "open" | "ready" | "staged" | "paused") {
+        return Err(anyhow!("cannot send heartbeat to turn {id} in status {}", t.status));
+    }
+    t.last_activity = now();
+    engine.store.save_turn(&t)?;
+    engine.log(origin, "turn_heartbeat", format!("{id} heartbeat touched"), Some(json!({"turn": id, "last_activity": t.last_activity})))?;
+    Ok(json!({
+        "status": "ok",
+        "turn": t.alias.clone().unwrap_or_else(|| t.id.clone()),
+        "last_activity": t.last_activity,
+    }))
+}
+
+pub fn reclaim(engine: &Engine, id: &str, origin: &str) -> Result<Value> {
+    let mut t = load(engine, id)?;
+    if t.status == "paused" {
+        return Err(anyhow!("cannot reclaim paused turn {id}; paused turns may be waiting on human input"));
+    }
+    if !matches!(t.status.as_str(), "open" | "ready" | "staged") {
+        return Err(anyhow!("cannot reclaim turn {id} with status {}; only active turns can be reclaimed", t.status));
+    }
+    let m = engine.store.manifest()?;
+    let stale_minutes = m.policy.stale_turn_minutes;
+    if !crate::lease::is_turn_stale(&t, stale_minutes) {
+        return Err(anyhow!("turn {id} is not stale (last activity: {}, stale threshold: {stale_minutes}m)", t.last_activity));
+    }
+    let old_id = t.alias.clone().unwrap_or_else(|| t.id.clone());
+    t.status = "abandoned".into();
+    t.reclaim = Some(crate::model::ReclaimRecord {
+        by: origin.to_string(),
+        at: now(),
+        reason: format!("explicit reclaim: idle > {stale_minutes}m"),
+    });
+    t.claims.clear();
+    t.gate = GateRecord {
+        decision: "abandoned".into(),
+        reasons: vec![format!("stale turn reclaimed by {origin}")],
+    };
+    engine.store.save_turn(&t)?;
+    let _ = crate::ledger::record_turn(engine, &t, "turn_stale_reclaimed", Some(&t.post_hashes), false);
+    let _ = engine.log(
+        origin,
+        "turn_stale_reclaimed",
+        format!("stale turn {old_id} explicitly reclaimed by {origin}"),
+        Some(json!({ "turn": old_id, "hash": t.turn_hash, "stale_minutes": stale_minutes })),
+    );
+
+    let feed = crate::events::EventFeed::for_project(&engine.store.project_root);
+    let _ = feed.emit(crate::events::PresenceEvent {
+        seq: 0,
+        timestamp: String::new(),
+        project_id: engine.store.project_root.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_else(|| "project".to_string()),
+        host_id: crate::project_registry::whoami_host(),
+        turn_hash: Some(t.turn_hash.clone()),
+        turn_id: Some(old_id.clone()),
+        kind: "turn_end.stale".to_string(),
+        outcome: Some("reclaimed".to_string()),
+        blast_radius: "low".to_string(),
+        requires_human: false,
+        title: format!("Turn {old_id}: stale turn reclaimed"),
+        detail: format!("Reclaimed by {origin}: idle > {stale_minutes}m"),
+        touched_files: vec![],
+        agent_quote: None,
+        metadata: json!({
+            "reclaimed_by": origin,
+            "stale_minutes": stale_minutes,
+        }),
+    });
+    Ok(json!({
+        "status": "reclaimed",
+        "turn": old_id,
+        "turn_hash": t.turn_hash,
+        "message": format!("Turn {old_id} reclaimed. Claims released."),
     }))
 }
 
@@ -2244,6 +2564,223 @@ mod tests {
         let resumed_turn = engine.store.turn(&tid).unwrap().unwrap();
         assert_eq!(resumed_turn.status, "open");
         assert_eq!(resumed_turn.pause.unwrap().response.as_deref(), Some("Redis"));
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_stale_turn_recovery_and_reclaim() {
+        let dir = std::env::temp_dir().join(format!("afwe-stale-{}", crate::util::short_id("t")));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(dir.join("src")).unwrap();
+        std::fs::write(dir.join("src/lib.rs"), "pub fn init() {}\n").unwrap();
+        crate::init::init(
+            &dir,
+            crate::init::InitOptions {
+                name: Some("stale-test".into()),
+                root: Some("src".into()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        let engine = Engine::open(&dir).unwrap();
+
+        // 1. Begin turn 1 with file claim on src/lib.rs
+        let b1 = begin(
+            &engine,
+            BeginRequest {
+                prompt: "Turn 1".into(),
+                origin: "human".into(),
+                targets: vec![],
+                refines: vec![],
+                kind: "code".into(),
+                agent: None,
+                parent: None,
+                claims: vec!["src/lib.rs".into()],
+            },
+        )
+        .unwrap();
+        let tid1 = b1["turn"].as_str().unwrap().to_string();
+
+        // Fresh contention check: turn 2 fails to claim same file
+        let b2_err = begin(
+            &engine,
+            BeginRequest {
+                prompt: "Turn 2 conflicting".into(),
+                origin: "human".into(),
+                targets: vec![],
+                refines: vec![],
+                kind: "code".into(),
+                agent: None,
+                parent: None,
+                claims: vec!["src/lib.rs".into()],
+            },
+        );
+        assert!(b2_err.is_err());
+        assert!(b2_err.unwrap_err().to_string().contains("CONTENTION"));
+
+        // Age turn 1 past stale threshold (> 120 minutes)
+        let mut t1 = engine.store.turn(&tid1).unwrap().unwrap();
+        let stale_time = chrono::Utc::now() - chrono::Duration::minutes(150);
+        t1.last_activity = stale_time.to_rfc3339();
+        engine.store.save_turn(&t1).unwrap();
+
+        // Turn 2 now successfully reclaims the stale turn 1
+        let b2 = begin(
+            &engine,
+            BeginRequest {
+                prompt: "Turn 2 reclaiming".into(),
+                origin: "human".into(),
+                targets: vec![],
+                refines: vec![],
+                kind: "code".into(),
+                agent: None,
+                parent: None,
+                claims: vec!["src/lib.rs".into()],
+            },
+        )
+        .unwrap();
+        let reclaimed = b2["reclaimed"].as_array().unwrap();
+        assert_eq!(reclaimed.len(), 1);
+        assert_eq!(reclaimed[0].as_str().unwrap(), tid1);
+
+        // Verify turn 1 was marked abandoned with structured reclaim record
+        let t1_reclaimed = engine.store.turn(&tid1).unwrap().unwrap();
+        assert_eq!(t1_reclaimed.status, "abandoned");
+        assert!(t1_reclaimed.claims.is_empty());
+        let rec = t1_reclaimed.reclaim.expect("reclaim record must be present");
+        assert_eq!(rec.reason, "reclaimed stale claim on `src/lib.rs` (idle > 120m)");
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_paused_turn_never_auto_reclaimed() {
+        let dir = std::env::temp_dir().join(format!("afwe-paused-immunity-{}", crate::util::short_id("t")));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(dir.join("src")).unwrap();
+        std::fs::write(dir.join("src/lib.rs"), "pub fn init() {}\n").unwrap();
+        crate::init::init(
+            &dir,
+            crate::init::InitOptions {
+                name: Some("pause-immune-test".into()),
+                root: Some("src".into()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        let engine = Engine::open(&dir).unwrap();
+
+        let b1 = begin(
+            &engine,
+            BeginRequest {
+                prompt: "Turn 1".into(),
+                origin: "human".into(),
+                targets: vec![],
+                refines: vec![],
+                kind: "code".into(),
+                agent: None,
+                parent: None,
+                claims: vec!["src/lib.rs".into()],
+            },
+        )
+        .unwrap();
+        let tid1 = b1["turn"].as_str().unwrap().to_string();
+
+        pause(&engine, &tid1, "Waiting for human decision", vec!["A".into()], 3600, "agent").unwrap();
+
+        // Age turn 1 past stale threshold
+        let mut t1 = engine.store.turn(&tid1).unwrap().unwrap();
+        let stale_time = chrono::Utc::now() - chrono::Duration::minutes(150);
+        t1.last_activity = stale_time.to_rfc3339();
+        engine.store.save_turn(&t1).unwrap();
+
+        // Must still block contention — paused turns are immune from auto-reclaim!
+        let b2_err = begin(
+            &engine,
+            BeginRequest {
+                prompt: "Turn 2 attempting reclaim".into(),
+                origin: "human".into(),
+                targets: vec![],
+                refines: vec![],
+                kind: "code".into(),
+                agent: None,
+                parent: None,
+                claims: vec!["src/lib.rs".into()],
+            },
+        );
+        assert!(b2_err.is_err());
+        assert!(b2_err.unwrap_err().to_string().contains("CONTENTION"));
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_canonical_assume_example_accepted_and_heartbeat() {
+        let dir = std::env::temp_dir().join(format!("afwe-example-{}", crate::util::short_id("t")));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(dir.join("src")).unwrap();
+        std::fs::write(dir.join("src/lib.rs"), "pub fn init() {}\n").unwrap();
+        crate::init::init(
+            &dir,
+            crate::init::InitOptions {
+                name: Some("example-test".into()),
+                root: Some("src".into()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        let engine = Engine::open(&dir).unwrap();
+
+        let b = begin(
+            &engine,
+            BeginRequest {
+                prompt: "Add helper".into(),
+                origin: "human".into(),
+                targets: vec![],
+                refines: vec![],
+                kind: "code".into(),
+                agent: None,
+                parent: None,
+                claims: vec![],
+            },
+        )
+        .unwrap();
+        let tid = b["turn"].as_str().unwrap().to_string();
+
+        // 1. Heartbeat touches last_activity
+        let mut t = engine.store.turn(&tid).unwrap().unwrap();
+        t.last_activity = "2026-11-08T00:00:00Z".into();
+        engine.store.save_turn(&t).unwrap();
+        let old_activity = "2026-11-08T00:00:00Z";
+        let hb = heartbeat(&engine, &tid, "human").unwrap();
+        assert_eq!(hb["status"], "ok");
+        let new_activity = hb["last_activity"].as_str().unwrap();
+        assert_ne!(old_activity, new_activity);
+
+        // 2. Canonical assume and commit examples are accepted
+        let example = canonical_assume_example();
+        let _commit_ex = canonical_commit_example();
+        assert!(_commit_ex.get("summary").is_some());
+        let _reclaim_res = reclaim_stale_turn_for_file(&engine, "nonexistent_hash", &tid, "src/lib.rs", 120);
+        let intents: Vec<TurnIntent> = serde_json::from_value(example["intents"].clone()).unwrap();
+        let assumptions: Vec<Assumption> = serde_json::from_value(example["assumptions"].clone()).unwrap();
+
+        let a_res = assume(
+            &engine,
+            &tid,
+            AssumeRequest {
+                intents,
+                assumptions,
+                removes: vec![],
+                overrides: vec![],
+                origin: "human".into(),
+                token: None,
+                claims: vec![],
+            },
+        )
+        .unwrap();
+        assert_eq!(a_res["status"], "accepted");
 
         let _ = std::fs::remove_dir_all(&dir);
     }

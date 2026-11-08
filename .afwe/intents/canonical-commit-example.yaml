@@ -1,0 +1,20 @@
+id: canonical-commit-example
+title: canonical-commit-example
+statement: 'feat(core): deterministic stale-turn recovery, robust auto-start supervision, and schema templates'
+status: active
+origin: human
+attaches:
+  files:
+  - canonical_commit_example
+  - reclaim_stale_turn_for_file
+  - crates/afwe-core/src/turn.rs::canonical_commit_example
+  - crates/afwe-core/src/turn.rs::reclaim_stale_turn_for_file
+from_turns:
+- t0090
+history:
+- turn: t0090
+  ts: 2026-11-08T03:02:17Z
+  statement: 'feat(core): deterministic stale-turn recovery, robust auto-start supervision, and schema templates'
+created: 2026-11-08T03:02:17Z
+updated: 2026-11-08T03:02:17Z
+task: task-t0090

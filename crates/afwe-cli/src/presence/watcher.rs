@@ -84,10 +84,22 @@ impl PresenceWatcher {
             println!("  (No projects registered in user registry yet. Use `afwe registry add <path>` or `afwe install-project`)");
         }
 
+        let mut tick = 0u64;
         loop {
+            tick += 1;
             // Reload registry periodically in case new projects are added
             if let Ok(updated) = ProjectRegistry::load() {
                 reg = updated;
+            }
+
+            // Mutual supervision: Presence watcher periodically ensures Studio daemon is alive
+            if tick % 30 == 0 {
+                for p in &reg.projects {
+                    let project_path = Path::new(&p.path);
+                    if project_path.exists() {
+                        let _ = crate::studio::ensure_daemon_running(project_path);
+                    }
+                }
             }
 
             let mut seq_updates: Vec<(String, u64)> = Vec::new();

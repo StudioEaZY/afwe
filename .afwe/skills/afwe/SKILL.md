@@ -15,11 +15,13 @@ When interacting with this codebase:
    - Read `docs/UBIQUITOUS_LANGUAGE.md` (or `.afwe/docs/UBIQUITOUS_LANGUAGE.md`) and `.afwe/memory/terminology/` to ensure plans, intents, and code adhere strictly to canonical domain terms.
    - In parallel multi-agent sessions, declare file claims upfront with `--claim <files>` to prevent lost-update races.
    - Read the briefing pack: inspect in-scope architectural nodes, locked pins, active guardrails, probing guides (`[GUIDE - ADVISORY]`), and ambiguity questions. Note your assigned `turn_hash` and bearer `token`.
-   - If `CONTENTION` is returned, another agent holds that file. Do not edit conflicting files concurrently in the same directory.
+   - Copy the compact `assume_example` and `assume_schema` returned in the briefing (or inspect via `afwe turn assume --schema`/`--example` or MCP resource `afwe://schema/turn.assume`) to eliminate field-name typos.
+   - If `CONTENTION` is returned on a file held by an open turn, note whether it was auto-reclaimed: stale turns (idle > `policy.stale_turn_minutes`, default 120m) are automatically reclaimed under lock and returned in `reclaimed: [...]`. Paused turns are immune.
+   - If running lengthy silent operations (e.g. large builds or multi-step analysis), call `afwe turn heartbeat <turn>` (or `afwe_turn_heartbeat`) to touch `last_activity` and prevent accidental staleness reclamation.
 
 2. **Phase 1: Pre-Code Declaration (After Plan Approval)**:
    - Call `afwe turn assume <turn> --file <json> [--token <tok>] [--claim <files>]` (or MCP tool `afwe_turn_assume`) to declare your intents and pre-generation claims BEFORE writing any code.
-     Supported claims include:
+     Use `afwe turn assume --example` for a copy-pasteable minimal skeleton. Supported claims include:
      - `forbid_import`: forbid cross-module imports (e.g. `to_nodes: ["ui"]`).
      - `forbid_symbol`: forbid disallowed AST symbols (e.g. `symbol: "danger_fn"`).
      - `export_exists`: ensure public symbol remains exposed (e.g. `symbol: "init"`).

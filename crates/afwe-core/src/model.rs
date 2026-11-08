@@ -147,6 +147,12 @@ pub struct Policy {
     /// Whether to auto-adopt structural drift (default false). Mechanical renames at >=90% always auto-remap.
     #[serde(default)]
     pub drift_auto_adopt: bool,
+    /// Stale turn TTL in minutes (default 120). Unfinished turns exceeding this activity age are reclaimed on contention.
+    #[serde(default = "d_stale_turn_minutes")]
+    pub stale_turn_minutes: u64,
+}
+fn d_stale_turn_minutes() -> u64 {
+    120
 }
 fn d_drift_tolerate_days() -> u32 {
     7
@@ -170,6 +176,7 @@ impl Default for Policy {
             explore_mode: false,
             drift_tolerate_days: d_drift_tolerate_days(),
             drift_auto_adopt: false,
+            stale_turn_minutes: d_stale_turn_minutes(),
         }
     }
 }
@@ -1438,6 +1445,17 @@ pub struct Turn {
     /// Mid-turn pause record when suspended awaiting human or delegated prompter decision.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pause: Option<TurnPause>,
+    /// Structured reclaim record when an idle stale turn is reclaimed by a subsequent turn or human action.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reclaim: Option<ReclaimRecord>,
+}
+
+/// Structured record of when and why an idle stale turn was reclaimed.
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+pub struct ReclaimRecord {
+    pub by: String,
+    pub at: String,
+    pub reason: String,
 }
 
 /// Mid-turn pause state for zero-token suspension and reactive wake-up.

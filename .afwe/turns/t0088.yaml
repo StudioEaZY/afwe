@@ -11,12 +11,14 @@ prompt: Implement turn active assertion and non-destructive project upgrade
 prompt_hash: 4cb87d5d7be2eb89
 task: task-t0088
 scope: {}
-status: open
+status: abandoned
 touched: {}
 strength: unverified
 confidence: 0.0
 gate:
-  decision: ''
+  decision: abandoned
+  reasons:
+  - turn explicitly abandoned
 footer_shown: false
 turn_token: afwe_tok_f0aecff87c1b757937560e59a27a4c01
 session_id: sess-cbf30d
